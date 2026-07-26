@@ -9,7 +9,7 @@
 <title>Almacenamiento BESS y cortes — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=250726g">
+<link rel="stylesheet" href="assets/estilo.css?v=250726h">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -113,7 +113,7 @@ document.getElementById("nota").textContent = "Generado " + D.generado + ". " + 
       popup: `<b>${p.n}</b>` +
         `<br>${p.tec || ""}${p.seg ? " — " + p.seg : ""}` +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
-        `<br>Estado: <b>${p.est || "sin dato"}</b>${p.fec ? " (" + p.fec + ")" : ""}` +
+        `<br>Estado: <b>${PW.estadoProyecto(p.est) || "sin dato"}</b>${p.fec ? " (" + p.fec + ")" : ""}` +
         (p.pn ? `<br>Potencia planta: ${PW.fmt(p.pn)} MW` : "") +
         (p.mw ? `<br>Almacenamiento: ${PW.fmt(p.mw)} MW` : "") +
         (p.mwh ? ` / ${PW.fmt(p.mwh)} MWh` : "") +
