@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Importaciones de vehiculos — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Importaciones de vehiculos</h1>
+  <p class="sub">Lo que entra por la aduana anticipa lo que se vendera meses despues. Microdato
+  DIN de Aduanas de vehiculos electrificados, con marca, modelo y propulsion homologadas.
+  Las importaciones de baterias de litio tienen su propia seccion.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Categoria de vehiculo
+      <select id="f-cat"></select>
+    </label>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Unidades importadas por mes y propulsion</h2>
+    <div id="g-serie"></div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Top marcas, ultimos 12 meses</h2>
+      <div id="g-marcas"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Pais de origen, ultimos 12 meses</h2>
+      <div id="g-paises"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Modelos que debutan (ultimos 6 meses)</h2>
+    <p class="nota">Primer mes en que un (marca, modelo) aparece en el registro aduanero
+    2015-2026: senal temprana de lanzamientos.</p>
+    <div id="t-debuts"></div>
+  </div>
+
+</main>
+<script src="data/radar.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("radar.html");
+const D = PW_DATA.radar;
+document.getElementById("nota").textContent =
+  "Ultimo mes publicado por la fuente: " + D.ultimo_mes + ". Generado " + D.generado + ". " + D.nota;
+
+const selC = document.getElementById("f-cat");
+D.categorias.forEach(c => {
+  const o = document.createElement("option"); o.value = c; o.textContent = c; selC.appendChild(o);
+});
+selC.value = "Livianos y Medianos";
+
+let tDebuts = null;
+function refrescar() {
+  const G = D.por_categoria[selC.value];
+  const desde = D.meses.findIndex(m => m >= "2020-01");
+  const meses = D.meses.slice(desde);
+  PW.lineas("g-serie", {
+    labels: meses,
+    series: Object.entries(G.series).map(([k, v]) => ({ nombre: k, valores: v.slice(desde) })),
+    fmtV: v => PW.fmt(v) + " unid.",
+    alto: 280,
+  });
+  PW.barras("g-marcas", {
+    items: G.top_marcas_12m.slice(0, 15).map(m => ({
+      nombre: m.marca, valor: m.unidades,
+      extra: "CIF unitario: US$" + PW.fmt(m.cif_unitario),
+    })),
+  });
+  PW.barras("g-paises", { items: G.paises_12m.map(p => ({ nombre: p.pais, valor: p.unidades })), color: PW.color("--s2") });
+
+  const colsD = [
+    { k: "debut", titulo: "Debut" },
+    { k: "marca", titulo: "Marca" },
+    { k: "modelo", titulo: "Modelo" },
+    { k: "propulsion", titulo: "Propulsion", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+    { k: "unidades", titulo: "Unidades a la fecha", num: true, fmt: v => PW.fmt(v) },
+  ];
+  if (tDebuts) tDebuts.actualizar(G.debuts_6m); else tDebuts = PW.tabla("t-debuts", colsD, G.debuts_6m, { orden: "debut" });
+}
+selC.addEventListener("input", refrescar);
+refrescar();
+</script>
+</body>
+</html>

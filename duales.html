@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Estaciones duales — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+<main>
+  <h1>Estaciones duales: bencina y electrones en el mismo punto</h1>
+  <p class="sub">Bencineras que tienen un cargador publico a 100 metros o menos: la estrategia
+  de conversion de cada petrolera, medida en terreno. En cada punto dual se compara el precio
+  del litro y del kWh en el mismo sitio fisico.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Tasa de conversion por marca</h2>
+      <div id="g-marcas"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Mapa de puntos duales</h2>
+      <div id="mapa-duales"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Detalle de estaciones duales</h2>
+    <div id="t-pares"></div>
+  </div>
+</main>
+<script src="data/c_duales.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("duales.html");
+const D = PW_DATA.c_duales;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const totalBenc = Object.values(D.marcas).reduce((a, m) => a + m.total, 0);
+document.getElementById("kpis").innerHTML = [
+  [D.pares.length, "estaciones duales detectadas", "cargador a 100 m o menos"],
+  [PW.fmt(Math.round(1000 * D.pares.length / Math.max(totalBenc, 1)) / 10, 1) + "%", "de las bencineras grandes", totalBenc + " estaciones en marcas 10+"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+const marcas = Object.entries(D.marcas).sort((a, b) => b[1].pct - a[1].pct);
+PW.barras("g-marcas", {
+  items: marcas.map(([m, v]) => ({
+    nombre: m, valor: v.pct,
+    extra: v.con_carga + " de " + v.total + " estaciones",
+  })),
+  fmtV: v => PW.fmt(v, 1) + "%",
+});
+
+PW.mapa("mapa-duales", {
+  capas: [{
+    nombre: "Duales", puntos: D.pares.map(p => ({
+      lat: p.lat, lon: p.lon, r: 6, color: PW.color("--s2"),
+      popup: `<b>${p.marca}</b><br>${p.dir || ""}<br>${p.com}, ${p.reg}` +
+        `<br>Cargador: ${p.operador_ev || "?"} a ${p.dist_m} m` +
+        (p.kw ? ` (${PW.fmt(p.kw)} kW)` : "") +
+        (p.p93 ? `<br>93: $${PW.fmt(p.p93)}/L` : "") +
+        (p.pkwh ? `<br>Carga: $${PW.fmt(p.pkwh)}/kWh` : "") +
+        PW.waze(p.lat, p.lon),
+    })),
+  }],
+  centro: [-33.6, -70.8], zoom: 6, alto: 420,
+});
+
+PW.tabla("t-pares", [
+  { k: "marca", titulo: "Marca" },
+  { k: "com", titulo: "Comuna" },
+  { k: "reg", titulo: "Region" },
+  { k: "operador_ev", titulo: "Operador de carga" },
+  { k: "dist_m", titulo: "Dist. (m)", num: true },
+  { k: "kw", titulo: "kW", num: true, fmt: v => PW.fmt(v) },
+  { k: "p93", titulo: "$/L 93", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
+  { k: "pkwh", titulo: "$/kWh", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
+], D.pares, { orden: "dist_m", asc: true, max: 300 });
+</script>
+</body>
+</html>

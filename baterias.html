@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Importaciones de baterias de litio — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Importaciones de baterias de litio</h1>
+  <p class="sub">El mercado del litio importado que casi nadie sigue en Chile: cuanto entra,
+  de que quimica, para que uso y desde donde. Un termometro temprano del negocio de baterias y
+  almacenamiento.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Valor CIF importado por mes (USD)</h2>
+    <div id="g-mensual"></div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por quimica (CIF, 12 meses)</h2>
+      <div id="g-quimica"></div>
+      <p class="nota">La quimica se extrae de la glosa; cobertura parcial.</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por segmento de uso (CIF, 12 meses)</h2>
+      <div id="g-segmento"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Por pais de origen (CIF, 12 meses)</h2>
+    <div id="g-pais"></div>
+  </div>
+
+  <p class="nota">El despliegue fisico del almacenamiento (mapa de proyectos, estados,
+  descarga diaria en el SEN e inversion de la cartera SEA) esta en la seccion Energia:
+  <a href="bess-cortes.html">Almacenamiento (BESS)</a>.</p>
+</main>
+<script src="data/baterias.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("baterias.html");
+
+
+const D = PW_DATA.baterias;
+document.getElementById("nota").textContent =
+  "Ultimo mes publicado: " + D.ultimo_mes + ". Generado " + D.generado + ". " + D.nota;
+
+const desde = D.mensual.findIndex(m => m.ym >= "2019-01");
+const mensual = D.mensual.slice(desde);
+PW.lineas("g-mensual", {
+  labels: mensual.map(m => m.ym),
+  series: [{ nombre: "CIF USD", valores: mensual.map(m => m.cif_usd) }],
+  fmtV: v => "US$" + PW.fmt(v),
+  fmtY: v => "US$" + PW.fmt(v / 1e6, 1) + "M",
+  alto: 260,
+});
+PW.barras("g-quimica", {
+  items: D.quimica_12m.map(q => ({ nombre: q.quim, valor: q.cif_usd })),
+  fmtV: v => "US$" + PW.fmt(v / 1e6, 1) + "M",
+});
+PW.barras("g-segmento", {
+  items: D.segmento_12m.map(s => ({ nombre: s.seg, valor: s.cif_usd })),
+  color: PW.color("--s2"),
+  fmtV: v => "US$" + PW.fmt(v / 1e6, 1) + "M",
+});
+PW.barras("g-pais", {
+  items: D.pais_12m.map(p => ({ nombre: p.pais, valor: p.cif_usd })),
+  color: PW.color("--s3"),
+  fmtV: v => "US$" + PW.fmt(v / 1e6, 1) + "M",
+});
+</script>
+</body>
+</html>

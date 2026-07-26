@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Brechas de autonomia — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+<main>
+  <h1>Brechas de autonomia en corredores</h1>
+  <p class="sub">¿En que tramos de ruta un electrico promedio se queda sin donde cargar?
+  Comparamos la distancia entre cargadores rapidos (50 kW o mas) con la autonomia real del
+  catalogo, para ver donde falta infraestructura para viajar.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Mapa de la red DC</h2>
+      <p class="nota">Rojo: el punto DC mas cercano queda mas lejos que el rango util p25.</p>
+      <div id="mapa-dc"></div>
+      <div id="ley-dc"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Mayores brechas norte-sur entre estaciones DC</h2>
+      <div id="t-brechas"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Estaciones DC y su vecino mas cercano</h2>
+    <div id="t-puntos"></div>
+  </div>
+</main>
+<script src="data/c_autonomia.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("autonomia.html");
+const D = PW_DATA.c_autonomia;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const K = D.kpis;
+document.getElementById("kpis").innerHTML = [
+  [K.estaciones_dc, "estaciones con carga rapida", "50 kW o mas"],
+  [PW.fmt(K.autonomia_p50) + " km", "autonomia mediana del catalogo", "p25: " + PW.fmt(K.autonomia_p25) + " km"],
+  [PW.fmt(K.rango_util_p25) + " km", "rango util conservador", "70% de la autonomia p25"],
+  [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada", D.brechas.length ? D.brechas[0].desde : ""],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+const umbral = K.rango_util_p25;
+PW.mapa("mapa-dc", {
+  capas: [{
+    nombre: "Estaciones DC", puntos: D.puntos.map(p => ({
+      lat: p.lat, lon: p.lon, r: 5,
+      color: (p.nn_km || 0) > umbral ? PW.color("--critical") : PW.color("--s3"),
+      popup: `<b>${p.n || "Estacion DC"}</b><br>${p.com}, ${p.reg}` +
+        `<br>${PW.fmt(p.kw)} kW` +
+        `<br>DC mas cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
+        PW.waze(p.lat, p.lon),
+    })),
+  }],
+  centro: [-33, -71], zoom: 4.5, alto: 460,
+});
+PW.leyendaMapa("ley-dc", [
+  ["Vecino DC dentro del rango util", PW.color("--s3")],
+  ["Aislada (vecino mas alla del rango)", PW.color("--critical")],
+]);
+
+PW.tabla("t-brechas", [
+  { k: "desde", titulo: "Desde" },
+  { k: "hasta", titulo: "Hasta" },
+  { k: "km", titulo: "km", num: true, fmt: v => `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v)}</span>` },
+], D.brechas, { orden: "km" });
+
+PW.tabla("t-puntos", [
+  { k: "n", titulo: "Estacion" },
+  { k: "com", titulo: "Comuna" },
+  { k: "reg", titulo: "Region" },
+  { k: "kw", titulo: "kW", num: true, fmt: v => PW.fmt(v) },
+  { k: "nn_km", titulo: "DC mas cercano (km)", num: true, fmt: v => v == null ? "—" : `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
+], D.puntos, { orden: "nn_km", max: 300 });
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Ranking de operadores de carga — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+<main>
+  <h1>Ranking de operadores de carga</h1>
+  <p class="sub">Que tan confiable es cada red de carga en Chile, medida en terreno cada 30
+  minutos: porcentaje operativo, ocupacion real y cargadores caidos de forma cronica. La
+  comparacion que ningun operador publica.</p>
+  <p class="nota" id="nota"></p>
+
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa de la red publica (estado en tiempo real)</h2>
+    <div class="filtros" id="filtros-mapa"></div>
+    <div id="mapa-red"></div>
+    <div id="ley-red"></div>
+    <p class="nota" id="cont-mapa"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Porcentaje operativo observado</h2>
+    <div id="g-operativo"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Detalle por operador</h2>
+    <div id="t-operadores"></div>
+    <p class="nota">Un mismo grupo comercial puede aparecer con mas de un nombre segun la
+    fuente (registro oficial vs plataforma propia); la columna Grupo los relaciona sin
+    fusionarlos, porque miden subconjuntos distintos de la red. Precio promedio solo donde el
+    operador lo publica.</p>
+  </div>
+</main>
+<script src="data/operadores.js"></script>
+<script src="data/mapa.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("operadores.html");
+
+// Mapa: estaciones coloreadas por estado en tiempo real, con filtros
+(function () {
+  const EST_COLOR = {
+    disponible: PW.color("--good"),
+    ocupado: PW.color("--s1"),
+    fuera_de_servicio: PW.color("--critical"),
+    no_disponible: PW.color("--ink-3"),
+  };
+  const datos = PW_DATA.mapa.carga;
+  const operadoresU = [...new Set(datos.map(p => p.op).filter(Boolean))].sort();
+  let filtroTerr = { rcut: null, com: null };
+  let mapaRed = null;
+
+  const popup = p => PW.popupEstacion(p);
+
+  function pintar() {
+    const est = document.getElementById("f-estado").value;
+    const op = document.getElementById("f-operador").value;
+    const kwMin = +document.getElementById("f-kw").value || 0;
+    const soloOfi = document.getElementById("f-oficial").checked;
+    const sel = datos.filter(p =>
+      (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
+      (!filtroTerr.com || p.com === filtroTerr.com) &&
+      (!est || (est === "sin_dato" ? !p.est : p.est === est)) &&
+      (!op || p.op === op) &&
+      ((p.kw || 0) >= kwMin) &&
+      (!soloOfi || p.ofi));
+    const pts = sel.map(p => ({
+      lat: p.lat, lon: p.lon, r: 7.5,
+      color: EST_COLOR[p.est] || PW.color("--ink-3"),
+      popup: popup(p),
+    }));
+    if (mapaRed) { mapaRed.remove(); mapaRed = null; }
+    mapaRed = PW.mapa("mapa-red", { capas: [{ nombre: "Estaciones", puntos: pts }], centro: [-35.5, -71.5], zoom: 5 });
+    if (mapaRed && pts.length && (filtroTerr.rcut || filtroTerr.com)) {
+      mapaRed.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.2));
+    }
+    document.getElementById("cont-mapa").textContent =
+      pts.length + " estaciones mostradas de " + datos.length + ".";
+  }
+
+  PW.filtrosTerritorio("filtros-mapa", datos, f => { filtroTerr = f; pintar(); },
+    `<label>Estado <select id="f-estado"><option value="">Todos</option>
+      <option value="disponible">Disponible</option><option value="ocupado">Ocupado</option>
+      <option value="fuera_de_servicio">Fuera de servicio</option><option value="sin_dato">Sin dato</option>
+    </select></label>
+    <label>Operador <select id="f-operador"><option value="">Todos</option>` +
+    operadoresU.map(o => `<option>${o}</option>`).join("") + `</select></label>
+    <label>Potencia min (kW) <input type="number" id="f-kw" value="0" min="0" step="10" style="width:70px"></label>
+    <label>Solo registro oficial <input type="checkbox" id="f-oficial"></label>`);
+  ["f-estado", "f-operador", "f-kw", "f-oficial"].forEach(id =>
+    document.getElementById(id).addEventListener("input", pintar));
+  pintar();
+  PW.leyendaMapa("ley-red", [
+    ["Disponible", PW.color("--good")],
+    ["Ocupado", PW.color("--s1")],
+    ["Fuera de servicio", PW.color("--critical")],
+    ["Sin dato / no disponible", PW.color("--ink-3")],
+  ]);
+})();
+const D = PW_DATA.operadores;
+document.getElementById("nota").textContent =
+  "Ventana observada (UTC): " + (D.rango_historico_utc ? D.rango_historico_utc.join(" a ") : "sin historico") +
+  ". Generado " + D.generado + ".";
+
+const cols = [
+  { k: "operador", titulo: "Operador" },
+  { k: "grupo", titulo: "Grupo", fmt: v => v ? `<span class="pill">${v}</span>` : "" },
+  { k: "estaciones", titulo: "Estaciones", num: true, fmt: v => PW.fmt(v) },
+  { k: "conectores", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
+  { k: "potencia_prom_kw", titulo: "kW prom.", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "pct_operativo", titulo: "% operativo", num: true, fmt: v => v == null ? "—" : `<span class="${v >= 90 ? "estado-ok" : (v < 75 ? "estado-mal" : "")}">${PW.pct(v)}</span>` },
+  { k: "pct_ocupado", titulo: "% ocupacion", num: true, fmt: v => PW.pct(v) },
+  { k: "conectores_cronicos", titulo: "Cronicos", num: true, fmt: v => v == null ? "—" : (v > 0 ? `<span class="estado-mal">${v}</span>` : "0") },
+  { k: "precio_prom_clp_kwh", titulo: "$/kWh prom.", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
+  { k: "obs", titulo: "Observaciones", num: true, fmt: v => PW.fmt(v) },
+];
+
+let tab = null;
+function refrescar() {
+  const filas = D.operadores;
+  const conMed = filas.filter(o => o.pct_operativo != null && o.obs >= 200)
+    .sort((a, b) => b.pct_operativo - a.pct_operativo);
+  PW.barras("g-operativo", {
+    items: conMed.map(o => ({
+      nombre: o.operador, valor: o.pct_operativo,
+      extra: PW.fmt(o.conectores) + " conectores, " + PW.fmt(o.obs) + " obs.",
+      color: o.pct_operativo >= 90 ? PW.color("--s3") : (o.pct_operativo < 75 ? PW.color("--s2") : PW.color("--s1")),
+    })),
+    fmtV: v => PW.pct(v),
+  });
+  if (tab) tab.actualizar(filas);
+  else tab = PW.tabla("t-operadores", cols, filas, { orden: "conectores" });
+}
+refrescar();
+</script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Almacenamiento BESS y cortes — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+<main>
+  <h1>Almacenamiento (BESS): despliegue, operacion y cortes</h1>
+  <p class="sub">El almacenamiento del sistema electrico chileno: donde estan los proyectos,
+  cuanta energia descargan cada dia, cuanta inversion viene en cartera, y si se instalan
+  donde mas se corta la luz — o solo donde conviene al mercado spot.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa de proyectos con almacenamiento</h2>
+    <p class="nota">Tamaño del punto segun capacidad (MWh); solo proyectos con coordenadas
+    declaradas en el catastro ACERA.</p>
+    <div class="filtros" id="filtros-bess"></div>
+    <div id="mapa-bess"></div>
+    <div id="ley-bess"></div>
+    <p class="nota" id="cont-bess"></p>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Proyectos BESS por estado (ACERA)</h2>
+      <div id="t-bess"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Descarga diaria de BESS en el SEN (GWh)</h2>
+      <div id="g-bess-diario"></div>
+      <p class="nota" id="nota-bess-diario"></p>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Inversion en cartera electrica SEA por region</h2>
+    <div id="g-sea"></div>
+    <p class="nota">Inversion declarada (MMUS$) de los proyectos electricos con RCA en el
+    SEIA; incluye generacion y almacenamiento.</p>
+  </div>
+
+  <h2>¿Se instala donde mas se corta?</h2>
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Cliente-horas de corte por region</h2>
+      <div id="g-cortes"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">MWh de almacenamiento por region</h2>
+      <div id="g-bess"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Las 20 comunas con mas cortes y su BESS</h2>
+    <div id="t-top"></div>
+    <p class="nota">mwh_comuna = capacidad de proyectos en la misma comuna; mwh_region = en la
+    region. Cero en ambos = maxima desproteccion relativa.</p>
+  </div>
+</main>
+<script src="data/c_besscortes.js"></script>
+<script src="data/baterias.js"></script>
+<script src="data/mapa.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("bess-cortes.html");
+const D = PW_DATA.c_besscortes;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+// Mapa BESS con filtros
+(function () {
+  const puntos = PW_DATA.mapa.bess;
+  const estadosU = [...new Set(puntos.map(p => p.est).filter(Boolean))].sort();
+  const tecsU = [...new Set(puntos.map(p => p.tec).filter(Boolean))].sort();
+  let filtroTerr = { rcut: null, com: null };
+  let mapaB = null;
+
+  function colorEstado(e) {
+    const n = (e || "").toLowerCase();
+    if (n.includes("opera")) return PW.color("--good");
+    if (n.includes("construc")) return PW.color("--s2");
+    if (n.includes("prueba") || n.includes("aprob")) return PW.color("--s1");
+    return PW.color("--ink-3");
+  }
+
+  function pintar() {
+    const est = document.getElementById("fb-estado").value;
+    const tec = document.getElementById("fb-tec").value;
+    const mwhMin = +document.getElementById("fb-mwh").value || 0;
+    const sel = puntos.filter(p =>
+      (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
+      (!filtroTerr.com || p.com === filtroTerr.com) &&
+      (!est || p.est === est) &&
+      (!tec || p.tec === tec) &&
+      ((p.mwh || 0) >= mwhMin));
+    const pts = sel.map(p => ({
+      lat: p.lat, lon: p.lon,
+      color: colorEstado(p.est),
+      r: p.mwh ? Math.max(4, Math.min(16, 2 + Math.sqrt(p.mwh) / 3)) : 4,
+      popup: `<b>${p.n}</b>` +
+        `<br>${p.tec || ""}${p.seg ? " — " + p.seg : ""}` +
+        `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
+        `<br>Estado: <b>${p.est || "sin dato"}</b>${p.fec ? " (" + p.fec + ")" : ""}` +
+        (p.pn ? `<br>Potencia planta: ${PW.fmt(p.pn)} MW` : "") +
+        (p.mw ? `<br>Almacenamiento: ${PW.fmt(p.mw)} MW` : "") +
+        (p.mwh ? ` / ${PW.fmt(p.mwh)} MWh` : "") +
+        (p.soc ? `<br>Socio: ${p.soc}` : "") +
+        (p.url ? `<br><a href="${p.url}" target="_blank" rel="noopener">Ficha SEIA</a>` : "") +
+        PW.waze(p.lat, p.lon),
+    }));
+    if (mapaB) { mapaB.remove(); mapaB = null; }
+    mapaB = PW.mapa("mapa-bess", { capas: [{ nombre: "Proyectos BESS", puntos: pts }], centro: [-30, -71], zoom: 4.5 });
+    if (mapaB && pts.length && (filtroTerr.rcut || filtroTerr.com)) {
+      mapaB.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.2));
+    }
+    const mwhTot = sel.reduce((a, p) => a + (p.mwh || 0), 0);
+    document.getElementById("cont-bess").textContent =
+      pts.length + " proyectos mostrados de " + puntos.length + " — " +
+      PW.fmt(Math.round(mwhTot)) + " MWh acumulados en la seleccion.";
+  }
+
+  PW.filtrosTerritorio("filtros-bess", puntos, f => { filtroTerr = f; pintar(); },
+    `<label>Estado <select id="fb-estado"><option value="">Todos</option>` +
+    estadosU.map(e => `<option>${e}</option>`).join("") + `</select></label>
+    <label>Tecnologia <select id="fb-tec"><option value="">Todas</option>` +
+    tecsU.map(t => `<option>${t}</option>`).join("") + `</select></label>
+    <label>MWh min <input type="number" id="fb-mwh" value="0" min="0" step="50" style="width:80px"></label>`);
+  ["fb-estado", "fb-tec", "fb-mwh"].forEach(id =>
+    document.getElementById(id).addEventListener("input", pintar));
+  pintar();
+  PW.leyendaMapa("ley-bess", [
+    ["En operacion", PW.color("--good")],
+    ["En construccion", PW.color("--s2")],
+    ["Aprobado / pruebas", PW.color("--s1")],
+    ["Otros estados", PW.color("--ink-3")],
+  ]);
+})();
+
+// Descarga diaria real + inversion SEA (datos del modulo de baterias)
+(function () {
+  const B = window.PW_DATA.baterias;
+  if (!B) return;
+  if (B.bess_diario && B.bess_diario.length) {
+    PW.lineas("g-bess-diario", {
+      labels: B.bess_diario.map(x => x.fecha),
+      series: [{ nombre: "GWh descargados por dia", valores: B.bess_diario.map(x => x.gwh_dia), area: true, color: PW.color("--s3") }],
+      fmtV: v => PW.fmt(v, 1) + " GWh", alto: 240,
+    });
+    const ult = B.bess_diario[B.bess_diario.length - 1];
+    document.getElementById("nota-bess-diario").textContent =
+      "Operacion real del Coordinador. Acumulado " + ult.fecha.slice(0, 4) + ": " +
+      PW.fmt(ult.gwh_anual) + " GWh al " + ult.fecha + ".";
+  }
+  if (B.bess_estado && B.bess_estado.length) {
+    PW.tabla("t-bess", [
+      { k: "estado", titulo: "Estado" },
+      { k: "proyectos", titulo: "Proyectos", num: true, fmt: v => PW.fmt(v) },
+      { k: "mw", titulo: "MW", num: true, fmt: v => PW.fmt(v) },
+      { k: "mwh", titulo: "MWh", num: true, fmt: v => PW.fmt(v) },
+    ], B.bess_estado, { orden: "mwh", buscador: false });
+  }
+  if (B.sea_inversion && B.sea_inversion.length) {
+    PW.barras("g-sea", {
+      items: B.sea_inversion.slice(0, 12).map(s => ({
+        nombre: s.region, valor: s.mmus, extra: s.proyectos + " proyectos",
+      })),
+      fmtV: v => "US$" + PW.fmt(v) + "M",
+    });
+  }
+})();
+
+const regs = D.regiones;
+PW.barras("g-cortes", {
+  items: regs.map(r => ({ nombre: r.region, valor: r.cliente_horas })),
+  color: PW.color("--critical"),
+  fmtV: v => PW.fmt(v / 1e6, 1) + "M",
+});
+PW.barras("g-bess", {
+  items: regs.map(r => ({ nombre: r.region, valor: r.mwh, extra: r.proyectos + " proyectos" })),
+  color: PW.color("--s3"),
+  fmtV: v => PW.fmt(v) + " MWh",
+});
+
+PW.tabla("t-top", [
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Region" },
+  { k: "cliente_horas", titulo: "Cliente-horas", num: true, fmt: v => PW.fmt(v / 1e6, 1) + "M" },
+  { k: "mwh_comuna", titulo: "MWh en la comuna", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
+  { k: "mwh_region", titulo: "MWh en la region", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
+], D.top_comunas, { orden: "cliente_horas" });
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Valor del parque vehicular — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Valor del parque vehicular comunal</h1>
+  <p class="sub">Cuanta riqueza vehicular hay en cada comuna: parque por tipo de motor (INE)
+  valorizado con la tasacion media del catalogo homologado. Un indice RELATIVO para comparar
+  comunas, no una tasacion absoluta.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Region <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Evolucion del parque nacional 2008-2024</h2>
+      <div id="g-serie-parque"></div>
+      <p class="nota" id="nota-serie"></p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Composicion por tipo de vehiculo (ultimo año)</h2>
+      <div id="g-tipos"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Top 20 comunas por valor referencial del parque</h2>
+    <div id="g-top"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Todas las comunas</h2>
+    <div id="t-comunas"></div>
+  </div>
+</main>
+<script src="data/c_valorparque.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("valor-parque.html");
+const D = PW_DATA.c_valorparque;
+document.getElementById("nota").textContent =
+  "Parque " + D.anio + ". Generado " + D.generado + ". " + D.nota +
+  " Tasaciones medias usadas: bencina " + PW.clp(D.tasaciones.bencina) + ", diesel " +
+  PW.clp(D.tasaciones.diesel) + ", electrico " + PW.clp(D.tasaciones.electrico) + ".";
+
+const selR = document.getElementById("f-region");
+const selC = document.getElementById("f-comuna");
+[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o);
+});
+function poblarComunas() {
+  const reg = selR.value;
+  const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort();
+  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
+  selC.disabled = !reg;
+}
+
+const cols = [
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Region" },
+  { k: "valor_mm", titulo: "Valor ref. (MM$)", num: true, fmt: v => PW.fmt(v) },
+  { k: "valor_pc", titulo: "Por habitante ($)", num: true, fmt: v => PW.clp(v) },
+  { k: "total", titulo: "Parque motorizado", num: true, fmt: v => PW.fmt(v) },
+  { k: "veh_pc", titulo: "Vehiculos per capita", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "electrico", titulo: "Electricos", num: true, fmt: v => PW.fmt(v) },
+  { k: "pct_electrico", titulo: "% electrico", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) + "%" },
+];
+
+// Serie nacional del parque + composicion por tipo
+if (D.serie_nacional) {
+  PW.lineas("g-serie-parque", {
+    labels: D.serie_nacional.map(s => String(s.anio)),
+    series: [
+      { nombre: "Parque motorizado", valores: D.serie_nacional.map(s => s.motorizados), area: true },
+      { nombre: "Electricos", valores: D.serie_nacional.map(s => s.electrico), color: PW.color("--s3") },
+    ],
+    fmtV: v => PW.fmt(v), fmtY: v => PW.fmt(v / 1e6, 1) + "M", alto: 260,
+  });
+  const u = D.serie_nacional[D.serie_nacional.length - 1];
+  document.getElementById("nota-serie").textContent =
+    "INE, permisos de circulacion. " + u.anio + ": " + PW.fmt(u.motorizados) +
+    " motorizados, " + PW.fmt(u.electrico) + " electricos (" + PW.fmt(u.pct_electrico, 1) +
+    "% — puede incluir hibridos).";
+}
+if (D.tipos_ultimo_anio) {
+  PW.barras("g-tipos", {
+    items: D.tipos_ultimo_anio.slice(0, 10).map(t => ({ nombre: t.tipo, valor: t.cantidad })),
+    color: PW.color("--s2"),
+    fmtV: v => PW.fmt(v),
+  });
+}
+
+let tab = null;
+function refrescar() {
+  const reg = selR.value;
+  const com = selC.value;
+  const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
+  PW.barras("g-top", {
+    items: filas.slice(0, 20).map(c => ({
+      nombre: c.comuna, valor: c.valor_mm,
+      extra: PW.fmt(c.total) + " vehiculos, " + PW.clp(c.valor_pc) + " por habitante",
+    })),
+    fmtV: v => PW.fmt(v / 1000, 1) + " mil MM$",
+  });
+  if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "valor_mm", max: 400 });
+}
+selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
+selC.addEventListener("input", refrescar);
+refrescar();
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Demanda electrica del parque EV — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Demanda electrica del parque EV</h1>
+  <p class="sub">Cuanta energia consume hoy el parque electrico y cuando su crecimiento se
+  hara sentir en el sistema electrico nacional. Proyeccion con supuestos declarados que puedes
+  ajustar.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>km anuales por vehiculo <input type="number" id="f-km" value="15000" step="1000" min="5000"></label>
+    <label>Rendimiento (km/kWh) <input type="number" id="f-rend" value="5.4" step="0.2" min="3"></label>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">GWh anuales por region (parque actual)</h2>
+      <div id="g-reg"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Escenarios de crecimiento del parque</h2>
+      <div id="t-esc"></div>
+      <p class="nota">Con el parque multiplicado por N, que fraccion del SEN actual representa
+      la carga EV. La estrategia 2035 implica parques 10-30 veces el actual.</p>
+    </div>
+  </div>
+</main>
+<script src="data/c_demanda.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("demanda-ev.html");
+const D = PW_DATA.c_demanda;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+function refrescar() {
+  const km = +document.getElementById("f-km").value || 15000;
+  const rend = +document.getElementById("f-rend").value || 5.4;
+  const gwh = D.kpis.parque_ev * km / rend / 1e6;
+  document.getElementById("kpis").innerHTML = [
+    [PW.fmt(D.kpis.parque_ev), "vehiculos electricos registrados", "INE 2024 (puede incluir hibridos)"],
+    [PW.fmt(gwh, 1) + " GWh", "consumo anual estimado", km / 1000 + " mil km x " + rend + " km/kWh"],
+    [PW.fmt(D.kpis.gwh_sen_anual) + " GWh", "generacion SEN anualizada", ""],
+    [PW.fmt(100 * gwh / D.kpis.gwh_sen_anual, 2) + "%", "del SEN es carga EV hoy", ""],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  PW.barras("g-reg", {
+    items: D.regiones.slice(0, 14).map(r => ({
+      nombre: r.region, valor: r.parque_ev * km / rend / 1e6,
+      extra: PW.fmt(r.parque_ev) + " vehiculos",
+    })),
+    fmtV: v => PW.fmt(v, 1) + " GWh",
+  });
+
+  const filas = [2, 5, 10, 20].map(f => ({
+    escenario: "Parque x" + f,
+    vehiculos: D.kpis.parque_ev * f,
+    gwh: Math.round(gwh * f),
+    pct: Math.round(1000 * gwh * f / D.kpis.gwh_sen_anual) / 10,
+  }));
+  document.getElementById("t-esc").innerHTML =
+    `<div class="scroll-x"><table class="pw"><thead><tr><th>Escenario</th><th class="num">Vehiculos</th><th class="num">GWh/año</th><th class="num">% del SEN</th></tr></thead><tbody>` +
+    filas.map(f => `<tr><td>${f.escenario}</td><td class="num">${PW.fmt(f.vehiculos)}</td><td class="num">${PW.fmt(f.gwh)}</td><td class="num">${PW.fmt(f.pct, 1)}%</td></tr>`).join("") +
+    `</tbody></table></div>`;
+}
+["f-km", "f-rend"].forEach(id => document.getElementById(id).addEventListener("input", refrescar));
+refrescar();
+</script>
+</body>
+</html>

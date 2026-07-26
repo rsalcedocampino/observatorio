@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Elasticidad bencina-EV — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Elasticidad bencina-electromovilidad</h1>
+  <p class="sub">¿Cuando sube la bencina, sube la adopcion de enchufables meses despues? Este
+  cruce contrasta la participacion de mercado enchufable con el precio real de la bencina 93.
+  Es un analisis que madura solo: el historico propio de precios captura cada 10 dias.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Participacion de mercado enchufable (mensual)</h2>
+    <div id="g-part"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Capturas de precio bencina 93 (promedio pais)</h2>
+    <div id="t-capturas"></div>
+    <p class="nota">La regresion participacion~precio con rezagos 0-6 meses se activara
+    automaticamente cuando existan suficientes capturas para construir una serie mensual.</p>
+  </div>
+</main>
+<script src="data/c_elasticidad.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("elasticidad.html");
+const D = PW_DATA.c_elasticidad;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const n = D.capturas_p93.length;
+document.getElementById("kpis").innerHTML = [
+  [n + " / " + D.capturas_necesarias, "capturas de precio acumuladas", "cada 10 dias desde jul-2026"],
+  [n >= D.capturas_necesarias ? "Activo" : "En construccion", "estado del analisis",
+    n >= D.capturas_necesarias ? "" : "faltan " + (D.capturas_necesarias - n) + " capturas (~" + Math.ceil((D.capturas_necesarias - n) * 10 / 30) + " meses)"],
+  [D.participacion.length ? PW.fmt(D.participacion[D.participacion.length - 1].pct, 1) + "%" : "—",
+    "participacion enchufable actual", D.participacion.length ? "mes " + D.participacion[D.participacion.length - 1].ym : ""],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+PW.lineas("g-part", {
+  labels: D.participacion.map(p => p.ym),
+  series: [{ nombre: "Enchufables %", valores: D.participacion.map(p => p.pct) }],
+  fmtV: v => PW.fmt(v, 1) + "%", fmtY: v => Math.round(v) + "%", alto: 240,
+});
+
+PW.tabla("t-capturas", [
+  { k: "captura", titulo: "Fecha de captura" },
+  { k: "p93", titulo: "Bencina 93 promedio pais", num: true, fmt: v => PW.clp(v) + "/L" },
+], D.capturas_p93, {});
+</script>
+</body>
+</html>

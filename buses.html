@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Buses electricos — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Buses electricos: del puerto al electroterminal</h1>
+  <p class="sub">Como se despliega el transporte publico electrico: ventas por categoria de
+  servicio, importaciones con su costo CIF, y la infraestructura de carga de transporte
+  (electroterminales SEC) region por region.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Ventas de buses electricos por categoria</h2>
+    <div id="g-ventas"></div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Marcas (ventas acumuladas)</h2>
+      <div id="g-marcas-v"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Marcas importadas (Aduana) y CIF por bus</h2>
+      <div id="t-marcas-a"></div>
+    </div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Importacion mensual de buses</h2>
+      <div id="g-aduana"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Cargadores de transporte por region (SEC)</h2>
+      <div id="t-et"></div>
+      <p class="nota">Electroterminales y carga de transporte publico, acumulado EcoCarga. Las
+      regiones que reciben buses sin infraestructura de terminal aparecen con cero.</p>
+    </div>
+  </div>
+</main>
+<script src="data/c_buses.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("buses.html");
+const D = PW_DATA.c_buses;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const desde = D.meses.findIndex(m => m >= "2019-01");
+const cats = Object.keys(D.ventas_categoria);
+PW.lineas("g-ventas", {
+  labels: D.meses.slice(desde),
+  series: cats.map(c => ({ nombre: c, valores: D.ventas_categoria[c].slice(desde) })),
+  fmtV: v => PW.fmt(v) + " buses", alto: 280,
+});
+
+PW.barras("g-marcas-v", {
+  items: D.marcas_ventas.map(m => ({ nombre: m.marca, valor: m.unidades })),
+  fmtV: v => PW.fmt(v),
+});
+
+PW.tabla("t-marcas-a", [
+  { k: "marca", titulo: "Marca (Aduana)" },
+  { k: "unidades", titulo: "Unidades", num: true, fmt: v => PW.fmt(v) },
+  { k: "cif_unit", titulo: "CIF por bus (USD)", num: true, fmt: v => "US$" + PW.fmt(v) },
+], D.marcas_aduana, { orden: "unidades" });
+
+PW.columnas("g-aduana", {
+  labels: D.aduana.filter(a => a.ym >= "2019-01").map(a => a.ym),
+  valores: D.aduana.filter(a => a.ym >= "2019-01").map(a => a.unidades),
+  color: PW.color("--s2"),
+  fmtV: v => PW.fmt(v) + " buses",
+});
+
+PW.tabla("t-et", [
+  { k: "region", titulo: "Region" },
+  { k: "cargadores", titulo: "Cargadores transporte", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
+  { k: "mw", titulo: "MW", num: true, fmt: v => PW.fmt(v, 1) },
+], D.electroterminales, { orden: "cargadores" });
+</script>
+</body>
+</html>

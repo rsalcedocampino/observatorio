@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Fichas de rescate — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Fichas de rescate</h1>
+  <p class="sub">Fichas de corte seguro y rescate de vehiculos electrificados que circulan en
+  Chile, consolidadas desde Euro NCAP, SEC y ANB. Pensado para bomberos, aseguradoras y
+  talleres: busca por marca o modelo y abre el documento original.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Buscar
+      <input type="search" id="busca" placeholder="Marca o modelo...">
+    </label>
+    <label>Tecnologia
+      <select id="f-tec"><option value="">Todas</option></select>
+    </label>
+    <span class="pill" id="contador"></span>
+  </div>
+
+  <div class="tarjeta">
+    <div id="t-fichas"></div>
+  </div>
+</main>
+<script src="data/rescate.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("rescate.html");
+const D = PW_DATA.rescate;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const selT = document.getElementById("f-tec");
+[...new Set(D.vehiculos.map(v => v.tecnologia).filter(Boolean))].sort().forEach(t => {
+  const o = document.createElement("option"); o.value = t; o.textContent = t; selT.appendChild(o);
+});
+
+function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
+
+const cols = [
+  { k: "marca", titulo: "Marca" },
+  { k: "modelo", titulo: "Modelo" },
+  { k: "descripcion", titulo: "Descripcion" },
+  { k: "tecnologia", titulo: "Tecnologia", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+  { k: "anios", titulo: "Años", fmt: v => Array.isArray(v) ? v.join(", ") : (v || "—") },
+  { k: "documentos", titulo: "Documentos", fmt: v => (v || []).filter(d => d.url || d.url_respaldo).map((d, i) => {
+      const ppal = d.url ? `<a href="${d.url}" target="_blank" rel="noopener">${d.tipo || "ficha"} ${i + 1}</a>` : `${d.tipo || "ficha"} ${i + 1}`;
+      const resp = d.url_respaldo ? ` <a href="${d.url_respaldo}" target="_blank" rel="noopener" title="Copia de respaldo">(respaldo)</a>` : "";
+      return ppal + resp;
+    }).join(" · ") || "—" },
+];
+
+let tab = null;
+function refrescar() {
+  const q = norm(document.getElementById("busca").value.trim());
+  const tec = selT.value;
+  const filas = D.vehiculos.filter(v =>
+    (!tec || v.tecnologia === tec) &&
+    (!q || norm(v.marca + " " + v.modelo + " " + (v.descripcion || "")).includes(q)));
+  document.getElementById("contador").textContent =
+    filas.length + " vehiculos, " + filas.reduce((a, v) => a + (v.documentos || []).length, 0) + " documentos";
+  if (tab) tab.actualizar(filas); else tab = PW.tabla("t-fichas", cols, filas, { orden: "marca", asc: true, max: 600, buscador: false });
+}
+["busca", "f-tec"].forEach(id => document.getElementById(id).addEventListener("input", refrescar));
+refrescar();
+</script>
+</body>
+</html>

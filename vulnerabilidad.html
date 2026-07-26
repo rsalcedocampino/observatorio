@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Vulnerabilidad energetica — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<main>
+  <h1>Indice de vulnerabilidad energetica comunal</h1>
+  <p class="sub">Que comunas combinan cortes frecuentes, energia cara y poblacion vulnerable.
+  Un indice 0-100 sobre las 346 comunas que cruza el historial SEC 2017-2026, los precios de
+  Bencina en Linea y cuatro variables sociales del Censo 2024.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Region <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa comunal del indice</h2>
+    <p class="nota">Las 345 comunas coloreadas por su indice de vulnerabilidad (quintiles;
+    mas oscuro = mas vulnerable). Cartografia oficial del Censo 2024.</p>
+    <div id="mapa-indice"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Top 20 comunas mas vulnerables</h2>
+    <div id="g-top"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Las 346 comunas con sus tres pilares</h2>
+    <div id="t-comunas"></div>
+    <p class="nota">Cada pilar es un percentil 0-100 dentro del pais. p93 con origen "regional"
+    significa que la comuna no tiene estaciones de servicio con precio y usa el promedio de su
+    region.</p>
+  </div>
+</main>
+<script src="data/c_vulnerab.js"></script>
+<script src="data/geo_comunas.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("vulnerabilidad.html");
+
+// Choropleth del indice
+PW.choropleth("mapa-indice", {
+  valores: Object.fromEntries(PW_DATA.c_vulnerab.comunas.map(c => [c.cut, c.indice])),
+  fmt: v => v == null ? "sin dato" : PW.fmt(v, 1),
+  alto: 560,
+});
+const D = PW_DATA.c_vulnerab;
+document.getElementById("nota").textContent =
+  "Generado " + D.generado + ". " + D.nota + " Pesos: cortes " + Math.round(100 * D.pesos.cortes) +
+  "%, precio " + Math.round(100 * D.pesos.precio) + "%, social " + Math.round(100 * D.pesos.social) + "%.";
+
+const selR = document.getElementById("f-region");
+const selC = document.getElementById("f-comuna");
+[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o);
+});
+function poblarComunas() {
+  const reg = selR.value;
+  const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort();
+  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
+  selC.disabled = !reg;
+}
+
+const cols = [
+  { k: "indice", titulo: "Indice", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Region" },
+  { k: "pilar_cortes", titulo: "Cortes", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "pilar_precio", titulo: "Precio", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "pilar_social", titulo: "Social", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "ch_pc", titulo: "Cliente-h/hab", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "p93", titulo: "$/L 93", num: true, fmt: (v, f) => v == null ? "—" : PW.clp(v) + (f.p93_origen === "regional" ? "*" : "") },
+  { k: "poblacion", titulo: "Poblacion", num: true, fmt: v => PW.fmt(v) },
+];
+
+let tab = null;
+function refrescar() {
+  const reg = selR.value;
+  const com = selC.value;
+  const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
+  PW.barras("g-top", {
+    items: filas.slice(0, 20).map(c => ({
+      nombre: c.comuna, valor: c.indice,
+      extra: c.region + " — cortes " + PW.fmt(c.pilar_cortes) + " / precio " + PW.fmt(c.pilar_precio) + " / social " + PW.fmt(c.pilar_social),
+      color: c.indice >= 75 ? PW.color("--critical") : (c.indice >= 60 ? PW.color("--s2") : PW.color("--s1")),
+    })),
+    fmtV: v => PW.fmt(v, 1),
+  });
+  if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "indice", max: 400 });
+}
+selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
+selC.addEventListener("input", refrescar);
+refrescar();
+</script>
+</body>
+</html>
