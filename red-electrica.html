@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Red elÃ©ctrica y potencial â€” EnergÃ­as Futuro</title>
+<title>Red eléctrica y potencial — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -17,9 +17,9 @@
 </head>
 <body>
 <main>
-  <h1>Red elÃ©ctrica y potencial renovable</h1>
-  <p class="sub">La columna vertebral que alimenta la electromovilidad: subestaciones y lÃ­neas
-  de transmisiÃ³n (Ministerio de EnergÃ­a + Coordinador), que tan lejos de la red esta cada
+  <h1>Red eléctrica y potencial renovable</h1>
+  <p class="sub">La columna vertebral que alimenta la electromovilidad: subestaciones y líneas
+  de transmisión (Ministerio de Energía + Coordinador), que tan lejos de la red esta cada
   estacion de carga, y cuanto potencial renovable instalable tiene cada comuna.</p>
   <p class="nota" id="nota"></p>
 
@@ -35,26 +35,26 @@
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">ConexiÃ³n de la red de carga por regiÃ³n</h2>
+      <h2 style="margin-top:0">Conexión de la red de carga por región</h2>
       <div id="t-conexion"></div>
-      <p class="nota">Distancia de cada estacion de carga a su subestaciÃ³n mÃ¡s cercana
-      (mediana regional y % de estaciones a menos de 1 y 5 km). AproximaciÃ³n por exceso.</p>
+      <p class="nota">Distancia de cada estacion de carga a su subestación más cercana
+      (mediana regional y % de estaciones a menos de 1 y 5 km). Aproximación por exceso.</p>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Estaciones de carga mÃ¡s lejos de la red</h2>
+      <h2 style="margin-top:0">Estaciones de carga más lejos de la red</h2>
       <div id="t-lejanas"></div>
     </div>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Potencial solar instalable por comuna (MW, estudio 2021)</h2>
-    <p class="nota">POTENCIAL instalable segÃºn el estudio del Ministerio de EnergÃ­a (2021) â€”
-    no confundir con capacidad instalada. Quintiles: mÃ¡s oscuro = mÃ¡s potencial.</p>
+    <p class="nota">POTENCIAL instalable según el estudio del Ministerio de Energía (2021) —
+    no confundir con capacidad instalada. Quintiles: más oscuro = más potencial.</p>
     <div id="mapa-potencial"></div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Potencial por comuna y tecnologÃ­a</h2>
+    <h2 style="margin-top:0">Potencial por comuna y tecnología</h2>
     <div id="t-potencial"></div>
   </div>
 </main>
@@ -83,7 +83,7 @@ function colorKv(kv) {
   if (kv >= 66) return PW.color("--s1");
   return PW.color("--s3");
 }
-const norm = s => (s || "").normalize("NFKD").replace(/[Ì€-Í¯]/g, "").toLowerCase();
+const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
 // radio por capacidad (MVA): las subestaciones grandes se ven mas grandes.
 // Escala raiz cuadrada acotada entre 6 y 15 px (6 = minimo / sin dato, 15 = satura ~2.000 MVA+).
 function radioMva(mva) {
@@ -95,8 +95,8 @@ function popupSub(s) {
   const nivel = s.kv == null ? "" : (s.kv >= 220 ? "Troncal" : (s.kv >= 66 ? "Subtransmision" : "Distribucion"));
   return `<div class="pop-est">` +
     `<div class="pop-titulo">${s.n || "Subestacion"}</div>` +
-    `<div class="pop-sub">${s.com || "Sin comuna"}${nivel ? " Â· " + nivel : ""}</div>` +
-    fila("TensiÃ³n", s.kv_txt) +
+    `<div class="pop-sub">${s.com || "Sin comuna"}${nivel ? " · " + nivel : ""}</div>` +
+    fila("Tensión", s.kv_txt) +
     fila("Capacidad", s.mva ? PW.fmt(s.mva) + " MVA" : null) +
     fila("Propietario", s.prop) +
     fila("Estado", s.est) +
@@ -114,7 +114,7 @@ function pintarSub() {
     (!q || norm(s.n).includes(q) || norm(s.prop).includes(q)));
   const pts = sel.map(s => ({
     lat: s.lat, lon: s.lon, r: radioMva(s.mva), color: colorKv(s.kv),
-    tip: (s.n || "Subestacion") + (s.kv_txt ? " â€” " + s.kv_txt : ""),
+    tip: (s.n || "Subestacion") + (s.kv_txt ? " — " + s.kv_txt : ""),
     popup: popupSub(s),
   }));
   if (mapaSub) { mapaSub.remove(); mapaSub = null; }
@@ -138,7 +138,7 @@ function pintarSub() {
       },
       onEachFeature: (f, c) => c.bindTooltip(
         (f.properties.n || "Linea") +
-        (f.properties.kv ? " â€” " + f.properties.kv + " kV" : "") +
+        (f.properties.kv ? " — " + f.properties.kv + " kV" : "") +
         (f.properties.km ? " (" + PW.fmt(Math.round(f.properties.km)) + " km)" : ""),
         { sticky: true }),
     });
@@ -159,8 +159,8 @@ function pintarSub() {
   const troncal = sel.filter(s => (s.kv || 0) >= 220).length;
   document.getElementById("cont-sub").textContent =
     PW.fmt(pts.length) + " subestaciones de " + PW.fmt(D.subestaciones.length) +
-    " Â· " + PW.fmt(Math.round(mvaTot)) + " MVA Â· " + troncal + " troncales (220 kV+)" +
-    (window.PW_DATA.geo_lineas ? " Â· trazados de lineas y ductos en el selector de capas (arriba a la derecha)." : ".");
+    " · " + PW.fmt(Math.round(mvaTot)) + " MVA · " + troncal + " troncales (220 kV+)" +
+    (window.PW_DATA.geo_lineas ? " · trazados de lineas y ductos en el selector de capas (arriba a la derecha)." : ".");
 }
 PW.filtrosTerritorio("filtros-mapa",
   D.subestaciones.map(s => ({ rcut: s.rcut, reg: s.rcut, com: s.com })).map(x => ({
@@ -177,11 +177,11 @@ PW.leyendaMapa("ley-sub", [
   ["66 a 220 kV", PW.color("--s1")],
   ["Menos de 66 kV", PW.color("--s3")],
   ["Sin dato de tension", PW.color("--ink-3")],
-  ["TamaÃ±o = capacidad (MVA)", PW.color("--ink-3")],
+  ["Tamaño = capacidad (MVA)", PW.color("--ink-3")],
 ]);
 
 PW.tabla("t-conexion", [
-  { k: "region", titulo: "RegiÃ³n" },
+  { k: "region", titulo: "Región" },
   { k: "estaciones", titulo: "Estaciones de carga", num: true },
   { k: "dist_mediana_km", titulo: "Dist. mediana (km)", num: true, fmt: v => PW.fmt(v, 1) },
   { k: "pct_1km", titulo: "% a 1 km o menos", num: true, fmt: v => PW.fmt(v) + "%" },
@@ -189,10 +189,10 @@ PW.tabla("t-conexion", [
 ], D.conexion_regiones, { orden: "dist_mediana_km" });
 
 PW.tabla("t-lejanas", [
-  { k: "n", titulo: "EstaciÃ³n" },
+  { k: "n", titulo: "Estación" },
   { k: "com", titulo: "Comuna" },
   { k: "dist_km", titulo: "Dist. (km)", num: true, fmt: v => `<span class="estado-mal">${PW.fmt(v, 1)}</span>` },
-  { k: "sub", titulo: "SubestaciÃ³n mÃ¡s cercana" },
+  { k: "sub", titulo: "Subestación más cercana" },
 ], D.estaciones_lejanas, { orden: "dist_km", max: 15 });
 
 // Choropleth de potencial solar
@@ -204,9 +204,9 @@ PW.choropleth("mapa-potencial", {
 
 PW.tabla("t-potencial", [
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "RegiÃ³n" },
+  { k: "region", titulo: "Región" },
   { k: "solar", titulo: "Solar FV (MW)", num: true, fmt: v => PW.fmt(v) },
-  { k: "eolico", titulo: "EÃ³lico (MW)", num: true, fmt: v => PW.fmt(v) },
+  { k: "eolico", titulo: "Eólico (MW)", num: true, fmt: v => PW.fmt(v) },
   { k: "hidro", titulo: "Hidro (MW)", num: true, fmt: v => PW.fmt(v) },
   { k: "csp", titulo: "CSP (MW)", num: true, fmt: v => PW.fmt(v) },
   { k: "total", titulo: "Total (MW)", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },

@@ -499,7 +499,9 @@
 
   // =====================================================================
   // COMPONENTE MAPA — partes identificables para iterar mejoras:
-  //   [BASE]      tiles CARTO segun tema claro/oscuro + escala metrica
+  //   [BASE]      capas base seleccionables via basesMapa(): Mapa (CARTO claro/oscuro
+  //               segun tema) · Satélite (Esri) · Relieve (OpenTopoMap) · Calles (OSM),
+  //               todas sin API key + escala metrica. Puntos validados con enChile().
   //   [CONTROLES] barra comun controlesMapa(): pantalla completa, vista inicial,
   //               ver todo (encuadra), mi ubicacion (geo + punto más cercano).
   //               La comparten mapa() y choropleth() -> tocar una vez, afecta todos.
@@ -809,6 +811,26 @@
       `</div>`;
   }
 
+  // [VOCABULARIO HOMOLOGADO] estado de un proyecto/instalacion (subestaciones,
+  // centrales, BESS): normaliza cualquier variante cruda al mismo termino legible
+  // (EN_OPERACION / operacion / "En Operación" -> "En operación"). Los popups y
+  // tablas de toda la web deben mostrar ESTO, no el codigo canonico crudo.
+  function estadoProyecto(x) {
+    if (x == null || x === "") return null;
+    const s = String(x).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+    if (/operaci/.test(s)) return "En operación";
+    if (/construcci/.test(s)) return "En construcción";
+    if (/prueba/.test(s)) return "En pruebas";
+    if (/calificaci/.test(s)) return "En calificación";
+    if (/aprobad/.test(s)) return "Aprobado";
+    if (/revisi/.test(s)) return "En revisión";
+    if (/terminad|finaliz/.test(s)) return "Terminado";
+    if (/rechaza/.test(s)) return "Rechazado";
+    if (/desisti/.test(s)) return "Desistido";
+    if (/no admitid|no_admitid|inadmisib/.test(s)) return "No admitido";
+    return String(x); // no reconocido: no inventar, devolver tal cual
+  }
+
   // enlace "como llegar" (Waze) + Google Maps de respaldo
   function waze(lat, lon) {
     return `<div style="margin-top:6px"><a href="https://waze.com/ul?ll=${lat},${lon}&navigate=yes" target="_blank" rel="noopener"><b>Como llegar (Waze)</b></a>` +
@@ -929,5 +951,5 @@
     });
   }
 
-  window.PW = { montarNav, fmt, clp, pct, lineas, barras, columnas, tabla, color, mapa, choropleth, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion };
+  window.PW = { montarNav, fmt, clp, pct, lineas, barras, columnas, tabla, color, mapa, choropleth, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto };
 })();

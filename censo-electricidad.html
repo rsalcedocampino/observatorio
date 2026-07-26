@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Electricidad en las viviendas â€” EnergÃ­as Futuro</title>
+<title>Electricidad en las viviendas — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -18,16 +18,16 @@
   <h1>De donde viene la electricidad de las viviendas</h1>
   <p class="sub">De donde saca la electricidad cada hogar de Chile, directo del microdato del
   Censo 2024 (18,5 millones de registros). La base real para dimensionar la carga domiciliaria
-  de vehÃ­culos elÃ©ctricos.</p>
+  de vehículos eléctricos.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Viviendas con placa solar por comuna (%)</h2>
-    <p class="nota">Quintiles: mÃ¡s oscuro = mayor proporciÃ³n de viviendas con placa solar como
-    fuente principal. En el extremo estÃ¡n las comunas aisladas sin red (General Lagos 68%,
-    RÃ­o Verde 51%): allÃ­ el solar domiciliario ES la red.</p>
+    <p class="nota">Quintiles: más oscuro = mayor proporción de viviendas con placa solar como
+    fuente principal. En el extremo están las comunas aisladas sin red (General Lagos 68%,
+    Río Verde 51%): allí el solar domiciliario ES la red.</p>
     <div id="mapa-solar"></div>
   </div>
 
@@ -35,11 +35,11 @@
     <div class="tarjeta">
       <h2 style="margin-top:0">Mayor dependencia de generador diesel/bencina</h2>
       <div id="g-generador"></div>
-      <p class="nota">Comunas donde mÃ¡s viviendas dependen de un generador: energÃ­a cara y
-      contaminante â€” candidatas naturales a solar + almacenamiento.</p>
+      <p class="nota">Comunas donde más viviendas dependen de un generador: energía cara y
+      contaminante — candidatas naturales a solar + almacenamiento.</p>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">MÃ¡s viviendas sin electricidad</h2>
+      <h2 style="margin-top:0">Más viviendas sin electricidad</h2>
       <div id="g-sin"></div>
     </div>
   </div>
@@ -75,7 +75,7 @@ PW.choropleth("mapa-solar", {
 PW.barras("g-generador", {
   items: D.comunas.slice().sort((a, b) => b.pct_generador - a.pct_generador).slice(0, 12).map(c => ({
     nombre: c.comuna, valor: c.pct_generador,
-    extra: c.region + " â€” " + PW.fmt(c.viviendas) + " viviendas",
+    extra: c.region + " — " + PW.fmt(c.viviendas) + " viviendas",
   })),
   color: PW.color("--s2"),
   fmtV: v => PW.fmt(v, 1) + "%",
@@ -91,7 +91,7 @@ PW.barras("g-sin", {
 
 PW.tabla("t-comunas", [
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "RegiÃ³n" },
+  { k: "region", titulo: "Región" },
   { k: "viviendas", titulo: "Viviendas", num: true, fmt: v => PW.fmt(v) },
   { k: "pct_red", titulo: "% red publica", num: true, fmt: v => PW.fmt(v, 1) + "%" },
   { k: "pct_solar", titulo: "% placa solar", num: true, fmt: v => v >= 5 ? `<b>${PW.fmt(v, 1)}%</b>` : PW.fmt(v, 1) + "%" },

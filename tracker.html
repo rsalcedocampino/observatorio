@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Meta 2035 â€” EnergÃ­as Futuro</title>
+<title>Meta 2035 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -32,10 +32,10 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
 </head>
 <body>
 <main>
-  <h1>Meta 2035: Â¿vamos a llegar?</h1>
-  <p class="sub">Chile comprometiÃ³ 100% de ventas de vehÃ­culos livianos cero emisiones al 2035.
-  Este panel proyecta el ritmo real de ventas, infraestructura, energÃ­a y planificaciÃ³n, y
-  responde una sola pregunta ejecutiva: a este paso, Â¿cuÃ¡ndo llegamos?</p>
+  <h1>Meta 2035: ¿vamos a llegar?</h1>
+  <p class="sub">Chile comprometió 100% de ventas de vehículos livianos cero emisiones al 2035.
+  Este panel proyecta el ritmo real de ventas, infraestructura, energía y planificación, y
+  responde una sola pregunta ejecutiva: a este paso, ¿cuándo llegamos?</p>
   <p class="nota" id="nota"></p>
 
   <div class="tarjeta">
@@ -43,36 +43,36 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
     <div class="scroll-x"><table class="pw semaforo"><thead>
       <tr><th>Meta</th><th class="num">Hoy</th><th>Objetivo</th><th>Llegada proyectada</th><th>Estado</th></tr>
     </thead><tbody id="semaforo"></tbody></table></div>
-    <p class="nota">Llegada proyectada = extrapolaciÃ³n del ritmo real reciente (mÃ©todo indicado
-    en cada secciÃ³n). Las metas sin cifra oficial publicada se marcan como referenciales y son
-    editables mÃ¡s abajo.</p>
+    <p class="nota">Llegada proyectada = extrapolación del ritmo real reciente (método indicado
+    en cada sección). Las metas sin cifra oficial publicada se marcan como referenciales y son
+    editables más abajo.</p>
   </div>
 
-  <h2 class="pregunta">1. Â¿Se venden los vehÃ­culos que la meta necesita?</h2>
-  <p class="puente">La meta es de participaciÃ³n de mercado: que fracciÃ³n de los livianos nuevos
-  es enchufable. Hoy la curva real, la trayectoria que exige la meta, y la proyecciÃ³n si el
+  <h2 class="pregunta">1. ¿Se venden los vehículos que la meta necesita?</h2>
+  <p class="puente">La meta es de participación de mercado: que fracción de los livianos nuevos
+  es enchufable. Hoy la curva real, la trayectoria que exige la meta, y la proyección si el
   ritmo no cambia.</p>
 
   <div class="filtros">
-    <label>Meta: participaciÃ³n enchufable (%)
+    <label>Meta: participación enchufable (%)
       <input type="number" id="meta-pct" value="100" min="1" max="100">
     </label>
-    <label>AÃ±o objetivo
+    <label>Año objetivo
       <input type="number" id="meta-anio" value="2035" min="2027" max="2050">
     </label>
   </div>
   <div class="kpis" id="kpis"></div>
   <div class="tarjeta">
     <div id="g-part"></div>
-    <p class="nota">Un punto por aÃ±o. A la izquierda de "Hoy": lo que paso (promedio anual).
-    A la derecha: la lÃ­nea naranja es lo que EXIGE la meta y la punteada es lo que PASARÃA si
-    el ritmo actual continua (curva S logÃ­stica ajustada a los Ãºltimos 36 meses; la llegada
-    con extrapolaciÃ³n lineal simple se muestra en las tarjetas de arriba).</p>
+    <p class="nota">Un punto por año. A la izquierda de "Hoy": lo que paso (promedio anual).
+    A la derecha: la línea naranja es lo que EXIGE la meta y la punteada es lo que PASARÍA si
+    el ritmo actual continua (curva S logística ajustada a los últimos 36 meses; la llegada
+    con extrapolación lineal simple se muestra en las tarjetas de arriba).</p>
   </div>
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Ventas anuales por tecnologÃ­a</h2>
+      <h2 style="margin-top:0">Ventas anuales por tecnología</h2>
       <div id="g-tecnologia"></div>
       <p class="nota" id="nota-tec"></p>
     </div>
@@ -82,16 +82,16 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
     </div>
   </div>
 
-  <h2 class="pregunta">2. Â¿DÃ³nde van a cargar?</h2>
-  <p class="puente">Sin red pÃºblica no hay masificaciÃ³n. Cargadores pÃºblicos reales (SEC + red
-  viva), la trayectoria requerida y la proyecciÃ³n al ritmo actual; abajo, cuantos cargadores
-  necesitarÃ¡ el parque proyectado.</p>
+  <h2 class="pregunta">2. ¿Dónde van a cargar?</h2>
+  <p class="puente">Sin red pública no hay masificación. Cargadores públicos reales (SEC + red
+  viva), la trayectoria requerida y la proyección al ritmo actual; abajo, cuantos cargadores
+  necesitará el parque proyectado.</p>
 
   <div class="filtros">
-    <label>Meta: cargadores pÃºblicos
+    <label>Meta: cargadores públicos
       <input type="number" id="meta-carg" value="10000" min="1000" step="1000">
     </label>
-    <label>AÃ±o objetivo
+    <label>Año objetivo
       <input type="number" id="meta-carg-anio" value="2030" min="2027" max="2050">
     </label>
     <label>EV por cargador (objetivo de servicio)
@@ -104,20 +104,20 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
     <p class="nota" id="nota-infra"></p>
   </div>
   <div class="tarjeta">
-    <h2 style="margin-top:0">El parque que viene y lo que exigirÃ¡</h2>
+    <h2 style="margin-top:0">El parque que viene y lo que exigirá</h2>
     <div class="kpis" id="kpis-parque"></div>
     <p class="nota" id="nota-parque"></p>
   </div>
 
-  <h2 class="pregunta">2b. Reporte regional: que le falta a cada regiÃ³n</h2>
-  <p class="puente">La meta nacional se gana o se pierde regiÃ³n por regiÃ³n. Para cada una:
-  su parque enchufable, su red de carga actual, y cuantos cargadores le faltarÃ­an en 2035 si
+  <h2 class="pregunta">2b. Reporte regional: que le falta a cada región</h2>
+  <p class="puente">La meta nacional se gana o se pierde región por región. Para cada una:
+  su parque enchufable, su red de carga actual, y cuantos cargadores le faltarían en 2035 si
   su parque crece al ritmo nacional proyectado.</p>
 
   <div class="tarjeta">
     <div class="filtros">
-      <label>RegiÃ³n <select id="filtro-reg-tabla"><option value="">Todas</option></select></label>
-      <span class="pill" id="fuentes-reg">Cruce: INE + Censo + red viva + SEC, por regiÃ³n</span>
+      <label>Región <select id="filtro-reg-tabla"><option value="">Todas</option></select></label>
+      <span class="pill" id="fuentes-reg">Cruce: INE + Censo + red viva + SEC, por región</span>
     </div>
     <div class="kpis" id="kpis-reg"></div>
     <div id="t-regiones"></div>
@@ -125,15 +125,15 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Cargadores que faltarÃ­an en 2035, por regiÃ³n</h2>
+    <h2 style="margin-top:0">Cargadores que faltarían en 2035, por región</h2>
     <div id="g-faltantes"></div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Avance de la transiciÃ³n energÃ©tica por regiÃ³n</h2>
-    <p class="puente">No basta con vender autos: cada regiÃ³n necesita generaciÃ³n limpia y
-    almacenamiento para sostener la carga. AquÃ­ lo instalado, lo que viene en construcciÃ³n, y
-    cuanta energÃ­a adicional demandarÃ¡ el parque EV proyectado a 2035.</p>
+    <h2 style="margin-top:0">Avance de la transición energética por región</h2>
+    <p class="puente">No basta con vender autos: cada región necesita generación limpia y
+    almacenamiento para sostener la carga. Aquí lo instalado, lo que viene en construcción, y
+    cuanta energía adicional demandará el parque EV proyectado a 2035.</p>
     <div class="kpis" id="kpis-energia-nac"></div>
     <div id="t-energia-reg"></div>
     <p class="nota" id="nota-energia-reg"></p>
@@ -142,7 +142,7 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
   <div class="tarjeta">
     <h2 style="margin-top:0">Detalle territorial: lo que ya existe y lo que falta</h2>
     <div class="filtros">
-      <label>RegiÃ³n <select id="fr-region"><option value="">Elige una regiÃ³n...</option></select></label>
+      <label>Región <select id="fr-region"><option value="">Elige una región...</option></select></label>
       <label>Comuna <select id="fr-comuna" disabled><option value="">Todas</option></select></label>
     </div>
     <div class="kpis" id="kpis-detalle"></div>
@@ -154,62 +154,62 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
         <p class="nota" id="cont-region"></p>
       </div>
       <div>
-        <h3 style="margin-top:0">RecomendaciÃ³n</h3>
+        <h3 style="margin-top:0">Recomendación</h3>
         <ul id="reco" style="color:var(--ink-2); font-size:14px; line-height:1.7; padding-left:20px"></ul>
       </div>
     </div>
   </div>
 
-  <h2 class="pregunta">3. Â¿Con que energÃ­a se cargaran?</h2>
-  <p class="puente">Un EV es tan limpio como la electricidad que lo carga. GeneraciÃ³n renovable
+  <h2 class="pregunta">3. ¿Con que energía se cargaran?</h2>
+  <p class="puente">Un EV es tan limpio como la electricidad que lo carga. Generación renovable
   del SEN, mes a mes, contra una referencia de 80% renovable.</p>
 
   <div class="tarjeta">
     <div class="kpis" id="kpis-gen"></div>
     <div id="g-renov"></div>
-    <p class="nota">Renovable = solar + eÃ³lica + hidrÃ¡ulica + geotÃ©rmica sobre la generaciÃ³n
-    total (serie diaria del Coordinador, aÃ±o mÃ³vil). La referencia 80% es ilustrativa, no una
+    <p class="nota">Renovable = solar + eólica + hidráulica + geotérmica sobre la generación
+    total (serie diaria del Coordinador, año móvil). La referencia 80% es ilustrativa, no una
     meta oficial de esta serie.</p>
   </div>
 
-  <h2 class="pregunta">4. Â¿QuÃ© esta comprometido y que se propone?</h2>
-  <p class="puente">Todas las metas oficiales ordenadas por su aÃ±o objetivo con su fuerza
-  jurÃ­dica real, y las propuestas sobre la mesa para cerrar las brechas â€” del gobierno, del
+  <h2 class="pregunta">4. ¿Qué esta comprometido y que se propone?</h2>
+  <p class="puente">Todas las metas oficiales ordenadas por su año objetivo con su fuerza
+  jurídica real, y las propuestas sobre la mesa para cerrar las brechas — del gobierno, del
   estudio de copropiedad y del gremio renovable. Fuente: biblioteca normativa
   (<a href="normativa.html">detalle completo</a>).</p>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">CronologÃ­a de metas oficiales</h2>
+    <h2 style="margin-top:0">Cronología de metas oficiales</h2>
     <div id="cronologia-metas"></div>
-    <p class="nota">PÃ­ldoras: verde = vinculante (solo carbono neutralidad tiene rango legal),
+    <p class="nota">Píldoras: verde = vinculante (solo carbono neutralidad tiene rango legal),
     azul = compromiso de gobierno, amarillo = indicativa, rojo = declarativa.</p>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Propuestas sobre la mesa, por actor</h2>
     <div id="t-propuestas"></div>
-    <p class="nota">Digitalizado del resumen de los 9 documentos estratÃ©gicos (22-07-2026).
-    La mÃ¡s relevante: el PdL de Incentivo a la Electromovilidad, comprometido para 2026-2027
+    <p class="nota">Digitalizado del resumen de los 9 documentos estratégicos (22-07-2026).
+    La más relevante: el PdL de Incentivo a la Electromovilidad, comprometido para 2026-2027
     y aun sin ingresar.</p>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Propuestas de actualizaciÃ³n norma por norma</h2>
+    <h2 style="margin-top:0">Propuestas de actualización norma por norma</h2>
     <div class="filtros">
       <label>Buscar <input type="search" id="busca-prop" placeholder="Norma o propuesta..."></label>
     </div>
     <div id="t-normas-prop"></div>
-    <p class="nota">Las 32 normas con redaccion de actualizaciÃ³n propuesta en el anÃ¡lisis de
-    brechas â€” el "que habrÃ­a que cambiar" concreto de cada instrumento.</p>
+    <p class="nota">Las 32 normas con redaccion de actualización propuesta en el análisis de
+    brechas — el "que habría que cambiar" concreto de cada instrumento.</p>
   </div>
 
-  <h2 class="pregunta">5. Â¿El sistema elÃ©ctrico sigue el plan?</h2>
-  <p class="puente">La PELP definiÃ³ tres escenarios de expansiÃ³n. Que trayectoria esta
-  siguiendo la capacidad real, tecnologÃ­a por tecnologÃ­a:</p>
+  <h2 class="pregunta">5. ¿El sistema eléctrico sigue el plan?</h2>
+  <p class="puente">La PELP definió tres escenarios de expansión. Que trayectoria esta
+  siguiendo la capacidad real, tecnología por tecnología:</p>
 
   <div class="tarjeta">
     <div id="veredicto-pelp"></div>
-    <p class="nota">ComparaciÃ³n de la capacidad real 2026 (Coordinador) con el valor 2026 de
+    <p class="nota">Comparación de la capacidad real 2026 (Coordinador) con el valor 2026 de
     cada escenario PELP. El detalle con las curvas completas esta en
     <a href="pelp.html">Chile vs PELP</a>.</p>
   </div>
@@ -274,7 +274,7 @@ function refrescarPart() {
 
   // lineal: pendiente 24 meses
   const hace24 = part[Math.max(0, part.length - 25)];
-  const pendiente = (ult.v - hace24.v) / (xUlt - ymAnum(hace24.ym) || 1); // pts/aÃ±o
+  const pendiente = (ult.v - hace24.v) / (xUlt - ymAnum(hace24.ym) || 1); // pts/año
   const llegadaLin = pendiente > 0.05 ? xUlt + (meta - ult.v) / pendiente : null;
 
   // logistica: ajuste sobre ultimos 36 meses en espacio logit
@@ -288,7 +288,7 @@ function refrescarPart() {
     }
   }
 
-  // Vista ANUAL: un punto por aÃ±o, historia hasta hoy y proyeccion hasta el aÃ±o meta
+  // Vista ANUAL: un punto por año, historia hasta hoy y proyeccion hasta el año meta
   const anioIni = 2019;
   const anioHoy = Math.floor(xUlt);
   const anios = [];
@@ -303,7 +303,7 @@ function refrescarPart() {
   const real = anios.map(a => porAnio[a]
     ? +(porAnio[a].reduce((s, x) => s + x, 0) / porAnio[a].length).toFixed(2) : null);
 
-  // requerida: recta desde hoy a la meta; proyeccion: curva S evaluada por aÃ±o
+  // requerida: recta desde hoy a la meta; proyeccion: curva S evaluada por año
   const req = anios.map(a => {
     if (a < anioHoy) return null;
     if (a === anioHoy) return ult.v;
@@ -332,8 +332,8 @@ function refrescarPart() {
   const creceReq = (meta - ult.v) / ((metaAnio + 11 / 12 - xUlt) || 1);
   document.getElementById("kpis").innerHTML = [
     [PW.fmt(ult.v, 1) + "%", "participacion enchufable hoy", "mes " + ult.ym],
-    [PW.fmt(pendiente, 1) + " pts/aÃ±o", "ritmo real (24 meses)", "se requieren " + PW.fmt(creceReq, 1)],
-    [fmtAnio(llegadaLin), "llegada proyectada (lineal)", "meta " + meta + "% â€” objetivo " + metaAnio],
+    [PW.fmt(pendiente, 1) + " pts/año", "ritmo real (24 meses)", "se requieren " + PW.fmt(creceReq, 1)],
+    [fmtAnio(llegadaLin), "llegada proyectada (lineal)", "meta " + meta + "% — objetivo " + metaAnio],
     [fmtAnio(llegadaLog), "llegada proyectada (curva S)", "ajuste logistico 36 meses"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
@@ -351,7 +351,7 @@ function refrescarPart() {
   refrescarParque();
 }
 
-// ---------- ventas por tecnologia (aÃ±o en curso anualizado)
+// ---------- ventas por tecnologia (año en curso anualizado)
 (function () {
   const T = D.ventas_tecnologia;
   const ultYmVenta = D.ventas_enchufables[D.ventas_enchufables.length - 1].ym.slice(0, 7);
@@ -399,7 +399,7 @@ function refrescarInfra() {
   const ritmo = (ult.cargadores_acum - hace12.cargadores_acum) / 12; // por mes
   const llegada = ritmo > 0.5 ? xUlt + (meta - ult.cargadores_acum) / ritmo / 12 : null;
 
-  // Vista ANUAL: cierre de cada aÃ±o (ultimo mes disponible del aÃ±o)
+  // Vista ANUAL: cierre de cada año (ultimo mes disponible del año)
   const anioHoy = Math.floor(xUlt);
   const anios = [];
   for (let a = 2019; a <= metaAnio; a++) anios.push(a);
@@ -432,7 +432,7 @@ function refrescarInfra() {
   document.getElementById("kpis-infra").innerHTML = [
     [PW.fmt(hoyCarg), "cargadores publicos hoy", "red viva, cada 30 min"],
     [PW.fmt(Math.round(ritmo)) + "/mes", "ritmo real (12 meses)", "se requieren " + PW.fmt(Math.round(ritmoReq)) + "/mes"],
-    [fmtAnio(llegada), "llegada proyectada", "meta " + PW.fmt(meta) + " â€” objetivo " + metaAnio],
+    [fmtAnio(llegada), "llegada proyectada", "meta " + PW.fmt(meta) + " — objetivo " + metaAnio],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
   if (D.red_viva) {
@@ -475,7 +475,7 @@ function refrescarParque() {
   // ventas anuales proyectadas: nivel 12m + pendiente 24m sostenida
   const u12 = vMes.slice(-12).reduce((s, x) => s + x.u, 0);
   const u24a12 = vMes.slice(-24, -12).reduce((s, x) => s + x.u, 0);
-  const crecAnual = u12 - u24a12; // unidades adicionales por aÃ±o
+  const crecAnual = u12 - u24a12; // unidades adicionales por año
   const xHoy = ymAnum(vMes[vMes.length - 1].ym);
   function parqueEn(anio) {
     let p = parqueHoy, ventas = u12;
@@ -506,8 +506,8 @@ function refrescarParque() {
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
   document.getElementById("nota-parque").textContent =
     "Proyeccion de parque: ventas de los ultimos 12 meses (" + PW.fmt(u12) + ") creciendo " +
-    PW.fmt(crecAnual) + " unidades/aÃ±o (pendiente 24 meses), acumuladas sobre el parque estimado. " +
-    "Demanda con " + PW.fmt(km) + " km/aÃ±o y " + rend + " km/kWh (supuestos del cruce Demanda EV). " +
+    PW.fmt(crecAnual) + " unidades/año (pendiente 24 meses), acumuladas sobre el parque estimado. " +
+    "Demanda con " + PW.fmt(km) + " km/año y " + rend + " km/kWh (supuestos del cruce Demanda EV). " +
     "Sin descuentos por bajas del parque: estimacion conservadora hacia arriba.";
 
   refrescarRegiones(p2035, ratio);
@@ -568,22 +568,22 @@ function refrescarRegiones(p2035Nac, ratio) {
   document.getElementById("kpis-reg").innerHTML = [
     [PW.fmt(totalFaltan), "cargadores faltantes 2035 (" + ambito + ")", ratio + " EV por cargador"],
     [enRitmo + " de " + filas.length, (filas.length === 1 ? "region" : "regiones") + " instalando al ritmo requerido", "ultimos 12 meses SEC"],
-    [filas[0] ? filas[0].region : "â€”", regSel ? "region seleccionada" : "region con mas parque EV", filas[0] ? PW.fmt(filas[0].parque_ev) + " vehiculos" : ""],
+    [filas[0] ? filas[0].region : "—", regSel ? "region seleccionada" : "region con mas parque EV", filas[0] ? PW.fmt(filas[0].parque_ev) + " vehiculos" : ""],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
   const th = (texto, fuente) => `<span title="${fuente}">${texto}</span>`;
   const cols = [
-    { k: "region", titulo: "RegiÃ³n" },
+    { k: "region", titulo: "Región" },
     { k: "parque_ev", titulo: th("Parque EV hoy", "Vehiculos electricos registrados. Fuente: INE, permisos de circulacion 2024 (puede incluir hibridos)"), num: true, fmt: v => PW.fmt(v) },
-    { k: "ev_1000hab", titulo: th("EV / 1.000 hab", "Parque EV dividido por poblacion regional. Fuente: INE + Censo 2024"), num: true, fmt: v => v == null ? "â€”" : PW.fmt(v, 1) },
+    { k: "ev_1000hab", titulo: th("EV / 1.000 hab", "Parque EV dividido por poblacion regional. Fuente: INE + Censo 2024"), num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
     { k: "parque_2035", titulo: th("Parque 2035 proy.", "Proyeccion nacional de parque repartida segun la participacion actual de la region"), num: true, fmt: v => PW.fmt(v) },
     { k: "cargadores_hoy", titulo: th("Cargadores hoy (red viva)", "Cargadores unicos de la region, publico + privado/restringido. Fuente: Cargadores y Conectores, cada 30 min"), num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
     { k: "ev_por_carg", titulo: th("EV por cargador", "Parque EV hoy / cargadores hoy: presion sobre la red local"), num: true, fmt: v => v == null ? "sin red" : PW.fmt(v, 1) },
     { k: "necesarios_2035", titulo: th("Necesarios 2035", "Parque 2035 proyectado / ratio de servicio (editable arriba)"), num: true, fmt: v => PW.fmt(v) },
     { k: "faltan", titulo: th("Faltan a 2035", "Necesarios 2035 - cargadores hoy"), num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
     { k: "ritmo_actual", titulo: th("Ritmo real (ult. 12 meses)", "Cargadores publicos nuevos instalados en la region durante los ultimos 12 meses. Fuente: SEC EcoCarga, categoria publico"), num: true, fmt: v => PW.fmt(v) },
-    { k: "ritmo_req", titulo: th("Ritmo requerido/aÃ±o", "Faltantes / aÃ±os restantes hasta 2035: lo que habria que instalar cada aÃ±o"), num: true, fmt: v => PW.fmt(v) },
-    { k: "estado", titulo: th("Estado", "En ritmo si instala al aÃ±o lo que la meta requiere"), fmt: v => `<span class="${v === "En ritmo" ? "estado-ok" : "estado-mal"}">${v}</span>` },
+    { k: "ritmo_req", titulo: th("Ritmo requerido/año", "Faltantes / años restantes hasta 2035: lo que habria que instalar cada año"), num: true, fmt: v => PW.fmt(v) },
+    { k: "estado", titulo: th("Estado", "En ritmo si instala al año lo que la meta requiere"), fmt: v => `<span class="${v === "En ritmo" ? "estado-ok" : "estado-mal"}">${v}</span>` },
   ];
   if (tabReg) tabReg.actualizar(filas); else tabReg = PW.tabla("t-regiones", cols, filas, { orden: "faltan" });
 
@@ -598,7 +598,7 @@ function refrescarRegiones(p2035Nac, ratio) {
   PW.barras("g-faltantes", {
     items: filas.filter(f => f.faltan > 0).sort((a, b) => b.faltan - a.faltan).map(f => ({
       nombre: f.region, valor: f.faltan,
-      extra: "Hoy: " + PW.fmt(f.cargadores_hoy) + " â€” necesarios 2035: " + PW.fmt(f.necesarios_2035),
+      extra: "Hoy: " + PW.fmt(f.cargadores_hoy) + " — necesarios 2035: " + PW.fmt(f.necesarios_2035),
       color: f.estado === "En ritmo" ? PW.color("--s3") : PW.color("--s2"),
     })),
     fmtV: v => PW.fmt(v),
@@ -647,27 +647,27 @@ function refrescarEnergiaReg(filasTodas, regSel) {
 
   const th = (t, f) => `<span title="${f}">${t}</span>`;
   const cols = [
-    { k: "region", titulo: "RegiÃ³n" },
+    { k: "region", titulo: "Región" },
     { k: "solar_op", titulo: th("Solar operando (MW)", "Capacidad fotovoltaica en operacion. Fuente: centrales unificadas Coordinador + ACERA"), num: true, fmt: v => PW.fmt(v) },
-    { k: "solar_pipe", titulo: th("Solar pipeline (MW)", "Solar en construccion, aprobada o en calificacion"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "â€”" },
+    { k: "solar_pipe", titulo: th("Solar pipeline (MW)", "Solar en construccion, aprobada o en calificacion"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
     { k: "bess_op", titulo: th("Almacenamiento operando (MWh)", "Capacidad BESS en operacion. Fuente: centrales con almacenamiento"), num: true, fmt: v => v > 0 ? PW.fmt(v) : `<span class="estado-mal">0</span>` },
-    { k: "bess_pipe", titulo: th("Almacenamiento pipeline (MWh)", "BESS en construccion o aprobado"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "â€”" },
+    { k: "bess_pipe", titulo: th("Almacenamiento pipeline (MWh)", "BESS en construccion o aprobado"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
     { k: "gd_mw", titulo: th("Gen. distribuida (MW)", "Net billing: paneles en techos residenciales/comerciales. Fuente: SEC"), num: true, fmt: v => PW.fmt(v, 1) },
-    { k: "demanda_2035", titulo: th("Demanda EV 2035 (GWh)", "Parque EV proyectado 2035 x " + PW.fmt(km) + " km/aÃ±o / " + rend + " km/kWh"), num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
+    { k: "demanda_2035", titulo: th("Demanda EV 2035 (GWh)", "Parque EV proyectado 2035 x " + PW.fmt(km) + " km/año / " + rend + " km/kWh"), num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
   ];
   if (tabEnergia) tabEnergia.actualizar(filas); else tabEnergia = PW.tabla("t-energia-reg", cols, filas, { orden: "demanda_2035" });
 
   document.getElementById("nota-energia-reg").textContent =
     "Solar y almacenamiento: catastro Coordinador + ACERA (operando vs pipeline en construccion/" +
     "aprobado). Generacion distribuida: net billing SEC. Demanda EV 2035 = parque proyectado x " +
-    PW.fmt(km) + " km/aÃ±o / " + rend + " km/kWh (mediana del catalogo). Una region con demanda " +
+    PW.fmt(km) + " km/año / " + rend + " km/kWh (mediana del catalogo). Una region con demanda " +
     "creciente y almacenamiento en cero (rojo) es la mas expuesta.";
 }
 
 // ---------- 2b detalle territorial: filtros, mapa de lo existente y recomendacion
 let REG_ESTADO = null;
 let mapaRegion = null;
-const norm = s => (s || "").normalize("NFKD").replace(/[Ì€-Í¯]/g, "").toUpperCase();
+const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase();
 
 (function poblarFiltros() {
   const selR = document.getElementById("fr-region");
@@ -725,7 +725,7 @@ function refrescarDetalle() {
     .map(p => ({
       lat: p.lat, lon: p.lon, r: p.mw ? Math.max(4, Math.min(12, 3 + Math.sqrt(p.mw))) : 4,
       color: PW.color("--s4"),
-      popup: `<b>${p.n}</b><br>Planta solar â€” ${p.com || ""}` +
+      popup: `<b>${p.n}</b><br>Planta solar — ${p.com || ""}` +
         (p.mw ? `<br>${PW.fmt(p.mw, 1)} MW` : "") +
         `<br>Estado: ${p.est || "sin dato"}`,
     }));
@@ -734,7 +734,7 @@ function refrescarDetalle() {
     .map(p => ({
       lat: p.lat, lon: p.lon, r: p.mwh ? Math.max(4, Math.min(12, 3 + Math.sqrt(p.mwh) / 3)) : 4,
       color: PW.color("--s3"),
-      popup: `<b>${p.n}</b><br>Almacenamiento â€” ${p.com || ""}` +
+      popup: `<b>${p.n}</b><br>Almacenamiento — ${p.com || ""}` +
         (p.mwh ? `<br>${PW.fmt(p.mwh)} MWh` : "") +
         `<br>Estado: ${p.est || "sin dato"}`,
     }));
@@ -812,10 +812,10 @@ function refrescarDetalle() {
       [PW.fmt(filaReg.parque_ev), "parque EV en " + regNombre, "INE " + (D.anio_parque || "")],
       [PW.fmt(filaReg.cargadores_hoy), "cargadores hoy (red viva)", filaReg.ev_por_carg != null ? PW.fmt(filaReg.ev_por_carg, 1) + " EV por cargador" : ""],
       [PW.fmt(filaReg.faltan), "faltarian a 2035", ratio + " EV por cargador"],
-      [PW.fmt(filaReg.ritmo_actual) + "/aÃ±o", "ritmo actual de instalacion", "se requieren " + PW.fmt(filaReg.ritmo_req) + "/aÃ±o"],
+      [PW.fmt(filaReg.ritmo_actual) + "/año", "ritmo actual de instalacion", "se requieren " + PW.fmt(filaReg.ritmo_req) + "/año"],
     ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
-    recos.push(`Instalar <b>${PW.fmt(filaReg.faltan)} cargadores</b> de aqui a 2035 (${PW.fmt(filaReg.ritmo_req)}/aÃ±o); el ritmo actual es ${PW.fmt(filaReg.ritmo_actual)}/aÃ±o (${filaReg.estado.toLowerCase()}).`);
+    recos.push(`Instalar <b>${PW.fmt(filaReg.faltan)} cargadores</b> de aqui a 2035 (${PW.fmt(filaReg.ritmo_req)}/año); el ritmo actual es ${PW.fmt(filaReg.ritmo_actual)}/año (${filaReg.estado.toLowerCase()}).`);
     const sinRed = comunasReg.filter(c => c.conectores === 0 && c.ev_parque > 0)
       .sort((a, b) => b.ev_parque - a.ev_parque);
     if (sinRed.length) {
@@ -836,7 +836,7 @@ function refrescarDetalle() {
       recos.push(`Hay <b>${PW.fmt(eR.solar_pipe_mw)} MW solares en desarrollo</b> en la region: coordinar la nueva carga rapida con esos puntos de inyeccion.`);
     }
     if (eR.bess_op_mwh === 0 && eR.bess_pipe_mwh === 0) {
-      recos.push(`La region <b>no tiene almacenamiento operando ni en pipeline</b>: los cargadores dependen totalmente de la red â€” evaluar BESS detras del medidor en la carga rapida.`);
+      recos.push(`La region <b>no tiene almacenamiento operando ni en pipeline</b>: los cargadores dependen totalmente de la red — evaluar BESS detras del medidor en la carga rapida.`);
     } else if (eR.bess_pipe_mwh > 0) {
       recos.push(`Almacenamiento: ${PW.fmt(eR.bess_op_mwh)} MWh operando y <b>${PW.fmt(eR.bess_pipe_mwh)} MWh en pipeline</b>: oportunidad de acoplar carga rapida a esos proyectos.`);
     }
@@ -862,7 +862,7 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
   const llegada = pendiente > 0.2 ? ymAnum(ult.ym) + (80 - ult.pct_renov) / pendiente : null;
   document.getElementById("kpis-gen").innerHTML = [
     [PW.fmt(ult.pct_renov, 1) + "%", "renovable el ultimo mes", ult.ym],
-    [PW.fmt(Math.max(...G.map(x => x.pct_renov)), 1) + "%", "mejor mes del aÃ±o movil", ""],
+    [PW.fmt(Math.max(...G.map(x => x.pct_renov)), 1) + "%", "mejor mes del año movil", ""],
     [fmtAnio(llegada), "llegada a 80% (tendencia simple)", "referencia ilustrativa"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
   PW.lineas("g-renov", {
@@ -873,7 +873,7 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
   });
   const [, colorS, textoS] = estadoMeta(llegada, 2035);
   SEM.renov = {
-    nombre: "EnergÃ­a: generaciÃ³n renovable", hoy: PW.fmt(ult.pct_renov, 1) + "%",
+    nombre: "Energía: generación renovable", hoy: PW.fmt(ult.pct_renov, 1) + "%",
     objetivo: "80% (referencial)",
     llegada: fmtAnio(llegada), color: colorS, texto: textoS,
   };
@@ -884,10 +884,10 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
 (function () {
   const N = window.PW_DATA.c_normativa;
   if (!N) return;
-  // cronologia por aÃ±o objetivo
+  // cronologia por año objetivo
   const porAnio = {};
   N.metas.forEach(m => {
-    const a = String(m.AÃ±o_Objetivo || "").split("-")[0].trim();
+    const a = String(m.Año_Objetivo || "").split("-")[0].trim();
     if (!/^\d{4}$/.test(a)) return;
     (porAnio[a] = porAnio[a] || []).push(m);
   });
@@ -914,7 +914,7 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
       normQ(n.norma + " " + n.propuesta).includes(q));
     const cols = [
       { k: "norma", titulo: "Norma" },
-      { k: "numero", titulo: "NÃºmero" },
+      { k: "numero", titulo: "Número" },
       { k: "propuesta", titulo: "Actualizacion propuesta" },
     ];
     if (tNP) tNP.actualizar(filas); else tNP = PW.tabla("t-normas-prop", cols, filas, { max: 40, buscador: false });
@@ -938,15 +938,15 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
     return { tec: d.tecnologia, real: d.real_2026_gw, escenario: mejor };
   }).filter(f => f.escenario);
   document.getElementById("veredicto-pelp").innerHTML =
-    `<div class="scroll-x"><table class="pw"><thead><tr><th>TecnologÃ­a</th><th class="num">Real 2026 (GW)</th><th>Trayectoria mas cercana</th></tr></thead><tbody>` +
+    `<div class="scroll-x"><table class="pw"><thead><tr><th>Tecnología</th><th class="num">Real 2026 (GW)</th><th>Trayectoria mas cercana</th></tr></thead><tbody>` +
     filas.map(f => `<tr><td>${f.tec}</td><td class="num">${PW.fmt(f.real, 1)}</td><td><span class="pill">${f.escenario}</span></td></tr>`).join("") +
     `</tbody></table></div>`;
   const solar = filas.find(f => f.tec === "Solar");
   SEM.pelp = {
     nombre: "Planificacion: capacidad vs PELP",
-    hoy: solar ? "Solar " + PW.fmt(solar.real, 1) + " GW" : "â€”",
+    hoy: solar ? "Solar " + PW.fmt(solar.real, 1) + " GW" : "—",
     objetivo: "Escenarios PELP 2020-2040",
-    llegada: solar ? "va como '" + solar.escenario + "'" : "â€”",
+    llegada: solar ? "va como '" + solar.escenario + "'" : "—",
     color: "var(--s1)", texto: "Ver detalle",
   };
   pintarSemaforo();
