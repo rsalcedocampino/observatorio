@@ -9,7 +9,7 @@
 <title>Meta 2035 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=250726g">
+<link rel="stylesheet" href="assets/estilo.css?v=250726h">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -727,7 +727,7 @@ function refrescarDetalle() {
       color: PW.color("--s4"),
       popup: `<b>${p.n}</b><br>Planta solar — ${p.com || ""}` +
         (p.mw ? `<br>${PW.fmt(p.mw, 1)} MW` : "") +
-        `<br>Estado: ${p.est || "sin dato"}`,
+        `<br>Estado: ${PW.estadoProyecto(p.est) || "sin dato"}`,
     }));
   const ptsBess = (PW_DATA.mapa.bess || [])
     .filter(p => p.rcut === rcut && (!comSel || norm(p.com) === norm(comSel)))
@@ -736,7 +736,7 @@ function refrescarDetalle() {
       color: PW.color("--s3"),
       popup: `<b>${p.n}</b><br>Almacenamiento — ${p.com || ""}` +
         (p.mwh ? `<br>${PW.fmt(p.mwh)} MWh` : "") +
-        `<br>Estado: ${p.est || "sin dato"}`,
+        `<br>Estado: ${PW.estadoProyecto(p.est) || "sin dato"}`,
     }));
   if (mapaRegion) { mapaRegion.remove(); mapaRegion = null; }
   mapaRegion = PW.mapa("mapa-region", {

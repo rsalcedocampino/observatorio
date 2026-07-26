@@ -9,7 +9,7 @@
 <title>Mapas Interactivos — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=250726g">
+<link rel="stylesheet" href="assets/estilo.css?v=250726h">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -109,7 +109,7 @@ function popupSub(s) {
     `<div class="pop-sub">${[s.com, s.prop].filter(Boolean).join(" · ")}</div>` +
     (s.kv_txt ? `<div class="pop-linea"><span>Tensión</span><div>${s.kv_txt}</div></div>` : "") +
     (s.mva ? `<div class="pop-linea"><span>Capacidad</span><div>${PW.fmt(s.mva)} MVA</div></div>` : "") +
-    (s.est ? `<div class="pop-linea"><span>Estado</span><div>${s.est}</div></div>` : "") + `</div>`;
+    (s.est ? `<div class="pop-linea"><span>Estado</span><div>${PW.estadoProyecto(s.est)}</div></div>` : "") + `</div>`;
 }
 function popupLinea(p) {
   const kv = +(p.kv || 0);
@@ -126,7 +126,7 @@ function popupPlanta(p) {
     (p.mw ? `<div class="pop-linea"><span>Potencia</span><div>${PW.fmt(p.mw, 1)} MW</div></div>` : "") +
     (p.mwh ? `<div class="pop-linea"><span>Capacidad</span><div>${PW.fmt(p.mwh, 1)} MWh</div></div>` : "") +
     (p.tec ? `<div class="pop-linea"><span>Tecnología</span><div>${p.tec}</div></div>` : "") +
-    (p.est ? `<div class="pop-linea"><span>Estado</span><div>${p.est}</div></div>` : "") + `</div>`;
+    (p.est ? `<div class="pop-linea"><span>Estado</span><div>${PW.estadoProyecto(p.est)}</div></div>` : "") + `</div>`;
 }
 
 // re-render del mapa. fit=true encuadra a lo filtrado; si no, conserva el zoom/paneo actual.
