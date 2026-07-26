@@ -6,47 +6,49 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Vulnerabilidad energetica — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Vulnerabilidad energética — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 <main>
-  <h1>Indice de vulnerabilidad energetica comunal</h1>
-  <p class="sub">Que comunas combinan cortes frecuentes, energia cara y poblacion vulnerable.
-  Un indice 0-100 sobre las 346 comunas que cruza el historial SEC 2017-2026, los precios de
-  Bencina en Linea y cuatro variables sociales del Censo 2024.</p>
+  <h1>Índice de vulnerabilidad energética comunal</h1>
+  <p class="sub">Que comunas combinan cortes frecuentes, energía cara y población vulnerable.
+  Un índice 0-100 sobre las 346 comunas que cruza el historial SEC 2017-2026, los precios de
+  Bencina en Línea y cuatro variables sociales del Censo 2024.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
-    <label>Region <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Región <select id="f-region"><option value="">Todas</option></select></label>
     <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Mapa comunal del indice</h2>
-    <p class="nota">Las 345 comunas coloreadas por su indice de vulnerabilidad (quintiles;
-    mas oscuro = mas vulnerable). Cartografia oficial del Censo 2024.</p>
+    <h2 style="margin-top:0">Mapa comunal del índice</h2>
+    <p class="nota">Las 345 comunas coloreadas por su índice de vulnerabilidad (quintiles;
+    más oscuro = más vulnerable). Cartografía oficial del Censo 2024.</p>
     <div id="mapa-indice"></div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Top 20 comunas mas vulnerables</h2>
+    <h2 style="margin-top:0">Top 20 comunas más vulnerables</h2>
     <div id="g-top"></div>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Las 346 comunas con sus tres pilares</h2>
     <div id="t-comunas"></div>
-    <p class="nota">Cada pilar es un percentil 0-100 dentro del pais. p93 con origen "regional"
+    <p class="nota">Cada pilar es un percentil 0-100 dentro del país. p93 con origen "regional"
     significa que la comuna no tiene estaciones de servicio con precio y usa el promedio de su
-    region.</p>
+    región.</p>
   </div>
 </main>
 <script src="data/c_vulnerab.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("vulnerabilidad.html");
 
@@ -74,9 +76,9 @@ function poblarComunas() {
 }
 
 const cols = [
-  { k: "indice", titulo: "Indice", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
+  { k: "indice", titulo: "Índice", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "Region" },
+  { k: "region", titulo: "Región" },
   { k: "pilar_cortes", titulo: "Cortes", num: true, fmt: v => PW.fmt(v, 1) },
   { k: "pilar_precio", titulo: "Precio", num: true, fmt: v => PW.fmt(v, 1) },
   { k: "pilar_social", titulo: "Social", num: true, fmt: v => PW.fmt(v, 1) },

@@ -6,44 +6,46 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Mejor hora para cargar — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Mejor hora para cargar — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
   <h1>Mejor hora para cargar</h1>
-  <p class="sub">A que hora conviene cargar: la ocupacion real de la red publica hora por hora,
-  del historico capturado cada 30 minutos. Menos fila, mas sol.</p>
+  <p class="sub">A que hora conviene cargar: la ocupación real de la red pública hora por hora,
+  del histórico capturado cada 30 minutos. Menos fila, más sol.</p>
   <p class="nota" id="nota"></p>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Ocupacion nacional por hora (hora de Chile)</h2>
+    <h2 style="margin-top:0">Ocupación nacional por hora (hora de Chile)</h2>
     <div id="g-nacional"></div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Por operador (los 5 con mas observaciones)</h2>
+    <h2 style="margin-top:0">Por operador (los 5 con más observaciones)</h2>
     <div id="g-operadores"></div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">La hora verde: sol proyectado vs ocupacion actual</h2>
+    <h2 style="margin-top:0">La hora verde: sol proyectado vs ocupación actual</h2>
     <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">Cargar cuando
-    el sistema es mas solar y la red de carga esta mas vacia. La curva solar viene de la
-    proyeccion horaria de la PELP; la de ocupacion, del historico real de la red.</p>
+    el sistema es más solar y la red de carga esta más vacía. La curva solar viene de la
+    proyección horaria de la PELP; la de ocupación, del histórico real de la red.</p>
     <div class="filtros">
       <label>Escenario PELP <select id="hv-esc"></select></label>
       <label>Año <select id="hv-anio"></select></label>
     </div>
     <div id="g-horaverde"></div>
     <p class="nota">Ambas curvas son porcentajes: % solar en el mix de esa hora (PELP,
-    promedio anual) y % de conectores ocupados a esa hora (historico propio, preliminar).
-    La ventana donde el solar es alto y la ocupacion baja es la hora verde.</p>
+    promedio anual) y % de conectores ocupados a esa hora (histórico propio, preliminar).
+    La ventana donde el solar es alto y la ocupación baja es la hora verde.</p>
   </div>
 </main>
 <script src="data/horas.js"></script>
 <script src="data/c_horaverde.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("horas.html");
 const D = PW_DATA.horas;

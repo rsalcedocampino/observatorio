@@ -6,8 +6,10 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Ranking de operadores de carga — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Ranking de operadores de carga — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -17,13 +19,13 @@
 <main>
   <h1>Ranking de operadores de carga</h1>
   <p class="sub">Que tan confiable es cada red de carga en Chile, medida en terreno cada 30
-  minutos: porcentaje operativo, ocupacion real y cargadores caidos de forma cronica. La
-  comparacion que ningun operador publica.</p>
+  minutos: porcentaje operativo, ocupación real y cargadores caídos de forma crónica. La
+  comparación que ningun operador pública.</p>
   <p class="nota" id="nota"></p>
 
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Mapa de la red publica (estado en tiempo real)</h2>
+    <h2 style="margin-top:0">Mapa de la red pública (estado en tiempo real)</h2>
     <div class="filtros" id="filtros-mapa"></div>
     <div id="mapa-red"></div>
     <div id="ley-red"></div>
@@ -38,15 +40,15 @@
   <div class="tarjeta">
     <h2 style="margin-top:0">Detalle por operador</h2>
     <div id="t-operadores"></div>
-    <p class="nota">Un mismo grupo comercial puede aparecer con mas de un nombre segun la
+    <p class="nota">Un mismo grupo comercial puede aparecer con más de un nombre según la
     fuente (registro oficial vs plataforma propia); la columna Grupo los relaciona sin
     fusionarlos, porque miden subconjuntos distintos de la red. Precio promedio solo donde el
-    operador lo publica.</p>
+    operador lo pública.</p>
   </div>
 </main>
 <script src="data/operadores.js"></script>
 <script src="data/mapa.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("operadores.html");
 

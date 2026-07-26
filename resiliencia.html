@@ -6,30 +6,32 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Resiliencia de la carga ante cortes — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Resiliencia de la carga ante cortes — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
   <h1>Resiliencia de la red de carga ante cortes</h1>
   <p class="sub">Cuando la SEC registra un corte en una comuna, ¿se caen sus cargadores
-  publicos? Cruce del historico de estados cada 30 minutos con los eventos de interrupcion,
-  comuna por comuna. Nadie mas puede medir esto: requiere ambos historicos propios.</p>
+  públicos? Cruce del histórico de estados cada 30 minutos con los eventos de interrupción,
+  comuna por comuna. Nadie más puede medir esto: requiere ambos históricos propios.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Eventos analizados (mayor degradacion primero)</h2>
+    <h2 style="margin-top:0">Eventos analizados (mayor degradación primero)</h2>
     <div id="t-casos"></div>
     <p class="nota">fs = porcentaje de observaciones "fuera de servicio" de los conectores de la
-    comuna. Delta = fs durante el corte - fs linea base. Un delta alto sugiere cargadores sin
-    respaldo electrico; un delta nulo, red resiliente o corte fuera de la zona de los
+    comuna. Delta = fs durante el corte - fs línea base. Un delta alto sugiere cargadores sin
+    respaldo eléctrico; un delta nulo, red resiliente o corte fuera de la zona de los
     cargadores.</p>
   </div>
 </main>
 <script src="data/c_resiliencia.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("resiliencia.html");
 const D = PW_DATA.c_resiliencia;

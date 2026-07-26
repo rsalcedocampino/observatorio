@@ -85,7 +85,9 @@ header.pw {
   top: 0;
   z-index: 10;
 }
-header.pw .marca { font-weight: 700; font-size: 16px; color: var(--ink-1); white-space: nowrap; }
+header.pw .marca { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; font-size: 16px; color: var(--ink-1); white-space: nowrap; text-decoration: none; }
+header.pw .marca img { height: 28px; width: auto; display: block; }
+header.pw .marca:hover { text-decoration: none; }
 header.pw nav { display: flex; gap: 2px; flex-wrap: wrap; }
 header.pw nav a {
   color: var(--ink-2);

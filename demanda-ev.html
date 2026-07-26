@@ -6,19 +6,21 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Demanda electrica del parque EV — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Demanda eléctrica del parque EV — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Demanda electrica del parque EV</h1>
-  <p class="sub">Cuanta energia consume hoy el parque electrico y cuando su crecimiento se
-  hara sentir en el sistema electrico nacional. Proyeccion con supuestos declarados que puedes
+  <h1>Demanda eléctrica del parque EV</h1>
+  <p class="sub">Cuanta energía consume hoy el parque eléctrico y cuando su crecimiento se
+  hará sentir en el sistema eléctrico nacional. Proyección con supuestos declarados que puedes
   ajustar.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
-    <label>km anuales por vehiculo <input type="number" id="f-km" value="15000" step="1000" min="5000"></label>
+    <label>km anuales por vehículo <input type="number" id="f-km" value="15000" step="1000" min="5000"></label>
     <label>Rendimiento (km/kWh) <input type="number" id="f-rend" value="5.4" step="0.2" min="3"></label>
   </div>
 
@@ -26,19 +28,19 @@
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">GWh anuales por region (parque actual)</h2>
+      <h2 style="margin-top:0">GWh anuales por región (parque actual)</h2>
       <div id="g-reg"></div>
     </div>
     <div class="tarjeta">
       <h2 style="margin-top:0">Escenarios de crecimiento del parque</h2>
       <div id="t-esc"></div>
-      <p class="nota">Con el parque multiplicado por N, que fraccion del SEN actual representa
+      <p class="nota">Con el parque multiplicado por N, que fracción del SEN actual representa
       la carga EV. La estrategia 2035 implica parques 10-30 veces el actual.</p>
     </div>
   </div>
 </main>
 <script src="data/c_demanda.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("demanda-ev.html");
 const D = PW_DATA.c_demanda;

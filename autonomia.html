@@ -6,8 +6,10 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Brechas de autonomia — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Brechas de autonomía — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -15,10 +17,10 @@
 </head>
 <body>
 <main>
-  <h1>Brechas de autonomia en corredores</h1>
-  <p class="sub">¿En que tramos de ruta un electrico promedio se queda sin donde cargar?
-  Comparamos la distancia entre cargadores rapidos (50 kW o mas) con la autonomia real del
-  catalogo, para ver donde falta infraestructura para viajar.</p>
+  <h1>Brechas de autonomía en corredores</h1>
+  <p class="sub">¿En que tramos de ruta un eléctrico promedio se queda sin donde cargar?
+  Comparamos la distancia entre cargadores rápidos (50 kW o más) con la autonomía real del
+  catálogo, para ver donde falta infraestructura para viajar.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
@@ -26,7 +28,7 @@
   <div class="fila2">
     <div class="tarjeta">
       <h2 style="margin-top:0">Mapa de la red DC</h2>
-      <p class="nota">Rojo: el punto DC mas cercano queda mas lejos que el rango util p25.</p>
+      <p class="nota">Rojo: el punto DC más cercano queda más lejos que el rango útil p25.</p>
       <div id="mapa-dc"></div>
       <div id="ley-dc"></div>
     </div>
@@ -37,12 +39,12 @@
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Estaciones DC y su vecino mas cercano</h2>
+    <h2 style="margin-top:0">Estaciones DC y su vecino más cercano</h2>
     <div id="t-puntos"></div>
   </div>
 </main>
 <script src="data/c_autonomia.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("autonomia.html");
 const D = PW_DATA.c_autonomia;
@@ -82,9 +84,9 @@ PW.tabla("t-brechas", [
 ], D.brechas, { orden: "km" });
 
 PW.tabla("t-puntos", [
-  { k: "n", titulo: "Estacion" },
+  { k: "n", titulo: "Estación" },
   { k: "com", titulo: "Comuna" },
-  { k: "reg", titulo: "Region" },
+  { k: "reg", titulo: "Región" },
   { k: "kw", titulo: "kW", num: true, fmt: v => PW.fmt(v) },
   { k: "nn_km", titulo: "DC mas cercano (km)", num: true, fmt: v => v == null ? "—" : `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
 ], D.puntos, { orden: "nn_km", max: 300 });

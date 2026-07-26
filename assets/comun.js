@@ -1,4 +1,4 @@
-/* Observatorio EV y Energia — utilidades compartidas: navegacion, formato,
+/* Energías Futuro — utilidades compartidas: navegacion, formato,
    tablas ordenables y graficos SVG propios (sin dependencias externas). */
 (function () {
   "use strict";
@@ -9,15 +9,15 @@
     ]],
     ["Mercado", [
       ["tracker.html", "Meta 2035"],
-      ["vehiculo.html", "Vehiculo 360"],
-      ["rotacion.html", "Rotacion de inventario"],
+      ["vehiculo.html", "Vehículo 360"],
+      ["rotacion.html", "Rotación de inventario"],
       ["elasticidad.html", "Elasticidad bencina-EV"],
       ["valor-parque.html", "Valor del parque"],
-      ["buses.html", "Buses electricos"],
+      ["buses.html", "Buses eléctricos"],
     ]],
     ["Importaciones", [
-      ["radar.html", "Vehiculos"],
-      ["baterias.html", "Baterias de litio"],
+      ["radar.html", "Vehículos"],
+      ["baterias.html", "Baterías de litio"],
     ]],
     ["Carga", [
       ["operadores.html", "Operadores"],
@@ -25,17 +25,17 @@
       ["costo.html", "Bencina vs Enchufe"],
       ["horas.html", "Mejor hora"],
       ["duales.html", "Estaciones duales"],
-      ["autonomia.html", "Brechas de autonomia"],
+      ["autonomia.html", "Brechas de autonomía"],
       ["conectores-red.html", "Conectores flota-red"],
       ["resiliencia.html", "Resiliencia ante cortes"],
     ]],
-    ["Energia", [
-      ["riesgo.html", "Cortes electricos"],
+    ["Energía", [
+      ["riesgo.html", "Cortes eléctricos"],
       ["probabilidad-cortes.html", "Probabilidad de cortes"],
-      ["vulnerabilidad.html", "Vulnerabilidad energetica"],
+      ["vulnerabilidad.html", "Vulnerabilidad energética"],
       ["bess-cortes.html", "Almacenamiento (BESS)"],
       ["demanda-ev.html", "Demanda del parque EV"],
-      ["red-electrica.html", "Red electrica y potencial"],
+      ["red-electrica.html", "Red eléctrica y potencial"],
       ["censo-electricidad.html", "Electricidad en las viviendas"],
       ["pelp.html", "Chile vs PELP"],
     ]],
@@ -111,7 +111,7 @@
         `<a href="${f}" class="${f === activa ? "activo" : ""}">${t}</a>`).join("");
       nav += `<div class="nav-grupo"><a class="${contiene ? "activo" : ""}" tabindex="0">${grupo}</a><div class="submenu">${sub}</div></div>`;
     });
-    h.innerHTML = `<span class="marca">Observatorio EV y Energia</span><nav>${nav}</nav>`;
+    h.innerHTML = `<a href="index.html" class="marca"><img src="assets/logo-icon.png" alt="" width="28" height="28"><span>Energías Futuro</span></a><nav>${nav}</nav>`;
     document.body.prepend(h);
 
     // icono junto al titulo de la seccion
@@ -122,10 +122,10 @@
 
     const f = document.createElement("footer");
     f.className = "pw";
-    f.innerHTML = "Version de trabajo para revision interna. Fuentes oficiales: SEC, CNE, " +
-      "INE, Aduanas, Coordinador Electrico Nacional, ACERA, CMF, Euro NCAP y los operadores " +
-      "de carga. Cada cifra es trazable a su fuente y esta homologada por comuna (CUT INE), " +
-      "tipo de conector, estado y tecnologia. Elaboracion propia.";
+    f.innerHTML = "Versión de trabajo para revisión interna. Fuentes oficiales: SEC, CNE, " +
+      "INE, Aduanas, Coordinador Eléctrico Nacional, ACERA, CMF, Euro NCAP y los operadores " +
+      "de carga. Cada cifra es trazable a su fuente y está homologada por comuna (CUT INE), " +
+      "tipo de conector, estado y tecnología. Elaboración propia.";
     document.body.appendChild(f);
   }
 
@@ -501,7 +501,7 @@
   // COMPONENTE MAPA — partes identificables para iterar mejoras:
   //   [BASE]      tiles CARTO segun tema claro/oscuro + escala metrica
   //   [CONTROLES] barra comun controlesMapa(): pantalla completa, vista inicial,
-  //               ver todo (encuadra), mi ubicacion (geo + punto mas cercano).
+  //               ver todo (encuadra), mi ubicacion (geo + punto más cercano).
   //               La comparten mapa() y choropleth() -> tocar una vez, afecta todos.
   //   [CAPAS]     grupos de puntos con selector cuando hay mas de una
   //   [CLUSTER]   agrupacion automatica sobre cfg.clusterDesde puntos (250)
@@ -514,7 +514,7 @@
   // API: mapa(cont, {capas, centro, zoom, alto, clusterDesde, sinCluster})
   // =====================================================================
 
-  // distancia haversine en km (para "el punto mas cercano")
+  // distancia haversine en km (para "el punto más cercano")
   function distKm(a, b) {
     const R = 6371, r = x => x * Math.PI / 180;
     const dLat = r(b[0] - a[0]), dLon = r(b[1] - a[1]);
@@ -550,7 +550,7 @@
           else m.setView(opts.centro, opts.zoom);
         });
         if (navigator.geolocation) {
-          boton("&#x2316;", "Mi ubicacion" + (opts.puntos ? " (y punto mas cercano)" : ""), a => {
+          boton("&#x2316;", "Mi ubicación" + (opts.puntos ? " (y punto más cercano)" : ""), a => {
             a.classList.add("cargando");
             navigator.geolocation.getCurrentPosition(pos => {
               a.classList.remove("cargando");
@@ -560,17 +560,17 @@
                 L.circle(ll, { radius: pos.coords.accuracy || 200, color: color("--s2"), weight: 1, fillOpacity: 0.08 }),
                 L.circleMarker(ll, { radius: 7, color: "#fff", weight: 2, fillColor: color("--s2"), fillOpacity: 1 }),
               ]).addTo(m);
-              let html = "<b>Estas aqui</b>";
+              let html = "<b>Estás aquí</b>";
               if (opts.puntos && opts.puntos.length) {
                 let cerca = null, dmin = Infinity;
                 opts.puntos.forEach(p => { const d = distKm(ll, p.ll); if (d < dmin) { dmin = d; cerca = p; } });
-                if (cerca) html += `<br>Mas cercano: ${cerca.nombre || "punto"} a ${dmin < 1 ? Math.round(dmin * 1000) + " m" : dmin.toFixed(1) + " km"}`;
+                if (cerca) html += `<br>Más cercano: ${cerca.nombre || "punto"} a ${dmin < 1 ? Math.round(dmin * 1000) + " m" : dmin.toFixed(1) + " km"}`;
               }
               miUbic.getLayers()[1].bindPopup(html).openPopup();
               m.setView(ll, 11);
             }, () => {
               a.classList.remove("cargando");
-              alert("No se pudo obtener tu ubicacion. Revisa los permisos del navegador.");
+              alert("No se pudo obtener tu ubicación. Revisa los permisos del navegador.");
             }, { enableHighAccuracy: true, timeout: 8000 });
           });
         }
@@ -584,7 +584,7 @@
   function mapa(cont, cfg) {
     const el = typeof cont === "string" ? document.getElementById(cont) : cont;
     if (typeof L === "undefined") {
-      el.innerHTML = '<p class="nota">Mapa no disponible sin conexion (Leaflet/OSM se cargan de internet).</p>';
+      el.innerHTML = '<p class="nota">Mapa no disponible sin conexión (Leaflet/OSM se cargan de internet).</p>';
       return null;
     }
     el.innerHTML = "";
@@ -609,7 +609,7 @@
     // pane para el coropletico de fondo (debajo de todo lo demas)
     m.createPane("pw-comunas").style.zIndex = 250;
 
-    // acumula todos los puntos para "ver todo" y para "punto mas cercano"
+    // acumula todos los puntos para "ver todo" y para "punto más cercano"
     const todosPts = [];   // {ll:[lat,lon], nombre}
 
     // [CONTROLES] pantalla completa · vista inicial · ver todo · mi ubicacion
@@ -749,7 +749,7 @@
         (p.tipos ? `<div class="pop-detalle">${p.tipos}</div>` : "")
       : null;
     return `<div class="pop-est">` +
-      `<div class="pop-titulo">${p.n || (p.op ? "Estacion " + p.op : "Estacion de carga")}</div>` +
+      `<div class="pop-titulo">${p.n || (p.op ? "Estación " + p.op : "Estación de carga")}</div>` +
       `<div class="pop-sub">${[p.dir, [p.com, p.reg].filter(Boolean).join(", ")].filter(Boolean).join("<br>")}</div>` +
       fila("Operador", p.op) +
       `<div class="pop-linea"><span>Estado</span><div><b style="color:${estColor}">${estTxt}</b></div></div>` +
@@ -803,7 +803,7 @@
     const el = typeof cont === "string" ? document.getElementById(cont) : cont;
     const geo = window.PW_DATA && window.PW_DATA.geo_comunas;
     if (typeof L === "undefined" || !geo) {
-      el.innerHTML = '<p class="nota">Mapa comunal no disponible (falta Leaflet o la cartografia).</p>';
+      el.innerHTML = '<p class="nota">Mapa comunal no disponible (falta Leaflet o la cartografía).</p>';
       return null;
     }
     el.innerHTML = "";

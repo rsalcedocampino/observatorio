@@ -6,14 +6,16 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rotacion de inventario — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Rotación de inventario — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Rotacion de inventario por marca</h1>
+  <h1>Rotación de inventario por marca</h1>
   <p class="sub">El pulso comercial de cada marca: cuanto tarda en vender lo que importa y
-  quien esta acumulando stock. Importacion mensual frente a venta mensual, marca por marca,
+  quien esta acumulando stock. Importación mensual frente a venta mensual, marca por marca,
   para anticipar liquidaciones y quiebres de oferta.</p>
   <p class="nota" id="nota"></p>
 
@@ -22,20 +24,20 @@
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0" id="t-serie">Importacion vs venta mensual</h2>
+    <h2 style="margin-top:0" id="t-serie">Importación vs venta mensual</h2>
     <div id="g-serie"></div>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Resumen por marca (livianos electrificados, desde 2020-05)</h2>
     <div id="t-marcas"></div>
-    <p class="nota">meses_stock = stock estimado / venta promedio de los ultimos 6 meses. El
-    stock incluye unidades en transito, demos y flotas propias; valores altos sostenidos
+    <p class="nota">meses_stock = stock estimado / venta promedio de los últimos 6 meses. El
+    stock incluye unidades en tránsito, demos y flotas propias; valores altos sostenidos
     anticipan liquidaciones.</p>
   </div>
 </main>
 <script src="data/c_rotacion.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("rotacion.html");
 const D = PW_DATA.c_rotacion;

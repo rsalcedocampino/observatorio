@@ -6,36 +6,38 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Cortes electricos — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Cortes eléctricos — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Cortes electricos</h1>
+  <h1>Cortes eléctricos</h1>
   <p class="sub">Historial de interrupciones de suministro (SEC, 2017 a hoy). Dos miradas
-  separadas: cuantos CLIENTES quedan sin energia (magnitud) y cuantas HORAS sin energia
-  acumula cada territorio (duracion). Filtra por region y comuna.</p>
+  separadas: cuantos CLIENTES quedan sin energía (magnitud) y cuantas HORAS sin energía
+  acumula cada territorio (duración). Filtra por región y comuna.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="filtros">
-    <label>Region <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Región <select id="f-region"><option value="">Todas</option></select></label>
     <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
     <span class="pill" id="ambito"></span>
   </div>
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Clientes sin energia</h2>
-      <p class="nota">Peak de clientes simultaneos sin suministro (magnitud del corte). A nivel
-      region es la suma de los peaks comunales.</p>
+      <h2 style="margin-top:0">Clientes sin energía</h2>
+      <p class="nota">Peak de clientes simultáneos sin suministro (magnitud del corte). A nivel
+      región es la suma de los peaks comunales.</p>
       <div class="kpis" id="kpis-clientes"></div>
       <div id="g-clientes"></div>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Horas sin energia</h2>
-      <p class="nota">Horas acumuladas con al menos un corte activo (duracion). A nivel region
+      <h2 style="margin-top:0">Horas sin energía</h2>
+      <p class="nota">Horas acumuladas con al menos un corte activo (duración). A nivel región
       es la suma de horas-comuna afectadas.</p>
       <div class="kpis" id="kpis-horas"></div>
       <div id="g-horas"></div>
@@ -44,27 +46,27 @@
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Cliente-horas de interrupcion por año</h2>
+      <h2 style="margin-top:0">Cliente-horas de interrupción por año</h2>
       <div id="g-anual"></div>
-      <p class="nota">Cliente-horas = clientes x horas: combina magnitud y duracion. Serie
+      <p class="nota">Cliente-horas = clientes x horas: combina magnitud y duración. Serie
       nacional (no cambia con el filtro).</p>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Estacionalidad (promedio mensual historico)</h2>
+      <h2 style="margin-top:0">Estacionalidad (promedio mensual histórico)</h2>
       <div id="g-estacional"></div>
-      <p class="nota">Serie nacional. Los huecos de fuente (nov-2018 a jun-2019) estan excluidos.</p>
+      <p class="nota">Serie nacional. Los huecos de fuente (nov-2018 a jun-2019) están excluidos.</p>
     </div>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0" id="titulo-tabla">Detalle territorial</h2>
     <div id="t-rank"></div>
-    <p class="nota">Clientes sin energia = peak simultaneo; Horas sin energia = horas con
-    afectacion; Cliente-horas = producto de ambos. Por habitante normaliza con Censo 2024.</p>
+    <p class="nota">Clientes sin energía = peak simultáneo; Horas sin energía = horas con
+    afectación; Cliente-horas = producto de ambos. Por habitante normaliza con Censo 2024.</p>
   </div>
 </main>
 <script src="data/riesgo.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
@@ -148,7 +150,7 @@ function refrescar() {
 
 const cols = [
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "Region" },
+  { k: "region", titulo: "Región" },
   { k: "peak_clientes", titulo: "Clientes sin energia", num: true, fmt: v => `<span class="estado-mal">${PW.fmt(v)}</span>` },
   { k: "horas_afectada", titulo: "Horas sin energia", num: true, fmt: v => PW.fmt(v) },
   { k: "cliente_horas", titulo: "Cliente-horas", num: true, fmt: v => PW.fmt(v) },

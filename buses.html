@@ -6,19 +6,21 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Buses electricos — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Buses eléctricos — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Buses electricos: del puerto al electroterminal</h1>
-  <p class="sub">Como se despliega el transporte publico electrico: ventas por categoria de
+  <h1>Buses eléctricos: del puerto al electroterminal</h1>
+  <p class="sub">Como se despliega el transporte público eléctrico: ventas por categoría de
   servicio, importaciones con su costo CIF, y la infraestructura de carga de transporte
-  (electroterminales SEC) region por region.</p>
+  (electroterminales SEC) región por región.</p>
   <p class="nota" id="nota"></p>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Ventas de buses electricos por categoria</h2>
+    <h2 style="margin-top:0">Ventas de buses eléctricos por categoría</h2>
     <div id="g-ventas"></div>
   </div>
 
@@ -35,19 +37,19 @@
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Importacion mensual de buses</h2>
+      <h2 style="margin-top:0">Importación mensual de buses</h2>
       <div id="g-aduana"></div>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Cargadores de transporte por region (SEC)</h2>
+      <h2 style="margin-top:0">Cargadores de transporte por región (SEC)</h2>
       <div id="t-et"></div>
-      <p class="nota">Electroterminales y carga de transporte publico, acumulado EcoCarga. Las
+      <p class="nota">Electroterminales y carga de transporte público, acumulado EcoCarga. Las
       regiones que reciben buses sin infraestructura de terminal aparecen con cero.</p>
     </div>
   </div>
 </main>
 <script src="data/c_buses.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("buses.html");
 const D = PW_DATA.c_buses;
@@ -80,7 +82,7 @@ PW.columnas("g-aduana", {
 });
 
 PW.tabla("t-et", [
-  { k: "region", titulo: "Region" },
+  { k: "region", titulo: "Región" },
   { k: "cargadores", titulo: "Cargadores transporte", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
   { k: "mw", titulo: "MW", num: true, fmt: v => PW.fmt(v, 1) },
 ], D.electroterminales, { orden: "cargadores" });

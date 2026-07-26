@@ -6,15 +6,17 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Ficha vehiculo 360 — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Ficha vehículo 360 — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Ficha vehiculo 360</h1>
-  <p class="sub">Un modelo, todo su rastro en Chile en una sola ficha: cuanto se importo y a
-  que precio, cuanto se vende, bateria, autonomia, conectores y guia de rescate. El expediente
-  que ningun portal automotriz reune.</p>
+  <h1>Ficha vehículo 360</h1>
+  <p class="sub">Un modelo, todo su rastro en Chile en una sola ficha: cuanto se importó y a
+  que precio, cuanto se vende, batería, autonomía, conectores y guía de rescate. El expediente
+  que ningun portal automotriz reúne.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
@@ -29,12 +31,12 @@
   <div id="detalle"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Catalogo (haz clic en una fila para ver la ficha)</h2>
+    <h2 style="margin-top:0">Catálogo (haz clic en una fila para ver la ficha)</h2>
     <div id="t-modelos"></div>
   </div>
 </main>
 <script src="data/vehiculo.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("vehiculo.html");
 const D = PW_DATA.vehiculo;
@@ -101,7 +103,7 @@ const cols = [
   { k: "modelo", titulo: "Modelo" },
   { k: "tipo", titulo: "Tipo", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
   { k: "bateria_kwh", titulo: "kWh", num: true, fmt: v => PW.fmt(v, 1) },
-  { k: "autonomia_km", titulo: "Autonomia km", num: true, fmt: v => PW.fmt(v) },
+  { k: "autonomia_km", titulo: "Autonomía km", num: true, fmt: v => PW.fmt(v) },
   { k: "dc_kw", titulo: "DC kW", num: true, fmt: v => PW.fmt(v) },
   { k: "conector_dc", titulo: "Conector DC" },
   { k: "precio_min", titulo: "Precio desde", num: true, fmt: v => PW.clp(v) },

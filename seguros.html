@@ -6,8 +6,10 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Seguros y coberturas EV — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Seguros y coberturas EV — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 <style>
 .celda-cob { text-align: center; font-weight: 600; border-radius: 6px; padding: 3px 6px; display: inline-block; min-width: 54px; font-size: 12px; }
 .cob-si { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
@@ -20,19 +22,19 @@
 </head>
 <body>
 <main>
-  <h1>Seguros y coberturas para vehiculos electricos</h1>
+  <h1>Seguros y coberturas para vehículos eléctricos</h1>
   <p class="sub">Que cubre (y que no) el mercado asegurador chileno para un EV, verificado
   contra los condicionados oficiales depositados en la CMF, con benchmark internacional.
-  Las primas son referenciales publicas, no cotizaciones.</p>
+  Las primas son referenciales públicas, no cotizaciones.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Matriz de coberturas EV por producto</h2>
-    <p class="nota">Las 8 coberturas especificas de un vehiculo electrico contra cada producto
+    <p class="nota">Las 8 coberturas específicas de un vehículo eléctrico contra cada producto
     del mercado. S/I = el condicionado no lo menciona (que no es lo mismo que "no": la
-    ausencia es en si el hallazgo). Pasa el mouse por el encabezado para ver la definicion.</p>
+    ausencia es en si el hallazgo). Pasa el mouse por el encabezado para ver la definición.</p>
     <div class="filtros">
       <label>Aseguradora <select id="f-aseg"><option value="">Todas</option></select></label>
       <label>Tipo de cobertura <select id="f-tipo">
@@ -45,37 +47,37 @@
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Depositos de condicionados en CMF por año</h2>
+      <h2 style="margin-top:0">Depósitos de condicionados en CMF por año</h2>
       <div id="g-depositos"></div>
-      <p class="nota">La ola 2013-2018 es el mercado tradicional; los depositos 2025-2026 son
-      la señal de renovacion (incluye la primera clausula de "combustion espontanea", SURA
+      <p class="nota">La ola 2013-2018 es el mercado tradicional; los depósitos 2025-2026 son
+      la señal de renovación (incluye la primera cláusula de "combustion espontánea", SURA
       jul-2026).</p>
     </div>
     <div class="tarjeta">
       <h2 style="margin-top:0">Primas de referencia internacionales</h2>
       <div id="t-primas-int"></div>
       <p class="nota">Cada valor con su moneda y fecha de consulta original; no convertidos.
-      El recargo EV mundial es decreciente: el driver es la severidad de reparacion, no la
+      El recargo EV mundial es decreciente: el driver es la severidad de reparación, no la
       frecuencia.</p>
     </div>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Hallazgos clave del mercado chileno</h2>
-    <div class="hallazgo"><b>Solo existe UN seguro EV especifico en Chile</b>: BCI "Seguro Auto
-    Sustentable" (cable de recarga UF 15 solo robo, carga en ruta, RC en estaciones, reposicion
-    0 km, prima trianual en UF fija). BCI asegura mas de la mitad de los Tesla del pais.</div>
-    <div class="hallazgo">Los 58 condicionados depositados en CMF <b>no mencionan "bateria",
-    "cargador" ni "vehiculo electrico"</b>: todo lo EV vive en condiciones particulares no
-    publicas.</div>
+    <div class="hallazgo"><b>Solo existe UN seguro EV específico en Chile</b>: BCI "Seguro Auto
+    Sustentable" (cable de recarga UF 15 solo robo, carga en ruta, RC en estaciones, reposición
+    0 km, prima trianual en UF fija). BCI asegura más de la mitad de los Tesla del país.</div>
+    <div class="hallazgo">Los 58 condicionados depositados en CMF <b>no mencionan "batería",
+    "cargador" ni "vehículo eléctrico"</b>: todo lo EV vive en condiciones particulares no
+    públicas.</div>
     <div class="hallazgo">El <b>cable cargador esta excluido de facto</b> en todo el mercado
-    (la definicion de "accesorio" exige adherencia permanente al vehiculo) y la bateria de
-    traccion solo se cubre ante siniestro accidental, nunca por falla o degradacion.</div>
+    (la definición de "accesorio" exige adherencia permanente al vehículo) y la batería de
+    tracción solo se cubre ante siniestro accidental, nunca por falla o degradación.</div>
     <div class="hallazgo"><b>Ningun seguro de hogar chileno nombra el wallbox</b> y ningun
-    operador de electrolineras transparenta sus polizas. Los mismos grupos (Mapfre, Zurich,
-    SURA, HDI) ya venden estas coberturas fuera de Chile: el gap es comercial, no tecnico.</div>
+    operador de electrolineras transparenta sus pólizas. Los mismos grupos (Mapfre, Zurich,
+    SURA, HDI) ya venden estas coberturas fuera de Chile: el gap es comercial, no técnico.</div>
     <div class="hallazgo">El canal real del seguro EV chileno es el <b>empaquetado en leasing y
-    suscripcion</b> (Tanner, Arval, Astara Move, Kia Seguros via Marsh), no la venta directa.</div>
+    suscripción</b> (Tanner, Arval, Astara Move, Kia Seguros vía Marsh), no la venta directa.</div>
   </div>
 
   <div class="tarjeta">
@@ -84,7 +86,7 @@
   </div>
 </main>
 <script src="data/c_seguros.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("seguros.html");
 const D = PW_DATA.c_seguros;

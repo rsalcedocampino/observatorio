@@ -6,30 +6,32 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Valor del parque vehicular — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Valor del parque vehicular — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
   <h1>Valor del parque vehicular comunal</h1>
   <p class="sub">Cuanta riqueza vehicular hay en cada comuna: parque por tipo de motor (INE)
-  valorizado con la tasacion media del catalogo homologado. Un indice RELATIVO para comparar
-  comunas, no una tasacion absoluta.</p>
+  valorizado con la tasación media del catálogo homologado. Un índice RELATIVO para comparar
+  comunas, no una tasación absoluta.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
-    <label>Region <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Región <select id="f-region"><option value="">Todas</option></select></label>
     <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
   </div>
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Evolucion del parque nacional 2008-2024</h2>
+      <h2 style="margin-top:0">Evolución del parque nacional 2008-2024</h2>
       <div id="g-serie-parque"></div>
       <p class="nota" id="nota-serie"></p>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Composicion por tipo de vehiculo (ultimo año)</h2>
+      <h2 style="margin-top:0">Composición por tipo de vehículo (último año)</h2>
       <div id="g-tipos"></div>
     </div>
   </div>
@@ -45,7 +47,7 @@
   </div>
 </main>
 <script src="data/c_valorparque.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("valor-parque.html");
 const D = PW_DATA.c_valorparque;
@@ -68,7 +70,7 @@ function poblarComunas() {
 
 const cols = [
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "Region" },
+  { k: "region", titulo: "Región" },
   { k: "valor_mm", titulo: "Valor ref. (MM$)", num: true, fmt: v => PW.fmt(v) },
   { k: "valor_pc", titulo: "Por habitante ($)", num: true, fmt: v => PW.clp(v) },
   { k: "total", titulo: "Parque motorizado", num: true, fmt: v => PW.fmt(v) },
