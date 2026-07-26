@@ -6,8 +6,10 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Almacenamiento BESS y cortes — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Almacenamiento BESS y cortes — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -15,15 +17,15 @@
 </head>
 <body>
 <main>
-  <h1>Almacenamiento (BESS): despliegue, operacion y cortes</h1>
-  <p class="sub">El almacenamiento del sistema electrico chileno: donde estan los proyectos,
-  cuanta energia descargan cada dia, cuanta inversion viene en cartera, y si se instalan
-  donde mas se corta la luz — o solo donde conviene al mercado spot.</p>
+  <h1>Almacenamiento (BESS): despliegue, operación y cortes</h1>
+  <p class="sub">El almacenamiento del sistema eléctrico chileno: donde están los proyectos,
+  cuanta energía descargan cada día, cuanta inversión viene en cartera, y si se instalan
+  donde más se corta la luz — o solo donde conviene al mercado spot.</p>
   <p class="nota" id="nota"></p>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa de proyectos con almacenamiento</h2>
-    <p class="nota">Tamaño del punto segun capacidad (MWh); solo proyectos con coordenadas
+    <p class="nota">Tamaño del punto según capacidad (MWh); solo proyectos con coordenadas
     declaradas en el catastro ACERA.</p>
     <div class="filtros" id="filtros-bess"></div>
     <div id="mapa-bess"></div>
@@ -44,35 +46,35 @@
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Inversion en cartera electrica SEA por region</h2>
+    <h2 style="margin-top:0">Inversión en cartera eléctrica SEA por región</h2>
     <div id="g-sea"></div>
-    <p class="nota">Inversion declarada (MMUS$) de los proyectos electricos con RCA en el
-    SEIA; incluye generacion y almacenamiento.</p>
+    <p class="nota">Inversión declarada (MMUS$) de los proyectos eléctricos con RCA en el
+    SEIA; incluye generación y almacenamiento.</p>
   </div>
 
-  <h2>¿Se instala donde mas se corta?</h2>
+  <h2>¿Se instala donde más se corta?</h2>
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Cliente-horas de corte por region</h2>
+      <h2 style="margin-top:0">Cliente-horas de corte por región</h2>
       <div id="g-cortes"></div>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">MWh de almacenamiento por region</h2>
+      <h2 style="margin-top:0">MWh de almacenamiento por región</h2>
       <div id="g-bess"></div>
     </div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Las 20 comunas con mas cortes y su BESS</h2>
+    <h2 style="margin-top:0">Las 20 comunas con más cortes y su BESS</h2>
     <div id="t-top"></div>
     <p class="nota">mwh_comuna = capacidad de proyectos en la misma comuna; mwh_region = en la
-    region. Cero en ambos = maxima desproteccion relativa.</p>
+    región. Cero en ambos = máxima desprotección relativa.</p>
   </div>
 </main>
 <script src="data/c_besscortes.js"></script>
 <script src="data/baterias.js"></script>
 <script src="data/mapa.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("bess-cortes.html");
 const D = PW_DATA.c_besscortes;
@@ -194,7 +196,7 @@ PW.barras("g-bess", {
 
 PW.tabla("t-top", [
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "Region" },
+  { k: "region", titulo: "Región" },
   { k: "cliente_horas", titulo: "Cliente-horas", num: true, fmt: v => PW.fmt(v / 1e6, 1) + "M" },
   { k: "mwh_comuna", titulo: "MWh en la comuna", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
   { k: "mwh_region", titulo: "MWh en la region", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },

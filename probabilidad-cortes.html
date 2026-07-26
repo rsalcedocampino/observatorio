@@ -6,8 +6,10 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Probabilidad de cortes — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Probabilidad de cortes — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
@@ -21,7 +23,7 @@
 
   <div class="filtros">
     <label>Mes <select id="f-mes"></select></label>
-    <label>Region <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Región <select id="f-region"><option value="">Todas</option></select></label>
     <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
   </div>
 
@@ -41,22 +43,22 @@
 
   <div class="tarjeta">
     <h2 style="margin-top:0" id="titulo-mapa">Mapa comunal de probabilidad</h2>
-    <p class="nota">Las comunas coloreadas por su probabilidad historica de corte en el mes
-    elegido (quintiles; mas oscuro = mas probable). Cartografia oficial del Censo 2024.</p>
+    <p class="nota">Las comunas coloreadas por su probabilidad histórica de corte en el mes
+    elegido (quintiles; más oscuro = más probable). Cartografía oficial del Censo 2024.</p>
     <div id="mapa-prob"></div>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0" id="titulo-tabla">Detalle con la infraestructura expuesta</h2>
     <div id="t-detalle"></div>
-    <p class="nota">Expuesta = comunas con probabilidad de 75% o mas en el mes elegido. La
+    <p class="nota">Expuesta = comunas con probabilidad de 75% o más en el mes elegido. La
     infraestructura es la red de carga viva (actualizada cada 30 min); el historial de cortes
     es 2017-2026 con el umbral SEC de 500+ clientes por evento.</p>
   </div>
 </main>
 <script src="data/c_probcortes.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("probabilidad-cortes.html");
 const D = PW_DATA.c_probcortes;
@@ -186,7 +188,7 @@ function refrescar() {
   }));
   const cols = [
     { k: "comuna", titulo: "Comuna" },
-    { k: "region", titulo: "Region" },
+    { k: "region", titulo: "Región" },
     { k: "prob", titulo: "Prob. " + MES_ABR[mes], num: true, fmt: v => `<span class="${v >= UMBRAL ? "estado-mal" : ""}">${PW.fmt(v, 1)}%</span>` },
     { k: "evprom", titulo: "Cortes prom.", num: true, fmt: v => PW.fmt(v, 1) },
     { k: "peor_mes", titulo: "Peor mes" },

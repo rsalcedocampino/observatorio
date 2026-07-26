@@ -6,33 +6,35 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Elasticidad bencina-EV — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Elasticidad bencina-EV — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
   <h1>Elasticidad bencina-electromovilidad</h1>
-  <p class="sub">¿Cuando sube la bencina, sube la adopcion de enchufables meses despues? Este
-  cruce contrasta la participacion de mercado enchufable con el precio real de la bencina 93.
-  Es un analisis que madura solo: el historico propio de precios captura cada 10 dias.</p>
+  <p class="sub">¿Cuándo sube la bencina, sube la adopción de enchufables meses después? Este
+  cruce contrasta la participación de mercado enchufable con el precio real de la bencina 93.
+  Es un análisis que madura solo: el histórico propio de precios captura cada 10 días.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Participacion de mercado enchufable (mensual)</h2>
+    <h2 style="margin-top:0">Participación de mercado enchufable (mensual)</h2>
     <div id="g-part"></div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Capturas de precio bencina 93 (promedio pais)</h2>
+    <h2 style="margin-top:0">Capturas de precio bencina 93 (promedio país)</h2>
     <div id="t-capturas"></div>
-    <p class="nota">La regresion participacion~precio con rezagos 0-6 meses se activara
-    automaticamente cuando existan suficientes capturas para construir una serie mensual.</p>
+    <p class="nota">La regresion participación~precio con rezagos 0-6 meses se activará
+    automáticamente cuando existan suficientes capturas para construir una serie mensual.</p>
   </div>
 </main>
 <script src="data/c_elasticidad.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("elasticidad.html");
 const D = PW_DATA.c_elasticidad;

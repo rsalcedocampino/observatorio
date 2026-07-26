@@ -6,8 +6,10 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Selector de sitios de carga — Observatorio EV</title>
-<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<title>Selector de sitios de carga — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=250726g">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
@@ -16,16 +18,16 @@
 <body>
 <main>
   <h1>Selector de sitios de carga</h1>
-  <p class="sub">Donde conviene instalar el proximo cargador publico. Un puntaje de oportunidad
+  <p class="sub">Donde conviene instalar el próximo cargador público. Un puntaje de oportunidad
   por comuna que cruza demanda, oferta instalada, riesgo de cortes y precio local de la bencina.
-  La decision de inversion, resumida en un mapa.</p>
+  La decisión de inversión, resumida en un mapa.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
-    <label>Region
+    <label>Región
       <select id="f-region"><option value="">Todas</option></select>
     </label>
-    <label>Poblacion minima
+    <label>Población mínima
       <input type="number" id="f-pob" value="0" step="10000" min="0">
     </label>
     <label>Solo comunas sin conectores
@@ -36,11 +38,11 @@
   <div class="tarjeta">
     <h2 style="margin-top:0">Oferta actual: donde ya hay cargadores</h2>
     <p class="nota">Complemento del puntaje: la infraestructura existente. Donde no hay
-    puntos y el puntaje es alto, hay brecha. La region se hereda del filtro superior.</p>
+    puntos y el puntaje es alto, hay brecha. La región se hereda del filtro superior.</p>
     <div class="filtros">
       <label>Comuna <select id="fm-comuna"><option value="">Todas</option></select></label>
       <label>Potencia min (kW) <input type="number" id="fm-kw" value="0" min="0" step="10" style="width:70px"></label>
-      <label>Solo carga rapida (50 kW o mas) <input type="checkbox" id="fm-dc"></label>
+      <label>Solo carga rápida (50 kW o más) <input type="checkbox" id="fm-dc"></label>
     </div>
     <div id="mapa-oferta"></div>
     <div id="ley-oferta"></div>
@@ -59,7 +61,7 @@
 </main>
 <script src="data/sitios.js"></script>
 <script src="data/mapa.js"></script>
-<script src="assets/comun.js?v=250726d"></script>
+<script src="assets/comun.js?v=250726g"></script>
 <script>
 PW.montarNav("sitios.html");
 const D = PW_DATA.sitios;
@@ -74,7 +76,7 @@ const selR = document.getElementById("f-region");
 const cols = [
   { k: "score", titulo: "Puntaje", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "Region" },
+  { k: "region", titulo: "Región" },
   { k: "poblacion", titulo: "Poblacion", num: true, fmt: v => PW.fmt(v) },
   { k: "ev_parque", titulo: "Parque electrico", num: true, fmt: v => PW.fmt(v) },
   { k: "conectores", titulo: "Conectores", num: true, fmt: (v, f) => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
