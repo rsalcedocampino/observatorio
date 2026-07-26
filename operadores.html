@@ -40,10 +40,18 @@
   <div class="tarjeta">
     <h2 style="margin-top:0">Detalle por operador</h2>
     <div id="t-operadores"></div>
-    <p class="nota">Un mismo grupo comercial puede aparecer con más de un nombre según la
-    fuente (registro oficial vs plataforma propia); la columna Grupo los relaciona sin
-    fusionarlos, porque miden subconjuntos distintos de la red. Precio promedio solo donde el
-    operador lo pública.</p>
+    <p class="nota">Cada operador se homologa a su entidad canónica con el kit oficial
+    (operador_id / grupo económico): las distintas grafías de una misma red según la fuente
+    (por ejemplo "COPEC S.A.", "Copec" y "Copec Voltex", o "ENEL MOBILITY..." y "Enel X") se
+    consolidan en una sola fila. Precio promedio solo donde el operador lo pública.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Marcas de cargador (equipamiento)</h2>
+    <p class="sub" style="margin-top:0">Qué fabricante de hardware domina la red instalada.
+    Marca homologada al catálogo canónico con el mismo kit (dimensión equipamiento).</p>
+    <div id="g-marcas"></div>
+    <p class="nota" id="nota-marcas"></p>
   </div>
 </main>
 <script src="data/operadores.js"></script>
@@ -147,6 +155,23 @@ function refrescar() {
   else tab = PW.tabla("t-operadores", cols, filas, { orden: "conectores" });
 }
 refrescar();
+
+// Marcas de cargador (equipamiento) homologadas
+(function () {
+  const marcas = D.marcas_cargador || [];
+  if (!marcas.length) { document.getElementById("g-marcas").textContent = "Sin dato de marca."; return; }
+  const total = marcas.reduce((a, m) => a + m.cargadores, 0);
+  PW.barras("g-marcas", {
+    items: marcas.slice(0, 12).map(m => ({
+      nombre: m.marca, valor: m.cargadores,
+      extra: PW.pct(100 * m.cargadores / total) + " de la red",
+      color: PW.color("--s1"),
+    })),
+    fmtV: v => PW.fmt(v),
+  });
+  document.getElementById("nota-marcas").textContent =
+    marcas.length + " marcas homologadas. " + PW.fmt(total) + " cargadores únicos con marca identificada.";
+})();
 </script>
 </body>
 </html>
