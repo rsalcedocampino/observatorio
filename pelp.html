@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,21 +6,21 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Chile vs PELP â€” EnergÃ­as Futuro</title>
+<title>Chile vs PELP — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Chile vs PELP: Â¿quÃ© escenario estamos siguiendo?</h1>
-  <p class="sub">Â¿Sigue Chile su propio plan energÃ©tico? La capacidad instalada real, tecnologÃ­a
-  por tecnologÃ­a, frente a los tres escenarios oficiales de la PlanificaciÃ³n EnergÃ©tica de Largo
-  Plazo. Un seguimiento que hoy no existe publicado en el paÃ­s.</p>
+  <h1>Chile vs PELP: ¿qué escenario estamos siguiendo?</h1>
+  <p class="sub">¿Sigue Chile su propio plan energético? La capacidad instalada real, tecnología
+  por tecnología, frente a los tres escenarios oficiales de la Planificación Energética de Largo
+  Plazo. Un seguimiento que hoy no existe publicado en el país.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
-    <label>TecnologÃ­a <select id="f-tec"></select></label>
+    <label>Tecnología <select id="f-tec"></select></label>
   </div>
 
   <div class="tarjeta">
@@ -34,17 +34,17 @@
       <div id="g-emisiones"></div>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Consumo final de electricidad del paÃ­s (GWh)</h2>
+      <h2 style="margin-top:0">Consumo final de electricidad del país (GWh)</h2>
       <div id="g-consumo"></div>
-      <p class="nota">Balance Nacional de EnergÃ­a CNE, 2008-2024 (1 tcal = 1,163 GWh). El
-      contexto histÃ³rico sobre el que se montan la electromovilidad y los escenarios.</p>
+      <p class="nota">Balance Nacional de Energía CNE, 2008-2024 (1 tcal = 1,163 GWh). El
+      contexto histórico sobre el que se montan la electromovilidad y los escenarios.</p>
     </div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">DiagnÃ³stico 2026 por tecnologÃ­a (GW)</h2>
+    <h2 style="margin-top:0">Diagnóstico 2026 por tecnología (GW)</h2>
     <div id="t-diag"></div>
-    <p class="nota">Los escenarios PELP parten en 2020 y son capacidad de expansiÃ³n acumulada;
+    <p class="nota">Los escenarios PELP parten en 2020 y son capacidad de expansión acumulada;
     el punto real y el escenario no siempre comparten base exacta, por eso la lectura correcta
     es la PENDIENTE (que trayectoria sigue Chile), no la resta simple.</p>
   </div>
@@ -63,7 +63,7 @@ if (tecs.includes("Solar")) sel.value = "Solar";
 
 function pintar() {
   const t = sel.value;
-  // eje comun: union de aÃ±os reales y PELP
+  // eje comun: union de años reales y PELP
   const anios = [...new Set([...D.anios_real, ...D.anios_pelp])].sort((a, b) => a - b)
     .filter(a => a >= 2015 && a <= 2035);
   const serieReal = anios.map(a => {
@@ -107,9 +107,9 @@ if (D.consumo_electricidad) {
 
 const escNombres = Object.keys(D.escenarios);
 PW.tabla("t-diag", [
-  { k: "tecnologia", titulo: "TecnologÃ­a" },
+  { k: "tecnologia", titulo: "Tecnología" },
   { k: "real_2026_gw", titulo: "Real 2026", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
-  ...escNombres.map(e => ({ k: e, titulo: e, num: true, fmt: v => v == null ? "â€”" : PW.fmt(v, 1) })),
+  ...escNombres.map(e => ({ k: e, titulo: e, num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) })),
 ], D.diagnostico_2026, {});
 </script>
 </body>

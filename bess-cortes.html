@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Almacenamiento BESS y cortes â€” EnergÃ­as Futuro</title>
+<title>Almacenamiento BESS y cortes — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -17,15 +17,15 @@
 </head>
 <body>
 <main>
-  <h1>Almacenamiento (BESS): despliegue, operaciÃ³n y cortes</h1>
-  <p class="sub">El almacenamiento del sistema elÃ©ctrico chileno: donde estÃ¡n los proyectos,
-  cuanta energÃ­a descargan cada dÃ­a, cuanta inversiÃ³n viene en cartera, y si se instalan
-  donde mÃ¡s se corta la luz â€” o solo donde conviene al mercado spot.</p>
+  <h1>Almacenamiento (BESS): despliegue, operación y cortes</h1>
+  <p class="sub">El almacenamiento del sistema eléctrico chileno: donde están los proyectos,
+  cuanta energía descargan cada día, cuanta inversión viene en cartera, y si se instalan
+  donde más se corta la luz — o solo donde conviene al mercado spot.</p>
   <p class="nota" id="nota"></p>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa de proyectos con almacenamiento</h2>
-    <p class="nota">TamaÃ±o del punto segÃºn capacidad (MWh); solo proyectos con coordenadas
+    <p class="nota">Tamaño del punto según capacidad (MWh); solo proyectos con coordenadas
     declaradas en el catastro ACERA.</p>
     <div class="filtros" id="filtros-bess"></div>
     <div id="mapa-bess"></div>
@@ -46,29 +46,29 @@
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">InversiÃ³n en cartera elÃ©ctrica SEA por regiÃ³n</h2>
+    <h2 style="margin-top:0">Inversión en cartera eléctrica SEA por región</h2>
     <div id="g-sea"></div>
-    <p class="nota">InversiÃ³n declarada (MMUS$) de los proyectos elÃ©ctricos con RCA en el
-    SEIA; incluye generaciÃ³n y almacenamiento.</p>
+    <p class="nota">Inversión declarada (MMUS$) de los proyectos eléctricos con RCA en el
+    SEIA; incluye generación y almacenamiento.</p>
   </div>
 
-  <h2>Â¿Se instala donde mÃ¡s se corta?</h2>
+  <h2>¿Se instala donde más se corta?</h2>
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Cliente-horas de corte por regiÃ³n</h2>
+      <h2 style="margin-top:0">Cliente-horas de corte por región</h2>
       <div id="g-cortes"></div>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">MWh de almacenamiento por regiÃ³n</h2>
+      <h2 style="margin-top:0">MWh de almacenamiento por región</h2>
       <div id="g-bess"></div>
     </div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Las 20 comunas con mÃ¡s cortes y su BESS</h2>
+    <h2 style="margin-top:0">Las 20 comunas con más cortes y su BESS</h2>
     <div id="t-top"></div>
     <p class="nota">mwh_comuna = capacidad de proyectos en la misma comuna; mwh_region = en la
-    regiÃ³n. Cero en ambos = mÃ¡xima desprotecciÃ³n relativa.</p>
+    región. Cero en ambos = máxima desprotección relativa.</p>
   </div>
 </main>
 <script src="data/c_besscortes.js"></script>
@@ -111,7 +111,7 @@ document.getElementById("nota").textContent = "Generado " + D.generado + ". " + 
       color: colorEstado(p.est),
       r: p.mwh ? Math.max(4, Math.min(16, 2 + Math.sqrt(p.mwh) / 3)) : 4,
       popup: `<b>${p.n}</b>` +
-        `<br>${p.tec || ""}${p.seg ? " â€” " + p.seg : ""}` +
+        `<br>${p.tec || ""}${p.seg ? " — " + p.seg : ""}` +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
         `<br>Estado: <b>${p.est || "sin dato"}</b>${p.fec ? " (" + p.fec + ")" : ""}` +
         (p.pn ? `<br>Potencia planta: ${PW.fmt(p.pn)} MW` : "") +
@@ -128,7 +128,7 @@ document.getElementById("nota").textContent = "Generado " + D.generado + ". " + 
     }
     const mwhTot = sel.reduce((a, p) => a + (p.mwh || 0), 0);
     document.getElementById("cont-bess").textContent =
-      pts.length + " proyectos mostrados de " + puntos.length + " â€” " +
+      pts.length + " proyectos mostrados de " + puntos.length + " — " +
       PW.fmt(Math.round(mwhTot)) + " MWh acumulados en la seleccion.";
   }
 
@@ -196,7 +196,7 @@ PW.barras("g-bess", {
 
 PW.tabla("t-top", [
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "RegiÃ³n" },
+  { k: "region", titulo: "Región" },
   { k: "cliente_horas", titulo: "Cliente-horas", num: true, fmt: v => PW.fmt(v / 1e6, 1) + "M" },
   { k: "mwh_comuna", titulo: "MWh en la comuna", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
   { k: "mwh_region", titulo: "MWh en la region", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },

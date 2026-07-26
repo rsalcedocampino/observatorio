@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,17 +6,17 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Ficha vehÃ­culo 360 â€” EnergÃ­as Futuro</title>
+<title>Ficha vehículo 360 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Ficha vehÃ­culo 360</h1>
-  <p class="sub">Un modelo, todo su rastro en Chile en una sola ficha: cuanto se importÃ³ y a
-  que precio, cuanto se vende, baterÃ­a, autonomÃ­a, conectores y guÃ­a de rescate. El expediente
-  que ningun portal automotriz reÃºne.</p>
+  <h1>Ficha vehículo 360</h1>
+  <p class="sub">Un modelo, todo su rastro en Chile en una sola ficha: cuanto se importó y a
+  que precio, cuanto se vende, batería, autonomía, conectores y guía de rescate. El expediente
+  que ningun portal automotriz reúne.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
@@ -31,7 +31,7 @@
   <div id="detalle"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">CatÃ¡logo (haz clic en una fila para ver la ficha)</h2>
+    <h2 style="margin-top:0">Catálogo (haz clic en una fila para ver la ficha)</h2>
     <div id="t-modelos"></div>
   </div>
 </main>
@@ -48,7 +48,7 @@ const selT = document.getElementById("f-tipo");
 });
 
 function norm(s) {
-  return (s || "").normalize("NFKD").replace(/[Ì€-Í¯]/g, "").toUpperCase();
+  return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase();
 }
 
 function mostrarDetalle(m) {
@@ -71,15 +71,15 @@ function mostrarDetalle(m) {
   <div class="tarjeta">
     <h2 style="margin-top:0">${m.marca} ${m.modelo}</h2>
     <div class="kpis">
-      <div class="kpi"><div class="v">${m.bateria_kwh != null ? PW.fmt(m.bateria_kwh, 1) + " kWh" : "â€”"}</div><div class="l">bateria</div></div>
-      <div class="kpi"><div class="v">${m.autonomia_km != null ? PW.fmt(m.autonomia_km) + " km" : "â€”"}</div><div class="l">autonomia ref.</div></div>
-      <div class="kpi"><div class="v">${m.dc_kw != null ? PW.fmt(m.dc_kw) + " kW" : "â€”"}</div><div class="l">carga DC max.</div><div class="d">${m.conector_dc || ""}</div></div>
-      <div class="kpi"><div class="v">${m.ac_kw != null ? PW.fmt(m.ac_kw, 1) + " kW" : "â€”"}</div><div class="l">carga AC</div><div class="d">${m.conector_ac || ""}</div></div>
-      <div class="kpi"><div class="v">${m.precio_min != null ? PW.clp(m.precio_min) : "â€”"}</div><div class="l">precio lista desde</div></div>
-      <div class="kpi"><div class="v">${m.imp_unidades != null ? PW.fmt(m.imp_unidades) : "â€”"}</div><div class="l">unidades importadas</div><div class="d">${m.imp_unidades != null ? "microdato DIN de Aduanas" : "sin registro por modelo"}</div></div>
+      <div class="kpi"><div class="v">${m.bateria_kwh != null ? PW.fmt(m.bateria_kwh, 1) + " kWh" : "—"}</div><div class="l">bateria</div></div>
+      <div class="kpi"><div class="v">${m.autonomia_km != null ? PW.fmt(m.autonomia_km) + " km" : "—"}</div><div class="l">autonomia ref.</div></div>
+      <div class="kpi"><div class="v">${m.dc_kw != null ? PW.fmt(m.dc_kw) + " kW" : "—"}</div><div class="l">carga DC max.</div><div class="d">${m.conector_dc || ""}</div></div>
+      <div class="kpi"><div class="v">${m.ac_kw != null ? PW.fmt(m.ac_kw, 1) + " kW" : "—"}</div><div class="l">carga AC</div><div class="d">${m.conector_ac || ""}</div></div>
+      <div class="kpi"><div class="v">${m.precio_min != null ? PW.clp(m.precio_min) : "—"}</div><div class="l">precio lista desde</div></div>
+      <div class="kpi"><div class="v">${m.imp_unidades != null ? PW.fmt(m.imp_unidades) : "—"}</div><div class="l">unidades importadas</div><div class="d">${m.imp_unidades != null ? "microdato DIN de Aduanas" : "sin registro por modelo"}</div></div>
       <div class="kpi"><div class="v">${m.ficha_docs != null ? m.ficha_docs : "0"}</div><div class="l">documentos de rescate</div><div class="d">${m.ficha_docs ? '<a href="rescate.html">ver en Rescate</a>' : "sin ficha"}</div></div>
     </div>
-    <h2>Marca ${m.marca}: ventas vs importaciones por aÃ±o</h2>
+    <h2>Marca ${m.marca}: ventas vs importaciones por año</h2>
     <div id="g-marca"></div>
     <p class="nota">Ventas a nivel marca (todas las tecnologias electrificadas de la fuente
     mensual); importaciones del microdato aduanero homologado. Las curvas no son comparables
@@ -101,14 +101,14 @@ function mostrarDetalle(m) {
 const cols = [
   { k: "marca", titulo: "Marca" },
   { k: "modelo", titulo: "Modelo" },
-  { k: "tipo", titulo: "Tipo", fmt: v => v ? `<span class="pill">${v}</span>` : "â€”" },
+  { k: "tipo", titulo: "Tipo", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
   { k: "bateria_kwh", titulo: "kWh", num: true, fmt: v => PW.fmt(v, 1) },
-  { k: "autonomia_km", titulo: "AutonomÃ­a km", num: true, fmt: v => PW.fmt(v) },
+  { k: "autonomia_km", titulo: "Autonomía km", num: true, fmt: v => PW.fmt(v) },
   { k: "dc_kw", titulo: "DC kW", num: true, fmt: v => PW.fmt(v) },
   { k: "conector_dc", titulo: "Conector DC" },
   { k: "precio_min", titulo: "Precio desde", num: true, fmt: v => PW.clp(v) },
   { k: "imp_unidades", titulo: "Importados", num: true, fmt: v => PW.fmt(v) },
-  { k: "ficha_docs", titulo: "Fichas", num: true, fmt: v => v ? `<span class="estado-ok">${v}</span>` : "â€”" },
+  { k: "ficha_docs", titulo: "Fichas", num: true, fmt: v => v ? `<span class="estado-ok">${v}</span>` : "—" },
 ];
 
 let filasActuales = [];

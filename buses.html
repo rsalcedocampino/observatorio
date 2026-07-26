@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,21 +6,21 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Buses elÃ©ctricos â€” EnergÃ­as Futuro</title>
+<title>Buses eléctricos — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Buses elÃ©ctricos: del puerto al electroterminal</h1>
-  <p class="sub">Como se despliega el transporte pÃºblico elÃ©ctrico: ventas por categorÃ­a de
+  <h1>Buses eléctricos: del puerto al electroterminal</h1>
+  <p class="sub">Como se despliega el transporte público eléctrico: ventas por categoría de
   servicio, importaciones con su costo CIF, y la infraestructura de carga de transporte
-  (electroterminales SEC) regiÃ³n por regiÃ³n.</p>
+  (electroterminales SEC) región por región.</p>
   <p class="nota" id="nota"></p>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Ventas de buses elÃ©ctricos por categorÃ­a</h2>
+    <h2 style="margin-top:0">Ventas de buses eléctricos por categoría</h2>
     <div id="g-ventas"></div>
   </div>
 
@@ -37,13 +37,13 @@
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">ImportaciÃ³n mensual de buses</h2>
+      <h2 style="margin-top:0">Importación mensual de buses</h2>
       <div id="g-aduana"></div>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Cargadores de transporte por regiÃ³n (SEC)</h2>
+      <h2 style="margin-top:0">Cargadores de transporte por región (SEC)</h2>
       <div id="t-et"></div>
-      <p class="nota">Electroterminales y carga de transporte pÃºblico, acumulado EcoCarga. Las
+      <p class="nota">Electroterminales y carga de transporte público, acumulado EcoCarga. Las
       regiones que reciben buses sin infraestructura de terminal aparecen con cero.</p>
     </div>
   </div>
@@ -82,7 +82,7 @@ PW.columnas("g-aduana", {
 });
 
 PW.tabla("t-et", [
-  { k: "region", titulo: "RegiÃ³n" },
+  { k: "region", titulo: "Región" },
   { k: "cargadores", titulo: "Cargadores transporte", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
   { k: "mw", titulo: "MW", num: true, fmt: v => PW.fmt(v, 1) },
 ], D.electroterminales, { orden: "cargadores" });

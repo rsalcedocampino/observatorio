@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,21 +6,21 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Demanda elÃ©ctrica del parque EV â€” EnergÃ­as Futuro</title>
+<title>Demanda eléctrica del parque EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Demanda elÃ©ctrica del parque EV</h1>
-  <p class="sub">Cuanta energÃ­a consume hoy el parque elÃ©ctrico y cuando su crecimiento se
-  harÃ¡ sentir en el sistema elÃ©ctrico nacional. ProyecciÃ³n con supuestos declarados que puedes
+  <h1>Demanda eléctrica del parque EV</h1>
+  <p class="sub">Cuanta energía consume hoy el parque eléctrico y cuando su crecimiento se
+  hará sentir en el sistema eléctrico nacional. Proyección con supuestos declarados que puedes
   ajustar.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
-    <label>km anuales por vehÃ­culo <input type="number" id="f-km" value="15000" step="1000" min="5000"></label>
+    <label>km anuales por vehículo <input type="number" id="f-km" value="15000" step="1000" min="5000"></label>
     <label>Rendimiento (km/kWh) <input type="number" id="f-rend" value="5.4" step="0.2" min="3"></label>
   </div>
 
@@ -28,13 +28,13 @@
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">GWh anuales por regiÃ³n (parque actual)</h2>
+      <h2 style="margin-top:0">GWh anuales por región (parque actual)</h2>
       <div id="g-reg"></div>
     </div>
     <div class="tarjeta">
       <h2 style="margin-top:0">Escenarios de crecimiento del parque</h2>
       <div id="t-esc"></div>
-      <p class="nota">Con el parque multiplicado por N, que fracciÃ³n del SEN actual representa
+      <p class="nota">Con el parque multiplicado por N, que fracción del SEN actual representa
       la carga EV. La estrategia 2035 implica parques 10-30 veces el actual.</p>
     </div>
   </div>
@@ -72,7 +72,7 @@ function refrescar() {
     pct: Math.round(1000 * gwh * f / D.kpis.gwh_sen_anual) / 10,
   }));
   document.getElementById("t-esc").innerHTML =
-    `<div class="scroll-x"><table class="pw"><thead><tr><th>Escenario</th><th class="num">Vehiculos</th><th class="num">GWh/aÃ±o</th><th class="num">% del SEN</th></tr></thead><tbody>` +
+    `<div class="scroll-x"><table class="pw"><thead><tr><th>Escenario</th><th class="num">Vehiculos</th><th class="num">GWh/año</th><th class="num">% del SEN</th></tr></thead><tbody>` +
     filas.map(f => `<tr><td>${f.escenario}</td><td class="num">${PW.fmt(f.vehiculos)}</td><td class="num">${PW.fmt(f.gwh)}</td><td class="num">${PW.fmt(f.pct, 1)}%</td></tr>`).join("") +
     `</tbody></table></div>`;
 }

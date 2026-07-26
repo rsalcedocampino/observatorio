@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Valor del parque vehicular â€” EnergÃ­as Futuro</title>
+<title>Valor del parque vehicular — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -15,23 +15,23 @@
 <main>
   <h1>Valor del parque vehicular comunal</h1>
   <p class="sub">Cuanta riqueza vehicular hay en cada comuna: parque por tipo de motor (INE)
-  valorizado con la tasaciÃ³n media del catÃ¡logo homologado. Un Ã­ndice RELATIVO para comparar
-  comunas, no una tasaciÃ³n absoluta.</p>
+  valorizado con la tasación media del catálogo homologado. Un índice RELATIVO para comparar
+  comunas, no una tasación absoluta.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
-    <label>RegiÃ³n <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Región <select id="f-region"><option value="">Todas</option></select></label>
     <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
   </div>
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">EvoluciÃ³n del parque nacional 2008-2024</h2>
+      <h2 style="margin-top:0">Evolución del parque nacional 2008-2024</h2>
       <div id="g-serie-parque"></div>
       <p class="nota" id="nota-serie"></p>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">ComposiciÃ³n por tipo de vehÃ­culo (Ãºltimo aÃ±o)</h2>
+      <h2 style="margin-top:0">Composición por tipo de vehículo (último año)</h2>
       <div id="g-tipos"></div>
     </div>
   </div>
@@ -70,13 +70,13 @@ function poblarComunas() {
 
 const cols = [
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "RegiÃ³n" },
+  { k: "region", titulo: "Región" },
   { k: "valor_mm", titulo: "Valor ref. (MM$)", num: true, fmt: v => PW.fmt(v) },
   { k: "valor_pc", titulo: "Por habitante ($)", num: true, fmt: v => PW.clp(v) },
   { k: "total", titulo: "Parque motorizado", num: true, fmt: v => PW.fmt(v) },
   { k: "veh_pc", titulo: "Vehiculos per capita", num: true, fmt: v => PW.fmt(v, 1) },
   { k: "electrico", titulo: "Electricos", num: true, fmt: v => PW.fmt(v) },
-  { k: "pct_electrico", titulo: "% electrico", num: true, fmt: v => v == null ? "â€”" : PW.fmt(v, 1) + "%" },
+  { k: "pct_electrico", titulo: "% electrico", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) + "%" },
 ];
 
 // Serie nacional del parque + composicion por tipo
@@ -93,7 +93,7 @@ if (D.serie_nacional) {
   document.getElementById("nota-serie").textContent =
     "INE, permisos de circulacion. " + u.anio + ": " + PW.fmt(u.motorizados) +
     " motorizados, " + PW.fmt(u.electrico) + " electricos (" + PW.fmt(u.pct_electrico, 1) +
-    "% â€” puede incluir hibridos).";
+    "% — puede incluir hibridos).";
 }
 if (D.tipos_ultimo_anio) {
   PW.barras("g-tipos", {

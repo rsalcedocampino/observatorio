@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Normativa y metas â€” EnergÃ­as Futuro</title>
+<title>Normativa y metas — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -24,22 +24,22 @@
 <body>
 <main>
   <h1>Normativa y metas de gobierno</h1>
-  <p class="sub">El marco legal y de metas de la electromovilidad y la energÃ­a en Chile:
-  que esta comprometido, con que fuerza jurÃ­dica, que normas existen, donde estÃ¡n los vacÃ­os
+  <p class="sub">El marco legal y de metas de la electromovilidad y la energía en Chile:
+  que esta comprometido, con que fuerza jurídica, que normas existen, donde están los vacíos
   y que viene en el radar legislativo. 112 documentos oficiales verificados.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">SemÃ¡foro de metas oficiales: cuanta fuerza jurÃ­dica tienen</h2>
-    <p class="nota">El hallazgo central: la meta 2035 de electromovilidad es DECLARATIVA â€” no
+    <h2 style="margin-top:0">Semáforo de metas oficiales: cuanta fuerza jurídica tienen</h2>
+    <p class="nota">El hallazgo central: la meta 2035 de electromovilidad es DECLARATIVA — no
     esta en la NDC, ni en el PSMACC, ni en ninguna ley. Casi todo el edificio de metas
-    descansa en documentos de polÃ­tica, no en obligaciones.</p>
+    descansa en documentos de política, no en obligaciones.</p>
     <div class="filtros">
       <label>Vinculancia <select id="f-vin"><option value="">Todas</option>
         <option value="vinculante">Vinculante</option><option value="compromiso">Compromiso</option>
-        <option value="indicativa">Indicativa</option><option value="politica">PolÃ­tica</option>
+        <option value="indicativa">Indicativa</option><option value="politica">Política</option>
         <option value="declarativa">Declarativa</option>
       </select></label>
     </div>
@@ -48,12 +48,12 @@
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa de brechas normativas para la meta 2035</h2>
-    <p class="nota">25 brechas tipificadas: vacÃ­o absoluto (la norma no existe), actualizaciÃ³n
-    (existe pero no sirve), conflicto (normas que chocan) y creaciÃ³n. La vÃ­a indica si se
+    <p class="nota">25 brechas tipificadas: vacío absoluto (la norma no existe), actualización
+    (existe pero no sirve), conflicto (normas que chocan) y creación. La vía indica si se
     resuelve por decreto o requiere ley.</p>
     <div class="filtros">
       <label>Urgencia <select id="f-urg"><option value="">Todas</option>
-        <option>mÃ¡xima</option><option>alta</option><option>media</option><option>baja</option>
+        <option>máxima</option><option>alta</option><option>media</option><option>baja</option>
       </select></label>
     </div>
     <div id="t-brechas"></div>
@@ -63,22 +63,22 @@
     <div class="tarjeta">
       <h2 style="margin-top:0">Radar legislativo: lo que viene</h2>
       <div id="t-monitoreo"></div>
-      <p class="nota">Se actualiza con el barrido mensual de LeyChile (dÃ­a 1) del proyecto
+      <p class="nota">Se actualiza con el barrido mensual de LeyChile (día 1) del proyecto
       productor. El pendiente mayor: el PdL de Incentivo a la Electromovilidad comprometido
       para 2026-2027, aun sin ingresar.</p>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Normas del sector por aÃ±o</h2>
+      <h2 style="margin-top:0">Normas del sector por año</h2>
       <div id="g-normas"></div>
-      <h2>InversiÃ³n pÃºblica catastrada</h2>
+      <h2>Inversión pública catastrada</h2>
       <div id="t-inversiones"></div>
     </div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Las 48 normas con su relevancia EV y sus vacÃ­os</h2>
+    <h2 style="margin-top:0">Las 48 normas con su relevancia EV y sus vacíos</h2>
     <div class="filtros">
-      <label>Buscar <input type="search" id="busca-norma" placeholder="Norma, materia, vacÃ­o..."></label>
+      <label>Buscar <input type="search" id="busca-norma" placeholder="Norma, materia, vacío..."></label>
     </div>
     <div id="t-normas"></div>
   </div>
@@ -121,8 +121,8 @@ function pintarMetas() {
   const filas = D.metas.filter(m => !f || m.clase === f);
   const cols = [
     { k: "Meta", titulo: "Meta" },
-    { k: "Valor", titulo: "Valor", num: true, fmt: (v, r) => v == null ? "â€”" : PW.fmt(+v) + (r.Unidad ? " " + r.Unidad : "") },
-    { k: "AÃ±o_Objetivo", titulo: "AÃ±o objetivo" },
+    { k: "Valor", titulo: "Valor", num: true, fmt: (v, r) => v == null ? "—" : PW.fmt(+v) + (r.Unidad ? " " + r.Unidad : "") },
+    { k: "Año_Objetivo", titulo: "Año objetivo" },
     { k: "clase", titulo: "Vinculancia", fmt: v => vinPill(v) },
     { k: "Estado_Vinculancia", titulo: "Detalle" },
     { k: "Documento_Fuente", titulo: "Fuente" },
@@ -138,8 +138,8 @@ function pintarBrechas() {
   const filas = D.brechas.filter(b => !f || String(b.Urgencia).toLowerCase() === f);
   const cols = [
     { k: "Brecha", titulo: "Brecha" },
-    { k: "Tipo", titulo: "Tipo", fmt: v => `<span class="pill">${v || "â€”"}</span>` },
-    { k: "Urgencia", titulo: "Urgencia", fmt: v => `<span class="urg-${String(v).toLowerCase()}">${v || "â€”"}</span>` },
+    { k: "Tipo", titulo: "Tipo", fmt: v => `<span class="pill">${v || "—"}</span>` },
+    { k: "Urgencia", titulo: "Urgencia", fmt: v => `<span class="urg-${String(v).toLowerCase()}">${v || "—"}</span>` },
     { k: "Via", titulo: "Via" },
     { k: "Instrumento_Afectado", titulo: "Instrumento afectado" },
     { k: "Referencia_Internacional", titulo: "Referencia internacional" },
@@ -164,7 +164,7 @@ PW.columnas("g-normas", {
 PW.tabla("t-inversiones", [
   { k: "Programa", titulo: "Programa" },
   { k: "Organismo", titulo: "Organismo" },
-  { k: "Monto", titulo: "Monto", num: true, fmt: (v, r) => v == null ? "â€”" : PW.fmt(+v) + " " + (r.Moneda_Unidad || "") },
+  { k: "Monto", titulo: "Monto", num: true, fmt: (v, r) => v == null ? "—" : PW.fmt(+v) + " " + (r.Moneda_Unidad || "") },
 ], D.inversiones, {});
 
 const norm = s => (s || "").toLowerCase();
@@ -175,7 +175,7 @@ function pintarNormas() {
     norm(n.Norma + " " + n.Materia + " " + n.Relevancia_EV + " " + n.Vacios).includes(q));
   const cols = [
     { k: "Norma", titulo: "Norma" },
-    { k: "AÃ±o", titulo: "AÃ±o" },
+    { k: "Año", titulo: "Año" },
     { k: "Organismo", titulo: "Organismo" },
     { k: "Materia", titulo: "Materia" },
     { k: "Relevancia_EV", titulo: "Relevancia EV" },
@@ -194,8 +194,8 @@ function pintarCifras() {
   const filas = D.cifras.filter(c => !q || norm(c.Indicador + " " + c.Fuente).includes(q));
   const cols = [
     { k: "Indicador", titulo: "Indicador" },
-    { k: "Valor", titulo: "Valor", num: true, fmt: (v, r) => v == null ? "â€”" : v + " " + (r.Unidad || "") },
-    { k: "AÃ±o", titulo: "AÃ±o" },
+    { k: "Valor", titulo: "Valor", num: true, fmt: (v, r) => v == null ? "—" : v + " " + (r.Unidad || "") },
+    { k: "Año", titulo: "Año" },
     { k: "Fuente", titulo: "Fuente" },
   ];
   if (tCifras) tCifras.actualizar(filas); else tCifras = PW.tabla("t-cifras", cols, filas, { max: 30, buscador: false });

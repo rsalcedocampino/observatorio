@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Brechas de autonomÃ­a â€” EnergÃ­as Futuro</title>
+<title>Brechas de autonomía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -17,10 +17,10 @@
 </head>
 <body>
 <main>
-  <h1>Brechas de autonomÃ­a en corredores</h1>
-  <p class="sub">Â¿En que tramos de ruta un elÃ©ctrico promedio se queda sin donde cargar?
-  Comparamos la distancia entre cargadores rÃ¡pidos (50 kW o mÃ¡s) con la autonomÃ­a real del
-  catÃ¡logo, para ver donde falta infraestructura para viajar.</p>
+  <h1>Brechas de autonomía en corredores</h1>
+  <p class="sub">¿En que tramos de ruta un eléctrico promedio se queda sin donde cargar?
+  Comparamos la distancia entre cargadores rápidos (50 kW o más) con la autonomía real del
+  catálogo, para ver donde falta infraestructura para viajar.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
@@ -28,7 +28,7 @@
   <div class="fila2">
     <div class="tarjeta">
       <h2 style="margin-top:0">Mapa de la red DC</h2>
-      <p class="nota">Rojo: el punto DC mÃ¡s cercano queda mÃ¡s lejos que el rango Ãºtil p25.</p>
+      <p class="nota">Rojo: el punto DC más cercano queda más lejos que el rango útil p25.</p>
       <div id="mapa-dc"></div>
       <div id="ley-dc"></div>
     </div>
@@ -39,7 +39,7 @@
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Estaciones DC y su vecino mÃ¡s cercano</h2>
+    <h2 style="margin-top:0">Estaciones DC y su vecino más cercano</h2>
     <div id="t-puntos"></div>
   </div>
 </main>
@@ -55,7 +55,7 @@ document.getElementById("kpis").innerHTML = [
   [K.estaciones_dc, "estaciones con carga rapida", "50 kW o mas"],
   [PW.fmt(K.autonomia_p50) + " km", "autonomia mediana del catalogo", "p25: " + PW.fmt(K.autonomia_p25) + " km"],
   [PW.fmt(K.rango_util_p25) + " km", "rango util conservador", "70% de la autonomia p25"],
-  [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "â€”", "mayor brecha detectada", D.brechas.length ? D.brechas[0].desde : ""],
+  [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada", D.brechas.length ? D.brechas[0].desde : ""],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
 const umbral = K.rango_util_p25;
@@ -66,7 +66,7 @@ PW.mapa("mapa-dc", {
       color: (p.nn_km || 0) > umbral ? PW.color("--critical") : PW.color("--s3"),
       popup: `<b>${p.n || "Estacion DC"}</b><br>${p.com}, ${p.reg}` +
         `<br>${PW.fmt(p.kw)} kW` +
-        `<br>DC mas cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "â€”"}` +
+        `<br>DC mas cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
         PW.waze(p.lat, p.lon),
     })),
   }],
@@ -84,11 +84,11 @@ PW.tabla("t-brechas", [
 ], D.brechas, { orden: "km" });
 
 PW.tabla("t-puntos", [
-  { k: "n", titulo: "EstaciÃ³n" },
+  { k: "n", titulo: "Estación" },
   { k: "com", titulo: "Comuna" },
-  { k: "reg", titulo: "RegiÃ³n" },
+  { k: "reg", titulo: "Región" },
   { k: "kw", titulo: "kW", num: true, fmt: v => PW.fmt(v) },
-  { k: "nn_km", titulo: "DC mas cercano (km)", num: true, fmt: v => v == null ? "â€”" : `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
+  { k: "nn_km", titulo: "DC mas cercano (km)", num: true, fmt: v => v == null ? "—" : `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
 ], D.puntos, { orden: "nn_km", max: 300 });
 </script>
 </body>
