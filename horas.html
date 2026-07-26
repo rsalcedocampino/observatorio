@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Mejor hora para cargar — Energías Futuro</title>
+<title>Mejor hora para cargar â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -14,38 +14,38 @@
 <body>
 <main>
   <h1>Mejor hora para cargar</h1>
-  <p class="sub">A que hora conviene cargar: la ocupación real de la red pública hora por hora,
-  del histórico capturado cada 30 minutos. Menos fila, más sol.</p>
+  <p class="sub">A que hora conviene cargar: la ocupaciÃ³n real de la red pÃºblica hora por hora,
+  del histÃ³rico capturado cada 30 minutos. Menos fila, mÃ¡s sol.</p>
   <p class="nota" id="nota"></p>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Ocupación nacional por hora (hora de Chile)</h2>
+    <h2 style="margin-top:0">OcupaciÃ³n nacional por hora (hora de Chile)</h2>
     <div id="g-nacional"></div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Por operador (los 5 con más observaciones)</h2>
+    <h2 style="margin-top:0">Por operador (los 5 con mÃ¡s observaciones)</h2>
     <div id="g-operadores"></div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">La hora verde: sol proyectado vs ocupación actual</h2>
+    <h2 style="margin-top:0">La hora verde: sol proyectado vs ocupaciÃ³n actual</h2>
     <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">Cargar cuando
-    el sistema es más solar y la red de carga esta más vacía. La curva solar viene de la
-    proyección horaria de la PELP; la de ocupación, del histórico real de la red.</p>
+    el sistema es mÃ¡s solar y la red de carga esta mÃ¡s vacÃ­a. La curva solar viene de la
+    proyecciÃ³n horaria de la PELP; la de ocupaciÃ³n, del histÃ³rico real de la red.</p>
     <div class="filtros">
       <label>Escenario PELP <select id="hv-esc"></select></label>
-      <label>Año <select id="hv-anio"></select></label>
+      <label>AÃ±o <select id="hv-anio"></select></label>
     </div>
     <div id="g-horaverde"></div>
     <p class="nota">Ambas curvas son porcentajes: % solar en el mix de esa hora (PELP,
-    promedio anual) y % de conectores ocupados a esa hora (histórico propio, preliminar).
-    La ventana donde el solar es alto y la ocupación baja es la hora verde.</p>
+    promedio anual) y % de conectores ocupados a esa hora (histÃ³rico propio, preliminar).
+    La ventana donde el solar es alto y la ocupaciÃ³n baja es la hora verde.</p>
   </div>
 </main>
 <script src="data/horas.js"></script>
 <script src="data/c_horaverde.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("horas.html");
 const D = PW_DATA.horas;
@@ -71,7 +71,7 @@ if (!D.disponible) {
   PW.lineas("g-operadores", {
     labels: horas.map(h => String(h).padStart(2, "0")),
     series: Object.entries(D.por_operador).map(([op, serie]) => ({
-      nombre: op.length > 26 ? op.slice(0, 25) + "…" : op,
+      nombre: op.length > 26 ? op.slice(0, 25) + "â€¦" : op,
       valores: horas.map(h => {
         const r = serie.find(x => x.hora === h);
         return r ? r.ocupacion : null;

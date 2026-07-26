@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Probabilidad de cortes — Energías Futuro</title>
+<title>Probabilidad de cortes â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -17,13 +17,13 @@
 <main>
   <h1>Probabilidad de cortes por mes</h1>
   <p class="sub">Con el historial SEC 2017-2026: que probabilidad tiene cada comuna de sufrir
-  al menos un corte relevante en cada mes del año, y cuanta infraestructura de carga queda
+  al menos un corte relevante en cada mes del aÃ±o, y cuanta infraestructura de carga queda
   expuesta donde la probabilidad es alta.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
     <label>Mes <select id="f-mes"></select></label>
-    <label>Región <select id="f-region"><option value="">Todas</option></select></label>
+    <label>RegiÃ³n <select id="f-region"><option value="">Todas</option></select></label>
     <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
   </div>
 
@@ -43,22 +43,22 @@
 
   <div class="tarjeta">
     <h2 style="margin-top:0" id="titulo-mapa">Mapa comunal de probabilidad</h2>
-    <p class="nota">Las comunas coloreadas por su probabilidad histórica de corte en el mes
-    elegido (quintiles; más oscuro = más probable). Cartografía oficial del Censo 2024.</p>
+    <p class="nota">Las comunas coloreadas por su probabilidad histÃ³rica de corte en el mes
+    elegido (quintiles; mÃ¡s oscuro = mÃ¡s probable). CartografÃ­a oficial del Censo 2024.</p>
     <div id="mapa-prob"></div>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0" id="titulo-tabla">Detalle con la infraestructura expuesta</h2>
     <div id="t-detalle"></div>
-    <p class="nota">Expuesta = comunas con probabilidad de 75% o más en el mes elegido. La
+    <p class="nota">Expuesta = comunas con probabilidad de 75% o mÃ¡s en el mes elegido. La
     infraestructura es la red de carga viva (actualizada cada 30 min); el historial de cortes
     es 2017-2026 con el umbral SEC de 500+ clientes por evento.</p>
   </div>
 </main>
 <script src="data/c_probcortes.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("probabilidad-cortes.html");
 const D = PW_DATA.c_probcortes;
@@ -132,16 +132,16 @@ function refrescar() {
   if (comunaUnica) {
     perfil = comunaUnica.prob;
     tituloPerfil = "Probabilidad mensual de corte en " + comunaUnica.comuna;
-    notaPerfil = "Probabilidad = años con al menos un corte ese mes / años con datos.";
+    notaPerfil = "Probabilidad = aÃ±os con al menos un corte ese mes / aÃ±os con datos.";
   } else if (rcut) {
     const reg = D.regiones.find(r => r.rcut === rcut);
     perfil = reg.pct_comunas;
-    tituloPerfil = "% de comunas afectadas por mes — " + reg.region;
+    tituloPerfil = "% de comunas afectadas por mes â€” " + reg.region;
     notaPerfil = "Promedio historico del porcentaje de comunas de la region con al menos un corte en el mes.";
   } else {
     perfil = MESES.map((_, m) =>
       +(D.regiones.reduce((s, r) => s + r.pct_comunas[m], 0) / D.regiones.length).toFixed(1));
-    tituloPerfil = "% de comunas afectadas por mes — promedio pais";
+    tituloPerfil = "% de comunas afectadas por mes â€” promedio pais";
     notaPerfil = "Promedio simple de las 16 regiones.";
   }
   document.getElementById("titulo-perfil").textContent = tituloPerfil;
@@ -188,14 +188,14 @@ function refrescar() {
   }));
   const cols = [
     { k: "comuna", titulo: "Comuna" },
-    { k: "region", titulo: "Región" },
+    { k: "region", titulo: "RegiÃ³n" },
     { k: "prob", titulo: "Prob. " + MES_ABR[mes], num: true, fmt: v => `<span class="${v >= UMBRAL ? "estado-mal" : ""}">${PW.fmt(v, 1)}%</span>` },
     { k: "evprom", titulo: "Cortes prom.", num: true, fmt: v => PW.fmt(v, 1) },
     { k: "peor_mes", titulo: "Peor mes" },
     { k: "est", titulo: "Estaciones", num: true, fmt: v => PW.fmt(v) },
     { k: "carg", titulo: "Cargadores", num: true, fmt: v => PW.fmt(v) },
     { k: "con", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
-    { k: "expuesta", titulo: "Red expuesta", fmt: v => v ? `<span class="estado-mal">Si</span>` : "—" },
+    { k: "expuesta", titulo: "Red expuesta", fmt: v => v ? `<span class="estado-mal">Si</span>` : "â€”" },
   ];
   if (tab) tab.actualizar(filas); else tab = PW.tabla("t-detalle", cols, filas, { orden: "prob", max: 400 });
 }

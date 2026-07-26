@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Mapas Interactivos — Energías Futuro</title>
+<title>Mapas Interactivos â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -18,12 +18,12 @@
 <body>
 <main>
   <h1>Mapas Interactivos</h1>
-  <p class="sub">Un solo mapa para cruzar las cinco capas del sistema eléctrico y de
-  electromovilidad: la <b>red de carga</b>, la <b>transmisión</b> que la alimenta, la
-  <b>generación renovable</b> y el <b>almacenamiento</b> que la respaldan, y el <b>Censo</b>
-  como telón de fondo territorial. Parta de un <b>cruce sugerido</b> o encienda y apague capas
-  a mano para encontrar relaciones sobre el territorio: cargadores lejos de una subestación,
-  plantas solares junto a baterías, comunas con poca electrificación y sin red cercana.</p>
+  <p class="sub">Un solo mapa para cruzar las cinco capas del sistema elÃ©ctrico y de
+  electromovilidad: la <b>red de carga</b>, la <b>transmisiÃ³n</b> que la alimenta, la
+  <b>generaciÃ³n renovable</b> y el <b>almacenamiento</b> que la respaldan, y el <b>Censo</b>
+  como telÃ³n de fondo territorial. Parta de un <b>cruce sugerido</b> o encienda y apague capas
+  a mano para encontrar relaciones sobre el territorio: cargadores lejos de una subestaciÃ³n,
+  plantas solares junto a baterÃ­as, comunas con poca electrificaciÃ³n y sin red cercana.</p>
 
   <div class="tarjeta">
     <div id="kpis-mapa" class="kpis"></div>
@@ -33,9 +33,9 @@
     <div id="mapa-todo"></div>
     <p id="cont-todo" class="nota" style="margin-top:10px"></p>
     <p class="nota" id="ley-encoding"></p>
-    <p class="nota">Consejo: cada capa mantiene su estado al filtrar o cambiar el telón de
+    <p class="nota">Consejo: cada capa mantiene su estado al filtrar o cambiar el telÃ³n de
     fondo; el mapa conserva el zoom cuando activa o apaga capas. Use "Ver todo" para encuadrar
-    y "Mi ubicación" para centrarse y ver el punto más cercano.</p>
+    y "Mi ubicaciÃ³n" para centrarse y ver el punto mÃ¡s cercano.</p>
   </div>
 
 </main>
@@ -45,7 +45,7 @@
 <script src="data/c_censoelec.js"></script>
 <script src="data/geo_lineas.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("mapas.html");
 
@@ -57,7 +57,7 @@ const C = PW.color;
 
 // indicador del Censo para el telon de fondo comunal
 const IND = {
-  pct_solar: ["Censo: % viviendas con generación solar", v => PW.fmt(v, 1) + "%"],
+  pct_solar: ["Censo: % viviendas con generaciÃ³n solar", v => PW.fmt(v, 1) + "%"],
   pct_red:   ["Censo: % viviendas conectadas a la red", v => PW.fmt(v, 1) + "%"],
   viviendas: ["Censo: viviendas por comuna", v => PW.fmt(v)],
 };
@@ -68,8 +68,8 @@ const IND = {
 const CAPAS = [
   { k: "carga",  nombre: "Cargadores y conectores", color: "--s3",       on: true  },
   { k: "sub",    nombre: "Subestaciones",           color: "--critical", on: false },
-  { k: "lineas", nombre: "Líneas de transmisión",   color: "--s2",       on: true  },
-  { k: "solar",  nombre: "Generación solar",        color: "--s4",       on: false },
+  { k: "lineas", nombre: "LÃ­neas de transmisiÃ³n",   color: "--s2",       on: true  },
+  { k: "solar",  nombre: "GeneraciÃ³n solar",        color: "--s4",       on: false },
   { k: "bess",   nombre: "Almacenamiento (BESS)",   color: "--s5",       on: false },
   { k: "censo",  nombre: "Censo por comuna",        color: "--s1",       on: false },
 ];
@@ -77,14 +77,14 @@ const on = k => (CAPAS.find(c => c.k === k) || {}).on;
 
 // cruces sugeridos: cada uno arma una combinacion para responder una pregunta
 const PRESETS = [
-  { t: "Carga vs red eléctrica", on: ["carga", "sub", "lineas"],
-    desc: "Los cargadores sobre la transmisión que los alimenta: quién está lejos de la red." },
-  { t: "Generación + almacenamiento", on: ["solar", "bess"],
-    desc: "Dónde se genera energía solar y dónde se guarda en baterías." },
+  { t: "Carga vs red elÃ©ctrica", on: ["carga", "sub", "lineas"],
+    desc: "Los cargadores sobre la transmisiÃ³n que los alimenta: quiÃ©n estÃ¡ lejos de la red." },
+  { t: "GeneraciÃ³n + almacenamiento", on: ["solar", "bess"],
+    desc: "DÃ³nde se genera energÃ­a solar y dÃ³nde se guarda en baterÃ­as." },
   { t: "Cobertura vs Censo", on: ["carga", "censo"], ind: "pct_red",
-    desc: "La red de carga sobre la electrificación de los hogares por comuna." },
+    desc: "La red de carga sobre la electrificaciÃ³n de los hogares por comuna." },
   { t: "Solar vs potencial del hogar", on: ["solar", "censo"], ind: "pct_solar",
-    desc: "Plantas solares sobre el porcentaje de viviendas con generación solar propia." },
+    desc: "Plantas solares sobre el porcentaje de viviendas con generaciÃ³n solar propia." },
   { t: "Ver todo", on: ["carga", "sub", "lineas", "solar", "bess", "censo"] },
   { t: "Limpiar", on: [] },
 ];
@@ -106,17 +106,17 @@ function dentro(o) {
 
 function popupSub(s) {
   return `<div class="pop-est"><div class="pop-titulo">${s.n || "Subestacion"}</div>` +
-    `<div class="pop-sub">${[s.com, s.prop].filter(Boolean).join(" · ")}</div>` +
-    (s.kv_txt ? `<div class="pop-linea"><span>Tensión</span><div>${s.kv_txt}</div></div>` : "") +
+    `<div class="pop-sub">${[s.com, s.prop].filter(Boolean).join(" Â· ")}</div>` +
+    (s.kv_txt ? `<div class="pop-linea"><span>TensiÃ³n</span><div>${s.kv_txt}</div></div>` : "") +
     (s.mva ? `<div class="pop-linea"><span>Capacidad</span><div>${PW.fmt(s.mva)} MVA</div></div>` : "") +
     (s.est ? `<div class="pop-linea"><span>Estado</span><div>${s.est}</div></div>` : "") + `</div>`;
 }
 function popupLinea(p) {
   const kv = +(p.kv || 0);
-  const nivel = kv >= 220 ? "Troncal" : (kv >= 66 ? "Subtransmisión" : (kv > 0 ? "Distribución" : ""));
+  const nivel = kv >= 220 ? "Troncal" : (kv >= 66 ? "SubtransmisiÃ³n" : (kv > 0 ? "DistribuciÃ³n" : ""));
   return `<div class="pop-est"><div class="pop-titulo">${p.n || "Linea de transmision"}</div>` +
     `<div class="pop-sub">${nivel || "Linea de transmision"}</div>` +
-    (p.kv ? `<div class="pop-linea"><span>Tensión</span><div>${p.kv} kV</div></div>` : "") +
+    (p.kv ? `<div class="pop-linea"><span>TensiÃ³n</span><div>${p.kv} kV</div></div>` : "") +
     (p.km ? `<div class="pop-linea"><span>Longitud</span><div>${PW.fmt(p.km, 1)} km</div></div>` : "") +
     (p.prop ? `<div class="pop-linea"><span>Propietario</span><div>${p.prop}</div></div>` : "") + `</div>`;
 }
@@ -125,7 +125,7 @@ function popupPlanta(p) {
     `<div class="pop-sub">${[p.com, p.reg].filter(Boolean).join(", ")}</div>` +
     (p.mw ? `<div class="pop-linea"><span>Potencia</span><div>${PW.fmt(p.mw, 1)} MW</div></div>` : "") +
     (p.mwh ? `<div class="pop-linea"><span>Capacidad</span><div>${PW.fmt(p.mwh, 1)} MWh</div></div>` : "") +
-    (p.tec ? `<div class="pop-linea"><span>Tecnología</span><div>${p.tec}</div></div>` : "") +
+    (p.tec ? `<div class="pop-linea"><span>TecnologÃ­a</span><div>${p.tec}</div></div>` : "") +
     (p.est ? `<div class="pop-linea"><span>Estado</span><div>${p.est}</div></div>` : "") + `</div>`;
 }
 
@@ -145,27 +145,27 @@ function render(fit) {
     { nombre: "Cargadores y conectores", visible: on("carga"), color: C("--s3"), puntos: carga.map(p => ({
         lat: p.lat, lon: p.lon, r: 5, color: C("--s3"),
         tip: p.n || (p.op ? "Estacion " + p.op : "Cargador"), popup: PW.popupEstacion(p) })) },
-    { nombre: "Transmisión: subestaciones", visible: on("sub"), color: C("--critical"), puntos: subs.map(s => ({
+    { nombre: "TransmisiÃ³n: subestaciones", visible: on("sub"), color: C("--critical"), puntos: subs.map(s => ({
         lat: s.lat, lon: s.lon, r: radioMva(s.mva), color: C("--critical"),
-        tip: (s.n || "Subestacion") + (s.kv_txt ? " — " + s.kv_txt : ""), popup: popupSub(s) })) },
-    { nombre: "Generación solar", visible: on("solar"), color: C("--s4"), puntos: solar.map(p => ({
+        tip: (s.n || "Subestacion") + (s.kv_txt ? " â€” " + s.kv_txt : ""), popup: popupSub(s) })) },
+    { nombre: "GeneraciÃ³n solar", visible: on("solar"), color: C("--s4"), puntos: solar.map(p => ({
         lat: p.lat, lon: p.lon, r: radio(3, p.mw, 2.5), color: C("--s4"),
-        tip: (p.n || "Planta solar") + (p.mw ? " — " + PW.fmt(p.mw, 1) + " MW" : ""),
+        tip: (p.n || "Planta solar") + (p.mw ? " â€” " + PW.fmt(p.mw, 1) + " MW" : ""),
         popup: popupPlanta(p) })) },
     { nombre: "Almacenamiento (BESS)", visible: on("bess"), color: C("--s5"), puntos: bess.map(p => ({
         lat: p.lat, lon: p.lon, r: radio(4, p.mwh, 4), color: C("--s5"),
-        tip: (p.n || "BESS") + (p.mwh ? " — " + PW.fmt(p.mwh, 1) + " MWh" : ""),
+        tip: (p.n || "BESS") + (p.mwh ? " â€” " + PW.fmt(p.mwh, 1) + " MWh" : ""),
         popup: popupPlanta(p) })) },
   ];
 
   const lineas = LIN ? [{
-    nombre: "Transmisión: líneas", visible: on("lineas"), geojson: LIN,
+    nombre: "TransmisiÃ³n: lÃ­neas", visible: on("lineas"), geojson: LIN,
     color: props => {
       const kv = +(props.kv || 0);
       return { color: C("--s2"),
                weight: kv >= 220 ? 2.4 : 1.3, opacity: kv >= 220 ? 0.85 : 0.6 };
     },
-    tip: p => (p.n || "Linea") + (p.kv ? " — " + p.kv + " kV" : "") +
+    tip: p => (p.n || "Linea") + (p.kv ? " â€” " + p.kv + " kV" : "") +
               (p.km ? " (" + PW.fmt(Math.round(p.km)) + " km)" : ""),
     popup: popupLinea,
     colorSel: "#00c2d6",
@@ -196,7 +196,7 @@ function pintarKpis() {
   const kpis = [
     ["Cargadores", conteos.carga, "puntos de carga"],
     ["Subestaciones", conteos.sub, PW.fmt(Math.round(suma(RED.subestaciones || [], "mva"))) + " MVA"],
-    ["Generación solar", conteos.solar, PW.fmt(Math.round(suma(M.solar || [], "mw"))) + " MW"],
+    ["GeneraciÃ³n solar", conteos.solar, PW.fmt(Math.round(suma(M.solar || [], "mw"))) + " MW"],
     ["Almacenamiento", conteos.bess, PW.fmt(Math.round(suma(M.bess || [], "mwh"))) + " MWh"],
     ["Comunas (Censo)", conteos.censo, "con dato"],
   ];
@@ -222,9 +222,9 @@ function pintarContador(ind) {
     (activas.length ? "Capas activas: " + activas.join(", ") + "." : "Sin capas activas: encienda una arriba.") +
     (filtroTerr.rcut || filtroTerr.com ? " Filtrado por territorio." : " Todo Chile.");
   document.getElementById("ley-encoding").innerHTML =
-    "Tamaño del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
-    "Líneas de transmisión en naranjo (más gruesa y opaca = 220 kV o más). " +
-    "Censo: fondo azul, más oscuro = mayor " +
+    "TamaÃ±o del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
+    "LÃ­neas de transmisiÃ³n en naranjo (mÃ¡s gruesa y opaca = 220 kV o mÃ¡s). " +
+    "Censo: fondo azul, mÃ¡s oscuro = mayor " +
     (ind === "viviendas" ? "numero de viviendas" : "porcentaje") + " en la comuna.";
 }
 
