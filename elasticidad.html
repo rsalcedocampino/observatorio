@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Elasticidad bencina-EV — Energías Futuro</title>
+<title>Elasticidad bencina-EV â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -14,27 +14,27 @@
 <body>
 <main>
   <h1>Elasticidad bencina-electromovilidad</h1>
-  <p class="sub">¿Cuándo sube la bencina, sube la adopción de enchufables meses después? Este
-  cruce contrasta la participación de mercado enchufable con el precio real de la bencina 93.
-  Es un análisis que madura solo: el histórico propio de precios captura cada 10 días.</p>
+  <p class="sub">Â¿CuÃ¡ndo sube la bencina, sube la adopciÃ³n de enchufables meses despuÃ©s? Este
+  cruce contrasta la participaciÃ³n de mercado enchufable con el precio real de la bencina 93.
+  Es un anÃ¡lisis que madura solo: el histÃ³rico propio de precios captura cada 10 dÃ­as.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Participación de mercado enchufable (mensual)</h2>
+    <h2 style="margin-top:0">ParticipaciÃ³n de mercado enchufable (mensual)</h2>
     <div id="g-part"></div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Capturas de precio bencina 93 (promedio país)</h2>
+    <h2 style="margin-top:0">Capturas de precio bencina 93 (promedio paÃ­s)</h2>
     <div id="t-capturas"></div>
-    <p class="nota">La regresion participación~precio con rezagos 0-6 meses se activará
-    automáticamente cuando existan suficientes capturas para construir una serie mensual.</p>
+    <p class="nota">La regresion participaciÃ³n~precio con rezagos 0-6 meses se activarÃ¡
+    automÃ¡ticamente cuando existan suficientes capturas para construir una serie mensual.</p>
   </div>
 </main>
 <script src="data/c_elasticidad.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("elasticidad.html");
 const D = PW_DATA.c_elasticidad;
@@ -45,7 +45,7 @@ document.getElementById("kpis").innerHTML = [
   [n + " / " + D.capturas_necesarias, "capturas de precio acumuladas", "cada 10 dias desde jul-2026"],
   [n >= D.capturas_necesarias ? "Activo" : "En construccion", "estado del analisis",
     n >= D.capturas_necesarias ? "" : "faltan " + (D.capturas_necesarias - n) + " capturas (~" + Math.ceil((D.capturas_necesarias - n) * 10 / 30) + " meses)"],
-  [D.participacion.length ? PW.fmt(D.participacion[D.participacion.length - 1].pct, 1) + "%" : "—",
+  [D.participacion.length ? PW.fmt(D.participacion[D.participacion.length - 1].pct, 1) + "%" : "â€”",
     "participacion enchufable actual", D.participacion.length ? "mes " + D.participacion[D.participacion.length - 1].ym : ""],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 

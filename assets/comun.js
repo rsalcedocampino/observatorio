@@ -514,6 +514,39 @@
   // API: mapa(cont, {capas, centro, zoom, alto, clusterDesde, sinCluster})
   // =====================================================================
 
+  // [TERRITORIO] bounding box canonico de Chile — MISMO criterio que dentro_chile()
+  // del pipeline (generar_datos.py): lat -56..-17, lon -76..-66. Red de seguridad en
+  // el render para que ningun punto con coordenada corrupta se dibuje fuera del pais.
+  // No inventa coordenadas: un punto malo simplemente no se mapea.
+  function enChile(lat, lon) {
+    return lat != null && lon != null && !Number.isNaN(lat) && !Number.isNaN(lon) &&
+      lat >= -56 && lat <= -17 && lon >= -76 && lon <= -66;
+  }
+
+  // [BASE] fuentes cartograficas homologadas para TODOS los mapas del sitio.
+  // Todas son raster sin API key -> funcionan en GitHub Pages sin exponer secretos.
+  //   Mapa      CARTO claro/oscuro segun el tema (limpio, para leer datos encima)
+  //   Satélite  Esri World Imagery (imagen real, gratis, sin token)
+  //   Relieve   OpenTopoMap (curvas de nivel; util para red electrica y potencial)
+  //   Calles    OpenStreetMap estandar (detalle urbano a color)
+  // Tocar aqui cambia las capas base de mapa() y choropleth() a la vez.
+  function basesMapa(oscuro) {
+    const bases = {};
+    bases["Mapa"] = L.tileLayer(
+      `https://{s}.basemaps.cartocdn.com/${oscuro ? "dark_all" : "light_all"}/{z}/{x}/{y}{r}.png`,
+      { maxZoom: 19, attribution: "© OpenStreetMap © CARTO" });
+    bases["Satélite"] = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      { maxZoom: 19, attribution: "Imágenes © Esri, Maxar, Earthstar Geographics" });
+    bases["Relieve"] = L.tileLayer(
+      "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+      { maxZoom: 17, subdomains: "abc", attribution: "© OpenStreetMap, SRTM · © OpenTopoMap (CC-BY-SA)" });
+    bases["Calles"] = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      { maxZoom: 19, attribution: "© OpenStreetMap" });
+    return bases;
+  }
+
   // distancia haversine en km (para "el punto más cercano")
   function distKm(a, b) {
     const R = 6371, r = x => x * Math.PI / 180;
@@ -595,15 +628,13 @@
     const zoom = cfg.zoom || 5;
     const m = L.map(el, { preferCanvas: true, zoomSnap: 0.5 }).setView(centro, zoom);
 
-    // [BASE] tiles segun tema + escala
+    // [BASE] capas base homologadas (Mapa/Satélite/Relieve/Calles) + escala
     const raiz = document.documentElement;
     const oscuro = raiz.dataset.theme === "dark" ||
       (raiz.dataset.theme !== "light" && window.matchMedia &&
        window.matchMedia("(prefers-color-scheme: dark)").matches);
-    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${oscuro ? "dark_all" : "light_all"}/{z}/{x}/{y}{r}.png`, {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap © CARTO',
-    }).addTo(m);
+    const bases = basesMapa(oscuro);
+    bases["Mapa"].addTo(m);
     L.control.scale({ imperial: false, position: "bottomleft" }).addTo(m);
 
     // pane para el coropletico de fondo (debajo de todo lo demas)
@@ -611,6 +642,7 @@
 
     // acumula todos los puntos para "ver todo" y para "punto más cercano"
     const todosPts = [];   // {ll:[lat,lon], nombre}
+    let fueraChile = 0;    // puntos descartados por caer fuera del territorio
 
     // [CONTROLES] pantalla completa · vista inicial · ver todo · mi ubicacion
     controlesMapa(m, el, { centro, zoom, puntos: todosPts });
@@ -672,6 +704,7 @@
         : L.layerGroup();
       capa.puntos.forEach(p => {
         if (p.lat == null || p.lon == null) return;
+        if (!enChile(p.lat, p.lon)) { fueraChile++; return; }
         const rBase = p.r || 5;
         const mk = L.circleMarker([p.lat, p.lon], {
           renderer: usarCluster ? undefined : renderer,
@@ -681,7 +714,14 @@
           fillColor: p.color || color("--s1"),
           fillOpacity: 0.85,
         });
-        if (p.popup) mk.bindPopup(p.popup, { maxWidth: 300 });
+        if (p.popup) {
+          // [POPUP] "como llegar" homologado: se inyecta a TODO punto con coordenada
+          // (Waze + Maps), salvo que el popup ya lo traiga. Antes se pegaba a mano por
+          // pagina y quedaban mapas sin el (p.ej. operadores). Aqui es automatico.
+          let ph = p.popup;
+          if (!/waze\.com|maps\/dir/.test(ph)) ph += waze(p.lat, p.lon);
+          mk.bindPopup(ph, { maxWidth: 300 });
+        }
         const tip = p.tip || (p.popup ? (p.popup.match(/<b>(.*?)<\/b>/) || [])[1] : null);
         if (tip) mk.bindTooltip(tip, { direction: "top", offset: [0, -6], opacity: 0.95 });
         // [HOVER] resaltar el punto al pasar el mouse
@@ -727,8 +767,13 @@
       if (lc.visible) capaL.addTo(m);
     });
 
-    if (!cfg.sinSelector && Object.keys(control).length > 1) {
-      L.control.layers(null, control, { collapsed: false }).addTo(m);
+    // [CONTROLES] un solo selector: capas base (Mapa/Satélite/Relieve/Calles) siempre
+    // disponibles como radios, mas los overlays de puntos/lineas como checkboxes si hay.
+    const overlays = (!cfg.sinSelector && Object.keys(control).length > 1) ? control : null;
+    L.control.layers(bases, overlays, { collapsed: !overlays }).addTo(m);
+
+    if (fueraChile) {
+      console.warn(`PW.mapa: ${fueraChile} punto(s) descartado(s) por coordenada fuera de Chile (bbox lat -56..-17, lon -76..-66).`);
     }
     return m;
   }
@@ -739,6 +784,7 @@
     ocupado: ["Ocupado", "var(--s1)"],
     fuera_de_servicio: ["Fuera de servicio", "var(--critical)"],
     no_disponible: ["No disponible", "var(--ink-3)"],
+    desconocido: ["Sin dato", "var(--ink-3)"],
   };
   function popupEstacion(p) {
     const [estTxt, estColor] = ESTADO_TXT[p.est] || ["Sin dato", "var(--ink-3)"];
@@ -814,10 +860,10 @@
     const oscuro = raiz.dataset.theme === "dark" ||
       (raiz.dataset.theme !== "light" && window.matchMedia &&
        window.matchMedia("(prefers-color-scheme: dark)").matches);
-    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${oscuro ? "dark_all" : "light_all"}/{z}/{x}/{y}{r}.png`, {
-      maxZoom: 19, attribution: '© OpenStreetMap © CARTO',
-    }).addTo(m);
+    const bases = basesMapa(oscuro);
+    bases["Mapa"].addTo(m);
     L.control.scale({ imperial: false, position: "bottomleft" }).addTo(m);
+    L.control.layers(bases, null, { collapsed: true }).addTo(m);
 
     // cortes por quintiles sobre los valores presentes
     const vals = Object.values(cfg.valores).filter(v => v != null && !Number.isNaN(v)).sort((a, b) => a - b);
@@ -883,5 +929,5 @@
     });
   }
 
-  window.PW = { montarNav, fmt, clp, pct, lineas, barras, columnas, tabla, color, mapa, choropleth, leyendaMapa, waze, filtrosTerritorio, icono, popupEstacion };
+  window.PW = { montarNav, fmt, clp, pct, lineas, barras, columnas, tabla, color, mapa, choropleth, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion };
 })();

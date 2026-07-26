@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,43 +6,43 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Importaciones de vehículos — Energías Futuro</title>
+<title>Importaciones de vehÃ­culos â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Importaciones de vehículos</h1>
-  <p class="sub">Lo que entra por la aduana anticipa lo que se venderá meses después. Microdato
-  DIN de Aduanas de vehículos electrificados, con marca, modelo y propulsión homologadas.
-  Las importaciones de baterías de litio tienen su propia sección.</p>
+  <h1>Importaciones de vehÃ­culos</h1>
+  <p class="sub">Lo que entra por la aduana anticipa lo que se venderÃ¡ meses despuÃ©s. Microdato
+  DIN de Aduanas de vehÃ­culos electrificados, con marca, modelo y propulsiÃ³n homologadas.
+  Las importaciones de baterÃ­as de litio tienen su propia secciÃ³n.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
-    <label>Categoría de vehículo
+    <label>CategorÃ­a de vehÃ­culo
       <select id="f-cat"></select>
     </label>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Unidades importadas por mes y propulsión</h2>
+    <h2 style="margin-top:0">Unidades importadas por mes y propulsiÃ³n</h2>
     <div id="g-serie"></div>
   </div>
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Top marcas, últimos 12 meses</h2>
+      <h2 style="margin-top:0">Top marcas, Ãºltimos 12 meses</h2>
       <div id="g-marcas"></div>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">País de origen, últimos 12 meses</h2>
+      <h2 style="margin-top:0">PaÃ­s de origen, Ãºltimos 12 meses</h2>
       <div id="g-paises"></div>
     </div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Modelos que debutan (últimos 6 meses)</h2>
+    <h2 style="margin-top:0">Modelos que debutan (Ãºltimos 6 meses)</h2>
     <p class="nota">Primer mes en que un (marca, modelo) aparece en el registro aduanero
     2015-2026: senal temprana de lanzamientos.</p>
     <div id="t-debuts"></div>
@@ -50,7 +50,7 @@
 
 </main>
 <script src="data/radar.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("radar.html");
 const D = PW_DATA.radar;
@@ -86,7 +86,7 @@ function refrescar() {
     { k: "debut", titulo: "Debut" },
     { k: "marca", titulo: "Marca" },
     { k: "modelo", titulo: "Modelo" },
-    { k: "propulsion", titulo: "Propulsion", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+    { k: "propulsion", titulo: "Propulsion", fmt: v => v ? `<span class="pill">${v}</span>` : "â€”" },
     { k: "unidades", titulo: "Unidades a la fecha", num: true, fmt: v => PW.fmt(v) },
   ];
   if (tDebuts) tDebuts.actualizar(G.debuts_6m); else tDebuts = PW.tabla("t-debuts", colsD, G.debuts_6m, { orden: "debut" });

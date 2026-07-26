@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,16 +6,16 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Rotación de inventario — Energías Futuro</title>
+<title>RotaciÃ³n de inventario â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
 </head>
 <body>
 <main>
-  <h1>Rotación de inventario por marca</h1>
+  <h1>RotaciÃ³n de inventario por marca</h1>
   <p class="sub">El pulso comercial de cada marca: cuanto tarda en vender lo que importa y
-  quien esta acumulando stock. Importación mensual frente a venta mensual, marca por marca,
+  quien esta acumulando stock. ImportaciÃ³n mensual frente a venta mensual, marca por marca,
   para anticipar liquidaciones y quiebres de oferta.</p>
   <p class="nota" id="nota"></p>
 
@@ -24,20 +24,20 @@
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0" id="t-serie">Importación vs venta mensual</h2>
+    <h2 style="margin-top:0" id="t-serie">ImportaciÃ³n vs venta mensual</h2>
     <div id="g-serie"></div>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Resumen por marca (livianos electrificados, desde 2020-05)</h2>
     <div id="t-marcas"></div>
-    <p class="nota">meses_stock = stock estimado / venta promedio de los últimos 6 meses. El
-    stock incluye unidades en tránsito, demos y flotas propias; valores altos sostenidos
+    <p class="nota">meses_stock = stock estimado / venta promedio de los Ãºltimos 6 meses. El
+    stock incluye unidades en trÃ¡nsito, demos y flotas propias; valores altos sostenidos
     anticipan liquidaciones.</p>
   </div>
 </main>
 <script src="data/c_rotacion.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("rotacion.html");
 const D = PW_DATA.c_rotacion;
@@ -49,7 +49,7 @@ D.marcas.forEach(m => { const o = document.createElement("option"); o.value = m.
 function pintar() {
   const m = D.marcas.find(x => x.marca === sel.value) || D.marcas[0];
   document.getElementById("t-serie").textContent =
-    m.marca + " — lag de maxima correlacion: " + (m.lag_meses != null ? m.lag_meses + " meses (r=" + m.correlacion + ")" : "sin dato");
+    m.marca + " â€” lag de maxima correlacion: " + (m.lag_meses != null ? m.lag_meses + " meses (r=" + m.correlacion + ")" : "sin dato");
   PW.lineas("g-serie", {
     labels: D.meses,
     series: [
@@ -66,10 +66,10 @@ PW.tabla("t-marcas", [
   { k: "marca", titulo: "Marca" },
   { k: "importado", titulo: "Importado", num: true, fmt: v => PW.fmt(v) },
   { k: "vendido", titulo: "Vendido", num: true, fmt: v => PW.fmt(v) },
-  { k: "stock_estimado", titulo: "Stock estimado", num: true, fmt: v => v < 0 ? "—" : PW.fmt(v) },
-  { k: "meses_stock", titulo: "Meses de stock", num: true, fmt: v => v == null ? "—" : `<span class="${v > 6 ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
+  { k: "stock_estimado", titulo: "Stock estimado", num: true, fmt: v => v < 0 ? "â€”" : PW.fmt(v) },
+  { k: "meses_stock", titulo: "Meses de stock", num: true, fmt: v => v == null ? "â€”" : `<span class="${v > 6 ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
   { k: "lag_meses", titulo: "Lag (meses)", num: true },
-  { k: "correlacion", titulo: "r", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
+  { k: "correlacion", titulo: "r", num: true, fmt: v => v == null ? "â€”" : PW.fmt(v, 1) },
 ], D.marcas, { orden: "vendido" });
 </script>
 </body>

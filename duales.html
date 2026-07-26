@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Estaciones duales — Energías Futuro</title>
+<title>Estaciones duales â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -18,16 +18,16 @@
 <body>
 <main>
   <h1>Estaciones duales: bencina y electrones en el mismo punto</h1>
-  <p class="sub">Bencineras que tienen un cargador público a 100 metros o menos: la estrategia
-  de conversión de cada petrolera, medida en terreno. En cada punto dual se compara el precio
-  del litro y del kWh en el mismo sitio físico.</p>
+  <p class="sub">Bencineras que tienen un cargador pÃºblico a 100 metros o menos: la estrategia
+  de conversiÃ³n de cada petrolera, medida en terreno. En cada punto dual se compara el precio
+  del litro y del kWh en el mismo sitio fÃ­sico.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Tasa de conversión por marca</h2>
+      <h2 style="margin-top:0">Tasa de conversiÃ³n por marca</h2>
       <div id="g-marcas"></div>
     </div>
     <div class="tarjeta">
@@ -42,7 +42,7 @@
   </div>
 </main>
 <script src="data/c_duales.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("duales.html");
 const D = PW_DATA.c_duales;
@@ -81,12 +81,12 @@ PW.mapa("mapa-duales", {
 PW.tabla("t-pares", [
   { k: "marca", titulo: "Marca" },
   { k: "com", titulo: "Comuna" },
-  { k: "reg", titulo: "Región" },
+  { k: "reg", titulo: "RegiÃ³n" },
   { k: "operador_ev", titulo: "Operador de carga" },
   { k: "dist_m", titulo: "Dist. (m)", num: true },
   { k: "kw", titulo: "kW", num: true, fmt: v => PW.fmt(v) },
-  { k: "p93", titulo: "$/L 93", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
-  { k: "pkwh", titulo: "$/kWh", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
+  { k: "p93", titulo: "$/L 93", num: true, fmt: v => v == null ? "â€”" : PW.clp(v) },
+  { k: "pkwh", titulo: "$/kWh", num: true, fmt: v => v == null ? "â€”" : PW.clp(v) },
 ], D.pares, { orden: "dist_m", asc: true, max: 300 });
 </script>
 </body>

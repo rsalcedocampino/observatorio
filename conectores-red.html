@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Conectores: flota vs red — Energías Futuro</title>
+<title>Conectores: flota vs red â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -14,9 +14,9 @@
 <body>
 <main>
   <h1>Conectores: la flota que llega vs la red instalada</h1>
-  <p class="sub">¿La red de carga instalada calza con los autos que están entrando al país?
+  <p class="sub">Â¿La red de carga instalada calza con los autos que estÃ¡n entrando al paÃ­s?
   Comparamos los conectores de la flota importada con los realmente instalados, en un mismo
-  estándar. Oferta y demanda de conectores, cara a cara.</p>
+  estÃ¡ndar. Oferta y demanda de conectores, cara a cara.</p>
   <p class="nota" id="nota"></p>
 
   <div class="fila2">
@@ -25,21 +25,21 @@
       <div id="g-flota"></div>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Red pública instalada por conector</h2>
+      <h2 style="margin-top:0">Red pÃºblica instalada por conector</h2>
       <div id="g-red"></div>
     </div>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Vehículos entrantes por conector instalado</h2>
+    <h2 style="margin-top:0">VehÃ­culos entrantes por conector instalado</h2>
     <div id="t-ratio"></div>
-    <p class="nota">Lectura: cuanta flota nueva compite por cada conector del estándar. El
-    stock CHAdeMO instalado (144) sirve a una flota entrante mínima; CCS2 concentra la presión.
+    <p class="nota">Lectura: cuanta flota nueva compite por cada conector del estÃ¡ndar. El
+    stock CHAdeMO instalado (144) sirve a una flota entrante mÃ­nima; CCS2 concentra la presiÃ³n.
     Cobertura del match marca/modelo indicada arriba: el resto de la flota no aparece.</p>
   </div>
 </main>
 <script src="data/c_conectred.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("conectores-red.html");
 const D = PW_DATA.c_conectred;
@@ -61,7 +61,7 @@ PW.tabla("t-ratio", [
   { k: "tipo", titulo: "Estandar (canonico)" },
   { k: "vehiculos_24m", titulo: "Vehiculos entrantes 24m", num: true, fmt: v => PW.fmt(v) },
   { k: "conectores_red", titulo: "Conectores instalados", num: true, fmt: v => PW.fmt(v) },
-  { k: "veh_por_conector", titulo: "Vehiculos por conector", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
+  { k: "veh_por_conector", titulo: "Vehiculos por conector", num: true, fmt: v => v == null ? "â€”" : PW.fmt(v, 1) },
 ], D.ratio.filter(r => r.tipo !== "no-aplica"), { orden: "vehiculos_24m" });
 </script>
 </body>

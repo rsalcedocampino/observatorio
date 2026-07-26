@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Selector de sitios de carga — Energías Futuro</title>
+<title>Selector de sitios de carga â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -18,16 +18,16 @@
 <body>
 <main>
   <h1>Selector de sitios de carga</h1>
-  <p class="sub">Donde conviene instalar el próximo cargador público. Un puntaje de oportunidad
+  <p class="sub">Donde conviene instalar el prÃ³ximo cargador pÃºblico. Un puntaje de oportunidad
   por comuna que cruza demanda, oferta instalada, riesgo de cortes y precio local de la bencina.
-  La decisión de inversión, resumida en un mapa.</p>
+  La decisiÃ³n de inversiÃ³n, resumida en un mapa.</p>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
-    <label>Región
+    <label>RegiÃ³n
       <select id="f-region"><option value="">Todas</option></select>
     </label>
-    <label>Población mínima
+    <label>PoblaciÃ³n mÃ­nima
       <input type="number" id="f-pob" value="0" step="10000" min="0">
     </label>
     <label>Solo comunas sin conectores
@@ -38,11 +38,11 @@
   <div class="tarjeta">
     <h2 style="margin-top:0">Oferta actual: donde ya hay cargadores</h2>
     <p class="nota">Complemento del puntaje: la infraestructura existente. Donde no hay
-    puntos y el puntaje es alto, hay brecha. La región se hereda del filtro superior.</p>
+    puntos y el puntaje es alto, hay brecha. La regiÃ³n se hereda del filtro superior.</p>
     <div class="filtros">
       <label>Comuna <select id="fm-comuna"><option value="">Todas</option></select></label>
       <label>Potencia min (kW) <input type="number" id="fm-kw" value="0" min="0" step="10" style="width:70px"></label>
-      <label>Solo carga rápida (50 kW o más) <input type="checkbox" id="fm-dc"></label>
+      <label>Solo carga rÃ¡pida (50 kW o mÃ¡s) <input type="checkbox" id="fm-dc"></label>
     </div>
     <div id="mapa-oferta"></div>
     <div id="ley-oferta"></div>
@@ -61,7 +61,7 @@
 </main>
 <script src="data/sitios.js"></script>
 <script src="data/mapa.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("sitios.html");
 const D = PW_DATA.sitios;
@@ -76,14 +76,14 @@ const selR = document.getElementById("f-region");
 const cols = [
   { k: "score", titulo: "Puntaje", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
   { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "Región" },
+  { k: "region", titulo: "RegiÃ³n" },
   { k: "poblacion", titulo: "Poblacion", num: true, fmt: v => PW.fmt(v) },
   { k: "ev_parque", titulo: "Parque electrico", num: true, fmt: v => PW.fmt(v) },
   { k: "conectores", titulo: "Conectores", num: true, fmt: (v, f) => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
   { k: "conectores_dc", titulo: "DC", num: true },
   { k: "ev_por_conector", titulo: "EV por conector", num: true, fmt: v => v == null ? "sin oferta" : PW.fmt(v, 1) },
   { k: "cliente_horas_cortes", titulo: "Cliente-horas cortes", num: true, fmt: v => PW.fmt(v) },
-  { k: "p93", titulo: "$/L 93", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
+  { k: "p93", titulo: "$/L 93", num: true, fmt: v => v == null ? "â€”" : PW.clp(v) },
 ];
 
 let mapaOferta = null;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Fichas de rescate — Energías Futuro</title>
+<title>Fichas de rescate â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -14,7 +14,7 @@
 <body>
 <main>
   <h1>Fichas de rescate</h1>
-  <p class="sub">Fichas de corte seguro y rescate de vehículos electrificados que circulan en
+  <p class="sub">Fichas de corte seguro y rescate de vehÃ­culos electrificados que circulan en
   Chile, consolidadas desde Euro NCAP, SEC y ANB. Pensado para bomberos, aseguradoras y
   talleres: busca por marca o modelo y abre el documento original.</p>
   <p class="nota" id="nota"></p>
@@ -23,7 +23,7 @@
     <label>Buscar
       <input type="search" id="busca" placeholder="Marca o modelo...">
     </label>
-    <label>Tecnología
+    <label>TecnologÃ­a
       <select id="f-tec"><option value="">Todas</option></select>
     </label>
     <span class="pill" id="contador"></span>
@@ -34,7 +34,7 @@
   </div>
 </main>
 <script src="data/rescate.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("rescate.html");
 const D = PW_DATA.rescate;
@@ -45,19 +45,19 @@ const selT = document.getElementById("f-tec");
   const o = document.createElement("option"); o.value = t; o.textContent = t; selT.appendChild(o);
 });
 
-function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
+function norm(s) { return (s || "").normalize("NFKD").replace(/[Ì€-Í¯]/g, "").toUpperCase(); }
 
 const cols = [
   { k: "marca", titulo: "Marca" },
   { k: "modelo", titulo: "Modelo" },
   { k: "descripcion", titulo: "Descripcion" },
-  { k: "tecnologia", titulo: "Tecnología", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
-  { k: "anios", titulo: "Años", fmt: v => Array.isArray(v) ? v.join(", ") : (v || "—") },
+  { k: "tecnologia", titulo: "TecnologÃ­a", fmt: v => v ? `<span class="pill">${v}</span>` : "â€”" },
+  { k: "anios", titulo: "AÃ±os", fmt: v => Array.isArray(v) ? v.join(", ") : (v || "â€”") },
   { k: "documentos", titulo: "Documentos", fmt: v => (v || []).filter(d => d.url || d.url_respaldo).map((d, i) => {
       const ppal = d.url ? `<a href="${d.url}" target="_blank" rel="noopener">${d.tipo || "ficha"} ${i + 1}</a>` : `${d.tipo || "ficha"} ${i + 1}`;
       const resp = d.url_respaldo ? ` <a href="${d.url_respaldo}" target="_blank" rel="noopener" title="Copia de respaldo">(respaldo)</a>` : "";
       return ppal + resp;
-    }).join(" · ") || "—" },
+    }).join(" Â· ") || "â€”" },
 ];
 
 let tab = null;

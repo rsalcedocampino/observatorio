@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Ranking de operadores de carga — Energías Futuro</title>
+<title>Ranking de operadores de carga â€” EnergÃ­as Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=250726g">
@@ -19,13 +19,13 @@
 <main>
   <h1>Ranking de operadores de carga</h1>
   <p class="sub">Que tan confiable es cada red de carga en Chile, medida en terreno cada 30
-  minutos: porcentaje operativo, ocupación real y cargadores caídos de forma crónica. La
-  comparación que ningun operador pública.</p>
+  minutos: porcentaje operativo, ocupaciÃ³n real y cargadores caÃ­dos de forma crÃ³nica. La
+  comparaciÃ³n que ningun operador pÃºblica.</p>
   <p class="nota" id="nota"></p>
 
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Mapa de la red pública (estado en tiempo real)</h2>
+    <h2 style="margin-top:0">Mapa de la red pÃºblica (estado en tiempo real)</h2>
     <div class="filtros" id="filtros-mapa"></div>
     <div id="mapa-red"></div>
     <div id="ley-red"></div>
@@ -40,23 +40,23 @@
   <div class="tarjeta">
     <h2 style="margin-top:0">Detalle por operador</h2>
     <div id="t-operadores"></div>
-    <p class="nota">Cada operador se homologa a su entidad canónica con el kit oficial
-    (operador_id / grupo económico): las distintas grafías de una misma red según la fuente
+    <p class="nota">Cada operador se homologa a su entidad canÃ³nica con el kit oficial
+    (operador_id / grupo econÃ³mico): las distintas grafÃ­as de una misma red segÃºn la fuente
     (por ejemplo "COPEC S.A.", "Copec" y "Copec Voltex", o "ENEL MOBILITY..." y "Enel X") se
-    consolidan en una sola fila. Precio promedio solo donde el operador lo pública.</p>
+    consolidan en una sola fila. Precio promedio solo donde el operador lo pÃºblica.</p>
   </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Marcas de cargador (equipamiento)</h2>
-    <p class="sub" style="margin-top:0">Qué fabricante de hardware domina la red instalada.
-    Marca homologada al catálogo canónico con el mismo kit (dimensión equipamiento).</p>
+    <p class="sub" style="margin-top:0">QuÃ© fabricante de hardware domina la red instalada.
+    Marca homologada al catÃ¡logo canÃ³nico con el mismo kit (dimensiÃ³n equipamiento).</p>
     <div id="g-marcas"></div>
     <p class="nota" id="nota-marcas"></p>
   </div>
 </main>
 <script src="data/operadores.js"></script>
 <script src="data/mapa.js"></script>
-<script src="assets/comun.js?v=250726g"></script>
+<script src="assets/comun.js?v=250726h"></script>
 <script>
 PW.montarNav("operadores.html");
 
@@ -131,10 +131,10 @@ const cols = [
   { k: "estaciones", titulo: "Estaciones", num: true, fmt: v => PW.fmt(v) },
   { k: "conectores", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
   { k: "potencia_prom_kw", titulo: "kW prom.", num: true, fmt: v => PW.fmt(v, 1) },
-  { k: "pct_operativo", titulo: "% operativo", num: true, fmt: v => v == null ? "—" : `<span class="${v >= 90 ? "estado-ok" : (v < 75 ? "estado-mal" : "")}">${PW.pct(v)}</span>` },
+  { k: "pct_operativo", titulo: "% operativo", num: true, fmt: v => v == null ? "â€”" : `<span class="${v >= 90 ? "estado-ok" : (v < 75 ? "estado-mal" : "")}">${PW.pct(v)}</span>` },
   { k: "pct_ocupado", titulo: "% ocupacion", num: true, fmt: v => PW.pct(v) },
-  { k: "conectores_cronicos", titulo: "Cronicos", num: true, fmt: v => v == null ? "—" : (v > 0 ? `<span class="estado-mal">${v}</span>` : "0") },
-  { k: "precio_prom_clp_kwh", titulo: "$/kWh prom.", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
+  { k: "conectores_cronicos", titulo: "Cronicos", num: true, fmt: v => v == null ? "â€”" : (v > 0 ? `<span class="estado-mal">${v}</span>` : "0") },
+  { k: "precio_prom_clp_kwh", titulo: "$/kWh prom.", num: true, fmt: v => v == null ? "â€”" : PW.clp(v) },
   { k: "obs", titulo: "Observaciones", num: true, fmt: v => PW.fmt(v) },
 ];
 
@@ -170,7 +170,7 @@ refrescar();
     fmtV: v => PW.fmt(v),
   });
   document.getElementById("nota-marcas").textContent =
-    marcas.length + " marcas homologadas. " + PW.fmt(total) + " cargadores únicos con marca identificada.";
+    marcas.length + " marcas homologadas. " + PW.fmt(total) + " cargadores Ãºnicos con marca identificada.";
 })();
 </script>
 </body>
