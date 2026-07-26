@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Rotacion de inventario — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Rotacion de inventario por marca</h1>
+  <p class="sub">El pulso comercial de cada marca: cuanto tarda en vender lo que importa y
+  quien esta acumulando stock. Importacion mensual frente a venta mensual, marca por marca,
+  para anticipar liquidaciones y quiebres de oferta.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Marca <select id="f-marca"></select></label>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0" id="t-serie">Importacion vs venta mensual</h2>
+    <div id="g-serie"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Resumen por marca (livianos electrificados, desde 2020-05)</h2>
+    <div id="t-marcas"></div>
+    <p class="nota">meses_stock = stock estimado / venta promedio de los ultimos 6 meses. El
+    stock incluye unidades en transito, demos y flotas propias; valores altos sostenidos
+    anticipan liquidaciones.</p>
+  </div>
+</main>
+<script src="data/c_rotacion.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("rotacion.html");
+const D = PW_DATA.c_rotacion;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const sel = document.getElementById("f-marca");
+D.marcas.forEach(m => { const o = document.createElement("option"); o.value = m.marca; o.textContent = m.marca; sel.appendChild(o); });
+
+function pintar() {
+  const m = D.marcas.find(x => x.marca === sel.value) || D.marcas[0];
+  document.getElementById("t-serie").textContent =
+    m.marca + " — lag de maxima correlacion: " + (m.lag_meses != null ? m.lag_meses + " meses (r=" + m.correlacion + ")" : "sin dato");
+  PW.lineas("g-serie", {
+    labels: D.meses,
+    series: [
+      { nombre: "Importado", valores: m.serie.imp },
+      { nombre: "Vendido", valores: m.serie.ven, color: PW.color("--s3") },
+    ],
+    fmtV: v => PW.fmt(v) + " unid.", alto: 280,
+  });
+}
+sel.addEventListener("input", pintar);
+pintar();
+
+PW.tabla("t-marcas", [
+  { k: "marca", titulo: "Marca" },
+  { k: "importado", titulo: "Importado", num: true, fmt: v => PW.fmt(v) },
+  { k: "vendido", titulo: "Vendido", num: true, fmt: v => PW.fmt(v) },
+  { k: "stock_estimado", titulo: "Stock estimado", num: true, fmt: v => v < 0 ? "—" : PW.fmt(v) },
+  { k: "meses_stock", titulo: "Meses de stock", num: true, fmt: v => v == null ? "—" : `<span class="${v > 6 ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
+  { k: "lag_meses", titulo: "Lag (meses)", num: true },
+  { k: "correlacion", titulo: "r", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
+], D.marcas, { orden: "vendido" });
+</script>
+</body>
+</html>

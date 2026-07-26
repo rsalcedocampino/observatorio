@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Probabilidad de cortes — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<main>
+  <h1>Probabilidad de cortes por mes</h1>
+  <p class="sub">Con el historial SEC 2017-2026: que probabilidad tiene cada comuna de sufrir
+  al menos un corte relevante en cada mes del año, y cuanta infraestructura de carga queda
+  expuesta donde la probabilidad es alta.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Mes <select id="f-mes"></select></label>
+    <label>Region <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0" id="titulo-perfil">Perfil anual de probabilidad</h2>
+      <div id="g-perfil"></div>
+      <p class="nota" id="nota-perfil"></p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0" id="titulo-rank">Mayor probabilidad en el mes elegido</h2>
+      <div id="g-rank"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0" id="titulo-mapa">Mapa comunal de probabilidad</h2>
+    <p class="nota">Las comunas coloreadas por su probabilidad historica de corte en el mes
+    elegido (quintiles; mas oscuro = mas probable). Cartografia oficial del Censo 2024.</p>
+    <div id="mapa-prob"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0" id="titulo-tabla">Detalle con la infraestructura expuesta</h2>
+    <div id="t-detalle"></div>
+    <p class="nota">Expuesta = comunas con probabilidad de 75% o mas en el mes elegido. La
+    infraestructura es la red de carga viva (actualizada cada 30 min); el historial de cortes
+    es 2017-2026 con el umbral SEC de 500+ clientes por evento.</p>
+  </div>
+</main>
+<script src="data/c_probcortes.js"></script>
+<script src="data/geo_comunas.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("probabilidad-cortes.html");
+const D = PW_DATA.c_probcortes;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+               "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const MES_ABR = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const UMBRAL = 75;
+
+const selMes = document.getElementById("f-mes");
+MESES.forEach((m, i) => {
+  const o = document.createElement("option"); o.value = i; o.textContent = m; selMes.appendChild(o);
+});
+selMes.value = new Date().getMonth();
+
+const selR = document.getElementById("f-region");
+D.regiones.slice().sort((a, b) => a.region.localeCompare(b.region)).forEach(r => {
+  const o = document.createElement("option"); o.value = r.rcut; o.textContent = r.region; selR.appendChild(o);
+});
+const selC = document.getElementById("f-comuna");
+function poblarComunas() {
+  const rcut = selR.value;
+  const coms = D.comunas.filter(c => !rcut || c.rcut === rcut)
+    .map(c => c.comuna).sort();
+  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
+  selC.disabled = !rcut;
+}
+poblarComunas();
+
+let tab = null;
+let mapaProb = null;
+function refrescar() {
+  const mes = +selMes.value;
+  // choropleth del mes elegido (todas las comunas, independiente del filtro territorial)
+  document.getElementById("titulo-mapa").textContent =
+    "Mapa comunal: probabilidad de corte en " + MESES[mes].toLowerCase();
+  if (mapaProb) { mapaProb.remove(); mapaProb = null; }
+  const leyVieja = document.querySelector("#mapa-prob + .leyenda");
+  if (leyVieja) leyVieja.remove();
+  mapaProb = PW.choropleth("mapa-prob", {
+    valores: Object.fromEntries(D.comunas.map(c => [c.cut, c.prob[mes]])),
+    fmt: v => v == null ? "sin datos" : PW.fmt(v, 0) + "%",
+    alto: 560,
+  });
+  const rcut = selR.value;
+  const comSel = selC.value;
+  const comunas = D.comunas.filter(c => (!rcut || c.rcut === rcut) && (!comSel || c.comuna === comSel));
+  const comunaUnica = comSel ? comunas[0] : null;
+
+  // KPIs: infraestructura expuesta en la seleccion para el mes elegido
+  const expuestas = comunas.filter(c => c.prob[mes] >= UMBRAL);
+  const est = expuestas.reduce((s, c) => s + c.est, 0);
+  const carg = expuestas.reduce((s, c) => s + c.carg, 0);
+  const con = expuestas.reduce((s, c) => s + c.con, 0);
+  const ambito = comunaUnica ? comunaUnica.comuna : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el pais");
+  document.getElementById("kpis").innerHTML = (comunaUnica ? [
+    [PW.fmt(comunaUnica.prob[mes], 1) + "%", "probabilidad de corte en " + MESES[mes].toLowerCase(), comunaUnica.comuna],
+    [PW.fmt(comunaUnica.evprom[mes], 1), "cortes promedio ese mes", "eventos 500+ clientes"],
+    [PW.fmt(comunaUnica.carg), "cargadores en la comuna", comunaUnica.est + " estaciones"],
+    [PW.fmt(comunaUnica.con), "conectores en la comuna", comunaUnica.prob[mes] >= UMBRAL ? "EXPUESTOS este mes" : "riesgo moderado/bajo"],
+  ] : [
+    [expuestas.length + " de " + comunas.length, "comunas con probabilidad alta (75%+)", MESES[mes] + ", " + ambito],
+    [PW.fmt(est), "estaciones de carga expuestas", ""],
+    [PW.fmt(carg), "cargadores expuestos", ""],
+    [PW.fmt(con), "conectores expuestos", ""],
+  ]).map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  // Perfil anual: comuna elegida, o % de comunas afectadas (region / promedio pais)
+  let perfil, tituloPerfil, notaPerfil;
+  if (comunaUnica) {
+    perfil = comunaUnica.prob;
+    tituloPerfil = "Probabilidad mensual de corte en " + comunaUnica.comuna;
+    notaPerfil = "Probabilidad = años con al menos un corte ese mes / años con datos.";
+  } else if (rcut) {
+    const reg = D.regiones.find(r => r.rcut === rcut);
+    perfil = reg.pct_comunas;
+    tituloPerfil = "% de comunas afectadas por mes — " + reg.region;
+    notaPerfil = "Promedio historico del porcentaje de comunas de la region con al menos un corte en el mes.";
+  } else {
+    perfil = MESES.map((_, m) =>
+      +(D.regiones.reduce((s, r) => s + r.pct_comunas[m], 0) / D.regiones.length).toFixed(1));
+    tituloPerfil = "% de comunas afectadas por mes — promedio pais";
+    notaPerfil = "Promedio simple de las 16 regiones.";
+  }
+  document.getElementById("titulo-perfil").textContent = tituloPerfil;
+  document.getElementById("nota-perfil").textContent = notaPerfil;
+  PW.columnas("g-perfil", {
+    labels: MES_ABR,
+    valores: perfil,
+    color: PW.color("--s2"),
+    fmtV: v => PW.fmt(v, 1) + "%", fmtY: v => Math.round(v) + "%", alto: 250,
+  });
+
+  // Ranking del mes: comunas (o regiones si no hay filtro)
+  if (rcut || comSel) {
+    document.getElementById("titulo-rank").textContent = "Comunas con mayor probabilidad en " + MESES[mes].toLowerCase();
+    PW.barras("g-rank", {
+      items: comunas.slice().sort((a, b) => b.prob[mes] - a.prob[mes]).slice(0, 15).map(c => ({
+        nombre: c.comuna, valor: c.prob[mes],
+        extra: PW.fmt(c.carg) + " cargadores, " + PW.fmt(c.con) + " conectores",
+        color: c.prob[mes] >= UMBRAL ? PW.color("--critical") : PW.color("--s1"),
+      })),
+      fmtV: v => PW.fmt(v, 1) + "%",
+    });
+  } else {
+    document.getElementById("titulo-rank").textContent = "Regiones: % de comunas afectadas en " + MESES[mes].toLowerCase();
+    PW.barras("g-rank", {
+      items: D.regiones.slice().sort((a, b) => b.pct_comunas[mes] - a.pct_comunas[mes]).map(r => ({
+        nombre: r.region, valor: r.pct_comunas[mes],
+        extra: PW.fmt(r.carg) + " cargadores, " + PW.fmt(r.con) + " conectores en la region",
+        color: r.pct_comunas[mes] >= 50 ? PW.color("--critical") : PW.color("--s1"),
+      })),
+      fmtV: v => PW.fmt(v, 1) + "%",
+    });
+  }
+
+  // Tabla de detalle
+  document.getElementById("titulo-tabla").textContent =
+    "Comunas de " + ambito + " en " + MESES[mes].toLowerCase() + " (con su red de carga)";
+  const filas = comunas.map(c => ({
+    comuna: c.comuna, region: c.region,
+    prob: c.prob[mes], evprom: c.evprom[mes],
+    peor_mes: MES_ABR[c.prob.indexOf(Math.max(...c.prob))] + " (" + PW.fmt(Math.max(...c.prob), 0) + "%)",
+    est: c.est, carg: c.carg, con: c.con,
+    expuesta: c.prob[mes] >= UMBRAL && c.con > 0 ? "Si" : "",
+  }));
+  const cols = [
+    { k: "comuna", titulo: "Comuna" },
+    { k: "region", titulo: "Region" },
+    { k: "prob", titulo: "Prob. " + MES_ABR[mes], num: true, fmt: v => `<span class="${v >= UMBRAL ? "estado-mal" : ""}">${PW.fmt(v, 1)}%</span>` },
+    { k: "evprom", titulo: "Cortes prom.", num: true, fmt: v => PW.fmt(v, 1) },
+    { k: "peor_mes", titulo: "Peor mes" },
+    { k: "est", titulo: "Estaciones", num: true, fmt: v => PW.fmt(v) },
+    { k: "carg", titulo: "Cargadores", num: true, fmt: v => PW.fmt(v) },
+    { k: "con", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
+    { k: "expuesta", titulo: "Red expuesta", fmt: v => v ? `<span class="estado-mal">Si</span>` : "—" },
+  ];
+  if (tab) tab.actualizar(filas); else tab = PW.tabla("t-detalle", cols, filas, { orden: "prob", max: 400 });
+}
+selMes.addEventListener("input", refrescar);
+selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
+selC.addEventListener("input", refrescar);
+refrescar();
+</script>
+</body>
+</html>

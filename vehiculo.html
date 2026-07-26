@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Ficha vehiculo 360 — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Ficha vehiculo 360</h1>
+  <p class="sub">Un modelo, todo su rastro en Chile en una sola ficha: cuanto se importo y a
+  que precio, cuanto se vende, bateria, autonomia, conectores y guia de rescate. El expediente
+  que ningun portal automotriz reune.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Buscar modelo
+      <input type="search" id="busca" placeholder="Marca o modelo (ej: BYD Dolphin)">
+    </label>
+    <label>Tipo
+      <select id="f-tipo"><option value="">Todos</option></select>
+    </label>
+  </div>
+
+  <div id="detalle"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Catalogo (haz clic en una fila para ver la ficha)</h2>
+    <div id="t-modelos"></div>
+  </div>
+</main>
+<script src="data/vehiculo.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("vehiculo.html");
+const D = PW_DATA.vehiculo;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const selT = document.getElementById("f-tipo");
+[...new Set(D.modelos.map(m => m.tipo).filter(Boolean))].sort().forEach(t => {
+  const o = document.createElement("option"); o.value = t; o.textContent = t; selT.appendChild(o);
+});
+
+function norm(s) {
+  return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase();
+}
+
+function mostrarDetalle(m) {
+  const marcaN = norm(m.marca);
+  const info = D.marcas[marcaN] || {};
+  const filas = [];
+  const anios = new Set([
+    ...Object.keys(info.ventas_anual || {}),
+    ...Object.keys(info.import_anual || {}),
+  ]);
+  [...anios].sort().forEach(a => {
+    filas.push({
+      anio: a,
+      ventas: (info.ventas_anual || {})[a] ?? null,
+      imports: (info.import_anual || {})[a] ?? null,
+    });
+  });
+  const det = document.getElementById("detalle");
+  det.innerHTML = `
+  <div class="tarjeta">
+    <h2 style="margin-top:0">${m.marca} ${m.modelo}</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="v">${m.bateria_kwh != null ? PW.fmt(m.bateria_kwh, 1) + " kWh" : "—"}</div><div class="l">bateria</div></div>
+      <div class="kpi"><div class="v">${m.autonomia_km != null ? PW.fmt(m.autonomia_km) + " km" : "—"}</div><div class="l">autonomia ref.</div></div>
+      <div class="kpi"><div class="v">${m.dc_kw != null ? PW.fmt(m.dc_kw) + " kW" : "—"}</div><div class="l">carga DC max.</div><div class="d">${m.conector_dc || ""}</div></div>
+      <div class="kpi"><div class="v">${m.ac_kw != null ? PW.fmt(m.ac_kw, 1) + " kW" : "—"}</div><div class="l">carga AC</div><div class="d">${m.conector_ac || ""}</div></div>
+      <div class="kpi"><div class="v">${m.precio_min != null ? PW.clp(m.precio_min) : "—"}</div><div class="l">precio lista desde</div></div>
+      <div class="kpi"><div class="v">${m.imp_unidades != null ? PW.fmt(m.imp_unidades) : "—"}</div><div class="l">unidades importadas</div><div class="d">${m.imp_unidades != null ? "microdato DIN de Aduanas" : "sin registro por modelo"}</div></div>
+      <div class="kpi"><div class="v">${m.ficha_docs != null ? m.ficha_docs : "0"}</div><div class="l">documentos de rescate</div><div class="d">${m.ficha_docs ? '<a href="rescate.html">ver en Rescate</a>' : "sin ficha"}</div></div>
+    </div>
+    <h2>Marca ${m.marca}: ventas vs importaciones por año</h2>
+    <div id="g-marca"></div>
+    <p class="nota">Ventas a nivel marca (todas las tecnologias electrificadas de la fuente
+    mensual); importaciones del microdato aduanero homologado. Las curvas no son comparables
+    uno a uno: sirven de tendencia.</p>
+  </div>`;
+  if (filas.length) {
+    PW.lineas("g-marca", {
+      labels: filas.map(f => f.anio),
+      series: [
+        { nombre: "Ventas marca", valores: filas.map(f => f.ventas) },
+        { nombre: "Importaciones marca", valores: filas.map(f => f.imports) },
+      ],
+      fmtV: v => PW.fmt(v) + " unid.",
+    });
+  }
+  det.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+const cols = [
+  { k: "marca", titulo: "Marca" },
+  { k: "modelo", titulo: "Modelo" },
+  { k: "tipo", titulo: "Tipo", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+  { k: "bateria_kwh", titulo: "kWh", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "autonomia_km", titulo: "Autonomia km", num: true, fmt: v => PW.fmt(v) },
+  { k: "dc_kw", titulo: "DC kW", num: true, fmt: v => PW.fmt(v) },
+  { k: "conector_dc", titulo: "Conector DC" },
+  { k: "precio_min", titulo: "Precio desde", num: true, fmt: v => PW.clp(v) },
+  { k: "imp_unidades", titulo: "Importados", num: true, fmt: v => PW.fmt(v) },
+  { k: "ficha_docs", titulo: "Fichas", num: true, fmt: v => v ? `<span class="estado-ok">${v}</span>` : "—" },
+];
+
+let filasActuales = [];
+let tab = null;
+function refrescar() {
+  const q = norm(document.getElementById("busca").value.trim());
+  const tipo = selT.value;
+  filasActuales = D.modelos.filter(m =>
+    (!tipo || m.tipo === tipo) &&
+    (!q || norm(m.marca + " " + m.modelo).includes(q)));
+  if (tab) tab.actualizar(filasActuales);
+  else tab = PW.tabla("t-modelos", cols, filasActuales, { orden: "imp_unidades", max: 300, buscador: false });
+  enganchar();
+}
+function enganchar() {
+  document.querySelectorAll("#t-modelos tbody tr").forEach((tr) => {
+    tr.style.cursor = "pointer";
+    tr.addEventListener("click", () => {
+      const marca = tr.children[0].textContent, modelo = tr.children[1].textContent;
+      const m = D.modelos.find(x => x.marca === marca && x.modelo === modelo);
+      if (m) mostrarDetalle(m);
+    });
+  });
+}
+["busca", "f-tipo"].forEach(id => document.getElementById(id).addEventListener("input", refrescar));
+refrescar();
+// re-enganchar tras cada orden por click en cabecera
+document.getElementById("t-modelos").addEventListener("click", () => setTimeout(enganchar, 0));
+</script>
+</body>
+</html>

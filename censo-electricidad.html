@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Electricidad en las viviendas — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<main>
+  <h1>De donde viene la electricidad de las viviendas</h1>
+  <p class="sub">De donde saca la electricidad cada hogar de Chile, directo del microdato del
+  Censo 2024 (18,5 millones de registros). La base real para dimensionar la carga domiciliaria
+  de vehiculos electricos.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Viviendas con placa solar por comuna (%)</h2>
+    <p class="nota">Quintiles: mas oscuro = mayor proporcion de viviendas con placa solar como
+    fuente principal. En el extremo estan las comunas aisladas sin red (General Lagos 68%,
+    Rio Verde 51%): alli el solar domiciliario ES la red.</p>
+    <div id="mapa-solar"></div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Mayor dependencia de generador diesel/bencina</h2>
+      <div id="g-generador"></div>
+      <p class="nota">Comunas donde mas viviendas dependen de un generador: energia cara y
+      contaminante — candidatas naturales a solar + almacenamiento.</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Mas viviendas sin electricidad</h2>
+      <div id="g-sin"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Todas las comunas</h2>
+    <div id="t-comunas"></div>
+  </div>
+</main>
+<script src="data/c_censoelec.js"></script>
+<script src="data/geo_comunas.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("censo-electricidad.html");
+const D = PW_DATA.c_censoelec;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const N = D.nacional;
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(N.viviendas), "viviendas censadas con dato", "particulares ocupadas, 2024"],
+  [PW.fmt(N.pct_red, 1) + "%", "conectadas a la red publica", "la base de la carga domiciliaria"],
+  [PW.fmt(N.n_solar), "con placa solar", PW.fmt(N.pct_solar, 1) + "% del pais"],
+  [PW.fmt(N.n_generador), "con generador diesel/bencina", ""],
+  [PW.fmt(N.n_sin), "sin electricidad", PW.fmt(N.pct_sin, 1) + "%"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+PW.choropleth("mapa-solar", {
+  valores: Object.fromEntries(D.comunas.map(c => [c.cut, c.pct_solar])),
+  fmt: v => v == null ? "sin dato" : PW.fmt(v, 1) + "%",
+  alto: 540,
+});
+
+PW.barras("g-generador", {
+  items: D.comunas.slice().sort((a, b) => b.pct_generador - a.pct_generador).slice(0, 12).map(c => ({
+    nombre: c.comuna, valor: c.pct_generador,
+    extra: c.region + " — " + PW.fmt(c.viviendas) + " viviendas",
+  })),
+  color: PW.color("--s2"),
+  fmtV: v => PW.fmt(v, 1) + "%",
+});
+PW.barras("g-sin", {
+  items: D.comunas.slice().sort((a, b) => b.pct_sin - a.pct_sin).slice(0, 12).map(c => ({
+    nombre: c.comuna, valor: c.pct_sin,
+    extra: c.region,
+  })),
+  color: PW.color("--critical"),
+  fmtV: v => PW.fmt(v, 1) + "%",
+});
+
+PW.tabla("t-comunas", [
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Region" },
+  { k: "viviendas", titulo: "Viviendas", num: true, fmt: v => PW.fmt(v) },
+  { k: "pct_red", titulo: "% red publica", num: true, fmt: v => PW.fmt(v, 1) + "%" },
+  { k: "pct_solar", titulo: "% placa solar", num: true, fmt: v => v >= 5 ? `<b>${PW.fmt(v, 1)}%</b>` : PW.fmt(v, 1) + "%" },
+  { k: "pct_generador", titulo: "% generador", num: true, fmt: v => PW.fmt(v, 1) + "%" },
+  { k: "pct_sin", titulo: "% sin electricidad", num: true, fmt: v => v >= 2 ? `<span class="estado-mal">${PW.fmt(v, 1)}%</span>` : PW.fmt(v, 1) + "%" },
+], D.comunas, { orden: "pct_solar", max: 400 });
+</script>
+</body>
+</html>

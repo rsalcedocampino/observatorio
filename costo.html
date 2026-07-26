@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>La bencina vs el enchufe — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+<main>
+  <h1>La bencina vs el enchufe</h1>
+  <p class="sub">Cuanto cuesta recorrer 100 km en tu comuna, con el precio real de la bencina de
+  sus estaciones de servicio (CNE, Bencina en Linea) y el precio real por kWh de sus cargadores
+  publicos. Ajusta los rendimientos a tu vehiculo.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Comuna
+      <input type="search" id="busca" list="lista-comunas" placeholder="Escribe una comuna...">
+      <datalist id="lista-comunas"></datalist>
+    </label>
+    <label>km/L bencina <input type="number" id="kml" value="12" step="0.5" min="3"></label>
+    <label>km/kWh EV <input type="number" id="kmkwh" value="6" step="0.5" min="2"></label>
+  </div>
+
+  <div class="kpis" id="kpis-comuna"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa de precios: combustible y carga publica</h2>
+    <p class="nota">Combustible coloreado contra el promedio pais del tipo elegido (verde =
+    mas barato, rojo = mas caro). Los puntos de carga EV muestran su $/kWh publicado.</p>
+    <div class="filtros" id="filtros-mapa"></div>
+    <div id="mapa-precios"></div>
+    <div id="ley-precios"></div>
+    <p class="nota" id="cont-mapa"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Costo de 100 km por comuna</h2>
+    <p class="nota">Solo comunas con al menos un precio de electricidad publicado por sus
+    cargadores. El EV domestico (tarifa BT1 aprox. $150/kWh) se muestra como referencia fija.</p>
+    <div id="t-costo"></div>
+  </div>
+</main>
+<script src="data/costo.js"></script>
+<script src="data/mapa.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("costo.html");
+
+// Mapa de precios con filtros (territorio + combustible + marca)
+(function () {
+  const M = PW_DATA.mapa;
+  const NOMBRES = { "93": "Bencina 93", "95": "Bencina 95", "97": "Bencina 97", "DI": "Diesel", "GLP": "GLP" };
+  const marcas = [...new Set(M.combustible.map(p => p.n).filter(Boolean))].sort();
+  // promedio pais por combustible (desde los propios puntos)
+  const refs = {};
+  Object.keys(NOMBRES).forEach(c => {
+    const v = M.combustible.map(p => p["p" + c]).filter(x => x != null);
+    refs[c] = v.reduce((a, b) => a + b, 0) / (v.length || 1);
+  });
+  let filtroTerr = { rcut: null, com: null };
+  let mapaP = null;
+
+  function pintar() {
+    const c = document.getElementById("f-comb").value;
+    const marca = document.getElementById("f-marca").value;
+    const ref = refs[c];
+    function colorPrecio(p) {
+      if (p == null) return PW.color("--ink-3");
+      if (p < ref * 0.97) return PW.color("--good");
+      if (p > ref * 1.03) return PW.color("--critical");
+      return PW.color("--s1");
+    }
+    const comb = M.combustible.filter(p =>
+      p["p" + c] != null &&
+      (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
+      (!filtroTerr.com || p.com === filtroTerr.com) &&
+      (!marca || p.n === marca)
+    ).map(p => ({
+      lat: p.lat, lon: p.lon, color: colorPrecio(p["p" + c]), r: 4,
+      popup: `<b>${p.n || "Estacion"}</b>` +
+        (p.dir ? `<br>${p.dir}` : "") +
+        `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
+        (p.at ? `<br>Atencion: ${p.at}` : "") +
+        ["93", "95", "97", "DI", "GLP"].filter(x => p["p" + x] != null)
+          .map(x => `<br>${NOMBRES[x]}: <b>$${PW.fmt(p["p" + x])}</b>`).join("") +
+        (p.f ? `<br><span style="opacity:.7">Precio vigente al ${p.f}</span>` : "") +
+        PW.waze(p.lat, p.lon),
+    }));
+    const ev = M.ev_precio.filter(p =>
+      (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
+      (!filtroTerr.com || p.com === filtroTerr.com)
+    ).map(p => ({
+      lat: p.lat, lon: p.lon, color: PW.color("--s2"), r: 6,
+      popup: `<b>${p.n || "Cargador"}</b>` +
+        (p.dir ? `<br>${p.dir}` : "") +
+        `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
+        (p.op ? `<br>Operador: ${p.op}` : "") +
+        `<br>Carga: <b>$${PW.fmt(p.pkwh)}/kWh</b> (${p.nc} conectores)` +
+        (p.tipos ? `<br>Conectores: ${p.tipos}` : "") +
+        PW.waze(p.lat, p.lon),
+    }));
+    if (mapaP) { mapaP.remove(); mapaP = null; }
+    mapaP = PW.mapa("mapa-precios", {
+      capas: [
+        { nombre: NOMBRES[c], puntos: comb },
+        { nombre: "Carga EV con precio", puntos: ev },
+      ],
+      centro: [-35.5, -71.5], zoom: 5,
+    });
+    const todos = comb.concat(ev);
+    if (mapaP && todos.length && (filtroTerr.rcut || filtroTerr.com)) {
+      mapaP.fitBounds(L.latLngBounds(todos.map(p => [p.lat, p.lon])).pad(0.2));
+    }
+    document.getElementById("cont-mapa").textContent =
+      comb.length + " estaciones de combustible y " + ev.length + " puntos de carga mostrados. " +
+      "Promedio pais " + NOMBRES[c] + ": $" + PW.fmt(Math.round(ref)) + ".";
+    PW.leyendaMapa("ley-precios", [
+      [NOMBRES[c] + " bajo el promedio pais", PW.color("--good")],
+      ["En el promedio (±3%)", PW.color("--s1")],
+      ["Sobre el promedio", PW.color("--critical")],
+      ["Carga EV ($/kWh)", PW.color("--s2")],
+    ]);
+  }
+
+  PW.filtrosTerritorio("filtros-mapa", M.combustible, f => { filtroTerr = f; pintar(); },
+    `<label>Combustible <select id="f-comb">` +
+    Object.entries(NOMBRES).map(([k, v]) => `<option value="${k}">${v}</option>`).join("") +
+    `</select></label>
+    <label>Marca <select id="f-marca"><option value="">Todas</option>` +
+    marcas.map(m => `<option>${m}</option>`).join("") + `</select></label>`);
+  ["f-comb", "f-marca"].forEach(id => document.getElementById(id).addEventListener("input", pintar));
+  pintar();
+})();
+const D = PW_DATA.costo;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+const dl = document.getElementById("lista-comunas");
+D.comunas.forEach(c => { const o = document.createElement("option"); o.value = c.comuna; dl.appendChild(o); });
+
+const TARIFA_CASA = 150; // $/kWh referencia domestica
+
+function calc(c, kml, kmkwh) {
+  return {
+    bencina: c.p93 != null ? 100 / kml * c.p93 : null,
+    diesel: c.pDI != null ? 100 / 14 * c.pDI : null,
+    ev_publico: c.pkwh != null ? 100 / kmkwh * c.pkwh : null,
+    ev_casa: 100 / kmkwh * TARIFA_CASA,
+  };
+}
+
+let tab = null;
+function refrescar() {
+  const kml = +document.getElementById("kml").value || 12;
+  const kmkwh = +document.getElementById("kmkwh").value || 6;
+  const q = document.getElementById("busca").value.trim().toLowerCase();
+
+  const sel = q ? D.comunas.find(c => c.comuna.toLowerCase() === q) : null;
+  const base = sel || { comuna: "Promedio pais", p93: D.nacional.p93, pkwh: D.nacional.pkwh };
+  const r = calc(base, kml, kmkwh);
+  const ahorro = r.bencina != null && r.ev_publico != null
+    ? Math.round(100 * (1 - r.ev_publico / r.bencina)) : null;
+  document.getElementById("kpis-comuna").innerHTML = [
+    [base.comuna, "comuna seleccionada", sel ? sel.region : "promedio nacional"],
+    [r.bencina != null ? PW.clp(r.bencina) : "—", "100 km en bencina 93", base.p93 != null ? "$" + PW.fmt(base.p93) + "/L en la comuna" : "sin estaciones con precio"],
+    [r.ev_publico != null ? PW.clp(r.ev_publico) : "—", "100 km en EV (carga publica)", base.pkwh != null ? "$" + PW.fmt(base.pkwh) + "/kWh promedio local" : "sin precio publicado"],
+    [PW.clp(r.ev_casa), "100 km en EV (casa, ref.)", "$" + TARIFA_CASA + "/kWh referencia BT1"],
+    [ahorro != null ? ahorro + "%" : "—", "ahorro EV publico vs bencina", ""],
+    [D.nacional.nudo_clp_kwh != null ? PW.clp(D.nacional.nudo_clp_kwh) : "—",
+      "precio nudo energia (mayorista)",
+      D.nacional.nudo_clp_kwh != null
+        ? "fijacion " + D.nacional.nudo_fijacion + " — spread bruto con carga publica: $" +
+          PW.fmt(Math.round(D.nacional.pkwh - D.nacional.nudo_clp_kwh)) + "/kWh (sin distribucion ni potencia)"
+        : ""],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  const filas = D.comunas.filter(c => c.pkwh != null && c.p93 != null).map(c => {
+    const x = calc(c, kml, kmkwh);
+    return {
+      comuna: c.comuna, region: c.region,
+      p93: c.p93, pkwh: c.pkwh,
+      c_bencina: Math.round(x.bencina), c_ev: Math.round(x.ev_publico),
+      ahorro: Math.round(100 * (1 - x.ev_publico / x.bencina)),
+      estaciones: c.estaciones_comb, conectores: c.conectores_ev,
+    };
+  });
+  const cols = [
+    { k: "comuna", titulo: "Comuna" },
+    { k: "region", titulo: "Region" },
+    { k: "p93", titulo: "$/L 93", num: true, fmt: v => PW.clp(v) },
+    { k: "pkwh", titulo: "$/kWh publico", num: true, fmt: v => PW.clp(v) },
+    { k: "c_bencina", titulo: "100 km bencina", num: true, fmt: v => PW.clp(v) },
+    { k: "c_ev", titulo: "100 km EV publico", num: true, fmt: v => PW.clp(v) },
+    { k: "ahorro", titulo: "Ahorro EV", num: true, fmt: v => `<span class="${v > 0 ? "estado-ok" : "estado-mal"}">${v}%</span>` },
+    { k: "estaciones", titulo: "Estaciones comb.", num: true },
+    { k: "conectores", titulo: "Conectores EV", num: true },
+  ];
+  if (tab) tab.actualizar(filas); else tab = PW.tabla("t-costo", cols, filas, { orden: "ahorro" });
+}
+["busca", "kml", "kmkwh"].forEach(id => document.getElementById(id).addEventListener("input", refrescar));
+refrescar();
+</script>
+</body>
+</html>

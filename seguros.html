@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Seguros y coberturas EV — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<style>
+.celda-cob { text-align: center; font-weight: 600; border-radius: 6px; padding: 3px 6px; display: inline-block; min-width: 54px; font-size: 12px; }
+.cob-si { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.cob-no { background: color-mix(in srgb, var(--critical) 14%, transparent); color: var(--critical); }
+.cob-opcional { background: color-mix(in srgb, var(--warning) 22%, transparent); color: color-mix(in srgb, var(--warning) 70%, var(--ink-1)); }
+.cob-si1 { background: var(--plane); color: var(--ink-3); }
+.hallazgo { border-left: 3px solid var(--s1); padding: 8px 14px; margin: 10px 0; color: var(--ink-2); font-size: 14px; }
+.hallazgo b { color: var(--ink-1); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Seguros y coberturas para vehiculos electricos</h1>
+  <p class="sub">Que cubre (y que no) el mercado asegurador chileno para un EV, verificado
+  contra los condicionados oficiales depositados en la CMF, con benchmark internacional.
+  Las primas son referenciales publicas, no cotizaciones.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Matriz de coberturas EV por producto</h2>
+    <p class="nota">Las 8 coberturas especificas de un vehiculo electrico contra cada producto
+    del mercado. S/I = el condicionado no lo menciona (que no es lo mismo que "no": la
+    ausencia es en si el hallazgo). Pasa el mouse por el encabezado para ver la definicion.</p>
+    <div class="filtros">
+      <label>Aseguradora <select id="f-aseg"><option value="">Todas</option></select></label>
+      <label>Tipo de cobertura <select id="f-tipo">
+        <option value="ev">Coberturas EV (8)</option>
+        <option value="base">Coberturas base (15)</option>
+      </select></label>
+    </div>
+    <div id="t-matriz" class="scroll-x"></div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Depositos de condicionados en CMF por año</h2>
+      <div id="g-depositos"></div>
+      <p class="nota">La ola 2013-2018 es el mercado tradicional; los depositos 2025-2026 son
+      la señal de renovacion (incluye la primera clausula de "combustion espontanea", SURA
+      jul-2026).</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Primas de referencia internacionales</h2>
+      <div id="t-primas-int"></div>
+      <p class="nota">Cada valor con su moneda y fecha de consulta original; no convertidos.
+      El recargo EV mundial es decreciente: el driver es la severidad de reparacion, no la
+      frecuencia.</p>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Hallazgos clave del mercado chileno</h2>
+    <div class="hallazgo"><b>Solo existe UN seguro EV especifico en Chile</b>: BCI "Seguro Auto
+    Sustentable" (cable de recarga UF 15 solo robo, carga en ruta, RC en estaciones, reposicion
+    0 km, prima trianual en UF fija). BCI asegura mas de la mitad de los Tesla del pais.</div>
+    <div class="hallazgo">Los 58 condicionados depositados en CMF <b>no mencionan "bateria",
+    "cargador" ni "vehiculo electrico"</b>: todo lo EV vive en condiciones particulares no
+    publicas.</div>
+    <div class="hallazgo">El <b>cable cargador esta excluido de facto</b> en todo el mercado
+    (la definicion de "accesorio" exige adherencia permanente al vehiculo) y la bateria de
+    traccion solo se cubre ante siniestro accidental, nunca por falla o degradacion.</div>
+    <div class="hallazgo"><b>Ningun seguro de hogar chileno nombra el wallbox</b> y ningun
+    operador de electrolineras transparenta sus polizas. Los mismos grupos (Mapfre, Zurich,
+    SURA, HDI) ya venden estas coberturas fuera de Chile: el gap es comercial, no tecnico.</div>
+    <div class="hallazgo">El canal real del seguro EV chileno es el <b>empaquetado en leasing y
+    suscripcion</b> (Tanner, Arval, Astara Move, Kia Seguros via Marsh), no la venta directa.</div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Productos del mercado</h2>
+    <div id="t-productos"></div>
+  </div>
+</main>
+<script src="data/c_seguros.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("seguros.html");
+const D = PW_DATA.c_seguros;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const conEV = D.aseguradoras.filter(a => a.oferta_ev).length;
+const matEV = D.matriz.filter(m => D.coberturas_ev[m.cobertura]);
+const cubiertas = matEV.filter(m => m.incluida === "si").length;
+document.getElementById("kpis").innerHTML = [
+  [D.aseguradoras.length, "aseguradoras analizadas", conEV + " con oferta EV especifica"],
+  [D.productos.length, "productos y planes", "condicionados POL/CAD citados"],
+  ["8", "coberturas EV canonicas", "del catalogo del proyecto"],
+  [cubiertas + " de " + matEV.length, "celdas EV con cobertura confirmada", "el resto: no, opcional o S/I"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+// selector de aseguradoras
+const selA = document.getElementById("f-aseg");
+D.aseguradoras.forEach(a => {
+  const o = document.createElement("option"); o.value = a.id; o.textContent = a.nombre; selA.appendChild(o);
+});
+
+// matriz producto x cobertura
+function pintarMatriz() {
+  const asegSel = selA.value;
+  const tipo = document.getElementById("f-tipo").value;
+  const cat = tipo === "ev" ? D.coberturas_ev : D.coberturas_base;
+  const cobIds = Object.keys(cat);
+  const productos = D.productos.filter(p => !asegSel || p.aseg_id === asegSel);
+  const idx = {};
+  D.matriz.forEach(m => { idx[m.producto + "|" + m.cobertura] = m; });
+
+  function celda(p, c) {
+    const m = idx[p.id + "|" + c];
+    const v = m ? m.incluida : "S/I";
+    const clase = v === "si" ? "cob-si" : v === "no" ? "cob-no" : v === "opcional" ? "cob-opcional" : "cob-si1";
+    const titulo = m ? [m.limite, m.nota, m.fuente].filter(Boolean).join(" — ") : "Sin informacion en la fuente";
+    return `<span class="celda-cob ${clase}" title="${(titulo || "").replace(/"/g, "'")}">${v}</span>`;
+  }
+  const nombreCob = c => c.replace(/_/g, " ").replace("bateria hv", "bateria alta tension");
+  const html = `<table class="pw"><thead><tr><th>Producto</th><th>Aseguradora</th>` +
+    cobIds.map(c => `<th title="${(cat[c] || "").replace(/"/g, "'")}">${nombreCob(c)}</th>`).join("") +
+    `</tr></thead><tbody>` +
+    productos.map(p => `<tr><td>${p.nombre}</td><td>${p.aseguradora}</td>` +
+      cobIds.map(c => `<td style="text-align:center">${celda(p, c)}</td>`).join("") + `</tr>`).join("") +
+    `</tbody></table>`;
+  document.getElementById("t-matriz").innerHTML = html;
+}
+selA.addEventListener("input", pintarMatriz);
+document.getElementById("f-tipo").addEventListener("input", pintarMatriz);
+pintarMatriz();
+
+PW.columnas("g-depositos", {
+  labels: D.depositos.map(d => String(d.anio)),
+  valores: D.depositos.map(d => d.n),
+  fmtV: v => PW.fmt(v) + " depositos",
+});
+
+PW.tabla("t-primas-int", [
+  { k: "pais", titulo: "Pais" },
+  { k: "concepto", titulo: "Concepto" },
+  { k: "min", titulo: "Valor", num: true, fmt: (v, f) => v == null ? "—" : PW.fmt(v) + (f.max ? " - " + PW.fmt(f.max) : "") + " " + f.moneda },
+  { k: "entidad", titulo: "Fuente" },
+], D.primas_int, {});
+
+PW.tabla("t-productos", [
+  { k: "aseguradora", titulo: "Aseguradora" },
+  { k: "nombre", titulo: "Producto" },
+  { k: "tipo", titulo: "Tipo de plan" },
+  { k: "pol_cad", titulo: "Condicionado (CMF)" },
+  { k: "prima_ref", titulo: "Prima ref." },
+  { k: "deducibles", titulo: "Deducibles (UF)" },
+], D.productos, { orden: "aseguradora", asc: true });
+</script>
+</body>
+</html>

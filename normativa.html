@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Normativa y metas — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<style>
+.vin { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+.vin-vinculante { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.vin-compromiso { background: color-mix(in srgb, var(--s1) 16%, transparent); color: var(--s1); }
+.vin-indicativa { background: color-mix(in srgb, var(--warning) 22%, transparent); color: color-mix(in srgb, var(--warning) 70%, var(--ink-1)); }
+.vin-politica { background: var(--plane); color: var(--ink-2); }
+.vin-declarativa { background: color-mix(in srgb, var(--critical) 12%, transparent); color: var(--critical); }
+.urg-maxima { color: var(--critical); font-weight: 700; }
+.urg-alta { color: var(--serious); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Normativa y metas de gobierno</h1>
+  <p class="sub">El marco legal y de metas de la electromovilidad y la energia en Chile:
+  que esta comprometido, con que fuerza juridica, que normas existen, donde estan los vacios
+  y que viene en el radar legislativo. 112 documentos oficiales verificados.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Semaforo de metas oficiales: cuanta fuerza juridica tienen</h2>
+    <p class="nota">El hallazgo central: la meta 2035 de electromovilidad es DECLARATIVA — no
+    esta en la NDC, ni en el PSMACC, ni en ninguna ley. Casi todo el edificio de metas
+    descansa en documentos de politica, no en obligaciones.</p>
+    <div class="filtros">
+      <label>Vinculancia <select id="f-vin"><option value="">Todas</option>
+        <option value="vinculante">Vinculante</option><option value="compromiso">Compromiso</option>
+        <option value="indicativa">Indicativa</option><option value="politica">Politica</option>
+        <option value="declarativa">Declarativa</option>
+      </select></label>
+    </div>
+    <div id="t-metas"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa de brechas normativas para la meta 2035</h2>
+    <p class="nota">25 brechas tipificadas: vacio absoluto (la norma no existe), actualizacion
+    (existe pero no sirve), conflicto (normas que chocan) y creacion. La via indica si se
+    resuelve por decreto o requiere ley.</p>
+    <div class="filtros">
+      <label>Urgencia <select id="f-urg"><option value="">Todas</option>
+        <option>maxima</option><option>alta</option><option>media</option><option>baja</option>
+      </select></label>
+    </div>
+    <div id="t-brechas"></div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Radar legislativo: lo que viene</h2>
+      <div id="t-monitoreo"></div>
+      <p class="nota">Se actualiza con el barrido mensual de LeyChile (dia 1) del proyecto
+      productor. El pendiente mayor: el PdL de Incentivo a la Electromovilidad comprometido
+      para 2026-2027, aun sin ingresar.</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Normas del sector por año</h2>
+      <div id="g-normas"></div>
+      <h2>Inversion publica catastrada</h2>
+      <div id="t-inversiones"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Las 48 normas con su relevancia EV y sus vacios</h2>
+    <div class="filtros">
+      <label>Buscar <input type="search" id="busca-norma" placeholder="Norma, materia, vacio..."></label>
+    </div>
+    <div id="t-normas"></div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Benchmark internacional</h2>
+      <div id="t-internacional"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Cifras del sector (referencia citable)</h2>
+      <div class="filtros">
+        <label>Buscar <input type="search" id="busca-cifra" placeholder="Indicador..."></label>
+      </div>
+      <div id="t-cifras"></div>
+    </div>
+  </div>
+</main>
+<script src="data/c_normativa.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("normativa.html");
+const D = PW_DATA.c_normativa;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+const K = D.kpis;
+document.getElementById("kpis").innerHTML = [
+  [K.documentos, "documentos oficiales verificados", ""],
+  [K.metas_vinculantes + " de " + K.metas, "metas con rango vinculante", "el resto: declarativas, compromisos o indicativas"],
+  [K.normas, "normas analizadas", "con relevancia EV y vacios"],
+  [K.brechas_maxima + " de " + K.brechas, "brechas de urgencia maxima", "para la meta 2035"],
+  [K.monitoreo, "items en el radar legislativo", "barrido mensual"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+const vinPill = c => `<span class="vin vin-${c}">${c}</span>`;
+
+let tMetas = null;
+function pintarMetas() {
+  const f = document.getElementById("f-vin").value;
+  const filas = D.metas.filter(m => !f || m.clase === f);
+  const cols = [
+    { k: "Meta", titulo: "Meta" },
+    { k: "Valor", titulo: "Valor", num: true, fmt: (v, r) => v == null ? "—" : PW.fmt(+v) + (r.Unidad ? " " + r.Unidad : "") },
+    { k: "Año_Objetivo", titulo: "Año objetivo" },
+    { k: "clase", titulo: "Vinculancia", fmt: v => vinPill(v) },
+    { k: "Estado_Vinculancia", titulo: "Detalle" },
+    { k: "Documento_Fuente", titulo: "Fuente" },
+  ];
+  if (tMetas) tMetas.actualizar(filas); else tMetas = PW.tabla("t-metas", cols, filas, {});
+}
+document.getElementById("f-vin").addEventListener("input", pintarMetas);
+pintarMetas();
+
+let tBrechas = null;
+function pintarBrechas() {
+  const f = document.getElementById("f-urg").value;
+  const filas = D.brechas.filter(b => !f || String(b.Urgencia).toLowerCase() === f);
+  const cols = [
+    { k: "Brecha", titulo: "Brecha" },
+    { k: "Tipo", titulo: "Tipo", fmt: v => `<span class="pill">${v || "—"}</span>` },
+    { k: "Urgencia", titulo: "Urgencia", fmt: v => `<span class="urg-${String(v).toLowerCase()}">${v || "—"}</span>` },
+    { k: "Via", titulo: "Via" },
+    { k: "Instrumento_Afectado", titulo: "Instrumento afectado" },
+    { k: "Referencia_Internacional", titulo: "Referencia internacional" },
+  ];
+  if (tBrechas) tBrechas.actualizar(filas); else tBrechas = PW.tabla("t-brechas", cols, filas, {});
+}
+document.getElementById("f-urg").addEventListener("input", pintarBrechas);
+pintarBrechas();
+
+PW.tabla("t-monitoreo", [
+  { k: "Item", titulo: "Pendiente" },
+  { k: "Estado_22jul2026", titulo: "Estado" },
+  { k: "Fecha_Esperada", titulo: "Fecha esperada" },
+], D.monitoreo, {});
+
+PW.columnas("g-normas", {
+  labels: D.normas_anio.map(n => String(n.anio)),
+  valores: D.normas_anio.map(n => n.n),
+  fmtV: v => PW.fmt(v) + " normas", alto: 200,
+});
+
+PW.tabla("t-inversiones", [
+  { k: "Programa", titulo: "Programa" },
+  { k: "Organismo", titulo: "Organismo" },
+  { k: "Monto", titulo: "Monto", num: true, fmt: (v, r) => v == null ? "—" : PW.fmt(+v) + " " + (r.Moneda_Unidad || "") },
+], D.inversiones, {});
+
+const norm = s => (s || "").toLowerCase();
+let tNormas = null;
+function pintarNormas() {
+  const q = norm(document.getElementById("busca-norma").value);
+  const filas = D.normas.filter(n => !q ||
+    norm(n.Norma + " " + n.Materia + " " + n.Relevancia_EV + " " + n.Vacios).includes(q));
+  const cols = [
+    { k: "Norma", titulo: "Norma" },
+    { k: "Año", titulo: "Año" },
+    { k: "Organismo", titulo: "Organismo" },
+    { k: "Materia", titulo: "Materia" },
+    { k: "Relevancia_EV", titulo: "Relevancia EV" },
+    { k: "Vacios", titulo: "Vacios" },
+  ];
+  if (tNormas) tNormas.actualizar(filas); else tNormas = PW.tabla("t-normas", cols, filas, { max: 60, buscador: false });
+}
+document.getElementById("busca-norma").addEventListener("input", pintarNormas);
+pintarNormas();
+
+PW.tabla("t-internacional", D.internacional.length ? Object.keys(D.internacional[0]).slice(0, 4).map(k => ({ k, titulo: k.replace(/_/g, " ") })) : [], D.internacional, {});
+
+let tCifras = null;
+function pintarCifras() {
+  const q = norm(document.getElementById("busca-cifra").value);
+  const filas = D.cifras.filter(c => !q || norm(c.Indicador + " " + c.Fuente).includes(q));
+  const cols = [
+    { k: "Indicador", titulo: "Indicador" },
+    { k: "Valor", titulo: "Valor", num: true, fmt: (v, r) => v == null ? "—" : v + " " + (r.Unidad || "") },
+    { k: "Año", titulo: "Año" },
+    { k: "Fuente", titulo: "Fuente" },
+  ];
+  if (tCifras) tCifras.actualizar(filas); else tCifras = PW.tabla("t-cifras", cols, filas, { max: 30, buscador: false });
+}
+document.getElementById("busca-cifra").addEventListener("input", pintarCifras);
+pintarCifras();
+</script>
+</body>
+</html>

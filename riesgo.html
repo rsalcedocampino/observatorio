@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Cortes electricos — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Cortes electricos</h1>
+  <p class="sub">Historial de interrupciones de suministro (SEC, 2017 a hoy). Dos miradas
+  separadas: cuantos CLIENTES quedan sin energia (magnitud) y cuantas HORAS sin energia
+  acumula cada territorio (duracion). Filtra por region y comuna.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="filtros">
+    <label>Region <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
+    <span class="pill" id="ambito"></span>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Clientes sin energia</h2>
+      <p class="nota">Peak de clientes simultaneos sin suministro (magnitud del corte). A nivel
+      region es la suma de los peaks comunales.</p>
+      <div class="kpis" id="kpis-clientes"></div>
+      <div id="g-clientes"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Horas sin energia</h2>
+      <p class="nota">Horas acumuladas con al menos un corte activo (duracion). A nivel region
+      es la suma de horas-comuna afectadas.</p>
+      <div class="kpis" id="kpis-horas"></div>
+      <div id="g-horas"></div>
+    </div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Cliente-horas de interrupcion por año</h2>
+      <div id="g-anual"></div>
+      <p class="nota">Cliente-horas = clientes x horas: combina magnitud y duracion. Serie
+      nacional (no cambia con el filtro).</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Estacionalidad (promedio mensual historico)</h2>
+      <div id="g-estacional"></div>
+      <p class="nota">Serie nacional. Los huecos de fuente (nov-2018 a jun-2019) estan excluidos.</p>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0" id="titulo-tabla">Detalle territorial</h2>
+    <div id="t-rank"></div>
+    <p class="nota">Clientes sin energia = peak simultaneo; Horas sin energia = horas con
+    afectacion; Cliente-horas = producto de ambos. Por habitante normaliza con Censo 2024.</p>
+  </div>
+</main>
+<script src="data/riesgo.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("riesgo.html");
+const D = PW_DATA.riesgo;
+document.getElementById("nota").textContent =
+  "Generado " + D.generado + " (fuente actualizada " + (D.actualizado_fuente || "—") + "). " + D.nota;
+
+// KPIs nacionales fijos (estado historico + vivo)
+const K = D.kpis || {};
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt((K.cliente_horas_total || 0) / 1e6, 1) + "M", "cliente-horas acumuladas (pais)", "2017 a hoy"],
+  [PW.fmt(K.eventos_totales), "eventos registrados", "umbral 500 clientes"],
+  [K.peak_historico ? PW.fmt(K.peak_historico.clientes) : "—", "peak historico de clientes",
+    K.peak_historico ? (K.peak_historico.evento || K.peak_historico.cuando) : ""],
+  [K.clientes_afectados_ahora != null ? PW.fmt(K.clientes_afectados_ahora) : "—", "clientes sin luz ahora", "SEC " + (K.vivo_hora || "")],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+// Filtros region -> comuna
+const selR = document.getElementById("f-region");
+const selC = document.getElementById("f-comuna");
+D.regiones.slice().sort((a, b) => a.region.localeCompare(b.region)).forEach(r => {
+  const o = document.createElement("option"); o.value = r.rcut; o.textContent = r.region; selR.appendChild(o);
+});
+function poblarComunas() {
+  const rcut = selR.value;
+  const coms = D.ranking.filter(c => !rcut || c.cod_region === rcut)
+    .map(c => c.comuna).sort();
+  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
+  selC.disabled = !rcut;
+}
+poblarComunas();
+
+function refrescar() {
+  const rcut = selR.value;
+  const com = selC.value;
+  const ambito = com ? com : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el pais");
+  document.getElementById("ambito").textContent = "Mostrando: " + ambito;
+
+  // filas comunales de la seleccion
+  const comunas = D.ranking.filter(c => (!rcut || c.cod_region === rcut) && (!com || c.comuna === com));
+
+  // totales de la seleccion
+  const totClientes = comunas.reduce((s, c) => s + c.peak_clientes, 0);
+  const totHoras = comunas.reduce((s, c) => s + c.horas_afectada, 0);
+  const totCH = comunas.reduce((s, c) => s + c.cliente_horas, 0);
+
+  document.getElementById("kpis-clientes").innerHTML = [
+    [PW.fmt(totClientes), com ? "peak de clientes sin energia" : "clientes sin energia (peak sumado)", ambito],
+    [comunas.length, com ? "comuna" : "comunas con registro", ""],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  document.getElementById("kpis-horas").innerHTML = [
+    [PW.fmt(totHoras), com ? "horas con corte" : "horas-comuna sin energia", ambito],
+    [PW.fmt(totCH / 1e6, 1) + "M", "cliente-horas de la seleccion", ""],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  // graficos: si no hay comuna elegida, mostrar el ranking de comunas de la seleccion;
+  // (a nivel pais/region se listan las comunas)
+  const ordClientes = comunas.slice().sort((a, b) => b.peak_clientes - a.peak_clientes).slice(0, 15);
+  PW.barras("g-clientes", {
+    items: ordClientes.map(c => ({
+      nombre: c.comuna, valor: c.peak_clientes,
+      extra: c.region + " — " + PW.fmt(c.horas_afectada) + " h sin energia",
+      color: PW.color("--critical"),
+    })),
+    fmtV: v => PW.fmt(v),
+  });
+  const ordHoras = comunas.slice().sort((a, b) => b.horas_afectada - a.horas_afectada).slice(0, 15);
+  PW.barras("g-horas", {
+    items: ordHoras.map(c => ({
+      nombre: c.comuna, valor: c.horas_afectada,
+      extra: c.region + " — " + PW.fmt(c.peak_clientes) + " clientes en el peak",
+      color: PW.color("--s2"),
+    })),
+    fmtV: v => PW.fmt(v) + " h",
+  });
+
+  document.getElementById("titulo-tabla").textContent =
+    "Detalle territorial: " + ambito + " (" + comunas.length + (comunas.length === 1 ? " comuna)" : " comunas)");
+  if (tab) tab.actualizar(comunas); else tab = PW.tabla("t-rank", cols, comunas, { orden: "cliente_horas", max: 400 });
+}
+
+const cols = [
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Region" },
+  { k: "peak_clientes", titulo: "Clientes sin energia", num: true, fmt: v => `<span class="estado-mal">${PW.fmt(v)}</span>` },
+  { k: "horas_afectada", titulo: "Horas sin energia", num: true, fmt: v => PW.fmt(v) },
+  { k: "cliente_horas", titulo: "Cliente-horas", num: true, fmt: v => PW.fmt(v) },
+  { k: "ch_por_hab", titulo: "Cliente-h / hab", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "poblacion", titulo: "Poblacion 2024", num: true, fmt: v => PW.fmt(v) },
+];
+let tab = null;
+
+selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
+selC.addEventListener("input", refrescar);
+refrescar();
+
+// Series nacionales (no dependen del filtro)
+PW.columnas("g-anual", {
+  labels: D.anual.map(a => String(a.anho)),
+  valores: D.anual.map(a => a.cliente_horas),
+  fmtV: v => PW.fmt(v) + " cliente-horas",
+  fmtY: v => PW.fmt(v / 1e6, 1) + "M",
+  anotaciones: [
+    { i: D.anual.findIndex(a => a.anho === 2025), texto: "Apagon nacional 25-feb" },
+    { i: D.anual.findIndex(a => a.anho === 2019), texto: "Hueco de fuente" },
+  ].filter(a => a.i >= 0),
+});
+
+const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+PW.columnas("g-estacional", {
+  labels: D.estacionalidad.map(e => MESES[+e.mes - 1]),
+  valores: D.estacionalidad.map(e => e.cliente_horas_prom),
+  color: PW.color("--s2"),
+  fmtV: v => PW.fmt(v) + " cliente-horas prom.",
+  fmtY: v => PW.fmt(v / 1e6, 1) + "M",
+});
+</script>
+</body>
+</html>

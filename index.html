@@ -1,31 +1,293 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>Redirigiendo… | Observatorio Energías Futuro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Redirección inmediata -->
-  <meta http-equiv="refresh" content="0; url=https://estadisticas.energiasfuturo.com/">
-  <link rel="canonical" href="https://estadisticas.energiasfuturo.com/">
-  <meta name="robots" content="noindex, follow">
-  <script>
-    // Respaldo por si el meta refresh no actúa
-    window.location.replace("https://estadisticas.energiasfuturo.com/");
-  </script>
-  <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-         background:#0b1e2d;color:#e8eef2;display:flex;min-height:100vh;
-         align-items:center;justify-content:center;margin:0;text-align:center}
-    a{color:#4fc3f7}
-    .box{max-width:480px;padding:24px}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Observatorio EV y Energia — Chile</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
 </head>
 <body>
-  <div class="box">
-    <h1>Redirigiendo…</h1>
-    <p>Te estamos llevando al dashboard de estadísticas.</p>
-    <p>Si no ocurre automáticamente,
-       <a href="https://estadisticas.energiasfuturo.com/">haz clic aquí</a>.</p>
+<main>
+  <div class="aviso-borrador">Version de trabajo para revision interna. Aun no publicada.</div>
+
+  <div class="hero">
+    <h1>El tablero ejecutivo de la electromovilidad y la energia en Chile</h1>
+    <p>Mercado, red de carga, energia y regulacion en una sola vista, cruzados por comuna y por
+    vehiculo. Mas de 25 indicadores sobre fuentes oficiales, para responder tres preguntas:
+    donde invertir, cuando, y con que riesgo.</p>
+    <div class="ctas">
+      <a class="principal" href="#mercado">Mercado e importaciones</a>
+      <a href="#carga">Red de carga</a>
+      <a href="#energia">Energia y normativa</a>
+    </div>
   </div>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota-kpis"></p>
+
+  <div class="filtros" style="margin-top:18px">
+    <label>Buscar modulo
+      <input type="search" id="busca-modulo" placeholder="Ej: cortes, seguros, solar, buses...">
+    </label>
+    <span class="pill" id="cont-modulos"></span>
+  </div>
+
+  <h2 id="mapas">Mapas Interactivos</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="mapas.html">
+      <h3>Mapas Interactivos</h3>
+      <p>Un solo mapa para cruzar cinco capas: red de carga, transmision (subestaciones y
+      lineas), generacion solar, almacenamiento BESS y el Censo por comuna. Superponga las
+      capas que quiera y encuentre las relaciones sobre el territorio.</p>
+      <div class="aud"><span class="pill">5 fuentes en un mapa</span> <span class="pill">Explorador</span></div>
+    </a>
+  </div>
+
+  <h2 id="mercado">Mercado</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="tracker.html">
+      <h3>Meta 2035: ¿vamos a llegar?</h3>
+      <p>Ventas, cargadores, energia y metas oficiales proyectados al 2035. En que va Chile
+      adelantado y en que va en rojo, region por region.</p>
+      <div class="aud"><span class="pill">Para decidir</span> <span class="pill">Rendicion de cuentas</span></div>
+    </a>
+    <a class="modulo-card" href="vehiculo.html">
+      <h3>Ficha vehiculo 360</h3>
+      <p>Un modelo, todo su rastro en Chile: cuanto se importo y a que precio, cuanto se
+      vende, bateria, autonomia, conectores y ficha de rescate. El expediente que ningun
+      portal reune.</p>
+      <div class="aud"><span class="pill">Para mi auto</span> <span class="pill">5 fuentes cruzadas</span></div>
+    </a>
+    <a class="modulo-card" href="rotacion.html">
+      <h3>Rotacion de inventario</h3>
+      <p>El pulso comercial de cada marca: cuantos meses tarda en vender lo que importa y
+      quien esta acumulando stock. Anticipa liquidaciones y quiebres de oferta.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Para invertir</span></div>
+    </a>
+    <a class="modulo-card" href="elasticidad.html">
+      <h3>Elasticidad bencina-EV</h3>
+      <p>¿Cuanto empuja el precio de la bencina la decision de cambiarse a electrico? El
+      vinculo se afina con cada nueva captura de precios.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">En construccion</span></div>
+    </a>
+    <a class="modulo-card" href="valor-parque.html">
+      <h3>Valor del parque comunal</h3>
+      <p>Cuanta riqueza vehicular concentra cada comuna, valorizada y normalizada por
+      habitante. Para dimensionar mercado y potencial de venta.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Para decidir</span></div>
+    </a>
+    <a class="modulo-card" href="buses.html">
+      <h3>Buses electricos</h3>
+      <p>El despliegue del transporte publico electrico: ventas por tipo de servicio, costo
+      CIF por bus e infraestructura de carga, region por region.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Transporte publico</span></div>
+    </a>
+  </div>
+
+  <h2 id="importaciones">Importaciones</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="radar.html">
+      <h3>Importaciones de vehiculos</h3>
+      <p>Lo que entra por la aduana anticipa lo que se vendera meses despues: unidades, valor
+      CIF, paises de origen y los modelos que recien debutan. Tu indicador adelantado.</p>
+      <div class="aud"><span class="pill">Para invertir</span> <span class="pill">Indicador adelantado</span></div>
+    </a>
+    <a class="modulo-card" href="baterias.html">
+      <h3>Importaciones de baterias de litio</h3>
+      <p>El mercado del litio importado por quimica, uso y origen: un dato estrategico que
+      casi nadie sigue en Chile.</p>
+      <div class="aud"><span class="pill">Para invertir</span> <span class="pill">Inedito en Chile</span></div>
+    </a>
+  </div>
+
+  <h2 id="carga">Red de carga</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="operadores.html">
+      <h3>Ranking de operadores</h3>
+      <p>Que tan confiable es cada red de carga, medido en terreno cada 30 minutos: porcentaje
+      operativo, ocupacion y cargadores caidos de forma cronica.</p>
+      <div class="aud"><span class="pill">Para decidir</span> <span class="pill">Dato unico</span></div>
+    </a>
+    <a class="modulo-card" href="sitios.html">
+      <h3>Selector de sitios de carga</h3>
+      <p>Donde conviene instalar el proximo cargador: un puntaje de oportunidad por comuna que
+      cruza demanda, oferta actual y riesgo de cortes.</p>
+      <div class="aud"><span class="pill">Para invertir</span> <span class="pill">6 fuentes cruzadas</span></div>
+    </a>
+    <a class="modulo-card" href="costo.html">
+      <h3>Bencina vs enchufe</h3>
+      <p>Cuanto cuesta recorrer 100 km en tu comuna: precio real de la bencina de sus
+      estaciones frente al $/kWh real de sus cargadores publicos.</p>
+      <div class="aud"><span class="pill">Para mi auto</span> <span class="pill">Por comuna</span></div>
+    </a>
+    <a class="modulo-card" href="horas.html">
+      <h3>Mejor hora para cargar</h3>
+      <p>Cuando la red publica esta mas libre, hora por hora, segun el historico real de
+      ocupacion.</p>
+      <div class="aud"><span class="pill">Para mi auto</span> <span class="pill">Preliminar</span></div>
+    </a>
+    <a class="modulo-card" href="duales.html">
+      <h3>Estaciones duales</h3>
+      <p>Bencineras que ya suman un cargador a menos de 100 metros: la estrategia de
+      conversion de cada petrolera, medida estacion por estacion.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Dato unico</span></div>
+    </a>
+    <a class="modulo-card" href="autonomia.html">
+      <h3>Brechas de autonomia</h3>
+      <p>Los tramos de ruta donde un electrico promedio no alcanza el siguiente cargador
+      rapido. Donde falta infraestructura para viajar.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Corredores</span></div>
+    </a>
+    <a class="modulo-card" href="conectores-red.html">
+      <h3>Conectores: flota vs red</h3>
+      <p>¿La red instalada calza con los conectores de los autos que estan llegando? Oferta y
+      demanda de estandares, cara a cara.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Estandares</span></div>
+    </a>
+    <a class="modulo-card" href="resiliencia.html">
+      <h3>Resiliencia ante cortes</h3>
+      <p>Cuando la SEC registra un corte, ¿se cae tambien la carga de esa comuna? Medido
+      evento por evento.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Preliminar</span></div>
+    </a>
+  </div>
+
+  <h2 id="energia">Energia</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="riesgo.html">
+      <h3>Cortes electricos</h3>
+      <p>Cuantos clientes y cuantas horas sin luz acumula cada comuna, con estado en vivo.
+      Clave para ubicar operaciones que no toleran cortes.</p>
+      <div class="aud"><span class="pill">Para decidir</span> <span class="pill">Mas alla del EV</span></div>
+    </a>
+    <a class="modulo-card" href="probabilidad-cortes.html">
+      <h3>Probabilidad de cortes</h3>
+      <p>Con 9 años de historial: que tan probable es un corte en tu comuna cada mes, y cuanta
+      infraestructura de carga queda expuesta.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Por mes y comuna</span></div>
+    </a>
+    <a class="modulo-card" href="vulnerabilidad.html">
+      <h3>Vulnerabilidad energetica</h3>
+      <p>Cortes, precio de la energia y realidad social del Censo en un solo indice: el mapa
+      de la desigualdad energetica de las 346 comunas.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Politica publica</span></div>
+    </a>
+    <a class="modulo-card" href="bess-cortes.html">
+      <h3>Almacenamiento (BESS)</h3>
+      <p>El almacenamiento del pais: mapa de proyectos, energia real inyectada al SEN,
+      inversion en cartera y donde falta respaldo frente a los cortes.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Resiliencia</span></div>
+    </a>
+    <a class="modulo-card" href="demanda-ev.html">
+      <h3>Demanda del parque EV</h3>
+      <p>Cuanta energia consume hoy el parque electrico y cuando su crecimiento se hara sentir
+      en el sistema. Con supuestos que puedes ajustar.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Proyeccion</span></div>
+    </a>
+    <a class="modulo-card" href="red-electrica.html">
+      <h3>Red electrica y potencial</h3>
+      <p>Subestaciones, lineas y que tan cerca de la red esta cada cargador, mas el potencial
+      renovable instalable de cada comuna.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">IDE + Coordinador</span></div>
+    </a>
+    <a class="modulo-card" href="censo-electricidad.html">
+      <h3>Electricidad en las viviendas</h3>
+      <p>6,4 millones de hogares segun su fuente de energia: red, panel solar, generador o sin
+      electricidad. Directo del microdato del Censo.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Microdato 18,5M</span></div>
+    </a>
+    <a class="modulo-card" href="pelp.html">
+      <h3>Chile vs PELP</h3>
+      <p>La capacidad instalada real frente a los tres escenarios oficiales de planificacion
+      energetica. ¿Que trayectoria estamos siguiendo?</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Rendicion de cuentas</span></div>
+    </a>
+  </div>
+
+  <h2 id="normativa">Normativa</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="normativa.html">
+      <h3>Metas y marco legal</h3>
+      <p>Las metas oficiales y su fuerza juridica real, las normas del sector, las brechas
+      para el 2035 y lo que viene en el radar legislativo. 112 documentos verificados.</p>
+      <div class="aud"><span class="pill">Seccion nueva</span> <span class="pill">Para decidir</span></div>
+    </a>
+  </div>
+
+  <h2 id="seguros">Seguros</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="seguros.html">
+      <h3>Coberturas EV</h3>
+      <p>Que cubre (y que no) el seguro chileno para un electrico: matriz de coberturas
+      producto por producto, verificada contra las polizas de la CMF, con referencia
+      internacional.</p>
+      <div class="aud"><span class="pill">Seccion nueva</span> <span class="pill">Para decidir</span></div>
+    </a>
+  </div>
+
+  <h2 id="seguridad">Seguridad</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="rescate.html">
+      <h3>Fichas de rescate</h3>
+      <p>567 vehiculos electrificados con su guia de corte seguro para emergencias. Para
+      bomberos, aseguradoras y talleres.</p>
+      <div class="aud"><span class="pill">Emergencias</span> <span class="pill">567 vehiculos</span></div>
+    </a>
+  </div>
+</main>
+<script src="data/resumen.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("index.html");
+const k = PW_DATA.resumen.kpis;
+const defs = [
+  [PW.fmt(k.estaciones), "estaciones de carga en Chile", "red completa, ahora mismo"],
+  [PW.fmt(k.conectores), "conectores en operacion", k.conectores_disponibles + " disponibles ahora"],
+  [PW.fmt(k.ventas_ytd), "electricos e hibridos vendidos en " + k.ventas_ultimo_mes.slice(0,4), "acumulado a " + k.ventas_ultimo_mes.slice(0,7)],
+  ["$" + PW.fmt(k.pkwh_nacional), "precio promedio de carga publica", "por kWh, potencia media " + PW.fmt(k.potencia_prom_kw, 1) + " kW"],
+  [PW.fmt(k.pct_renovable_dia, 1) + "%", "de la generacion fue renovable", "el " + k.fecha_generacion_dia],
+];
+document.getElementById("kpis").innerHTML = defs.map(d =>
+  `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+document.getElementById("nota-kpis").textContent =
+  "Datos generados el " + PW_DATA.resumen.generado + ". Importaciones publicadas hasta " + k.aduana_ultimo_mes + ".";
+
+// icono de cada modulo en su card
+document.querySelectorAll(".modulo-card").forEach(card => {
+  const svg = PW.icono(card.getAttribute("href"));
+  if (svg) card.insertAdjacentHTML("afterbegin", `<span class="ic">${svg}</span>`);
+});
+
+// buscador de modulos: filtra cards y oculta secciones vacias
+(function () {
+  const input = document.getElementById("busca-modulo");
+  const cont = document.getElementById("cont-modulos");
+  const cards = [...document.querySelectorAll(".modulo-card")];
+  const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  function filtrar() {
+    const q = norm(input.value.trim());
+    let visibles = 0;
+    cards.forEach(c => {
+      const ok = !q || norm(c.textContent).includes(q);
+      c.style.display = ok ? "" : "none";
+      if (ok) visibles++;
+    });
+    // ocultar titulos de seccion sin cards visibles
+    document.querySelectorAll("main h2[id]").forEach(h2 => {
+      const grid = h2.nextElementSibling;
+      if (!grid || !grid.classList.contains("grid-modulos")) return;
+      const hayVisible = [...grid.querySelectorAll(".modulo-card")].some(c => c.style.display !== "none");
+      h2.style.display = hayVisible ? "" : "none";
+      grid.style.display = hayVisible ? "" : "none";
+    });
+    cont.textContent = q ? visibles + " de " + cards.length + " modulos" : cards.length + " modulos";
+  }
+  input.addEventListener("input", filtrar);
+  filtrar();
+})();
+</script>
 </body>
 </html>

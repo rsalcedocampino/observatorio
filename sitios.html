@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Selector de sitios de carga — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+</head>
+<body>
+<main>
+  <h1>Selector de sitios de carga</h1>
+  <p class="sub">Donde conviene instalar el proximo cargador publico. Un puntaje de oportunidad
+  por comuna que cruza demanda, oferta instalada, riesgo de cortes y precio local de la bencina.
+  La decision de inversion, resumida en un mapa.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Region
+      <select id="f-region"><option value="">Todas</option></select>
+    </label>
+    <label>Poblacion minima
+      <input type="number" id="f-pob" value="0" step="10000" min="0">
+    </label>
+    <label>Solo comunas sin conectores
+      <input type="checkbox" id="f-cero">
+    </label>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Oferta actual: donde ya hay cargadores</h2>
+    <p class="nota">Complemento del puntaje: la infraestructura existente. Donde no hay
+    puntos y el puntaje es alto, hay brecha. La region se hereda del filtro superior.</p>
+    <div class="filtros">
+      <label>Comuna <select id="fm-comuna"><option value="">Todas</option></select></label>
+      <label>Potencia min (kW) <input type="number" id="fm-kw" value="0" min="0" step="10" style="width:70px"></label>
+      <label>Solo carga rapida (50 kW o mas) <input type="checkbox" id="fm-dc"></label>
+    </div>
+    <div id="mapa-oferta"></div>
+    <div id="ley-oferta"></div>
+    <p class="nota" id="cont-oferta"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Top 20 comunas por puntaje de oportunidad</h2>
+    <div id="g-top"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Todas las comunas</h2>
+    <div id="t-comunas"></div>
+  </div>
+</main>
+<script src="data/sitios.js"></script>
+<script src="data/mapa.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("sitios.html");
+const D = PW_DATA.sitios;
+document.getElementById("nota").textContent =
+  "Parque vehicular " + D.anio_parque + " (INE, permisos de circulacion). Generado " + D.generado + ". " + D.nota;
+
+const selR = document.getElementById("f-region");
+[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o);
+});
+
+const cols = [
+  { k: "score", titulo: "Puntaje", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Region" },
+  { k: "poblacion", titulo: "Poblacion", num: true, fmt: v => PW.fmt(v) },
+  { k: "ev_parque", titulo: "Parque electrico", num: true, fmt: v => PW.fmt(v) },
+  { k: "conectores", titulo: "Conectores", num: true, fmt: (v, f) => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
+  { k: "conectores_dc", titulo: "DC", num: true },
+  { k: "ev_por_conector", titulo: "EV por conector", num: true, fmt: v => v == null ? "sin oferta" : PW.fmt(v, 1) },
+  { k: "cliente_horas_cortes", titulo: "Cliente-horas cortes", num: true, fmt: v => PW.fmt(v) },
+  { k: "p93", titulo: "$/L 93", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
+];
+
+let mapaOferta = null;
+function pintarMapa(reg) {
+  // Filtrar por codigo CUT de region (los nombres difieren entre fuentes)
+  const rcut = reg ? String((D.comunas.find(c => c.region === reg) || {}).cod_region || "").padStart(2, "0") : null;
+  const comSel = document.getElementById("fm-comuna").value;
+  const kwMin = +document.getElementById("fm-kw").value || 0;
+  const soloDC = document.getElementById("fm-dc").checked;
+
+  // poblar comunas segun region
+  const selCom = document.getElementById("fm-comuna");
+  const comunas = [...new Set(PW_DATA.mapa.carga
+    .filter(p => (!rcut || p.rcut === rcut) && p.com).map(p => p.com))].sort();
+  const actual = selCom.value;
+  selCom.innerHTML = `<option value="">Todas</option>` + comunas.map(c => `<option>${c}</option>`).join("");
+  if (comunas.includes(actual)) selCom.value = actual;
+
+  const sel = PW_DATA.mapa.carga.filter(p =>
+    (!rcut || p.rcut === rcut) &&
+    (!selCom.value || p.com === selCom.value) &&
+    ((p.kw || 0) >= kwMin) &&
+    (!soloDC || (p.kw || 0) >= 50));
+  const pts = sel.map(p => ({
+    lat: p.lat, lon: p.lon, r: 7.5,
+    color: (p.kw || 0) >= 50 ? PW.color("--s2") : PW.color("--s1"),
+    popup: PW.popupEstacion(p),
+  }));
+  if (mapaOferta) { mapaOferta.remove(); mapaOferta = null; }
+  mapaOferta = PW.mapa("mapa-oferta", {
+    capas: [{ nombre: "Estaciones de carga", puntos: pts }],
+    centro: [-35.5, -71.5], zoom: reg ? 7 : 5, alto: 440,
+  });
+  if (mapaOferta && pts.length && (reg || selCom.value)) {
+    const b = L.latLngBounds(pts.map(p => [p.lat, p.lon]));
+    mapaOferta.fitBounds(b.pad(0.2));
+  }
+  document.getElementById("cont-oferta").textContent =
+    pts.length + " estaciones mostradas de " + PW_DATA.mapa.carga.length + ".";
+  PW.leyendaMapa("ley-oferta", [
+    ["Carga rapida (50 kW o mas)", PW.color("--s2")],
+    ["Carga hasta 50 kW", PW.color("--s1")],
+  ]);
+}
+["fm-comuna", "fm-kw", "fm-dc"].forEach(id =>
+  document.getElementById(id).addEventListener("input", () => pintarMapa(selR.value)));
+
+let tab = null;
+function refrescar() {
+  const reg = selR.value;
+  pintarMapa(reg);
+  const pobMin = +document.getElementById("f-pob").value || 0;
+  const soloCero = document.getElementById("f-cero").checked;
+  let filas = D.comunas.filter(c =>
+    (!reg || c.region === reg) &&
+    (c.poblacion || 0) >= pobMin &&
+    (!soloCero || c.conectores === 0));
+  filas = filas.slice().sort((a, b) => b.score - a.score);
+  PW.barras("g-top", {
+    items: filas.slice(0, 20).map(c => ({
+      nombre: c.comuna, valor: c.score,
+      extra: PW.fmt(c.ev_parque) + " EV registrados, " + c.conectores + " conectores, " +
+        PW.fmt(c.poblacion) + " hab.",
+    })),
+    fmtV: v => PW.fmt(v, 1),
+  });
+  if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "score", max: 400 });
+}
+["f-region", "f-pob", "f-cero"].forEach(id => document.getElementById(id).addEventListener("input", refrescar));
+refrescar();
+</script>
+</body>
+</html>

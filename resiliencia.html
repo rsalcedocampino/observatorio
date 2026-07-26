@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Resiliencia de la carga ante cortes — Observatorio EV</title>
+<link rel="stylesheet" href="assets/estilo.css?v=250726d">
+</head>
+<body>
+<main>
+  <h1>Resiliencia de la red de carga ante cortes</h1>
+  <p class="sub">Cuando la SEC registra un corte en una comuna, ¿se caen sus cargadores
+  publicos? Cruce del historico de estados cada 30 minutos con los eventos de interrupcion,
+  comuna por comuna. Nadie mas puede medir esto: requiere ambos historicos propios.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Eventos analizados (mayor degradacion primero)</h2>
+    <div id="t-casos"></div>
+    <p class="nota">fs = porcentaje de observaciones "fuera de servicio" de los conectores de la
+    comuna. Delta = fs durante el corte - fs linea base. Un delta alto sugiere cargadores sin
+    respaldo electrico; un delta nulo, red resiliente o corte fuera de la zona de los
+    cargadores.</p>
+  </div>
+</main>
+<script src="data/c_resiliencia.js"></script>
+<script src="assets/comun.js?v=250726d"></script>
+<script>
+PW.montarNav("resiliencia.html");
+const D = PW_DATA.c_resiliencia;
+document.getElementById("nota").textContent = "Ventana desde " + D.desde + ". Generado " + D.generado + ". " + D.nota;
+
+document.getElementById("kpis").innerHTML = [
+  [D.eventos_analizados, "cortes analizados", "peak 1.000+ clientes, en comunas con cargadores"],
+  [D.eventos_con_degradacion, "con degradacion de la carga", "delta > 5 puntos"],
+  [D.eventos_analizados ? Math.round(100 * D.eventos_con_degradacion / D.eventos_analizados) + "%" : "—",
+    "tasa de contagio corte-carga", "preliminar"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+PW.tabla("t-casos", [
+  { k: "comuna", titulo: "Comuna" },
+  { k: "inicio", titulo: "Inicio corte" },
+  { k: "fin", titulo: "Fin" },
+  { k: "peak_clientes", titulo: "Peak clientes", num: true, fmt: v => PW.fmt(v) },
+  { k: "fs_base", titulo: "fs base %", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "fs_durante", titulo: "fs durante %", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "delta", titulo: "Delta (pts)", num: true, fmt: v => `<span class="${v > 5 ? "estado-mal" : (v <= 0 ? "estado-ok" : "")}">${PW.fmt(v, 1)}</span>` },
+  { k: "obs", titulo: "Obs.", num: true },
+], D.casos, { orden: "delta" });
+</script>
+</body>
+</html>
