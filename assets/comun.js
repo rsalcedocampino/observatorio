@@ -123,9 +123,13 @@
     const f = document.createElement("footer");
     f.className = "pw";
     f.innerHTML = "Desarrollado por Rodrigo Salcedo Campino - Energías Futuro<br>" +
-      "Fuentes oficiales: SEC, CNE, INE, Aduanas, Coordinador Eléctrico Nacional, ACERA, " +
-      "CMF, Euro NCAP y los operadores de carga. Cada cifra es trazable a su fuente y está " +
-      "homologada por comuna (CUT INE), tipo de conector, estado y tecnología.<br>" +
+      "Fuentes oficiales: ACERA, ANB (Academia Nacional de Bomberos), BCN – LeyChile, " +
+      "CMF (Comisión para el Mercado Financiero), CNE (Comisión Nacional de Energía), " +
+      "Coordinador Eléctrico Nacional, Euro NCAP, INE (Instituto Nacional de Estadísticas), " +
+      "Ministerio de Energía (EcoCarga / PELP / IDE), SEC (Superintendencia de Electricidad " +
+      "y Combustibles), Servicio Nacional de Aduanas y los operadores de carga. Cada cifra es " +
+      "trazable a su fuente y está homologada por comuna (CUT INE), tipo de conector, estado " +
+      "y tecnología.<br>" +
       "Elaboración propia.";
     document.body.appendChild(f);
   }
