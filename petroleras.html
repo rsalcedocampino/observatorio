@@ -55,7 +55,7 @@ const G = D.grupos, T = D.totales;
 const lider = G[0];
 
 document.getElementById("kpis").innerHTML = [
-  [lider.grupo + " " + PW.fmt(lider.pct_con_carga, 1) + "%", "lidera en carga en el sitio", "de sus bencineras tienen un cargador"],
+  [lider.grupo + " · " + PW.fmt(lider.con_carga), "más bencineras con carga en el sitio", PW.fmt(lider.pct_con_carga, 1) + "% de su propia red"],
   [PW.fmt(T.con_carga_en_sitio) + " de " + PW.fmt(T.grupos), "petroleras con carga en sus estaciones", "aunque la opere un tercero"],
   [PW.fmt(T.con_red_propia), "operan su propia red", "el resto solo hospeda a terceros"],
   [PW.fmt(T.bencineras), "bencineras", "de las petroleras catalogadas"],
