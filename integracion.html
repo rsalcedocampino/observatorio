@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Integración vertical del sector energético — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260727g">
+</head>
+<body>
+<main>
+  <h1>Integración vertical del sector energético</h1>
+  <p class="sub">Un mismo grupo económico puede estar en varios eslabones de la energía a la vez.
+  Cruzando por <b>grupo económico canónico</b> (kit de homologación de operadores), este tablero
+  muestra quién está en la <b>red de carga</b>, en las <b>bencineras</b>, en la <b>generación</b>
+  y en la <b>transmisión</b> — y quién los combina. <span class="pill">Demo</span></p>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Matriz grupo económico × eslabón</h2>
+    <div class="leyenda" id="ley" style="margin:4px 0 12px"></div>
+    <div class="scroll-x"><table class="pw" id="matriz"></table></div>
+    <p class="nota" style="margin-top:10px">Intensidad del color = magnitud relativa dentro de
+    cada columna. "Sectores" cuenta en cuántos de los cuatro eslabones participa el grupo; 3 o 4
+    indican <b>integración vertical</b>. Solo se muestran los grupos reconocidos por el kit de
+    operadores (los SPV y actores menores no catalogados quedan fuera).</p>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+
+<script src="data/c_integracion.js"></script>
+<script src="assets/comun.js?v=260727g"></script>
+<script>
+PW.montarNav("integracion.html");
+const D = window.PW_DATA.c_integracion;
+const C = PW.color;
+
+// eslabones: clave, titulo, unidad, color, formato
+const COLS = [
+  { k: "carga", t: "Red de carga", u: "estaciones", col: "--s3", fmt: v => PW.fmt(v) },
+  { k: "comb",  t: "Combustible",  u: "bencineras", col: "--s2", fmt: v => PW.fmt(v) },
+  { k: "mw",    t: "Generación",   u: "MW",         col: "--s4", fmt: v => PW.fmt(Math.round(v)) },
+  { k: "sub",   t: "Transmisión",  u: "subestaciones", col: "--s1", fmt: v => PW.fmt(v) },
+];
+const max = {};
+COLS.forEach(c => { max[c.k] = Math.max(...D.grupos.map(g => g[c.k] || 0), 1); });
+
+// KPIs
+const integrados = D.grupos.filter(g => g.sectores >= 2);
+const top = D.grupos[0];
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(D.grupos.length), "grupos económicos", "reconocidos por el kit"],
+  [PW.fmt(integrados.length), "en 2 o más eslabones", "presencia multisector"],
+  [top.grupo, "el más integrado", top.sectores + " de 4 eslabones"],
+  [PW.fmt(D.totales.mw ? Math.round(D.totales.mw) : 0), "MW en la base", "sumados en generación"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+PW.leyendaMapa("ley", COLS.map(c => [c.t + " (" + c.u + ")", C(c.col)]));
+
+// mezcla el color de la columna con el fondo segun la magnitud (0..1)
+function celda(c, v) {
+  if (!v) return `<td class="num" style="color:var(--ink-3)">—</td>`;
+  const pct = Math.round(18 + 62 * Math.sqrt(v / max[c.k]));  // 18%..80%
+  const bg = `color-mix(in srgb, ${C(c.col)} ${pct}%, transparent)`;
+  return `<td class="num" style="background:${bg};font-weight:600">${c.fmt(v)}</td>`;
+}
+function badge(n) {
+  const col = n >= 4 ? C("--critical") : (n >= 3 ? C("--s2") : (n >= 2 ? C("--s4") : "--ink-3"));
+  return `<span style="display:inline-block;min-width:20px;text-align:center;border-radius:6px;` +
+    `padding:1px 7px;font-weight:700;color:#fff;background:${col}">${n}</span>`;
+}
+const th = `<thead><tr><th>Grupo económico</th>` +
+  COLS.map(c => `<th class="num">${c.t}<br><span style="font-weight:400;color:var(--ink-3)">${c.u}</span></th>`).join("") +
+  `<th class="num">Sectores</th></tr></thead>`;
+const rows = D.grupos.map(g =>
+  `<tr${g.sectores >= 3 ? ' style="outline:2px solid ' + C("--s1") + ';outline-offset:-2px"' : ""}>` +
+  `<td><b>${g.grupo}</b></td>` +
+  COLS.map(c => celda(c, g[c.k])).join("") +
+  `<td class="num">${badge(g.sectores)}</td></tr>`).join("");
+document.getElementById("matriz").innerHTML = th + "<tbody>" + rows + "</tbody>";
+
+document.getElementById("fuente").textContent = D.nota;
+</script>
+</body>
+</html>
