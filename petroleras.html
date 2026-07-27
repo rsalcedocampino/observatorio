@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>La transición de las petroleras — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260727j">
+<style>
+  .comp { display: flex; height: 20px; border-radius: 5px; overflow: hidden; min-width: 160px; background: var(--grid); }
+  .comp > i { height: 100%; }
+  .comp .c { background: var(--s3); }
+  .comp .b { background: var(--s2); }
+  .pctlead { font-variant-numeric: tabular-nums; font-weight: 700; }
+</style>
+</head>
+<body>
+<main>
+  <h1>La transición de las petroleras</h1>
+  <p class="sub">Las distribuidoras de combustible pueden convertir sus estaciones en puntos de
+  carga eléctrica. Cruzando por <b>grupo económico</b>, este tablero compara las bencineras de cada
+  petrolera con sus puntos de carga EV — quién lidera la transición y quién sigue solo en fósil.
+  <span class="pill">Demo</span></p>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Bencineras vs puntos de carga, por petrolera</h2>
+    <div class="leyenda" id="ley" style="margin:4px 0 12px"></div>
+    <div class="scroll-x"><table class="pw" id="tabla"></table></div>
+    <p class="nota" style="margin-top:10px">La barra de composición muestra, dentro de cada grupo,
+    qué proporción de sus sitios son puntos de carga (verde) vs bencineras (naranjo). Complementa
+    "Estaciones duales" (que mide proximidad física) con el ángulo corporativo. Solo grupos con
+    bencineras; la carga incluye la red pública total del grupo.</p>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+
+<script src="data/c_petroleras.js"></script>
+<script src="assets/comun.js?v=260727j"></script>
+<script>
+PW.montarNav("petroleras.html");
+const D = window.PW_DATA.c_petroleras;
+const C = PW.color;
+const G = D.grupos, T = D.totales;
+const lider = G[0];
+
+document.getElementById("kpis").innerHTML = [
+  [lider.grupo + " " + PW.fmt(lider.pct_carga, 1) + "%", "lidera la transición", "de sus sitios son carga"],
+  [PW.fmt(T.con_carga) + " de " + PW.fmt(T.grupos), "petroleras con carga", "el resto sigue en fósil"],
+  [PW.fmt(T.bencineras), "bencineras", "de las petroleras catalogadas"],
+  [PW.fmt(T.carga), "puntos de carga", "operados por petroleras"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+PW.leyendaMapa("ley", [["Puntos de carga EV", C("--s3")], ["Bencineras", C("--s2")]]);
+
+function comp(g) {
+  const tot = g.bencineras + g.carga || 1;
+  const wc = g.carga / tot * 100, wb = g.bencineras / tot * 100;
+  return `<div class="comp">` +
+    (wc ? `<i class="c" style="width:${wc}%"></i>` : "") +
+    (wb ? `<i class="b" style="width:${wb}%"></i>` : "") + `</div>`;
+}
+const th = `<thead><tr><th>Grupo (petrolera)</th>` +
+  `<th class="num">Bencineras</th><th class="num">Puntos de carga</th>` +
+  `<th>Composición de sus sitios</th><th class="num">% carga</th></tr></thead>`;
+const rows = G.map(g =>
+  `<tr><td><b>${g.grupo}</b></td>` +
+  `<td class="num">${PW.fmt(g.bencineras)}</td>` +
+  `<td class="num">${PW.fmt(g.carga)}</td>` +
+  `<td style="min-width:200px">${comp(g)}</td>` +
+  `<td class="num pctlead" style="color:${g.pct_carga > 0 ? C("--s3") : "var(--ink-3)"}">${PW.fmt(g.pct_carga, 1)}%</td></tr>`).join("");
+document.getElementById("tabla").innerHTML = th + "<tbody>" + rows + "</tbody>";
+
+document.getElementById("fuente").textContent = D.nota;
+</script>
+</body>
+</html>
