@@ -953,3 +953,4 @@
 
   window.PW = { montarNav, fmt, clp, pct, lineas, barras, columnas, tabla, color, mapa, choropleth, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto };
 })();
+
