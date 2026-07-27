@@ -122,10 +122,11 @@
 
     const f = document.createElement("footer");
     f.className = "pw";
-    f.innerHTML = "Versión de trabajo para revisión interna. Fuentes oficiales: SEC, CNE, " +
-      "INE, Aduanas, Coordinador Eléctrico Nacional, ACERA, CMF, Euro NCAP y los operadores " +
-      "de carga. Cada cifra es trazable a su fuente y está homologada por comuna (CUT INE), " +
-      "tipo de conector, estado y tecnología. Elaboración propia.";
+    f.innerHTML = "Desarrollado por Rodrigo Salcedo Campino - Energías Futuro<br>" +
+      "Fuentes oficiales: SEC, CNE, INE, Aduanas, Coordinador Eléctrico Nacional, ACERA, " +
+      "CMF, Euro NCAP y los operadores de carga. Cada cifra es trazable a su fuente y está " +
+      "homologada por comuna (CUT INE), tipo de conector, estado y tecnología.<br>" +
+      "Elaboración propia.";
     document.body.appendChild(f);
   }
 
