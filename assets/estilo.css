@@ -320,6 +320,7 @@ footer.pw {
   padding: 18px 20px 30px;
   max-width: 1180px;
   margin: 0 auto;
+  text-align: center;
 }
 /* ---------- mapa: partes visuales ---------- */
 .pw-mapa { border-radius: 10px; border: 1px solid var(--border); }
