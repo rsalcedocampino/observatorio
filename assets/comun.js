@@ -122,7 +122,7 @@
 
     const f = document.createElement("footer");
     f.className = "pw";
-    f.innerHTML = "Desarrollado por Rodrigo Salcedo Campino - Energías Futuro<br>" +
+    f.innerHTML = "<strong>Desarrollado por <a href='https://www.linkedin.com/in/rsalcedoc/' target='_blank' rel='noopener'>Rodrigo Salcedo Campino</a> - Energías Futuro</strong><br>" +
       "Fuentes oficiales: ACERA, ANB (Academia Nacional de Bomberos), BCN – LeyChile, " +
       "CMF (Comisión para el Mercado Financiero), CNE (Comisión Nacional de Energía), " +
       "Coordinador Eléctrico Nacional, Euro NCAP, INE (Instituto Nacional de Estadísticas), " +
