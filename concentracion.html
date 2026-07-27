@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Concentración de la red de carga — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260727h">
+<style>
+  .hhi-bar { position: relative; height: 20px; border-radius: 4px; background: var(--grid); overflow: hidden; min-width: 120px; }
+  .hhi-bar > span { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+  .hhi-val { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .nivel { display: inline-block; border-radius: 6px; padding: 1px 9px; font-size: 11.5px; font-weight: 700; color: #fff; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Concentración de la red de carga</h1>
+  <p class="sub">¿La red de carga pública es un mercado competitivo o dominado por unos pocos?
+  Medimos la concentración con el <b>índice Herfindahl-Hirschman (HHI)</b> sobre las estaciones de
+  carga, con los operadores agrupados por <b>grupo económico canónico</b>. Umbrales de referencia
+  (DOJ EE.UU.): bajo 1.500 competitivo, 1.500-2.500 moderado, sobre 2.500 concentrado.
+  <span class="pill">Demo</span></p>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">HHI por región (de más a menos concentrada)</h2>
+    <div class="leyenda" id="ley" style="margin:4px 0 12px"></div>
+    <div class="scroll-x"><table class="pw" id="tabla"></table></div>
+    <p class="nota" style="margin-top:10px">La barra escala el HHI de 0 a 10.000 (monopolio puro).
+    "Jugadores" es el número de grupos/operadores distintos en la región; "Líder" es el que más
+    estaciones tiene y su participación. Solo red pública (no incluye cargadores privados o de
+    acceso restringido).</p>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+
+<script src="data/c_concentracion.js"></script>
+<script src="assets/comun.js?v=260727h"></script>
+<script>
+PW.montarNav("concentracion.html");
+const D = window.PW_DATA.c_concentracion;
+const C = PW.color;
+
+const NIV = {
+  concentrado: ["Concentrado", "--critical"],
+  moderado:    ["Moderado", "--warning"],
+  competitivo: ["Competitivo", "--good"],
+};
+const N = D.nacional;
+const noCopec = D.regiones.filter(r => r.lider !== "Copec");
+
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(N.hhi), "HHI nacional", NIV[N.nivel][0].toLowerCase()],
+  [N.lider + " " + PW.fmt(N.pct_lider, 1) + "%", "líder nacional", "de las estaciones públicas"],
+  [PW.fmt(D.regiones.filter(r => r.nivel === "concentrado").length) + " de " + D.regiones.length, "regiones concentradas", "HHI sobre 2.500"],
+  [PW.fmt(noCopec.length), "regiones no lidera Copec", noCopec.map(r => r.region).join(", ") || "—"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+PW.leyendaMapa("ley", [
+  ["Concentrado (>2.500)", C("--critical")],
+  ["Moderado (1.500-2.500)", C("--warning")],
+  ["Competitivo (<1.500)", C("--good")],
+]);
+
+function barra(hhi, nivel) {
+  const w = Math.min(100, hhi / 10000 * 100);
+  const col = C(NIV[nivel][1]);
+  return `<div style="display:flex;align-items:center;gap:8px">` +
+    `<span class="hhi-val" style="min-width:44px;text-align:right">${PW.fmt(hhi)}</span>` +
+    `<div class="hhi-bar"><span style="width:${w}%;background:${col}"></span></div></div>`;
+}
+function badge(nivel) {
+  const [txt, cvar] = NIV[nivel] || ["—", "--ink-3"];
+  return `<span class="nivel" style="background:${C(cvar)}">${txt}</span>`;
+}
+const th = `<thead><tr><th>Región</th><th>HHI</th>` +
+  `<th class="num">Estaciones</th><th class="num">Jugadores</th>` +
+  `<th>Líder</th><th class="num">% líder</th><th>Nivel</th></tr></thead>`;
+const rows = D.regiones.map(r =>
+  `<tr><td><b>${r.region}</b></td>` +
+  `<td style="min-width:180px">${barra(r.hhi, r.nivel)}</td>` +
+  `<td class="num">${PW.fmt(r.estaciones)}</td>` +
+  `<td class="num">${PW.fmt(r.jugadores)}</td>` +
+  `<td>${r.lider}</td>` +
+  `<td class="num">${PW.fmt(r.pct_lider, 1)}%</td>` +
+  `<td>${badge(r.nivel)}</td></tr>`).join("");
+document.getElementById("tabla").innerHTML = th + "<tbody>" + rows + "</tbody>";
+
+document.getElementById("fuente").textContent = D.nota;
+</script>
+</body>
+</html>
