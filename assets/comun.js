@@ -14,6 +14,7 @@
       ["elasticidad.html", "Elasticidad bencina-EV"],
       ["valor-parque.html", "Valor del parque"],
       ["buses.html", "Buses eléctricos"],
+      ["grupoauto.html", "Grupo automotriz 360"],
     ]],
     ["Importaciones", [
       ["radar.html", "Vehículos"],
@@ -29,6 +30,7 @@
       ["conectores-red.html", "Conectores flota-red"],
       ["resiliencia.html", "Resiliencia ante cortes"],
       ["concentracion.html", "Concentración del mercado"],
+      ["petroleras.html", "Transición de las petroleras"],
     ]],
     ["Energía", [
       ["riesgo.html", "Cortes eléctricos"],
@@ -102,6 +104,8 @@
   ICONOS["pelp.html"] = ICONOS["tracker.html"];
   ICONOS["integracion.html"] = IC('<path d="M6 3v6a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3v6"/><circle cx="6" cy="3" r="1.6"/><circle cx="18" cy="21" r="1.6"/><circle cx="18" cy="9" r="1.6"/><circle cx="6" cy="15" r="1.6"/>');
   ICONOS["concentracion.html"] = IC('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>');
+  ICONOS["grupoauto.html"] = IC('<circle cx="12" cy="6" r="2.6"/><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M12 8.5v3.5M12 12l-4.4 2.8M12 12l4.4 2.8"/>');
+  ICONOS["petroleras.html"] = IC('<path d="M5 20V7l6-3 6 3v13M3 20h18M9 11h4M9 15h4"/><path d="M19 20v-6l2 1v5"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
 
   // ---------- navegacion + pie
