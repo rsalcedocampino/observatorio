@@ -38,6 +38,7 @@
       ["red-electrica.html", "Red eléctrica y potencial"],
       ["censo-electricidad.html", "Electricidad en las viviendas"],
       ["pelp.html", "Chile vs PELP"],
+      ["integracion.html", "Integración vertical"],
     ]],
     ["Normativa", [
       ["normativa.html", "Metas y marco legal"],
@@ -98,6 +99,7 @@
   ICONOS["bess-cortes.html"] = ICONOS["baterias.html"];
   ICONOS["demanda-ev.html"] = ICONOS["operadores.html"];
   ICONOS["pelp.html"] = ICONOS["tracker.html"];
+  ICONOS["integracion.html"] = IC('<path d="M6 3v6a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3v6"/><circle cx="6" cy="3" r="1.6"/><circle cx="18" cy="21" r="1.6"/><circle cx="18" cy="9" r="1.6"/><circle cx="6" cy="15" r="1.6"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
 
   // ---------- navegacion + pie
