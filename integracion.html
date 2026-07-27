@@ -54,11 +54,11 @@ COLS.forEach(c => { max[c.k] = Math.max(...D.grupos.map(g => g[c.k] || 0), 1); }
 
 // KPIs
 const integrados = D.grupos.filter(g => g.sectores >= 2);
-const top = D.grupos[0];
+const lider = D.grupos[0];
 document.getElementById("kpis").innerHTML = [
   [PW.fmt(D.grupos.length), "grupos económicos", "reconocidos por el kit"],
   [PW.fmt(integrados.length), "en 2 o más eslabones", "presencia multisector"],
-  [top.grupo, "el más integrado", top.sectores + " de 4 eslabones"],
+  [lider.grupo, "el más integrado", lider.sectores + " de 4 eslabones"],
   [PW.fmt(D.totales.mw ? Math.round(D.totales.mw) : 0), "MW en la base", "sumados en generación"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
