@@ -28,6 +28,7 @@
       ["autonomia.html", "Brechas de autonomía"],
       ["conectores-red.html", "Conectores flota-red"],
       ["resiliencia.html", "Resiliencia ante cortes"],
+      ["concentracion.html", "Concentración del mercado"],
     ]],
     ["Energía", [
       ["riesgo.html", "Cortes eléctricos"],
@@ -100,6 +101,7 @@
   ICONOS["demanda-ev.html"] = ICONOS["operadores.html"];
   ICONOS["pelp.html"] = ICONOS["tracker.html"];
   ICONOS["integracion.html"] = IC('<path d="M6 3v6a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3v6"/><circle cx="6" cy="3" r="1.6"/><circle cx="18" cy="21" r="1.6"/><circle cx="18" cy="9" r="1.6"/><circle cx="6" cy="15" r="1.6"/>');
+  ICONOS["concentracion.html"] = IC('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
 
   // ---------- navegacion + pie
