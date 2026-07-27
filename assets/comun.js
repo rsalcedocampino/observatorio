@@ -51,6 +51,7 @@
     ]],
     ["Seguridad", [
       ["rescate.html", "Fichas de rescate"],
+      ["fichacober.html", "Cobertura de rescate"],
     ]],
   ];
 
@@ -106,6 +107,7 @@
   ICONOS["concentracion.html"] = IC('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>');
   ICONOS["grupoauto.html"] = IC('<circle cx="12" cy="6" r="2.6"/><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M12 8.5v3.5M12 12l-4.4 2.8M12 12l4.4 2.8"/>');
   ICONOS["petroleras.html"] = IC('<path d="M5 20V7l6-3 6 3v13M3 20h18M9 11h4M9 15h4"/><path d="M19 20v-6l2 1v5"/>');
+  ICONOS["fichacober.html"] = IC('<path d="M12 3l8 3v6c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
 
   // ---------- navegacion + pie

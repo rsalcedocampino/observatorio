@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Cobertura de fichas de rescate — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260727k">
+<style>
+  .ubar { display: flex; align-items: center; gap: 9px; }
+  .ubar .n { min-width: 48px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .ubar .track { position: relative; height: 16px; border-radius: 4px; background: var(--grid); flex: 1; min-width: 100px; overflow: hidden; }
+  .ubar .track > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+  .tag { display: inline-block; border-radius: 6px; padding: 1px 10px; font-size: 12px; font-weight: 700; color: #fff; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Cobertura de fichas de rescate</h1>
+  <p class="sub">Cuando un vehículo eléctrico choca o se incendia, bomberos necesita su <b>ficha de
+  rescate</b> (dónde cortar, dónde está la batería de alto voltaje). Cruzando por <b>modelo</b>
+  homologado, medimos qué parte de los EV más vendidos en Chile tiene ficha — y cuáles, pese a
+  venderse mucho, no la tienen. <span class="pill">Demo</span></p>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Modelos EV más vendidos — ¿tienen ficha?</h2>
+    <div class="leyenda" id="ley" style="margin:4px 0 12px"></div>
+    <div class="scroll-x"><table class="pw" id="tabla"></table></div>
+    <p class="nota" style="margin-top:10px">La barra escala las unidades vendidas del modelo.
+    Alcance: los modelos del top de ventas (≈37% del mercado EV); "cobertura" son las unidades de
+    modelos con ficha sobre ese total. Los modelos sin ficha, pese a su volumen, son la brecha de
+    seguridad para el rescate.</p>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+
+<script src="data/c_fichacober.js"></script>
+<script src="assets/comun.js?v=260727k"></script>
+<script>
+PW.montarNav("fichacober.html");
+const D = window.PW_DATA.c_fichacober;
+const C = PW.color;
+const M = D.modelos;
+const maxu = Math.max(...M.map(m => m.unidades), 1);
+const brecha = M.filter(m => !m.ficha)[0];
+
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(D.cobertura_pct, 1) + "%", "cobertura de rescate", "de las unidades más vendidas"],
+  [PW.fmt(D.con_ficha) + " de " + PW.fmt(D.total_modelos), "modelos con ficha", "entre los más vendidos"],
+  [brecha ? brecha.marca + " " + brecha.modelo : "—", "el mayor sin ficha", brecha ? PW.fmt(brecha.unidades) + " unidades" : ""],
+  [PW.fmt(D.fichas_totales), "fichas en la biblioteca", "incluye modelos no vendidos aquí"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+PW.leyendaMapa("ley", [["Con ficha de rescate", C("--good")], ["Sin ficha (brecha)", C("--critical")]]);
+
+function barra(u, ficha) {
+  const w = Math.min(100, u / maxu * 100);
+  const col = C(ficha ? "--good" : "--critical");
+  return `<div class="ubar"><span class="n">${PW.fmt(u)}</span>` +
+    `<div class="track"><i style="width:${w}%;background:${col}"></i></div></div>`;
+}
+function tag(ficha) {
+  return ficha
+    ? `<span class="tag" style="background:${C("--good")}">Sí</span>`
+    : `<span class="tag" style="background:${C("--critical")}">No</span>`;
+}
+const th = `<thead><tr><th>Marca</th><th>Modelo</th>` +
+  `<th>Unidades vendidas</th><th class="num">Ficha</th></tr></thead>`;
+const rows = M.map(m =>
+  `<tr${!m.ficha ? ' style="background:color-mix(in srgb, ' + C("--critical") + ' 6%, transparent)"' : ""}>` +
+  `<td><b>${m.marca}</b></td><td>${m.modelo}</td>` +
+  `<td style="min-width:200px">${barra(m.unidades, m.ficha)}</td>` +
+  `<td class="num">${tag(m.ficha)}</td></tr>`).join("");
+document.getElementById("tabla").innerHTML = th + "<tbody>" + rows + "</tbody>";
+
+document.getElementById("fuente").textContent = D.nota;
+</script>
+</body>
+</html>
