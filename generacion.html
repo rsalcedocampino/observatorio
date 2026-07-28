@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Parque de generación y almacenamiento — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260728b">
+<style>
+  .badge-fase { font-size: 11px; padding: 1px 7px; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Parque de generación y almacenamiento</h1>
+  <p class="sub">El registro de las centrales del <b>Sistema Eléctrico Nacional</b> (Coordinador +
+  ACERA): qué tecnología, cuánta potencia, en qué fase (operación, construcción o desarrollo) y de
+  quién. Filtra por tecnología, fase o región y busca por nombre o propietario.
+  <span class="pill">SEN</span></p>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Buscar
+      <input type="search" id="busca" placeholder="Central o propietario...">
+    </label>
+    <label>Tecnología <select id="f-tec"><option value="">Todas</option></select></label>
+    <label>Fase <select id="f-fase"><option value="">Todas</option></select></label>
+    <label>Región <select id="f-reg"><option value="">Todas</option></select></label>
+    <span class="pill" id="contador"></span>
+  </div>
+
+  <div class="tarjeta">
+    <div id="t-gen"></div>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+<script src="data/generacion.js"></script>
+<script src="assets/comun.js?v=260728b"></script>
+<script>
+PW.montarNav("generacion.html");
+const D = PW_DATA.generacion;
+const GEN = D.centrales, T = D.totales;
+
+function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
+function g(id) { return document.getElementById(id); }
+
+g("kpis").innerHTML = [
+  [PW.fmt(T.centrales), "centrales", PW.fmt(T.en_operacion) + " en operación"],
+  [PW.fmt(T.capacidad_operando_mw) + " MW", "capacidad en operación", "potencia instalada del SEN"],
+  [PW.fmt(T.pct_renovable, 1) + "%", "renovable", "solar, eólica e hidro sobre lo operando"],
+  [PW.fmt(T.almacenamiento_mwh) + " MWh", "en almacenamiento", "capacidad BESS catalogada"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+function llenar(id, valores, etiqueta) {
+  const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es"));
+  g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join("");
+}
+llenar("f-tec", GEN.map(x => x.tecnologia), "Todas");
+llenar("f-fase", GEN.map(x => x.fase), "Todas");
+llenar("f-reg", GEN.map(x => x.region), "Todas");
+
+const COLOR_FASE = { "En operación": "--s3", "En construcción": "--s2", "En desarrollo": "--ink-3" };
+function faseBadge(x) {
+  const col = PW.color(COLOR_FASE[x.fase] || "--ink-3");
+  return `<span class="badge-fase" style="background:color-mix(in srgb, ${col} 20%, transparent);color:${col}">${x.fase}</span>`;
+}
+
+const cols = [
+  { k: "nombre", titulo: "Central", fmt: v => `<b>${v}</b>` },
+  { k: "tecnologia", titulo: "Tecnología", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+  { k: "potencia_mw", titulo: "Potencia (MW)", fmt: v => PW.fmt(v, 1) },
+  { k: "fase", titulo: "Fase", fmt: (v, r) => faseBadge(r) },
+  { k: "region", titulo: "Región" },
+  { k: "propietario", titulo: "Propietario" },
+  { k: "almacenamiento_mwh", titulo: "Almac. (MWh)", fmt: v => v ? PW.fmt(v) : "—" },
+];
+
+let tab = null;
+function refrescar() {
+  const q = norm(g("busca").value.trim());
+  const tec = g("f-tec").value, fase = g("f-fase").value, reg = g("f-reg").value;
+  const filas = GEN.filter(x =>
+    (!tec || x.tecnologia === tec) &&
+    (!fase || x.fase === fase) &&
+    (!reg || x.region === reg) &&
+    (!q || norm(x.nombre + " " + (x.propietario || "")).includes(q)));
+  const mw = filas.reduce((a, x) => a + (x.potencia_mw || 0), 0);
+  g("contador").textContent = filas.length + " centrales · " + PW.fmt(Math.round(mw)) + " MW";
+  if (tab) tab.actualizar(filas);
+  else tab = PW.tabla("t-gen", cols, filas, { orden: "potencia_mw", asc: false, max: 300, buscador: false });
+}
+["busca", "f-tec", "f-fase", "f-reg"].forEach(id => g(id).addEventListener("input", refrescar));
+refrescar();
+g("fuente").textContent = "Generado " + D.generado + ". " + D.nota;
+</script>
+</body>
+</html>
