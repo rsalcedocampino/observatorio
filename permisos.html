@@ -67,7 +67,7 @@ g("ano-tipo").textContent = T.ano;
 g("kpis").innerHTML = [
   [PW.fmt(T.parque), "vehículos en circulación", "parque total " + T.ano],
   [PW.fmt(T.electrico), "eléctricos", T.pct_elec.toLocaleString("es-CL") + "% del parque motorizado"],
-  ["×" + T.crece_elec_x, "creció la flota eléctrica", "en 10 años (desde " + PW.fmt(T.elec_hace_10) + ")"],
+  ["×" + T.crece_elec_x.toLocaleString("es-CL"), "creció la flota eléctrica", "en 10 años (desde " + PW.fmt(T.elec_hace_10) + ")"],
   [PW.fmt(T.diesel), "a diésel", "el motor más común tras la bencina"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
