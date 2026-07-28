@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Parque de vehículos — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260728d">
+</head>
+<body>
+<main>
+  <h1>Parque de vehículos</h1>
+  <p class="sub">Todos los vehículos con <b>permiso de circulación</b> en Chile, según el registro que
+  el INE consolida cada año a partir de los permisos municipales. La serie va de 2008 a
+  <span id="ano-ult"></span>: cuántos vehículos hay, con qué tipo de motor y en qué región.
+  <span class="pill">INE</span></p>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2>La flota eléctrica en el tiempo</h2>
+    <p class="sub">Vehículos eléctricos con permiso de circulación por año. El municipio agrupa aquí
+    eléctricos puros e híbridos; aun así el salto es claro tras 2018.</p>
+    <div id="ch-elec"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2>El parque completo</h2>
+    <p class="sub">Total de vehículos motorizados en circulación, año a año.</p>
+    <div id="ch-parque"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2>Por región <span class="pill" id="ano-reg"></span></h2>
+    <p class="sub">Vehículos motorizados por región y tipo de motor. Ordena por la columna que quieras;
+    la columna “% eléctrico” muestra qué región electrifica más rápido su flota.</p>
+    <div id="t-reg"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2>Por tipo de vehículo <span class="pill" id="ano-tipo"></span></h2>
+    <p class="sub">Composición del parque según el tipo de vehículo registrado en el permiso.</p>
+    <div id="t-tipo"></div>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+<script src="data/permisos.js"></script>
+<script src="assets/comun.js?v=260728d"></script>
+<script>
+PW.montarNav("permisos.html");
+const D = PW_DATA.permisos;
+const T = D.totales, S = D.serie;
+
+function g(id) { return document.getElementById(id); }
+function miles(v) { return (v || v === 0) ? PW.fmt(v) : "—"; }
+
+g("ano-ult").textContent = T.ano;
+g("ano-reg").textContent = T.ano;
+g("ano-tipo").textContent = T.ano;
+
+g("kpis").innerHTML = [
+  [PW.fmt(T.parque), "vehículos en circulación", "parque total " + T.ano],
+  [PW.fmt(T.electrico), "eléctricos", T.pct_elec.toLocaleString("es-CL") + "% del parque motorizado"],
+  ["×" + T.crece_elec_x, "creció la flota eléctrica", "en 10 años (desde " + PW.fmt(T.elec_hace_10) + ")"],
+  [PW.fmt(T.diesel), "a diésel", "el motor más común tras la bencina"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+const labels = S.map(x => String(x.ano));
+
+PW.lineas("ch-elec", {
+  labels,
+  series: [{ nombre: "Eléctricos", valores: S.map(x => x.electrico) }],
+  fmtY: v => PW.fmt(Math.round(v)),
+});
+
+PW.lineas("ch-parque", {
+  labels,
+  series: [{ nombre: "Parque motorizado", valores: S.map(x => x.motorizados) }],
+  fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
+});
+
+const colsReg = [
+  { k: "region", titulo: "Región", fmt: v => `<b>${v}</b>` },
+  { k: "total", titulo: "Motorizados", fmt: miles },
+  { k: "bencinero", titulo: "Bencinero", fmt: miles },
+  { k: "diesel", titulo: "Diésel", fmt: miles },
+  { k: "gas", titulo: "Gas", fmt: miles },
+  { k: "electrico", titulo: "Eléctrico", fmt: miles },
+  { k: "pct_elec", titulo: "% eléctrico", fmt: v => v.toLocaleString("es-CL") + "%" },
+];
+PW.tabla("t-reg", colsReg, D.regiones, { orden: "total", asc: false, buscador: false });
+
+const colsTipo = [
+  { k: "tipo", titulo: "Tipo de vehículo", fmt: v => `<b>${v}</b>` },
+  { k: "grupo", titulo: "Clase", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+  { k: "cantidad", titulo: "Cantidad", fmt: miles },
+  { k: "pct", titulo: "% del parque", fmt: v => v.toLocaleString("es-CL") + "%" },
+];
+PW.tabla("t-tipo", colsTipo, D.tipos, { orden: "cantidad", asc: false, buscador: false });
+
+g("fuente").textContent = "Generado " + D.generado + " · Fuente: INE, Parque de vehículos en circulación (permisos municipales). " + D.nota;
+</script>
+</body>
+</html>

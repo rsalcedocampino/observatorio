@@ -16,6 +16,7 @@
       ["buses.html", "Buses eléctricos"],
       ["grupoauto.html", "Grupo automotriz 360"],
       ["inversion.html", "Inversión verde"],
+      ["permisos.html", "Parque de vehículos"],
     ]],
     ["Importaciones", [
       ["radar.html", "Vehículos"],
@@ -96,6 +97,7 @@
   ICONOS["inversion.html"] = IC('<path d="M3 17l5-5 3 3 4-4.5"/><path d="M15 10.5h4v4"/><path d="M3 21h18"/>');
   ICONOS["generacion.html"] = IC('<path d="M12 2v6M12 8l-4 6h8l-4 6"/><path d="M5 5l1.5 1.5M19 5l-1.5 1.5"/>');
   ICONOS["combustible.html"] = IC('<path d="M5 21V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v16H4"/><path d="M14 8h2.5a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 0 3 0V8l-2.5-2.5"/><path d="M7 8h5"/>');
+  ICONOS["permisos.html"] = IC('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 15V9h3a2 2 0 0 1 0 4H8"/>');
   ICONOS["duales.html"] = ICONOS["costo.html"];
   ICONOS["autonomia.html"] = ICONOS["sitios.html"];
   ICONOS["conectores-red.html"] = ICONOS["operadores.html"];
