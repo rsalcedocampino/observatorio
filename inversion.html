@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Inversión y financiamiento verde — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260728a">
+<style>
+  .badge-est { font-size: 11px; padding: 1px 7px; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Inversión y financiamiento verde</h1>
+  <p class="sub">Catastro de instrumentos de <b>inversión y financiamiento</b> en Chile para
+  electromovilidad, carga, solar y renovables, almacenamiento (BESS) e hidrógeno. Filtra por tipo de
+  actor, origen de los fondos, ámbito, estado y nivel de verificación, y abre la fuente de cada uno.
+  <span class="pill">Barrido mensual</span></p>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Buscar
+      <input type="search" id="busca" placeholder="Instrumento, institución o qué financia...">
+    </label>
+    <label>Categoría <select id="f-cat"><option value="">Todas</option></select></label>
+    <label>Origen <select id="f-ori"><option value="">Todos</option></select></label>
+    <label>Ámbito <select id="f-amb"><option value="">Todos</option></select></label>
+    <label>Estado <select id="f-est"><option value="">Todos</option><option value="act">Activos</option><option value="cer">Cerrados</option></select></label>
+    <label>Verificación <select id="f-ver"><option value="">Todas</option></select></label>
+    <span class="pill" id="contador"></span>
+  </div>
+
+  <div class="tarjeta">
+    <div id="t-inv"></div>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+<script src="data/inversion.js"></script>
+<script src="assets/comun.js?v=260728a"></script>
+<script>
+PW.montarNav("inversion.html");
+const D = PW_DATA.inversion;
+const INV = D.instrumentos, T = D.totales;
+
+function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
+function g(id) { return document.getElementById(id); }
+
+g("kpis").innerHTML = [
+  [PW.fmt(T.instrumentos), "instrumentos", "de financiamiento e inversión"],
+  [PW.fmt(T.activos), "activos", "vigentes o en curso"],
+  [PW.fmt(T.confirmados), "confirmados", "verificación 3-0 / fuente primaria"],
+  [PW.fmt(T.categorias), "tipos de actor", "público, banca, fondo, bono…"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+function llenar(id, valores, etiqueta) {
+  const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es"));
+  g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join("");
+}
+llenar("f-cat", INV.map(x => x.categoria), "Todas");
+llenar("f-ori", INV.map(x => x.origen), "Todos");
+llenar("f-amb", INV.map(x => x.ambito), "Todos");
+llenar("f-ver", INV.map(x => x.verif_tier), "Todas");
+
+const COLOR_VER = { "confirmado": "--s3", "no verificado": "--s2", "baja confianza": "--critical" };
+function estadoBadge(x) {
+  const col = x.activo ? "--s3" : "--ink-3";
+  const txt = x.activo ? "Activo" : "Cerrado";
+  return `<span class="badge-est" style="background:color-mix(in srgb, ${PW.color(col)} 22%, transparent);color:${PW.color(col)}">${txt}</span>`;
+}
+function verBadge(x) {
+  const col = PW.color(COLOR_VER[x.verif_tier] || "--ink-3");
+  return `<span class="badge-est" style="background:color-mix(in srgb, ${col} 20%, transparent);color:${col}" title="${x.verificacion || ""}">${x.verif_tier}</span>`;
+}
+function fuenteLink(u) {
+  return /^https?:\/\//.test(u || "") ? `<a href="${u}" target="_blank" rel="noopener">fuente</a>` : "—";
+}
+
+const cols = [
+  { k: "instrumento", titulo: "Instrumento", fmt: (v, r) => `<b>${v}</b>` },
+  { k: "institucion", titulo: "Institución" },
+  { k: "categoria", titulo: "Actor", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+  { k: "origen", titulo: "Origen" },
+  { k: "que_financia", titulo: "Qué financia" },
+  { k: "vigencia", titulo: "Estado", fmt: (v, r) => estadoBadge(r) + " " + (v || "") },
+  { k: "verif_tier", titulo: "Verificación", fmt: (v, r) => verBadge(r) },
+  { k: "fuente", titulo: "Fuente", fmt: v => fuenteLink(v) },
+];
+
+let tab = null;
+function refrescar() {
+  const q = norm(g("busca").value.trim());
+  const cat = g("f-cat").value, ori = g("f-ori").value, amb = g("f-amb").value;
+  const est = g("f-est").value, ver = g("f-ver").value;
+  const filas = INV.filter(x =>
+    (!cat || x.categoria === cat) &&
+    (!ori || x.origen === ori) &&
+    (!amb || x.ambito === amb) &&
+    (!ver || x.verif_tier === ver) &&
+    (est === "" || (est === "act" ? x.activo : !x.activo)) &&
+    (!q || norm(x.instrumento + " " + x.institucion + " " + (x.que_financia || "")).includes(q)));
+  g("contador").textContent = filas.length + " instrumentos";
+  if (tab) tab.actualizar(filas);
+  else tab = PW.tabla("t-inv", cols, filas, { orden: "instrumento", asc: true, max: 200, buscador: false });
+}
+["busca", "f-cat", "f-ori", "f-amb", "f-est", "f-ver"].forEach(id => g(id).addEventListener("input", refrescar));
+refrescar();
+g("fuente").textContent = "Generado " + D.generado + ". " + D.nota;
+</script>
+</body>
+</html>
