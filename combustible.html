@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Precio de combustible — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260728c">
+</head>
+<body>
+<main>
+  <h1>Precio de combustible</h1>
+  <p class="sub">Los precios de bencina, diésel y kerosene por <b>estación de servicio</b> en Chile
+  (CNE, Bencina en Línea). Una fila por estación con el precio de cada combustible; ordena la tabla
+  por la columna que quieras y filtra por región o marca para encontrar dónde está más barato.
+  <span class="pill">CNE</span></p>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Buscar
+      <input type="search" id="busca" placeholder="Estación, dirección o comuna...">
+    </label>
+    <label>Región <select id="f-reg"><option value="">Todas</option></select></label>
+    <label>Marca <select id="f-marca"><option value="">Todas</option></select></label>
+    <span class="pill" id="contador"></span>
+  </div>
+
+  <div class="tarjeta">
+    <div id="t-comb"></div>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+<script src="data/combustible.js"></script>
+<script src="assets/comun.js?v=260728c"></script>
+<script>
+PW.montarNav("combustible.html");
+const D = PW_DATA.combustible;
+const EST = D.estaciones, T = D.totales;
+
+function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
+function g(id) { return document.getElementById(id); }
+function pesos(v) { return (v || v === 0) ? "$" + PW.fmt(v) : "—"; }
+
+g("kpis").innerHTML = [
+  [PW.fmt(T.estaciones), "estaciones", "con precio publicado"],
+  ["$" + PW.fmt(T.p93_prom), "bencina 93 promedio", "por litro, país"],
+  ["$" + PW.fmt(T.p93_min), "la 93 más barata", "del catálogo"],
+  ["$" + PW.fmt(T.p93_max), "la 93 más cara", "brecha de $" + PW.fmt(T.p93_max - T.p93_min)],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+function llenar(id, valores, etiqueta) {
+  const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es"));
+  g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join("");
+}
+llenar("f-reg", EST.map(x => x.region), "Todas");
+llenar("f-marca", EST.map(x => x.marca), "Todas");
+
+const cols = [
+  { k: "estacion", titulo: "Estación", fmt: v => `<b>${v}</b>` },
+  { k: "marca", titulo: "Marca", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Región" },
+  { k: "p93", titulo: "93", fmt: pesos },
+  { k: "p95", titulo: "95", fmt: pesos },
+  { k: "p97", titulo: "97", fmt: pesos },
+  { k: "pdi", titulo: "Diésel", fmt: pesos },
+];
+
+let tab = null;
+function refrescar() {
+  const q = norm(g("busca").value.trim());
+  const reg = g("f-reg").value, mk = g("f-marca").value;
+  const filas = EST.filter(x =>
+    (!reg || x.region === reg) &&
+    (!mk || x.marca === mk) &&
+    (!q || norm(x.estacion + " " + x.comuna).includes(q)));
+  g("contador").textContent = filas.length + " estaciones";
+  if (tab) tab.actualizar(filas);
+  else tab = PW.tabla("t-comb", cols, filas, { orden: "p93", asc: true, max: 300, buscador: false });
+}
+["busca", "f-reg", "f-marca"].forEach(id => g(id).addEventListener("input", refrescar));
+refrescar();
+g("fuente").textContent = "Generado " + D.generado + " (precios al " + (T.fecha || "s/f") + "). " + D.nota;
+</script>
+</body>
+</html>
