@@ -15,6 +15,7 @@
       ["valor-parque.html", "Valor del parque"],
       ["buses.html", "Buses eléctricos"],
       ["grupoauto.html", "Grupo automotriz 360"],
+      ["inversion.html", "Inversión verde"],
     ]],
     ["Importaciones", [
       ["radar.html", "Vehículos"],
@@ -90,6 +91,7 @@
   ICONOS["elasticidad.html"] = ICONOS["costo.html"];
   ICONOS["valor-parque.html"] = ICONOS["vehiculo.html"];
   ICONOS["buses.html"] = ICONOS["vehiculo.html"];
+  ICONOS["inversion.html"] = IC('<path d="M3 17l5-5 3 3 4-4.5"/><path d="M15 10.5h4v4"/><path d="M3 21h18"/>');
   ICONOS["duales.html"] = ICONOS["costo.html"];
   ICONOS["autonomia.html"] = ICONOS["sitios.html"];
   ICONOS["conectores-red.html"] = ICONOS["operadores.html"];
