@@ -274,7 +274,7 @@
 PW.montarNav("index.html");
 const k = PW_DATA.resumen.kpis;
 const defs = [
-  [PW.fmt(k.estaciones), "estaciones de carga en Chile", "red completa, ahora mismo"],
+  [PW.fmt(k.estaciones), "estaciones de carga en Chile", "red completa · máx registrado " + PW.fmt(k.estaciones_max || k.estaciones)],
   [PW.fmt(k.conectores), "conectores en operacion", k.conectores_disponibles + " disponibles ahora"],
   [PW.fmt(k.ventas_ytd), "electricos e hibridos vendidos en " + k.ventas_ultimo_mes.slice(0,4), "acumulado a " + k.ventas_ultimo_mes.slice(0,7)],
   ["$" + PW.fmt(k.pkwh_nacional), "precio promedio de carga publica", "por kWh, potencia media " + PW.fmt(k.potencia_prom_kw, 1) + " kW"],
