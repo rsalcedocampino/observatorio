@@ -9,7 +9,7 @@
 <title>Energías Futuro — Chile</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260728d">
+<link rel="stylesheet" href="assets/estilo.css?v=260729c">
 </head>
 <body>
 <main>
@@ -20,6 +20,7 @@
     donde invertir, cuando, y con que riesgo.</p>
     <div class="ctas">
       <a class="principal" href="#mercado">Mercado e importaciones</a>
+      <a href="#reporte-regional">Reporte regional</a>
       <a href="#carga">Red de carga</a>
       <a href="#energia">Energía y normativa</a>
     </div>
@@ -43,6 +44,36 @@
       líneas), generación solar, almacenamiento BESS y el Censo por comuna. Superponga las
       capas que quiera y encuentre las relaciones sobre el territorio.</p>
       <div class="aud"><span class="pill">5 fuentes en un mapa</span> <span class="pill">Explorador</span></div>
+    </a>
+  </div>
+
+  <h2 id="reporte-regional">Reporte Regional</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="reporte-regional.html">
+      <h3>Reporte Regional</h3>
+      <p>La meta nacional se gana o se pierde región por región. Para cada una: su parque
+      enchufable, su red de carga actual, cuántos cargadores le faltarían al 2035, el avance de su
+      transición energética (solar, almacenamiento, generación distribuida) y un detalle territorial
+      hasta nivel de comuna con recomendaciones.</p>
+      <div class="aud"><span class="pill">16 regiones</span> <span class="pill">INE + Censo + SEC + red viva</span></div>
+    </a>
+    <a class="modulo-card" href="vulnerabilidad.html">
+      <h3>Vulnerabilidad energética</h3>
+      <p>Cortes, precio de la energía y realidad social del Censo en un solo índice: el mapa
+      de la desigualdad energética de las 346 comunas.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Política pública</span></div>
+    </a>
+    <a class="modulo-card" href="valor-parque.html">
+      <h3>Valor del parque comunal</h3>
+      <p>Cuanta riqueza vehicular concentra cada comuna, valorizada y normalizada por
+      habitante. Para dimensionar mercado y potencial de venta.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Para decidir</span></div>
+    </a>
+    <a class="modulo-card" href="censo-electricidad.html">
+      <h3>Electricidad en las viviendas</h3>
+      <p>6,4 millones de hogares según su fuente de energía: red, panel solar, generador o sin
+      electricidad. Directo del microdato del Censo.</p>
+      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Microdato 18,5M</span></div>
     </a>
   </div>
 
@@ -72,12 +103,6 @@
       <p>¿Cuánto empuja el precio de la bencina la decisión de cambiarse a eléctrico? El
       vínculo se afina con cada nueva captura de precios.</p>
       <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">En construcción</span></div>
-    </a>
-    <a class="modulo-card" href="valor-parque.html">
-      <h3>Valor del parque comunal</h3>
-      <p>Cuanta riqueza vehicular concentra cada comuna, valorizada y normalizada por
-      habitante. Para dimensionar mercado y potencial de venta.</p>
-      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Para decidir</span></div>
     </a>
     <a class="modulo-card" href="buses.html">
       <h3>Buses eléctricos</h3>
@@ -204,12 +229,6 @@
       infraestructura de carga queda expuesta.</p>
       <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Por mes y comuna</span></div>
     </a>
-    <a class="modulo-card" href="vulnerabilidad.html">
-      <h3>Vulnerabilidad energética</h3>
-      <p>Cortes, precio de la energía y realidad social del Censo en un solo índice: el mapa
-      de la desigualdad energética de las 346 comunas.</p>
-      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Política pública</span></div>
-    </a>
     <a class="modulo-card" href="bess-cortes.html">
       <h3>Almacenamiento (BESS)</h3>
       <p>El almacenamiento del país: mapa de proyectos, energía real inyectada al SEN,
@@ -227,12 +246,6 @@
       <p>Subestaciones, líneas y que tan cerca de la red esta cada cargador, más el potencial
       renovable instalable de cada comuna.</p>
       <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">IDE + Coordinador</span></div>
-    </a>
-    <a class="modulo-card" href="censo-electricidad.html">
-      <h3>Electricidad en las viviendas</h3>
-      <p>6,4 millones de hogares según su fuente de energía: red, panel solar, generador o sin
-      electricidad. Directo del microdato del Censo.</p>
-      <div class="aud"><span class="pill">Cruce nuevo</span> <span class="pill">Microdato 18,5M</span></div>
     </a>
     <a class="modulo-card" href="pelp.html">
       <h3>Chile vs PELP</h3>
@@ -292,7 +305,7 @@
   </div>
 </main>
 <script src="data/resumen.js"></script>
-<script src="assets/comun.js?v=260728d"></script>
+<script src="assets/comun.js?v=260729c"></script>
 <script>
 PW.montarNav("index.html");
 const k = PW_DATA.resumen.kpis;
