@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Reporte Regional — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260729c">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<style>
+.puente { color: var(--ink-2); font-size: 14px; max-width: 860px; margin: 4px 0 12px; }
+details.metodo-card > summary { cursor: pointer; font-weight: 600; font-size: 16px; list-style: none; }
+details.metodo-card > summary::-webkit-details-marker { display: none; }
+details.metodo-card > summary::before { content: "\25B8"; margin-right: 8px; color: var(--accent, var(--s1)); }
+details.metodo-card[open] > summary::before { content: "\25BE"; }
+.metodo-card ol { color: var(--ink-2); font-size: 14px; line-height: 1.7; padding-left: 20px; margin: 12px 0 6px; }
+.metodo-card li { margin-bottom: 8px; }
+.metodo-card b { color: var(--ink-1); }
+.metodo-card code { background: var(--plane); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Reporte Regional</h1>
+  <p class="sub">La meta nacional de electromovilidad se gana o se pierde región por región. Para
+  cada una: su parque enchufable, su red de carga actual, cuántos cargadores le faltarían al 2035, el
+  avance de su transición energética, y un detalle territorial hasta nivel de comuna con
+  recomendaciones concretas.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta" style="padding-bottom:14px">
+    <div class="filtros" style="margin:0">
+      <label style="flex:1 1 340px">Buscar región o comuna
+        <input type="search" id="buscador-territorio" list="lista-territorio" autocomplete="off"
+          placeholder="Escribe una región o comuna: Ñuble, Providencia, Valparaíso...">
+      </label>
+      <datalist id="lista-territorio"></datalist>
+    </div>
+    <p class="nota" id="buscador-msg" style="margin:8px 0 0">Elige o escribe una región o comuna para saltar a su detalle territorial (mapa + brecha de carga + recomendaciones).</p>
+  </div>
+
+  <details class="tarjeta metodo-card" id="metodo">
+    <summary>Cómo se calcula lo que le falta a cada región y comuna</summary>
+    <ol>
+      <li><b>Parque enchufable proyectado a 2035 (nacional).</b> Se parte del parque al <span id="m-anio"></span> (INE, permisos de circulación) más las ventas enchufables registradas desde 2025. Las ventas futuras se proyectan tomando el nivel de los <b>últimos 12 meses</b> y sumándole cada año el crecimiento observado (pendiente de los <b>últimos 24 meses</b>); se acumulan año a año hasta 2035. Es una estimación conservadora hacia arriba: no descuenta bajas del parque.</li>
+      <li><b>Reparto por región y por comuna.</b> El total nacional 2035 se reparte según la participación <b>actual</b> de cada territorio:
+        <br><code>parque_2035(territorio) = parque_2035(nacional) × parque_EV_hoy(territorio) ÷ parque_EV_hoy(nacional)</code>.
+        <br>Supuesto: la distribución territorial del parque no cambia (cada región/comuna mantiene su peso de hoy). El parque nacional cuadra exacto con la suma de las 16 regiones y de las 346 comunas (mismo universo INE).</li>
+      <li><b>Cargadores necesarios y lo que falta.</b>
+        <br><code>necesarios_2035 = parque_2035 ÷ ratio</code>, con <b>ratio</b> = EV por cargador (objetivo de servicio, <b>editable arriba</b>; por defecto 20).
+        <br><code>faltan = máx(0, necesarios_2035 − cargadores_hoy)</code>, donde <i>cargadores_hoy</i> es la red viva actual del territorio.
+        <br><code>ritmo_requerido/año = faltan ÷ años restantes hasta 2035</code>. Se compara con el <b>ritmo real</b> (cargadores públicos nuevos de los últimos 12 meses, SEC): "En ritmo" si el real ≥ el requerido.</li>
+      <li><b>Demanda eléctrica adicional (2035).</b> <code>demanda_2035 (GWh) = parque_2035 × <span id="m-km"></span> km/año ÷ <span id="m-rend"></span> km/kWh</code> (supuestos del cruce Demanda EV).</li>
+    </ol>
+    <p class="nota" style="margin:6px 0 0"><b>Fuentes y homologación.</b> Parque EV: INE (permisos de circulación <span id="m-anio2"></span>) por comuna, homologado a <b>CUT/INE</b> (16 regiones, 346 comunas; "eléctrico" puede incluir híbridos). Red de carga (cargadores hoy): <b>red viva</b> de Cargadores y Conectores (público + privado/restringido, cada 30 min), por CUT. Ritmo de instalación: serie SEC EcoCarga, categoría público. Energía (solar/BESS/generación distribuida): catastro Coordinador + ACERA + SEC por región/comuna. Población: Censo 2024. Cada cifra cruza por el <b>código territorial canónico (CUT)</b>, no por texto.</p>
+  </details>
+
+  <div class="tarjeta">
+    <div class="filtros">
+      <label>Región <select id="filtro-reg-tabla"><option value="">Todas</option></select></label>
+      <label>EV por cargador (objetivo de servicio) <input type="number" id="ratio-ev" value="20" min="5" step="5"></label>
+      <span class="pill" id="fuentes-reg">Cruce: INE + Censo + red viva + SEC, por región</span>
+    </div>
+    <div class="kpis" id="kpis-reg"></div>
+    <div id="t-regiones"></div>
+    <p class="nota" id="nota-reg"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Cargadores que faltarían en 2035, por región</h2>
+    <div id="g-faltantes"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Avance de la transición energética por región</h2>
+    <p class="puente">No basta con vender autos: cada región necesita generación limpia y
+    almacenamiento para sostener la carga. Aquí lo instalado, lo que viene en construcción, y
+    cuanta energía adicional demandará el parque EV proyectado a 2035.</p>
+    <div class="kpis" id="kpis-energia-nac"></div>
+    <div id="t-energia-reg"></div>
+    <p class="nota" id="nota-energia-reg"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Detalle territorial: lo que ya existe y lo que falta</h2>
+    <div class="filtros">
+      <label>Región <select id="fr-region"><option value="">Elige una región...</option></select></label>
+      <label>Comuna <select id="fr-comuna" disabled><option value="">Todas</option></select></label>
+    </div>
+    <div class="kpis" id="kpis-detalle"></div>
+    <div class="kpis" id="kpis-energia"></div>
+    <div class="fila2">
+      <div>
+        <div id="mapa-region"></div>
+        <div id="ley-region"></div>
+        <p class="nota" id="cont-region"></p>
+      </div>
+      <div>
+        <h3 style="margin-top:0">Recomendación</h3>
+        <ul id="reco" style="color:var(--ink-2); font-size:14px; line-height:1.7; padding-left:20px"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">También territorial</h2>
+    <p class="nota">Otros módulos con lectura por región o comuna, en sus secciones:</p>
+    <ul style="color:var(--ink-2); font-size:14px; line-height:1.9; padding-left:20px; margin:6px 0 0">
+      <li><a href="concentracion.html">Concentración de la red de carga</a> — HHI de concentración por región.</li>
+      <li><a href="riesgo.html">Cortes eléctricos</a> — clientes y horas sin energía, con detalle territorial por región y comuna.</li>
+      <li><a href="bess-cortes.html">Almacenamiento (BESS)</a> — cortes y almacenamiento por región, e inversión SEA.</li>
+      <li><a href="red-electrica.html">Red eléctrica y potencial</a> — conexión de la carga por región y potencial solar por comuna.</li>
+      <li><a href="permisos.html">Parque de vehículos</a> — el parque por región en el tiempo.</li>
+    </ul>
+  </div>
+</main>
+<script src="data/tracker.js"></script>
+<script src="data/c_demanda.js"></script>
+<script src="data/sitios.js"></script>
+<script src="data/mapa.js"></script>
+<script src="assets/comun.js?v=260729c"></script>
+<script>
+PW.montarNav("reporte-regional.html");
+const D = PW_DATA.tracker;
+document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+
+// ---------- utilidades y proyeccion nacional de parque (para repartir por region)
+function ymAnum(ym) { const [a, m] = ym.split("-").map(Number); return a + (m - 1) / 12; }
+const vMes = D.ventas_enchufables.map(x => ({ ym: x.ym.slice(0, 7), u: x.unidades }));
+function parqueProyectado2035() {
+  const DEM = window.PW_DATA.c_demanda;
+  if (!DEM) return null;
+  const desde25 = vMes.filter(x => x.ym >= "2025-01").reduce((s, x) => s + x.u, 0);
+  const parqueHoy = DEM.kpis.parque_ev + desde25;
+  const u12 = vMes.slice(-12).reduce((s, x) => s + x.u, 0);
+  const u24a12 = vMes.slice(-24, -12).reduce((s, x) => s + x.u, 0);
+  const crecAnual = u12 - u24a12;
+  const xHoy = ymAnum(vMes[vMes.length - 1].ym);
+  let p = parqueHoy, ventas = u12;
+  for (let a = Math.ceil(xHoy); a <= 2035; a++) { ventas = Math.max(0, ventas + crecAnual); p += ventas; }
+  return Math.round(p);
+}
+
+// ---------- 2b. reporte regional
+let tabReg = null;
+(function poblarFiltroRegTabla() {
+  const sel = document.getElementById("filtro-reg-tabla");
+  D.regiones.slice().sort((a, b) => a.region.localeCompare(b.region)).forEach(r => {
+    const o = document.createElement("option"); o.value = r.rcut; o.textContent = r.region;
+    sel.appendChild(o);
+  });
+  sel.addEventListener("input", () => {
+    if (REG_ESTADO) refrescarRegiones(REG_ESTADO.p2035Nac, REG_ESTADO.ratio);
+    // sincronizar con el detalle territorial de mas abajo
+    const det = document.getElementById("fr-region");
+    if (det && det.value !== sel.value) {
+      det.value = sel.value;
+      det.dispatchEvent(new Event("input"));
+    }
+  });
+})();
+
+function refrescarRegiones(p2035Nac, ratio) {
+  const regs = D.regiones;
+  if (!regs || !regs.length) return;
+  const parqueNacHoy = regs.reduce((s, r) => s + r.parque_ev, 0);
+  const aniosFalt = 2035 - new Date().getFullYear();
+  const regSel = document.getElementById("filtro-reg-tabla").value;
+
+  // LISTA COMPLETA para los cruces (el detalle territorial la necesita entera);
+  // la vista de la tabla se filtra despues.
+  const filasTodas = regs.map(r => {
+    const share = r.parque_ev / parqueNacHoy;
+    const parque2035 = Math.round(p2035Nac * share);
+    const necesarios = Math.round(parque2035 / ratio);
+    const faltan = Math.max(0, necesarios - r.cargadores_hoy);
+    const ritmoReq = Math.round(faltan / Math.max(aniosFalt, 1));
+    const evPorCarg = r.cargadores_hoy ? +(r.parque_ev / r.cargadores_hoy).toFixed(1) : null;
+    const alDia = r.instalados_12m >= ritmoReq;
+    return {
+      rcut: r.rcut,
+      region: r.region, parque_ev: r.parque_ev, parque_2035: parque2035,
+      ev_1000hab: r.poblacion ? +(1000 * r.parque_ev / r.poblacion).toFixed(2) : null,
+      cargadores_hoy: r.cargadores_hoy, ev_por_carg: evPorCarg,
+      necesarios_2035: necesarios, faltan,
+      ritmo_actual: r.instalados_12m, ritmo_req: ritmoReq,
+      estado: alDia ? "En ritmo" : "Bajo ritmo",
+    };
+  });
+  // vista de la tabla: filtrada; los cruces del detalle usan la lista completa
+  const filas = regSel ? filasTodas.filter(f => f.rcut === regSel) : filasTodas;
+
+  const totalFaltan = filas.reduce((s, f) => s + f.faltan, 0);
+  const enRitmo = filas.filter(f => f.estado === "En ritmo").length;
+  const ambito = regSel ? filas[0].region : "pais";
+  document.getElementById("kpis-reg").innerHTML = [
+    [PW.fmt(totalFaltan), "cargadores faltantes 2035 (" + ambito + ")", ratio + " EV por cargador"],
+    [enRitmo + " de " + filas.length, (filas.length === 1 ? "region" : "regiones") + " instalando al ritmo requerido", "ultimos 12 meses SEC"],
+    [filas[0] ? filas[0].region : "—", regSel ? "region seleccionada" : "region con mas parque EV", filas[0] ? PW.fmt(filas[0].parque_ev) + " vehiculos" : ""],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  const th = (texto, fuente) => `<span title="${fuente}">${texto}</span>`;
+  const cols = [
+    { k: "region", titulo: "Región" },
+    { k: "parque_ev", titulo: th("Parque EV hoy", "Vehiculos electricos registrados. Fuente: INE, permisos de circulacion 2024 (puede incluir hibridos)"), num: true, fmt: v => PW.fmt(v) },
+    { k: "ev_1000hab", titulo: th("EV / 1.000 hab", "Parque EV dividido por poblacion regional. Fuente: INE + Censo 2024"), num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
+    { k: "parque_2035", titulo: th("Parque 2035 proy.", "Proyeccion nacional de parque repartida segun la participacion actual de la region"), num: true, fmt: v => PW.fmt(v) },
+    { k: "cargadores_hoy", titulo: th("Cargadores hoy (red viva)", "Cargadores unicos de la region, publico + privado/restringido. Fuente: Cargadores y Conectores, cada 30 min"), num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
+    { k: "ev_por_carg", titulo: th("EV por cargador", "Parque EV hoy / cargadores hoy: presion sobre la red local"), num: true, fmt: v => v == null ? "sin red" : PW.fmt(v, 1) },
+    { k: "necesarios_2035", titulo: th("Necesarios 2035", "Parque 2035 proyectado / ratio de servicio (editable arriba)"), num: true, fmt: v => PW.fmt(v) },
+    { k: "faltan", titulo: th("Faltan a 2035", "Necesarios 2035 - cargadores hoy"), num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
+    { k: "ritmo_actual", titulo: th("Ritmo real (ult. 12 meses)", "Cargadores publicos nuevos instalados en la region durante los ultimos 12 meses. Fuente: SEC EcoCarga, categoria publico"), num: true, fmt: v => PW.fmt(v) },
+    { k: "ritmo_req", titulo: th("Ritmo requerido/año", "Faltantes / años restantes hasta 2035: lo que habria que instalar cada año"), num: true, fmt: v => PW.fmt(v) },
+    { k: "estado", titulo: th("Estado", "En ritmo si instala al año lo que la meta requiere"), fmt: v => `<span class="${v === "En ritmo" ? "estado-ok" : "estado-mal"}">${v}</span>` },
+  ];
+  if (tabReg) tabReg.actualizar(filas); else tabReg = PW.tabla("t-regiones", cols, filas, { orden: "faltan" });
+
+  document.getElementById("nota-reg").textContent =
+    "Pasa el mouse por cada titulo de columna para ver su fuente y formula. Parque " +
+    (D.anio_parque || "") + " (INE; 'electrico' puede incluir hibridos). Cargadores hoy = red " +
+    "viva completa (publico + privado/restringido, cada 30 min); Ritmo real = cargadores " +
+    "publicos nuevos de los ultimos 12 meses segun la serie SEC (fuentes distintas, cada una " +
+    "rotulada). El ratio de servicio (" + ratio +
+    " EV por cargador) se edita arriba y recalcula necesarios, faltantes y ritmos.";
+
+  PW.barras("g-faltantes", {
+    items: filas.filter(f => f.faltan > 0).sort((a, b) => b.faltan - a.faltan).map(f => ({
+      nombre: f.region, valor: f.faltan,
+      extra: "Hoy: " + PW.fmt(f.cargadores_hoy) + " — necesarios 2035: " + PW.fmt(f.necesarios_2035),
+      color: f.estado === "En ritmo" ? PW.color("--s3") : PW.color("--s2"),
+    })),
+    fmtV: v => PW.fmt(v),
+  });
+
+  refrescarEnergiaReg(filasTodas, regSel);
+
+  REG_ESTADO = { filas: filasTodas, p2035Nac, ratio, parqueNacHoy };
+  refrescarDetalle();
+}
+
+// ---------- 2b: transicion energetica por region + demanda 2035
+let tabEnergia = null;
+function refrescarEnergiaReg(filasTodas, regSel) {
+  const ER = D.energia_reg || {};
+  const DEM = window.PW_DATA.c_demanda;
+  const km = DEM ? DEM.supuestos.km_anuales : 15000;
+  const rend = DEM ? DEM.supuestos.rendimiento_km_kwh : 5.4;
+  const gwhSen = DEM ? DEM.kpis.gwh_sen_anual : null;
+
+  const filasE = filasTodas.map(f => {
+    const e = ER[f.rcut] || {};
+    const gwh2035 = +(f.parque_2035 * km / rend / 1e6).toFixed(1);
+    return {
+      region: f.region,
+      solar_op: e.solar_op_mw || 0,
+      solar_pipe: e.solar_pipe_mw || 0,
+      bess_op: e.bess_op_mwh || 0,
+      bess_pipe: e.bess_pipe_mwh || 0,
+      gd_mw: e.gd_mw || 0,
+      demanda_2035: gwh2035,
+    };
+  });
+  const filas = regSel ? filasE.filter((_, i) => filasTodas[i].rcut === regSel) : filasE;
+
+  // KPIs nacionales de energia
+  const demTot = filasE.reduce((s, f) => s + f.demanda_2035, 0);
+  const solarOp = filasE.reduce((s, f) => s + f.solar_op, 0);
+  const solarPipe = filasE.reduce((s, f) => s + f.solar_pipe, 0);
+  const bessOp = filasE.reduce((s, f) => s + f.bess_op, 0);
+  document.getElementById("kpis-energia-nac").innerHTML = [
+    [PW.fmt(demTot, 1) + " GWh", "demanda EV proyectada 2035 (pais)", gwhSen ? PW.fmt(100 * demTot / gwhSen, 2) + "% del SEN actual" : ""],
+    [PW.fmt(solarOp) + " MW", "solar operando hoy", "+" + PW.fmt(solarPipe) + " MW en pipeline"],
+    [PW.fmt(bessOp) + " MWh", "almacenamiento operando", "el respaldo de la carga"],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  const th = (t, f) => `<span title="${f}">${t}</span>`;
+  const cols = [
+    { k: "region", titulo: "Región" },
+    { k: "solar_op", titulo: th("Solar operando (MW)", "Capacidad fotovoltaica en operacion. Fuente: centrales unificadas Coordinador + ACERA"), num: true, fmt: v => PW.fmt(v) },
+    { k: "solar_pipe", titulo: th("Solar pipeline (MW)", "Solar en construccion, aprobada o en calificacion"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
+    { k: "bess_op", titulo: th("Almacenamiento operando (MWh)", "Capacidad BESS en operacion. Fuente: centrales con almacenamiento"), num: true, fmt: v => v > 0 ? PW.fmt(v) : `<span class="estado-mal">0</span>` },
+    { k: "bess_pipe", titulo: th("Almacenamiento pipeline (MWh)", "BESS en construccion o aprobado"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
+    { k: "gd_mw", titulo: th("Gen. distribuida (MW)", "Net billing: paneles en techos residenciales/comerciales. Fuente: SEC"), num: true, fmt: v => PW.fmt(v, 1) },
+    { k: "demanda_2035", titulo: th("Demanda EV 2035 (GWh)", "Parque EV proyectado 2035 x " + PW.fmt(km) + " km/año / " + rend + " km/kWh"), num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
+  ];
+  if (tabEnergia) tabEnergia.actualizar(filas); else tabEnergia = PW.tabla("t-energia-reg", cols, filas, { orden: "demanda_2035" });
+
+  document.getElementById("nota-energia-reg").textContent =
+    "Solar y almacenamiento: catastro Coordinador + ACERA (operando vs pipeline en construccion/" +
+    "aprobado). Generacion distribuida: net billing SEC. Demanda EV 2035 = parque proyectado x " +
+    PW.fmt(km) + " km/año / " + rend + " km/kWh (mediana del catalogo). Una region con demanda " +
+    "creciente y almacenamiento en cero (rojo) es la mas expuesta.";
+}
+
+// ---------- 2b detalle territorial: filtros, mapa de lo existente y recomendacion
+let REG_ESTADO = null;
+let mapaRegion = null;
+const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase();
+
+(function poblarFiltros() {
+  const selR = document.getElementById("fr-region");
+  D.regiones.forEach(r => {
+    const o = document.createElement("option"); o.value = r.rcut; o.textContent = r.region;
+    selR.appendChild(o);
+  });
+  selR.addEventListener("input", () => { poblarComunas(); refrescarDetalle(); });
+  document.getElementById("fr-comuna").addEventListener("input", refrescarDetalle);
+})();
+function poblarComunas() {
+  const rcut = document.getElementById("fr-region").value;
+  const selC = document.getElementById("fr-comuna");
+  const comunas = PW_DATA.sitios.comunas
+    .filter(c => String(c.cod_region).padStart(2, "0") === rcut)
+    .map(c => c.comuna).sort();
+  selC.innerHTML = `<option value="">Todas</option>` + comunas.map(c => `<option>${c}</option>`).join("");
+  selC.disabled = !rcut;
+}
+
+function refrescarDetalle() {
+  if (!REG_ESTADO) return;
+  const rcut = document.getElementById("fr-region").value;
+  const comSel = document.getElementById("fr-comuna").value;
+  const { filas, p2035Nac, ratio, parqueNacHoy } = REG_ESTADO;
+  const kpiEl = document.getElementById("kpis-detalle");
+  const recoEl = document.getElementById("reco");
+  const contEl = document.getElementById("cont-region");
+
+  if (!rcut) {
+    kpiEl.innerHTML = "";
+    recoEl.innerHTML = "<li>Elige una region para ver su red actual en el mapa y la recomendacion.</li>";
+    if (mapaRegion) { mapaRegion.remove(); mapaRegion = null; }
+    document.getElementById("mapa-region").innerHTML = "";
+    document.getElementById("ley-region").innerHTML = "";
+    contEl.textContent = "";
+    return;
+  }
+
+  const regNombre = D.regiones.find(r => r.rcut === rcut)?.region || "";
+  const filaReg = filas.find(f => f.rcut === rcut) || filas.find(f => f.region === regNombre);
+  const comunasReg = PW_DATA.sitios.comunas.filter(c => String(c.cod_region).padStart(2, "0") === rcut);
+  const comData = comSel ? comunasReg.find(c => c.comuna === comSel) : null;
+
+  // [MAPA] lo que ya existe en el territorio: carga + solar + almacenamiento
+  const pts = PW_DATA.mapa.carga
+    .filter(p => p.rcut === rcut && (!comSel || norm(p.com) === norm(comSel)))
+    .map(p => ({
+      lat: p.lat, lon: p.lon, r: 7.5,
+      color: (p.kw || 0) >= 50 ? PW.color("--s2") : PW.color("--s1"),
+      popup: PW.popupEstacion(p),
+    }));
+  const ptsSolar = (PW_DATA.mapa.solar || [])
+    .filter(p => p.rcut === rcut && (!comSel || norm(p.com) === norm(comSel)))
+    .map(p => ({
+      lat: p.lat, lon: p.lon, r: p.mw ? Math.max(4, Math.min(12, 3 + Math.sqrt(p.mw))) : 4,
+      color: PW.color("--s4"),
+      popup: `<b>${p.n}</b><br>Planta solar — ${p.com || ""}` +
+        (p.mw ? `<br>${PW.fmt(p.mw, 1)} MW` : "") +
+        `<br>Estado: ${PW.estadoProyecto(p.est) || "sin dato"}`,
+    }));
+  const ptsBess = (PW_DATA.mapa.bess || [])
+    .filter(p => p.rcut === rcut && (!comSel || norm(p.com) === norm(comSel)))
+    .map(p => ({
+      lat: p.lat, lon: p.lon, r: p.mwh ? Math.max(4, Math.min(12, 3 + Math.sqrt(p.mwh) / 3)) : 4,
+      color: PW.color("--s3"),
+      popup: `<b>${p.n}</b><br>Almacenamiento — ${p.com || ""}` +
+        (p.mwh ? `<br>${PW.fmt(p.mwh)} MWh` : "") +
+        `<br>Estado: ${PW.estadoProyecto(p.est) || "sin dato"}`,
+    }));
+  if (mapaRegion) { mapaRegion.remove(); mapaRegion = null; }
+  mapaRegion = PW.mapa("mapa-region", {
+    capas: [
+      { nombre: "Estaciones de carga", puntos: pts },
+      { nombre: "Plantas solares", puntos: ptsSolar },
+      { nombre: "Almacenamiento (BESS)", puntos: ptsBess },
+    ],
+    centro: [-35.5, -71.5], zoom: 6, alto: 420,
+  });
+  const todosPts = pts.concat(ptsSolar, ptsBess);
+  if (mapaRegion && todosPts.length) {
+    mapaRegion.fitBounds(L.latLngBounds(todosPts.map(p => [p.lat, p.lon])).pad(0.2));
+  }
+  PW.leyendaMapa("ley-region", [
+    ["Carga rapida (50 kW o mas)", PW.color("--s2")],
+    ["Carga hasta 50 kW", PW.color("--s1")],
+    ["Planta solar", PW.color("--s4")],
+    ["Almacenamiento", PW.color("--s3")],
+  ]);
+  contEl.textContent = pts.length + " estaciones de carga, " + ptsSolar.length +
+    " plantas solares y " + ptsBess.length + " proyectos de almacenamiento en la seleccion.";
+
+  // [ENERGIA] KPIs del territorio
+  const eR = (D.energia_reg || {})[rcut] || {};
+  const eC = comData ? (D.energia_com || {})[comData.cut] || { solar_mw: 0, bess_mwh: 0, n_centrales: 0 } : null;
+  document.getElementById("kpis-energia").innerHTML = (comData ? [
+    [PW.fmt(eC.solar_mw, 1) + " MW", "solar en la comuna", eC.n_centrales + " centrales en total"],
+    [PW.fmt(eC.bess_mwh) + " MWh", "almacenamiento en la comuna", "operando + pipeline"],
+    [PW.fmt(eR.gd_inst), "generacion distribuida (region)", PW.fmt(eR.gd_mw, 1) + " MW en techos"],
+  ] : [
+    [PW.fmt(eR.solar_op_mw) + " MW", "solar operando en la region", PW.fmt(eR.solar_pipe_mw) + " MW en pipeline"],
+    [PW.fmt(eR.bess_op_mwh) + " MWh", "almacenamiento operando", PW.fmt(eR.bess_pipe_mwh) + " MWh en pipeline"],
+    [PW.fmt(eR.gd_inst), "instalaciones de generacion distribuida", PW.fmt(eR.gd_mw, 1) + " MW en techos (net billing)"],
+  ]).map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  // [KPIs + RECOMENDACION]
+  const recos = [];
+  if (comData) {
+    const p2035c = Math.round(p2035Nac * (comData.ev_parque / Math.max(parqueNacHoy, 1)));
+    const puntosNec = Math.round(p2035c / ratio);
+    const faltanC = Math.max(0, puntosNec - comData.estaciones);
+    kpiEl.innerHTML = [
+      [PW.fmt(comData.ev_parque), "parque EV en " + comData.comuna, "INE " + (D.anio_parque || "")],
+      [PW.fmt(comData.conectores), "conectores publicos hoy", comData.estaciones + " estaciones"],
+      [comData.ev_por_conector != null ? PW.fmt(comData.ev_por_conector, 1) : "sin red", "EV por conector", ""],
+      [PW.fmt(p2035c), "parque proyectado 2035", "participacion actual sostenida"],
+    ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+    if (comData.conectores === 0 && comData.ev_parque > 0) {
+      recos.push(`<b>${comData.comuna} no tiene ningun conector publico</b> pese a registrar ${PW.fmt(comData.ev_parque)} vehiculos electricos: primera prioridad de instalacion.`);
+    } else if (comData.ev_por_conector > ratio) {
+      recos.push(`Hay <b>${PW.fmt(comData.ev_por_conector, 1)} EV por conector</b>, sobre el objetivo de servicio (${ratio}): la red local ya esta bajo presion.`);
+    }
+    recos.push(`Con el parque proyectado 2035 (${PW.fmt(p2035c)}), la comuna requeriria del orden de <b>${PW.fmt(puntosNec)} puntos de carga</b>; hoy tiene ${PW.fmt(comData.estaciones)} estaciones (faltarian ~${PW.fmt(faltanC)}).`);
+    const dc = pts.filter(p => p.color === PW.color("--s2")).length;
+    if (pts.length && dc / pts.length < 0.25) {
+      recos.push(`Solo ${dc} de ${pts.length} estaciones son de carga rapida: priorizar DC (50 kW o mas).`);
+    }
+    if (comData.cliente_horas_cortes > 1e6) {
+      const conBess = eC && eC.bess_mwh > 0;
+      recos.push(`Historial de cortes alto (${PW.fmt(Math.round(comData.cliente_horas_cortes / 1e6), 1)}M cliente-horas)` +
+        (conBess ? `, pero la comuna ya tiene ${PW.fmt(eC.bess_mwh)} MWh de almacenamiento: acoplar la carga rapida a esos proyectos.`
+                 : ` y sin almacenamiento local: considerar BESS o respaldo para los cargadores.`));
+    }
+    if (eC && eC.solar_mw > 5 && comData.conectores === 0) {
+      recos.push(`La comuna genera <b>${PW.fmt(eC.solar_mw, 1)} MW solares</b> pero no tiene carga publica: sinergia directa para carga diurna junto a las plantas.`);
+    } else if (eC && eC.solar_mw > 5) {
+      recos.push(`Con ${PW.fmt(eC.solar_mw, 1)} MW solares en la comuna, priorizar tarifas y habitos de <b>carga diurna (11:00-16:00)</b> para calzar con el excedente solar.`);
+    }
+  } else if (filaReg) {
+    kpiEl.innerHTML = [
+      [PW.fmt(filaReg.parque_ev), "parque EV en " + regNombre, "INE " + (D.anio_parque || "")],
+      [PW.fmt(filaReg.cargadores_hoy), "cargadores hoy (red viva)", filaReg.ev_por_carg != null ? PW.fmt(filaReg.ev_por_carg, 1) + " EV por cargador" : ""],
+      [PW.fmt(filaReg.faltan), "faltarian a 2035", ratio + " EV por cargador"],
+      [PW.fmt(filaReg.ritmo_actual) + "/año", "ritmo actual de instalacion", "se requieren " + PW.fmt(filaReg.ritmo_req) + "/año"],
+    ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+    recos.push(`Instalar <b>${PW.fmt(filaReg.faltan)} cargadores</b> de aqui a 2035 (${PW.fmt(filaReg.ritmo_req)}/año); el ritmo actual es ${PW.fmt(filaReg.ritmo_actual)}/año (${filaReg.estado.toLowerCase()}).`);
+    const sinRed = comunasReg.filter(c => c.conectores === 0 && c.ev_parque > 0)
+      .sort((a, b) => b.ev_parque - a.ev_parque);
+    if (sinRed.length) {
+      recos.push(`<b>${sinRed.length} comunas con parque EV y cero conectores</b>: priorizar ` +
+        sinRed.slice(0, 4).map(c => `${c.comuna} (${PW.fmt(c.ev_parque)} EV)`).join(", ") +
+        (sinRed.length > 4 ? " y otras." : "."));
+    }
+    const dc = pts.filter(p => p.color === PW.color("--s2")).length;
+    if (pts.length && dc / pts.length < 0.25) {
+      recos.push(`Solo ${dc} de ${pts.length} estaciones son de carga rapida: reforzar DC en corredores.`);
+    }
+    // recomendaciones energeticas de la region
+    if (eR.solar_op_mw > 100) {
+      recos.push(`La region opera <b>${PW.fmt(eR.solar_op_mw)} MW solares</b>` +
+        (eR.solar_pipe_mw > 0 ? ` (+${PW.fmt(eR.solar_pipe_mw)} MW en pipeline)` : "") +
+        `: promover carga diurna (11:00-16:00) y electroterminales con contratos solares.`);
+    } else if (eR.solar_pipe_mw > 50) {
+      recos.push(`Hay <b>${PW.fmt(eR.solar_pipe_mw)} MW solares en desarrollo</b> en la region: coordinar la nueva carga rapida con esos puntos de inyeccion.`);
+    }
+    if (eR.bess_op_mwh === 0 && eR.bess_pipe_mwh === 0) {
+      recos.push(`La region <b>no tiene almacenamiento operando ni en pipeline</b>: los cargadores dependen totalmente de la red — evaluar BESS detras del medidor en la carga rapida.`);
+    } else if (eR.bess_pipe_mwh > 0) {
+      recos.push(`Almacenamiento: ${PW.fmt(eR.bess_op_mwh)} MWh operando y <b>${PW.fmt(eR.bess_pipe_mwh)} MWh en pipeline</b>: oportunidad de acoplar carga rapida a esos proyectos.`);
+    }
+    if (eR.gd_inst > 1000) {
+      recos.push(`${PW.fmt(eR.gd_inst)} instalaciones de generacion distribuida (${PW.fmt(eR.gd_mw, 1)} MW en techos): base de adopcion solar residencial que facilita la carga domiciliaria diurna.`);
+    }
+    const topOportunidad = comunasReg.slice().sort((a, b) => b.score - a.score).slice(0, 3);
+    recos.push(`Mayor oportunidad segun el Selector de sitios: ` +
+      topOportunidad.map(c => c.comuna).join(", ") +
+      ` (<a href="sitios.html">ver detalle</a>).`);
+  }
+  recoEl.innerHTML = recos.map(r => `<li>${r}</li>`).join("");
+}
+
+// ---------- disparador principal
+function refrescarTodo() {
+  const ratio = +document.getElementById("ratio-ev").value || 20;
+  const p2035Nac = parqueProyectado2035();
+  if (p2035Nac == null) return;
+  refrescarRegiones(p2035Nac, ratio);
+}
+document.getElementById("ratio-ev").addEventListener("input", refrescarTodo);
+refrescarTodo();
+
+// ---------- buscador de region / comuna
+(function buscadorTerritorio() {
+  const dl = document.getElementById("lista-territorio");
+  const inp = document.getElementById("buscador-territorio");
+  const msg = document.getElementById("buscador-msg");
+  const regNom = {}; D.regiones.forEach(r => regNom[r.rcut] = r.region);
+  const MAP = {};
+  D.regiones.slice().sort((a, b) => a.region.localeCompare(b.region)).forEach(r => {
+    const etq = "Región: " + r.region;
+    MAP[etq] = { rcut: r.rcut, comuna: "" };
+    const o = document.createElement("option"); o.value = etq; dl.appendChild(o);
+  });
+  PW_DATA.sitios.comunas.slice().sort((a, b) => a.comuna.localeCompare(b.comuna)).forEach(c => {
+    const rc = String(c.cod_region).padStart(2, "0");
+    const etq = c.comuna + " — " + (regNom[rc] || "");
+    MAP[etq] = { rcut: rc, comuna: c.comuna };
+    const o = document.createElement("option"); o.value = etq; dl.appendChild(o);
+  });
+  function resolver() {
+    const v = inp.value.trim();
+    let hit = MAP[v], clave = v;
+    if (!hit && norm(v).length >= 3) {
+      const nv = norm(v);
+      const k = Object.keys(MAP).find(kk => norm(kk).includes(nv));
+      if (k) { hit = MAP[k]; clave = k; inp.value = k; }
+    }
+    if (!hit) { msg.textContent = v ? ("No se encontró \"" + v + "\". Prueba una región o comuna.") : ""; return; }
+    const fr = document.getElementById("fr-region");
+    fr.value = hit.rcut; fr.dispatchEvent(new Event("input"));
+    if (hit.comuna) {
+      const fc = document.getElementById("fr-comuna");
+      fc.value = hit.comuna; fc.dispatchEvent(new Event("input"));
+    }
+    const ft = document.getElementById("filtro-reg-tabla");
+    if (ft && ft.value !== hit.rcut) { ft.value = hit.rcut; ft.dispatchEvent(new Event("input")); }
+    msg.textContent = "Mostrando " + (hit.comuna ? hit.comuna + " (" + (regNom[hit.rcut] || "") + ")" : "la región " + (regNom[hit.rcut] || "")) + " en el detalle territorial de abajo.";
+    const m = document.getElementById("mapa-region");
+    if (m) m.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  inp.addEventListener("change", resolver);
+  inp.addEventListener("input", () => { if (MAP[inp.value]) resolver(); });
+})();
+
+// ---------- valores en la explicacion de calculos
+(function metodoValores() {
+  const DEM = window.PW_DATA.c_demanda;
+  const set = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  set("m-anio", D.anio_parque || "");
+  set("m-anio2", D.anio_parque || "");
+  if (DEM) { set("m-km", PW.fmt(DEM.supuestos.km_anuales)); set("m-rend", DEM.supuestos.rendimiento_km_kwh); }
+})();
+</script>
+</body>
+</html>
