@@ -42,8 +42,8 @@
       ["combustible.html", "Precio de combustible"],
     ]],
     ["Energía", [
-      ["riesgo.html", "Cortes eléctricos"],
-      ["cortes.html", "Cortes en vivo"],
+      ["riesgo.html", "Cortes (histórico)"],
+      ["cortes.html", "Cortes (en vivo)"],
       ["probabilidad-cortes.html", "Probabilidad de cortes"],
       ["bess-cortes.html", "Almacenamiento (BESS)"],
       ["demanda-ev.html", "Demanda del parque EV"],
