@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Infraestructura de carga (SEC) — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260730c">
+</head>
+<body>
+<main>
+  <h1>Infraestructura de carga declarada (SEC)</h1>
+  <p class="sub">El registro <b>oficial</b> del regulador: lo que los operadores declaran a la SEC
+  (reporte EcoCarga). Acumulado histórico por categoría de uso, macro-zona, región, clase de potencia
+  y tipo de conector. Es distinto de la <a href="operadores.html">red viva</a> (Cargadores y
+  Conectores / OCPI, cada 30 min): aquí está la <b>base declarada</b>.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Crecimiento de la infraestructura declarada</h2>
+    <div id="g-serie"></div>
+    <p class="nota">Acumulado mes a mes desde 2018 (serie aditiva del reporte SEC). Los conectores
+    (tomas) superan a los cargadores porque un cargador puede tener varias tomas.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Por categoría de uso</h2>
+    <div class="scroll-x"><table class="pw" id="t-cat"></table></div>
+    <p class="nota" id="nota-cat"></p>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por macro-zona SEC</h2>
+      <div id="g-zona"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por región</h2>
+      <div id="g-region"></div>
+    </div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por clase de potencia</h2>
+      <div id="g-pot"></div>
+      <p class="nota">Snapshot de la red pública (EcoCarga). Semi-rápido y ultrarápido dominan.</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por tipo de conector</h2>
+      <div id="g-con"></div>
+      <p class="nota">Snapshot de la red pública, tipo de conector homologado al estándar canónico.</p>
+    </div>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+
+<script src="data/infraestructura.js"></script>
+<script src="assets/comun.js?v=260730c"></script>
+<script>
+PW.montarNav("infraestructura.html");
+const D = window.PW_DATA.infraestructura;
+
+document.getElementById("nota").textContent =
+  "Actualización SEC: " + D.actualizacion + ". Generado " + D.generado + ".";
+
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(D.kpis.instalaciones), "instalaciones", "puntos de carga declarados"],
+  [PW.fmt(D.kpis.cargadores), "cargadores", "equipos de carga"],
+  [PW.fmt(D.kpis.conectores), "conectores", "tomas de carga"],
+  [PW.fmt(D.kpis.mw, 1) + " MW", "potencia instalada", "capacidad declarada"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+PW.lineas("g-serie", {
+  labels: D.serie.map(x => x.ym),
+  series: [
+    { nombre: "Conectores", valores: D.serie.map(x => x.conectores), area: true },
+    { nombre: "Cargadores", valores: D.serie.map(x => x.cargadores), color: PW.color("--s2") },
+  ],
+  fmtV: v => PW.fmt(v), alto: 300,
+});
+
+PW.tabla("t-cat", [
+  { k: "cat", titulo: "Categoría de uso" },
+  { k: "instalaciones", titulo: "Instalaciones", num: true, fmt: v => PW.fmt(v) },
+  { k: "cargadores", titulo: "Cargadores", num: true, fmt: v => PW.fmt(v) },
+  { k: "conectores", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
+  { k: "mw", titulo: "Potencia (MW)", num: true, fmt: v => PW.fmt(v, 1) },
+], D.categorias, { orden: "conectores", buscador: false });
+
+const catMW = D.categorias.slice().sort((a, b) => b.mw - a.mw)[0];
+document.getElementById("nota-cat").textContent =
+  "El uso privado concentra la mayor cantidad de conectores, pero " + catMW.cat.toLowerCase() +
+  " concentra la potencia (" + PW.fmt(catMW.mw, 1) + " MW): los buses eléctricos cargan a alta potencia.";
+
+PW.barras("g-zona", {
+  items: D.zonas.map(z => ({
+    nombre: z.zona, valor: z.conectores,
+    extra: PW.fmt(z.cargadores) + " cargadores · " + PW.fmt(z.mw, 1) + " MW",
+  })),
+  fmtV: v => PW.fmt(v),
+});
+
+PW.barras("g-region", {
+  items: D.regiones.filter(r => r.conectores > 0).map(r => ({
+    nombre: r.region, valor: r.conectores,
+    extra: PW.fmt(r.cargadores) + " cargadores",
+  })),
+  fmtV: v => PW.fmt(v),
+});
+
+PW.barras("g-pot", {
+  items: D.por_potencia.map(p => ({ nombre: p.clase, valor: p.n })),
+  fmtV: v => PW.fmt(v),
+});
+
+PW.barras("g-con", {
+  items: D.por_conector.map(c => ({ nombre: c.tipo, valor: c.n })),
+  fmtV: v => PW.fmt(v),
+});
+
+document.getElementById("fuente").textContent = D.nota;
+</script>
+</body>
+</html>

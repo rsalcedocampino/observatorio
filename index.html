@@ -9,7 +9,7 @@
 <title>Energías Futuro — Chile</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260729c">
+<link rel="stylesheet" href="assets/estilo.css?v=260730c">
 </head>
 <body>
 <main>
@@ -147,6 +147,13 @@
 
   <h2 id="carga">Red de carga</h2>
   <div class="grid-modulos">
+    <a class="modulo-card" href="infraestructura.html">
+      <h3>Infraestructura de carga (SEC)</h3>
+      <p>El registro oficial declarado a la SEC (EcoCarga): cuántas instalaciones, cargadores,
+      conectores y MW hay por categoría de uso, macro-zona, región, clase de potencia y tipo de
+      conector. La base declarada, complemento de la red viva.</p>
+      <div class="aud"><span class="pill">SEC EcoCarga</span> <span class="pill">Base declarada</span></div>
+    </a>
     <a class="modulo-card" href="operadores.html">
       <h3>Ranking de operadores</h3>
       <p>Que tan confiable es cada red de carga, medido en terreno cada 30 minutos: porcentaje
@@ -217,6 +224,12 @@
 
   <h2 id="energia">Energía</h2>
   <div class="grid-modulos">
+    <a class="modulo-card" href="cortes.html">
+      <h3>Cortes de energía: en vivo</h3>
+      <p>La foto más reciente de la SEC: cuántos clientes están sin luz ahora y en qué regiones,
+      más los peores apagones y días de la historia reciente. La vista operacional de los cortes.</p>
+      <div class="aud"><span class="pill">SEC en vivo</span> <span class="pill">Eventos</span></div>
+    </a>
     <a class="modulo-card" href="riesgo.html">
       <h3>Cortes eléctricos</h3>
       <p>Cuantos clientes y cuantas horas sin luz acumula cada comuna, con estado en vivo.
@@ -267,6 +280,17 @@
     </a>
   </div>
 
+  <h2 id="censo">Censo Nacional</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="censo.html">
+      <h3>Censo Nacional 2024</h3>
+      <p>El retrato demográfico y habitacional del país (INE): población, edad, educación, empleo,
+      vivienda, conectividad y servicios básicos, por región y por las 346 comunas, con mapa comunal
+      por indicador. El contexto que sostiene el resto del observatorio.</p>
+      <div class="aud"><span class="pill">Censo 2024 INE</span> <span class="pill">346 comunas</span></div>
+    </a>
+  </div>
+
   <h2 id="normativa">Normativa</h2>
   <div class="grid-modulos">
     <a class="modulo-card" href="normativa.html">
@@ -305,7 +329,7 @@
   </div>
 </main>
 <script src="data/resumen.js"></script>
-<script src="assets/comun.js?v=260729c"></script>
+<script src="assets/comun.js?v=260730c"></script>
 <script>
 PW.montarNav("index.html");
 const k = PW_DATA.resumen.kpis;

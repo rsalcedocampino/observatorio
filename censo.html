@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Censo Nacional 2024 — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260730c">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<main>
+  <h1>Censo Nacional 2024</h1>
+  <p class="sub">El retrato demográfico y habitacional del país según el <b>Censo 2024 (INE)</b>:
+  población, estructura de edad, educación, empleo, vivienda, conectividad y servicios básicos, por
+  región y por las 346 comunas. Es el contexto territorial que sostiene todos los demás módulos.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Estructura de edad del país</h2>
+    <div id="g-edad"></div>
+    <p class="nota">Distribución de la población por tramo de edad (Censo 2024).</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa comunal por indicador</h2>
+    <div class="filtros">
+      <label>Indicador <select id="f-ind"></select></label>
+      <label>Región <select id="f-region"><option value="">Todas</option></select></label>
+      <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
+    </div>
+    <div id="mapa-wrap"><div id="mapa"></div></div>
+    <div id="ley"></div>
+    <p class="nota">Colores por quintiles del indicador elegido. Pasa el mouse por una comuna para ver
+    su valor.</p>
+    <h3 style="margin:14px 0 4px">Top 20 comunas por el indicador elegido</h3>
+    <div id="g-top"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Resumen por región</h2>
+    <div class="scroll-x"><table class="pw" id="t-regiones"></table></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Todas las comunas</h2>
+    <div id="t-comunas"></div>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+
+<script src="data/censo.js"></script>
+<script src="data/geo_comunas.js"></script>
+<script src="assets/comun.js?v=260730c"></script>
+<script>
+PW.montarNav("censo.html");
+const D = window.PW_DATA.censo;
+
+document.getElementById("nota").textContent = "Fuente: " + D.fuente + ". Generado " + D.generado + ".";
+document.getElementById("fuente").textContent = D.nota;
+
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(D.nacional.poblacion), "habitantes", "Censo 2024"],
+  [PW.fmt(D.nacional.hogares), "hogares", ""],
+  [PW.fmt(D.nacional.viviendas), "viviendas ocupadas", ""],
+  [PW.fmt(D.nacional.edad_promedio, 1) + " años", "edad promedio", D.nacional.pct_65_mas + "% tiene 65 o más"],
+  [PW.fmt(D.nacional.escolaridad, 1) + " años", "escolaridad (18+)", "promedio nacional"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+PW.barras("g-edad", {
+  items: D.edad.map(e => ({ nombre: e.grupo, valor: e.pct })),
+  fmtV: v => PW.fmt(v, 1) + "%",
+});
+
+const selInd = document.getElementById("f-ind");
+D.indicadores.forEach(i => {
+  const o = document.createElement("option"); o.value = i.k; o.textContent = i.label; selInd.appendChild(o);
+});
+selInd.value = "indice_envejecimiento";
+
+const selR = document.getElementById("f-region");
+const selC = document.getElementById("f-comuna");
+[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o);
+});
+function poblarComunas() {
+  const reg = selR.value;
+  const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort();
+  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
+  selC.disabled = !reg;
+}
+
+function indActual() { return D.indicadores.find(i => i.k === selInd.value); }
+function fmtInd(i, v) { return v == null ? "—" : PW.fmt(v, i.dec) + i.suf; }
+function colsCon(nameCols) {
+  return nameCols.concat(D.indicadores.map(i =>
+    ({ k: i.k, titulo: i.label, num: true, fmt: v => fmtInd(i, v) })));
+}
+
+PW.tabla("t-regiones", colsCon([{ k: "region", titulo: "Región" }]), D.regiones,
+  { orden: "poblacion", buscador: false });
+
+let tab = null;
+function pintarMapa(i) {
+  const wrap = document.getElementById("mapa-wrap");
+  wrap.innerHTML = '<div id="mapa"></div>';
+  PW.choropleth("mapa", {
+    valores: Object.fromEntries(D.comunas.map(c => [c.cut, c[i.k]])),
+    fmt: v => fmtInd(i, v), alto: 520,
+  });
+}
+function refrescar() {
+  const i = indActual();
+  const reg = selR.value, com = selC.value;
+  const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
+  pintarMapa(i);
+  PW.barras("g-top", {
+    items: filas.filter(c => c[i.k] != null).sort((a, b) => b[i.k] - a[i.k]).slice(0, 20)
+      .map(c => ({ nombre: c.comuna, valor: c[i.k], extra: c.region })),
+    fmtV: v => fmtInd(i, v),
+  });
+  if (tab) tab.actualizar(filas);
+  else tab = PW.tabla("t-comunas",
+    colsCon([{ k: "comuna", titulo: "Comuna" }, { k: "region", titulo: "Región" }]),
+    filas, { orden: "poblacion", max: 400 });
+}
+selInd.addEventListener("input", refrescar);
+selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
+selC.addEventListener("input", refrescar);
+refrescar();
+</script>
+</body>
+</html>

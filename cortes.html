@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Cortes de energía en vivo — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260730c">
+</head>
+<body>
+<main>
+  <h1>Cortes de energía: en vivo y grandes eventos</h1>
+  <p class="sub">La foto <b>más reciente</b> de la SEC (apps.sec.cl): cuántos clientes están sin luz
+  ahora y en qué regiones, más los peores apagones y días de la historia reciente. Para el análisis
+  por comuna, año y estacionalidad, ver <a href="riesgo.html">Cortes eléctricos</a>.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Clientes sin luz ahora, por región</h2>
+    <div id="g-vivo"></div>
+    <p class="nota" id="nota-vivo"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Peores apagones registrados (por evento)</h2>
+    <div class="scroll-x"><table class="pw" id="t-eventos"></table></div>
+    <p class="nota">Eventos individuales con mayor peak de clientes afectados desde 2017 (umbral 500
+    clientes). El apagón nacional del 25 de febrero de 2025 domina el registro.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Los peores días del país</h2>
+    <div id="g-dias"></div>
+    <p class="nota">Peak de clientes simultáneamente sin luz en el día (barra) y cliente-horas
+    acumuladas en la etiqueta.</p>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+
+<script src="data/cortes.js"></script>
+<script src="assets/comun.js?v=260730c"></script>
+<script>
+PW.montarNav("cortes.html");
+const D = window.PW_DATA.cortes;
+const V = D.vivo, K = D.kpis, PH = K.peak_historico || {};
+
+document.getElementById("nota").textContent =
+  "Fuente: " + D.fuente + ". Foto en vivo SEC: " + D.hora_sec + ". Generado " + D.generado + ".";
+document.getElementById("fuente").textContent = D.nota;
+
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + D.hora_sec],
+  [PW.fmt(V.pct_pais, 2) + "%", "del país sin suministro", PW.fmt(V.n_comunas) + " comunas afectadas"],
+  [PW.fmt(PH.clientes), "peak histórico", PH.evento || PH.cuando || ""],
+  [PW.fmt(K.eventos_totales), "eventos registrados", "desde 2017, umbral 500 clientes"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+PW.barras("g-vivo", {
+  items: V.por_region.filter(r => r.clientes > 0).map(r => ({
+    nombre: r.region, valor: r.clientes,
+  })),
+  fmtV: v => PW.fmt(v),
+});
+document.getElementById("nota-vivo").textContent =
+  V.clientes > 0
+    ? PW.fmt(V.clientes) + " clientes sin luz en " + PW.fmt(V.n_comunas) + " comunas al momento de la última lectura de la SEC (" + D.hora_sec + ")."
+    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + D.hora_sec + ").";
+
+PW.tabla("t-eventos", [
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Región" },
+  { k: "inicio", titulo: "Inicio" },
+  { k: "duracion_h", titulo: "Duración (h)", num: true, fmt: v => PW.fmt(v) },
+  { k: "peak", titulo: "Peak clientes", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
+], D.top_eventos, { orden: "peak", buscador: false });
+
+PW.barras("g-dias", {
+  items: D.peores_dias.map(x => ({
+    nombre: x.fecha, valor: x.peak,
+    extra: PW.fmt(x.cliente_horas) + " cliente-horas",
+  })),
+  fmtV: v => PW.fmt(v),
+});
+</script>
+</body>
+</html>
