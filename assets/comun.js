@@ -29,6 +29,7 @@
     ]],
     ["Carga", [
       ["operadores.html", "Operadores"],
+      ["infraestructura.html", "Infraestructura (SEC)"],
       ["sitios.html", "Selector de sitios"],
       ["costo.html", "Bencina vs Enchufe"],
       ["horas.html", "Mejor hora"],
@@ -42,6 +43,7 @@
     ]],
     ["Energía", [
       ["riesgo.html", "Cortes eléctricos"],
+      ["cortes.html", "Cortes en vivo"],
       ["probabilidad-cortes.html", "Probabilidad de cortes"],
       ["bess-cortes.html", "Almacenamiento (BESS)"],
       ["demanda-ev.html", "Demanda del parque EV"],
@@ -49,6 +51,9 @@
       ["pelp.html", "Chile vs PELP"],
       ["integracion.html", "Integración vertical"],
       ["generacion.html", "Parque de generación"],
+    ]],
+    ["Censo Nacional", [
+      ["censo.html", "Censo Nacional"],
     ]],
     ["Normativa", [
       ["normativa.html", "Metas y marco legal"],
@@ -120,6 +125,9 @@
   ICONOS["grupoauto.html"] = IC('<circle cx="12" cy="6" r="2.6"/><circle cx="6" cy="17" r="2.6"/><circle cx="18" cy="17" r="2.6"/><path d="M12 8.5v3.5M12 12l-4.4 2.8M12 12l4.4 2.8"/>');
   ICONOS["petroleras.html"] = IC('<path d="M5 20V7l6-3 6 3v13M3 20h18M9 11h4M9 15h4"/><path d="M19 20v-6l2 1v5"/>');
   ICONOS["fichacober.html"] = IC('<path d="M12 3l8 3v6c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>');
+  ICONOS["infraestructura.html"] = IC('<rect x="4" y="20" width="4" height="1.5"/><rect x="10" y="16" width="4" height="5.5"/><rect x="16" y="10" width="4" height="11.5"/><path d="M4 20V9l3-2 3 2M7 7V4"/>');
+  ICONOS["censo.html"] = IC('<circle cx="9" cy="7" r="3"/><path d="M3.5 21v-1.5a5.5 5.5 0 0 1 11 0V21"/><path d="M16 4.2a3 3 0 0 1 0 5.6"/><path d="M18 14.2a5 5 0 0 1 2.5 4.3V21"/>');
+  ICONOS["cortes.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/><path d="M3 3l18 18"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
 
   // ---------- navegacion + pie
