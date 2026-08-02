@@ -9,7 +9,7 @@
 <title>Normativa y metas — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260731c">
+<link rel="stylesheet" href="assets/estilo.css?v=260802b">
 <style>
 .vin { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
 .vin-vinculante { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
@@ -98,7 +98,7 @@
   </div>
 </main>
 <script src="data/c_normativa.js"></script>
-<script src="assets/comun.js?v=260731c"></script>
+<script src="assets/comun.js?v=260802b"></script>
 <script>
 PW.montarNav("normativa.html");
 const D = PW_DATA.c_normativa;
@@ -174,7 +174,8 @@ function pintarNormas() {
   const filas = D.normas.filter(n => !q ||
     norm(n.Norma + " " + n.Materia + " " + n.Relevancia_EV + " " + n.Vacios).includes(q));
   const cols = [
-    { k: "Norma", titulo: "Norma" },
+    { k: "Norma", titulo: "Norma", fmt: (v, r) => r.doc_url
+        ? `<a href="${r.doc_url}" target="_blank" rel="noopener" title="Ver o descargar el documento (Google Drive)">${v}</a>` : v },
     { k: "Año", titulo: "Año" },
     { k: "Organismo", titulo: "Organismo" },
     { k: "Materia", titulo: "Materia" },
