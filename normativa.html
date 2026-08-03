@@ -493,7 +493,10 @@ if (mtzEl && MTZ.length) {
     if (!items.length) {
       html += `<div class="mtz-det-item">Sin elementos en esta categoría para este eje.</div>`;
     } else if (key === "enlazadas") {
-      html += items.map(i => `<div class="mtz-det-item">${esc(i)}</div>`).join("");
+      html += items.map(i => {
+        const lab = `<b>${esc(i.norma)}</b> <span class="via">${esc(i.numero)} · ${esc(i.organismo)}</span>`;
+        return `<div class="mtz-det-item">${i.doc_url ? `<a href="${esc(i.doc_url)}" target="_blank" rel="noopener" title="Ver el documento en Drive">${lab}</a>` : lab}</div>`;
+      }).join("");
     } else {
       html += items.map(i => `<div class="mtz-det-item"><b>${esc(i.brecha)}</b>` +
         (i.urgencia ? ` — <span class="urg-${String(i.urgencia).toLowerCase()}">urgencia ${esc(i.urgencia)}</span>` : "") +
