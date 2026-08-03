@@ -88,6 +88,25 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
 @media (max-width: 720px) { .tl-track { height: 120px; } .tl-lab .n { font-size: 12.5px; } .tl-lab .yr { font-size: 10px; } .tl-leyenda { gap: 10px; } }
 /* Responsive: permitir que las columnas de .fila2 colapsen en movil (evita scroll horizontal de la pagina) */
 .fila2 > * { min-width: 0; }
+.mtz-wrap { overflow-x: auto; }
+.mtz { display: grid; grid-template-columns: minmax(150px, 1.5fr) repeat(3, 1fr); gap: 6px; margin-top: 10px; min-width: 540px; }
+.mtz-h { font-size: 11.5px; font-weight: 600; color: var(--ink-2); padding: 4px 8px; text-align: center; }
+.mtz-h.eje { text-align: left; }
+.mtz-eje { font-size: 12.5px; font-weight: 600; padding: 8px; display: flex; align-items: center; border-top: 1px solid var(--border); }
+.mtz-cell { border-top: 1px solid var(--border); border-radius: 8px; padding: 7px 8px; text-align: center; cursor: pointer; background: var(--surface-1); }
+.mtz-cell:hover { filter: brightness(1.06); }
+.mtz-cell.on { outline: 2px solid var(--ink-1); outline-offset: -2px; }
+.mtz-cell .n { font-size: 19px; font-weight: 700; display: block; line-height: 1.1; }
+.mtz-cell.enl { background: color-mix(in srgb, var(--good) 12%, transparent); color: var(--good); }
+.mtz-cell.cre { background: color-mix(in srgb, var(--critical) 12%, transparent); color: var(--critical); }
+.mtz-cell.mod { background: color-mix(in srgb, var(--warning) 20%, transparent); color: color-mix(in srgb, var(--warning) 75%, var(--ink-1)); }
+.mtz-cell.cero { opacity: .4; cursor: default; }
+.mtz-detalle { margin-top: 14px; }
+.mtz-det-item { padding: 8px 0; border-top: 1px solid var(--border); font-size: 12.5px; line-height: 1.4; }
+.mtz-det-item:first-child { border-top: 0; }
+.mtz-det-item .via { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+.urg-media { color: var(--ink-2); }
+.urg-baja { color: var(--ink-3); }
 </style>
 </head>
 <body>
@@ -123,6 +142,15 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
     <div class="tl-chart" id="tl-chart"></div>
     <div class="tl-detalle" id="tl-detalle"></div>
     <p class="nota tl-sf" id="ruta-sf"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Matriz normativa por eje: qué está enlazado, qué falta crear y qué falta modificar</h2>
+    <p class="nota">Cada eje de la Estrategia cruzado con su estado legal: <b>enlazado</b> (leyes/decretos que
+    ya lo sostienen), <b>falta crear</b> (vacío absoluto, o reglamento/plan comprometido sin dictar) y
+    <b>falta modificar</b> (norma que existe pero no sirve, o en conflicto). Toca una celda para ver el detalle.</p>
+    <div class="mtz-wrap"><div class="mtz" id="mtz"></div></div>
+    <div class="mtz-detalle" id="mtz-detalle"></div>
   </div>
 
   <div class="tarjeta">
@@ -434,6 +462,51 @@ if (sf.length) {
 
 const pico = ANIOS.reduce((best, a) => medPorAnio(a).length > medPorAnio(best).length ? a : best, ANIOS[0]);
 seleccionarAnio(pico);
+
+// Matriz normativa por eje: enlazado / falta crear / falta modificar
+const MTZ = RUTA.matriz || [];
+const MCOLS = [["enlazadas", "enl", "Enlazado"], ["crear", "cre", "Falta crear"], ["modificar", "mod", "Falta modificar"]];
+const mtzEl = document.getElementById("mtz");
+const mtzDet = document.getElementById("mtz-detalle");
+if (mtzEl && MTZ.length) {
+  let h = `<div class="mtz-h eje">Eje estratégico</div>` + MCOLS.map(c => `<div class="mtz-h">${c[2]}</div>`).join("");
+  MTZ.forEach((row, ri) => {
+    h += `<div class="mtz-eje">${esc(row.eje)}</div>`;
+    MCOLS.forEach(([key, cls]) => {
+      const n = (row[key] || []).length;
+      const cero = n === 0 ? " cero" : "";
+      h += `<div class="mtz-cell ${cls}${cero}" data-r="${ri}" data-k="${key}"${n ? ` role="button" tabindex="0"` : ""}><span class="n">${n}</span></div>`;
+    });
+  });
+  mtzEl.innerHTML = h;
+  const TIT = {
+    enlazadas: "Enlazado — leyes/decretos que ya lo sostienen",
+    crear: "Falta crear — vacío absoluto o instrumento comprometido sin dictar",
+    modificar: "Falta modificar — existe pero no sirve, o en conflicto",
+  };
+  function mtzMostrar(ri, key) {
+    mtzEl.querySelectorAll(".mtz-cell").forEach(c => c.classList.remove("on"));
+    const cell = mtzEl.querySelector(`[data-r="${ri}"][data-k="${key}"]`);
+    if (cell) cell.classList.add("on");
+    const row = MTZ[ri], items = row[key] || [];
+    let html = `<h3 style="margin:0 0 6px;font-size:14px">${esc(row.eje)} · ${TIT[key]} (${items.length})</h3>`;
+    if (!items.length) {
+      html += `<div class="mtz-det-item">Sin elementos en esta categoría para este eje.</div>`;
+    } else if (key === "enlazadas") {
+      html += items.map(i => `<div class="mtz-det-item">${esc(i)}</div>`).join("");
+    } else {
+      html += items.map(i => `<div class="mtz-det-item"><b>${esc(i.brecha)}</b>` +
+        (i.urgencia ? ` — <span class="urg-${String(i.urgencia).toLowerCase()}">urgencia ${esc(i.urgencia)}</span>` : "") +
+        `<div class="via">Vía: ${esc(i.via) || "—"}${i.instrumento ? " · instrumento: " + esc(i.instrumento) : ""}</div></div>`).join("");
+    }
+    mtzDet.innerHTML = html;
+  }
+  mtzEl.addEventListener("click", e => { const c = e.target.closest(".mtz-cell"); if (c && !c.classList.contains("cero")) mtzMostrar(+c.dataset.r, c.dataset.k); });
+  mtzEl.addEventListener("keydown", e => { const c = e.target.closest(".mtz-cell"); if (c && !c.classList.contains("cero") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); mtzMostrar(+c.dataset.r, c.dataset.k); } });
+  let bri = 0, bmax = -1;
+  MTZ.forEach((row, ri) => { const n = (row.crear || []).length; if (n > bmax) { bmax = n; bri = ri; } });
+  mtzMostrar(bri, "crear");
+}
 </script>
 </body>
 </html>
