@@ -837,9 +837,11 @@
       console.warn(`PW.mapa: ${fueraChile} punto(s) descartado(s) por coordenada fuera de Chile (bbox lat -56..-17, lon -76..-66).`);
     }
     // [FOCO] auto-zoom al territorio filtrado (region/comuna): cfg.foco = lista de cuts de comuna.
+    // animate:false: el fit corre sincronicamente al crear el mapa (antes de asentar el layout);
+    // con animacion la vista a veces se descarta por una carrera con el setView inicial.
     if (cfg.foco && cfg.foco.length) {
       const b = boundsComunas(cfg.foco);
-      if (b) m.fitBounds(b.pad(0.15));
+      if (b) m.fitBounds(b.pad(0.15), { animate: false });
     }
     return m;
   }
@@ -1000,9 +1002,11 @@
     });
     el.insertAdjacentElement("afterend", ley);
     // [FOCO] auto-zoom al territorio filtrado (region/comuna): cfg.foco = lista de cuts de comuna.
+    // animate:false: el fit corre sincronicamente al crear el mapa (antes de asentar el layout);
+    // con animacion la vista a veces se descarta por una carrera con el setView inicial.
     if (cfg.foco && cfg.foco.length) {
       const b = boundsComunas(cfg.foco);
-      if (b) m.fitBounds(b.pad(0.15));
+      if (b) m.fitBounds(b.pad(0.15), { animate: false });
     }
     return m;
   }
