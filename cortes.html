@@ -27,6 +27,15 @@
     <p class="nota" id="nota-vivo"></p>
   </div>
 
+  <div class="tarjeta" id="card-dist" style="display:none">
+    <h2 style="margin-top:0">Por empresa distribuidora (en vivo)</h2>
+    <p class="nota" id="dist-head"></p>
+    <div id="g-dist-grupo"></div>
+    <h3 style="margin:14px 0 6px;font-size:14px">Comunas con más clientes afectados (top 20)</h3>
+    <div class="scroll-x"><table class="pw" id="t-dist-comuna"></table></div>
+    <p class="nota" id="dist-caveats" style="margin-top:12px"></p>
+  </div>
+
   <div class="tarjeta">
     <h2 style="margin-top:0">Peores apagones registrados (por evento)</h2>
     <div class="scroll-x"><table class="pw" id="t-eventos"></table></div>
@@ -88,6 +97,39 @@ PW.barras("g-dias", {
   })),
   fmtV: v => PW.fmt(v),
 });
+
+// Por empresa distribuidora (en vivo, best-effort: puede faltar el bloque)
+const DI = D.distribuidoras;
+if (DI && (DI.por_grupo || []).length) {
+  document.getElementById("card-dist").style.display = "";
+  const cap = DI.capturado ? DI.capturado.slice(0, 16).replace("T", " ") : "s/f";
+  document.getElementById("dist-head").textContent =
+    "Snapshot " + cap + " · " + (DI.cobertura || "") + " · " +
+    PW.fmt(DI.n_reales) + " fallas reales / " + PW.fmt(DI.clientes_reales) + " clientes.";
+  PW.barras("g-dist-grupo", {
+    items: (DI.por_grupo || []).map(g => ({
+      nombre: g.grupo, valor: g.clientes, extra: PW.fmt(g.outages) + " fallas",
+    })),
+    fmtV: v => PW.fmt(v),
+  });
+  PW.tabla("t-dist-comuna", [
+    { k: "comuna", titulo: "Comuna" },
+    { k: "region", titulo: "Región" },
+    { k: "empresa", titulo: "Empresa", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+    { k: "clientes", titulo: "Clientes", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
+    { k: "outages", titulo: "Fallas", num: true, fmt: v => PW.fmt(v) },
+  ], DI.por_comuna || [], { orden: "clientes", buscador: false });
+  document.getElementById("dist-caveats").innerHTML =
+    "<b>Cómo se arma:</b> la SEC entrega el corte por comuna <b>sin empresa</b>; esta atribución se " +
+    "construye con los feeds de fallas de las propias distribuidoras. " +
+    "<b>Cobertura parcial:</b> SAESA, CGE, Edelmag y Enel; falta Chilquinta (su feed responde 403) y las " +
+    "cooperativas/menores — lo no cubierto queda sin empresa. " +
+    "<b>Solo en vivo:</b> los feeds no tienen histórico, así que el registro SEC 2017–hoy del resto del " +
+    "módulo sigue sin empresa (la atribución se acumula hacia adelante). " +
+    "<b>No cuadra con el total SEC:</b> son fuentes y horas de captura distintas (feed por empresa vs. SEC " +
+    "agregado por comuna); no es una reconciliación del total nacional. Las fallas hipotéticas de SAESA " +
+    "(predicciones) están excluidas de los conteos.";
+}
 </script>
 </body>
 </html>

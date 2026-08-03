@@ -29,6 +29,12 @@
     <p class="nota">Distribución de la población por tramo de edad (Censo 2024).</p>
   </div>
 
+  <div class="tarjeta" id="card-serie" style="display:none">
+    <h2 style="margin-top:0">Evolución de la población (1952-2024)</h2>
+    <div id="g-serie"></div>
+    <p class="nota" id="nota-serie"></p>
+  </div>
+
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa comunal por indicador</h2>
     <div class="filtros">
@@ -136,6 +142,22 @@ selInd.addEventListener("input", refrescar);
 selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
 selC.addEventListener("input", refrescar);
 refrescar();
+
+// Evolución de la población (serie intercensal 1952-2024)
+const SER = D.serie_nacional || [];
+if (SER.length > 1) {
+  document.getElementById("card-serie").style.display = "";
+  PW.lineas("g-serie", {
+    labels: SER.map(x => String(x.ano)),
+    series: [{ nombre: "Población censada", valores: SER.map(x => x.poblacion) }],
+    fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
+  });
+  const ult = SER[SER.length - 1], prim = SER[0];
+  document.getElementById("nota-serie").textContent =
+    "Población efectivamente censada por año censal (INE). De " + PW.fmt(prim.poblacion) + " en " + prim.ano +
+    " a " + PW.fmt(ult.poblacion) + " en " + ult.ano +
+    (ult.var_pct != null ? " (variación intercensal " + ult.var_pct + "%, crecimiento anual " + ult.crec_anual + "%)." : ".");
+}
 </script>
 </body>
 </html>
