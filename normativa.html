@@ -19,29 +19,75 @@
 .vin-declarativa { background: color-mix(in srgb, var(--critical) 12%, transparent); color: var(--critical); }
 .urg-maxima { color: var(--critical); font-weight: 700; }
 .urg-alta { color: var(--serious); font-weight: 600; }
-.ruta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 12px; margin-top: 10px; }
-.ruta-cat { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--surface-1); }
-.ruta-cat h3 { margin: 0 0 8px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-.ruta-cat h3 .n { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--plane); color: var(--ink-2); }
-.ruta-item { padding: 8px 0; border-top: 1px solid var(--border); }
-.ruta-item:first-of-type { border-top: 0; }
-.ruta-item .t { font-weight: 600; font-size: 13px; }
-.ruta-item .d { font-size: 12px; color: var(--ink-2); margin: 3px 0; line-height: 1.4; }
-.ruta-item .h { font-size: 11px; color: var(--ink-3); }
-.cat-ruta_critica { border-left: 3px solid var(--critical); }
-.cat-oportunidad { border-left: 3px solid var(--good); }
-.cat-desafio { border-left: 3px solid var(--warning); }
-.cat-accion_faltante { border-left: 3px solid var(--serious); }
-.cat-recuadro { border-left: 3px solid var(--s1); }
-.timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 10px; }
-.tl-col { border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--surface-1); }
-.tl-col.vacio { background: color-mix(in srgb, var(--critical) 8%, transparent); border-style: dashed; border-color: var(--critical); }
-.tl-col h4 { margin: 0 0 4px; font-size: 13px; display: flex; justify-content: space-between; align-items: baseline; }
-.tl-col h4 .c { font-size: 11px; color: var(--ink-3); font-weight: 600; }
-.tl-med { font-size: 11px; padding: 5px 0; border-top: 1px solid var(--border); color: var(--ink-2); line-height: 1.35; }
-.tl-med .e { color: var(--ink-3); font-weight: 600; }
-.tl-col.vacio .tl-med { border-top: 0; color: var(--critical); }
-@media (max-width: 760px) { .timeline { grid-template-columns: 1fr 1fr; } }
+/* Ruta 2035 — panel interactivo: filtro por categoria + tarjetas desplegables */
+.ruta-toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0 2px; }
+.ruta-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.ruta-chip { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none; padding: 5px 11px; border-radius: 999px; font-size: 12.5px; border: 1px solid var(--border); background: var(--plane); color: var(--ink-2); transition: border-color .12s, background .12s, color .12s; }
+.ruta-chip .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--cc, var(--s1)); flex: none; }
+.ruta-chip .num { color: var(--ink-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+.ruta-chip:hover { border-color: var(--ink-3); }
+.ruta-chip.on { background: var(--surface-1); border-color: var(--cc, var(--s1)); color: var(--ink-1); font-weight: 600; }
+.ruta-chip.on .num { color: var(--ink-2); }
+.ruta-toggle { margin-left: auto; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-family: inherit; border: 1px solid var(--border); background: var(--surface-1); color: var(--ink-1); }
+.ruta-toggle:hover { border-color: var(--s1); }
+.ruta-cont { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-top: 12px; align-items: start; }
+details.ruta-card { border: 1px solid var(--border); border-left: 3px solid var(--cc, var(--s1)); border-radius: 10px; background: var(--surface-1); overflow: hidden; transition: border-color .12s, box-shadow .12s; }
+details.ruta-card:hover { border-color: var(--cc, var(--s1)); }
+details.ruta-card[open] { box-shadow: 0 4px 14px rgba(0, 0, 0, .07); }
+details.ruta-card > summary { list-style: none; cursor: pointer; padding: 11px 12px; display: flex; align-items: flex-start; gap: 9px; }
+details.ruta-card > summary::-webkit-details-marker { display: none; }
+details.ruta-card > summary::after { content: "\25B8"; color: var(--ink-3); font-size: 12px; flex: none; margin-top: 2px; display: inline-block; transition: transform .15s; }
+details.ruta-card[open] > summary::after { transform: rotate(90deg); }
+.ruta-card .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--cc, var(--s1)); flex: none; margin-top: 5px; }
+.ruta-card .st { flex: 1; min-width: 0; }
+.ruta-card .t { font-weight: 600; font-size: 13px; line-height: 1.35; }
+.ruta-card .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+.ruta-card .cat-lbl { font-size: 10px; font-weight: 700; color: var(--cc, var(--s1)); text-transform: uppercase; letter-spacing: .04em; }
+.ruta-card .hz { font-size: 11px; color: var(--ink-3); }
+.ruta-card .body { padding: 0 12px 12px 30px; }
+details.ruta-card[open] .body { animation: ruta-in .18s ease; }
+@keyframes ruta-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.ruta-card .d { font-size: 12.5px; color: var(--ink-2); line-height: 1.45; }
+.ruta-card .h { font-size: 11px; color: var(--ink-3); margin-top: 6px; }
+.ruta-vacio { color: var(--ink-3); font-size: 12.5px; padding: 8px 2px; }
+.cat-ruta_critica { --cc: var(--critical); }
+.cat-oportunidad { --cc: var(--good); }
+.cat-desafio { --cc: var(--warning); }
+.cat-accion_faltante { --cc: var(--serious); }
+.cat-recuadro { --cc: var(--s1); }
+/* Timeline de medidas — grafico de barras apiladas por eje, interactivo */
+.tl-leyenda { display: flex; gap: 14px; flex-wrap: wrap; margin: 12px 0 2px; font-size: 11.5px; color: var(--ink-2); }
+.tl-leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.tl-leyenda span::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: var(--ec, var(--s1)); flex: none; }
+.tl-chart { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; align-items: end; margin-top: 12px; }
+.tl-bar { cursor: pointer; user-select: none; display: flex; flex-direction: column; align-items: center; gap: 6px; outline: none; }
+.tl-track { height: 150px; width: 100%; display: flex; align-items: flex-end; justify-content: center; }
+.tl-stack { width: 64%; max-width: 44px; display: flex; flex-direction: column-reverse; gap: 1.5px; min-height: 5px; transition: filter .12s; }
+.tl-seg { flex: 1; min-height: 3px; background: var(--ec, var(--s1)); border-radius: 2px; }
+.tl-stack .tl-seg:last-child { border-radius: 4px 4px 0 0; }
+.tl-bar:hover .tl-stack, .tl-bar:focus-visible .tl-stack { filter: brightness(1.08); }
+.tl-lab { text-align: center; line-height: 1.15; }
+.tl-lab .n { font-size: 14px; font-weight: 700; color: var(--ink-1); display: block; }
+.tl-lab .yr { font-size: 11.5px; color: var(--ink-2); }
+.tl-bar.sel .tl-lab .n, .tl-bar.sel .tl-lab .yr { color: var(--s1); }
+.tl-bar.sel .tl-stack { outline: 2px solid var(--s1); outline-offset: 2px; border-radius: 3px; }
+.tl-bar.vacio .tl-stack { height: 100%; background: none; border: 1.5px dashed var(--critical); border-radius: 6px; opacity: .6; }
+.tl-bar.vacio .tl-lab .n { color: var(--critical); }
+.tl-bar.vacio.sel .tl-stack { outline-color: var(--critical); opacity: 1; }
+.tl-detalle { margin-top: 16px; border: 1px solid var(--border); border-left: 3px solid var(--s1); border-radius: 10px; padding: 12px 14px; background: var(--surface-1); }
+.tl-detalle.vacio { border-left-color: var(--critical); }
+.tl-detalle h4 { margin: 0 0 4px; font-size: 14px; }
+.tl-detalle .cap { color: var(--ink-3); font-size: 11.5px; margin: 0 0 8px; }
+.tl-m { padding: 9px 0; border-top: 1px solid var(--grid); }
+.tl-m:first-of-type { border-top: 0; }
+.tl-m .eje { display: inline-block; font-size: 10.5px; font-weight: 700; color: var(--ec, var(--s1)); background: color-mix(in srgb, var(--ec, var(--s1)) 13%, transparent); border-radius: 999px; padding: 1px 9px; margin-bottom: 4px; }
+.tl-m .mt { font-size: 13px; color: var(--ink-1); line-height: 1.4; }
+.tl-m .mm { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; line-height: 1.4; }
+.tl-sf a { cursor: pointer; color: var(--s1); }
+.tl-sf a:hover { text-decoration: underline; }
+@media (max-width: 720px) { .tl-track { height: 120px; } .tl-lab .n { font-size: 12.5px; } .tl-lab .yr { font-size: 10px; } .tl-leyenda { gap: 10px; } }
+/* Responsive: permitir que las columnas de .fila2 colapsen en movil (evita scroll horizontal de la pagina) */
+.fila2 > * { min-width: 0; }
 </style>
 </head>
 <body>
@@ -58,9 +104,14 @@
     <h2 style="margin-top:0">Ruta a la Meta 2035: qué falta para llegar</h2>
     <p class="nota">Síntesis accionable de la Estrategia Nacional de Electromovilidad cruzada con las
     metas, leyes y brechas: las rutas críticas, las oportunidades, los desafíos, las acciones que aún
-    faltan y los datos-fuerza. Fuente: Documentos de Gobierno (análisis de la Estrategia 2030 y la Ruta
-    Energética).</p>
-    <div id="ruta-grupos" class="ruta-grid"></div>
+    faltan y los datos-fuerza. Filtra por categoría y despliega cada tarjeta para ver el detalle y su
+    fuente. Basado en Documentos de Gobierno (análisis de la Estrategia 2030 y la Ruta Energética).</p>
+    <div class="ruta-toolbar">
+      <div class="ruta-chips" id="ruta-chips"></div>
+      <button type="button" class="ruta-toggle" id="ruta-toggle">Expandir todo</button>
+    </div>
+    <p class="nota" id="ruta-count" style="margin:8px 0 0"></p>
+    <div id="ruta-cont" class="ruta-cont"></div>
   </div>
 
   <div class="tarjeta">
@@ -68,8 +119,10 @@
     <p class="nota">Las medidas con año de término comprometido se concentran en 2027-2029 y se apagan
     en 2030: <b>no hay ninguna medida nueva programada para 2031-2035</b>, justo el tramo final hacia la
     meta.</p>
-    <div id="ruta-timeline" class="timeline"></div>
-    <p class="nota" id="ruta-sf"></p>
+    <div class="tl-leyenda" id="tl-leyenda"></div>
+    <div class="tl-chart" id="tl-chart"></div>
+    <div class="tl-detalle" id="tl-detalle"></div>
+    <p class="nota tl-sf" id="ruta-sf"></p>
   </div>
 
   <div class="tarjeta">
@@ -245,7 +298,7 @@ function pintarCifras() {
 document.getElementById("busca-cifra").addEventListener("input", pintarCifras);
 pintarCifras();
 
-// Ruta a la Meta 2035: tarjetas por categoria + timeline de medidas por año
+// Ruta a la Meta 2035: panel interactivo — filtro por categoria + tarjetas desplegables
 const RUTA = D.ruta_2035 || { destacados: [], medidas: [] };
 const esc = s => (s == null ? "" : String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"));
 const corta = (s, n) => { s = s || ""; return s.length > n ? s.slice(0, n).trim() + "…" : s; };
@@ -253,33 +306,134 @@ const CATS = [
   ["ruta_critica", "Rutas críticas"], ["oportunidad", "Oportunidades"], ["desafio", "Desafíos"],
   ["accion_faltante", "Acciones faltantes"], ["recuadro", "Datos-fuerza"],
 ];
-document.getElementById("ruta-grupos").innerHTML = CATS.map(([cat, lbl]) => {
-  const items = RUTA.destacados.filter(d => d.categoria === cat);
-  if (!items.length) return "";
-  return `<div class="ruta-cat cat-${cat}"><h3>${lbl} <span class="n">${items.length}</span></h3>` +
-    items.map(d => `<div class="ruta-item"><div class="t">${esc(d.titulo)}</div>` +
-      (d.detalle ? `<div class="d">${esc(d.detalle)}</div>` : "") +
-      (d.horizonte || d.referencia
-        ? `<div class="h">${d.horizonte ? "Horizonte: " + esc(d.horizonte) : ""}${d.horizonte && d.referencia ? " · " : ""}${d.referencia ? esc(d.referencia) : ""}</div>`
-        : "") +
-      `</div>`).join("") + `</div>`;
-}).join("");
+const LBL = Object.fromEntries(CATS);
+const rutaCont = document.getElementById("ruta-cont");
+const rutaChips = document.getElementById("ruta-chips");
+const rutaToggle = document.getElementById("ruta-toggle");
+const rutaCount = document.getElementById("ruta-count");
+const catsCon = CATS.filter(([c]) => RUTA.destacados.some(d => d.categoria === c));
 
+rutaChips.innerHTML =
+  `<span class="ruta-chip on" data-cat="" style="--cc:var(--ink-2)">Todas <span class="num">${RUTA.destacados.length}</span></span>` +
+  catsCon.map(([c, l]) => {
+    const n = RUTA.destacados.filter(d => d.categoria === c).length;
+    return `<span class="ruta-chip cat-${c}" data-cat="${c}"><span class="dot"></span>${l} <span class="num">${n}</span></span>`;
+  }).join("");
+
+rutaCont.innerHTML = catsCon.flatMap(([c]) =>
+  RUTA.destacados.filter(d => d.categoria === c).map(d =>
+    `<details class="ruta-card cat-${c}" data-cat="${c}">` +
+      `<summary><span class="dot"></span><span class="st">` +
+        `<span class="t">${esc(d.titulo)}</span>` +
+        `<span class="meta"><span class="cat-lbl">${esc(LBL[c])}</span>` +
+          (d.horizonte ? `<span class="hz">Horizonte: ${esc(d.horizonte)}</span>` : "") +
+        `</span>` +
+      `</span></summary>` +
+      `<div class="body">` +
+        (d.detalle ? `<div class="d">${esc(d.detalle)}</div>` : "") +
+        (d.referencia ? `<div class="h">Fuente: ${esc(d.referencia)}</div>` : "") +
+      `</div>` +
+    `</details>`
+  )
+).join("") || `<div class="ruta-vacio">Sin datos de la Ruta 2035 disponibles.</div>`;
+
+function filtrarRuta(cat) {
+  let vis = 0;
+  rutaCont.querySelectorAll(".ruta-card").forEach(el => {
+    const ok = !cat || el.dataset.cat === cat;
+    el.style.display = ok ? "" : "none";
+    if (ok) vis++;
+  });
+  rutaChips.querySelectorAll(".ruta-chip").forEach(ch => ch.classList.toggle("on", ch.dataset.cat === cat));
+  rutaCount.textContent = "Mostrando " + vis + " de " + RUTA.destacados.length + " puntos de la ruta.";
+}
+rutaChips.addEventListener("click", e => {
+  const ch = e.target.closest(".ruta-chip");
+  if (ch) filtrarRuta(ch.dataset.cat);
+});
+
+let rutaAbierto = false;
+rutaToggle.addEventListener("click", () => {
+  rutaAbierto = !rutaAbierto;
+  rutaCont.querySelectorAll(".ruta-card").forEach(el => { if (el.style.display !== "none") el.open = rutaAbierto; });
+  rutaToggle.textContent = rutaAbierto ? "Contraer todo" : "Expandir todo";
+});
+
+filtrarRuta("");
+
+// Timeline de medidas — grafico apilado por eje + panel de detalle interactivo
 const ANIOS = ["2026", "2027", "2028", "2029", "2030"];
 const ejeNum = e => (e || "").trim().split(/\s+/)[0];
-let tlHTML = ANIOS.map(a => {
-  const ms = RUTA.medidas.filter(m => String(m.anio) === a);
-  return `<div class="tl-col"><h4>${a} <span class="c">${ms.length}</span></h4>` +
-    ms.map(m => `<div class="tl-med" title="${esc(m.medida)}"><span class="e">Eje ${esc(ejeNum(m.eje))}</span> · ${esc(corta(m.medida, 85))}</div>`).join("") +
-    `</div>`;
-}).join("");
-tlHTML += `<div class="tl-col vacio"><h4>2031-2035 <span class="c">0</span></h4>` +
-  `<div class="tl-med">Sin medidas nuevas programadas para el tramo final hacia la meta.</div></div>`;
-document.getElementById("ruta-timeline").innerHTML = tlHTML;
+const EJE_COL = { "1": "var(--s1)", "2": "var(--s2)", "3": "var(--s3)", "4": "var(--s4)", "5": "var(--s5)", "Transversal": "var(--s6)" };
+const EJE_LBL = { "1": "Infraestructura de carga", "2": "Transporte pesado", "3": "Transporte fluvial/marítimo", "4": "Economía circular de baterías", "5": "Coordinación pública", "Transversal": "Transversal" };
+const colEje = e => EJE_COL[ejeNum(e)] || "var(--ink-3)";
+const medPorAnio = a => RUTA.medidas.filter(m => String(m.anio) === a).slice().sort((x, y) => ejeNum(x.eje).localeCompare(ejeNum(y.eje)));
+const maxN = Math.max(1, ...ANIOS.map(a => medPorAnio(a).length));
+const tlChart = document.getElementById("tl-chart");
+const tlDetalle = document.getElementById("tl-detalle");
+
+const ejesPresentes = [...new Set(RUTA.medidas.map(m => ejeNum(m.eje)))].sort();
+document.getElementById("tl-leyenda").innerHTML = ejesPresentes.map(ej =>
+  `<span style="--ec:${EJE_COL[ej] || "var(--ink-3)"}">${ej === "Transversal" ? "Transversal" : "Eje " + ej}${EJE_LBL[ej] && ej !== "Transversal" ? " · " + esc(EJE_LBL[ej]) : ""}</span>`
+).join("");
+
+tlChart.innerHTML = ANIOS.map(a => {
+  const ms = medPorAnio(a);
+  const h = (ms.length / maxN * 100).toFixed(1);
+  const segs = ms.map(m => `<div class="tl-seg" style="--ec:${colEje(m.eje)}"></div>`).join("");
+  return `<div class="tl-bar" data-anio="${a}" role="button" tabindex="0" aria-label="Medidas ${a}: ${ms.length}">` +
+    `<div class="tl-track"><div class="tl-stack" style="height:${h}%">${segs}</div></div>` +
+    `<div class="tl-lab"><span class="n">${ms.length}</span><span class="yr">${a}</span></div></div>`;
+}).join("") +
+  `<div class="tl-bar vacio" data-anio="__vacio" role="button" tabindex="0" aria-label="2031-2035: sin medidas">` +
+    `<div class="tl-track"><div class="tl-stack"></div></div>` +
+    `<div class="tl-lab"><span class="n">0</span><span class="yr">2031-2035</span></div></div>`;
+
+function pintarDetalle(a) {
+  if (a === "__vacio") {
+    tlDetalle.className = "tl-detalle vacio";
+    tlDetalle.innerHTML = `<h4>2031-2035 · sin medidas nuevas</h4>` +
+      `<p class="cap">La Estrategia no programa ninguna medida con término en el tramo final hacia la meta 2035. El plan de implementación debería extender medidas a estos años con hitos anuales de ventas y de despliegue de carga.</p>`;
+    return;
+  }
+  const esSF = a === "s/f";
+  const ms = esSF ? RUTA.medidas.filter(m => !ANIOS.includes(String(m.anio))) : medPorAnio(a);
+  tlDetalle.className = "tl-detalle";
+  tlDetalle.innerHTML =
+    `<h4>${esSF ? "Medidas sin año de término definido" : "Medidas con término en " + a} · ${ms.length}</h4>` +
+    `<p class="cap">Eje responsable, medida comprometida y su meta asociada.</p>` +
+    ms.map(m => {
+      const ej = ejeNum(m.eje);
+      const ejLbl = (ej === "Transversal" ? "Transversal" : "Eje " + ej) + (EJE_LBL[ej] && ej !== "Transversal" ? " · " + EJE_LBL[ej] : "");
+      const mm = [m.responsables ? "Responsables: " + m.responsables : "", m.meta ? "Meta: " + m.meta : ""].filter(Boolean).join(" · ");
+      return `<div class="tl-m"><span class="eje" style="--ec:${colEje(m.eje)}">${esc(ejLbl)}</span>` +
+        `<div class="mt">${esc(m.medida)}</div>` +
+        (mm ? `<div class="mm">${esc(mm)}</div>` : "") + `</div>`;
+    }).join("");
+}
+
+function seleccionarAnio(a) {
+  tlChart.querySelectorAll(".tl-bar").forEach(b => b.classList.toggle("sel", b.dataset.anio === a));
+  pintarDetalle(a);
+}
+tlChart.addEventListener("click", e => { const b = e.target.closest(".tl-bar"); if (b) seleccionarAnio(b.dataset.anio); });
+tlChart.addEventListener("keydown", e => {
+  const b = e.target.closest(".tl-bar");
+  if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); seleccionarAnio(b.dataset.anio); }
+});
+
 const sf = RUTA.medidas.filter(m => !ANIOS.includes(String(m.anio)));
-document.getElementById("ruta-sf").textContent = sf.length
-  ? sf.length + " medidas sin año de término definido (s/f) no se muestran en el timeline."
-  : "";
+const tlSf = document.getElementById("ruta-sf");
+if (sf.length) {
+  tlSf.innerHTML = `<a id="tl-sf-link" role="button" tabindex="0">${sf.length} medidas sin año de término definido (s/f)</a> — no entran en el gráfico; toca para verlas en el detalle.`;
+  const lk = document.getElementById("tl-sf-link");
+  const abrirSF = () => { tlChart.querySelectorAll(".tl-bar").forEach(b => b.classList.remove("sel")); pintarDetalle("s/f"); };
+  lk.addEventListener("click", abrirSF);
+  lk.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirSF(); } });
+} else { tlSf.textContent = ""; }
+
+const pico = ANIOS.reduce((best, a) => medPorAnio(a).length > medPorAnio(best).length ? a : best, ANIOS[0]);
+seleccionarAnio(pico);
 </script>
 </body>
 </html>
