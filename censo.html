@@ -9,7 +9,7 @@
 <title>Censo Nacional 2024 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260803a">
+<link rel="stylesheet" href="assets/estilo.css?v=260803b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 </head>
@@ -65,7 +65,7 @@
 
 <script src="data/censo.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260803a"></script>
+<script src="assets/comun.js?v=260803b"></script>
 <script>
 PW.montarNav("censo.html");
 const D = window.PW_DATA.censo;
@@ -122,19 +122,20 @@ PW.tabla("t-regiones", colsCon([{ k: "region", titulo: "Región" }]), D.regiones
   { orden: "poblacion", buscador: false });
 
 let tab = null;
-function pintarMapa(i) {
+function pintarMapa(i, foco) {
   const wrap = document.getElementById("mapa-wrap");
   wrap.innerHTML = '<div id="mapa"></div>';
   PW.choropleth("mapa", {
     valores: Object.fromEntries(D.comunas.map(c => [c.cut, c[i.k]])),
-    fmt: v => fmtInd(i, v), alto: 520,
+    fmt: v => fmtInd(i, v), alto: 520, foco: foco,
   });
 }
 function refrescar() {
   const i = indActual();
   const reg = selR.value, com = selC.value;
   const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
-  pintarMapa(i);
+  const foco = (reg || com) ? filas.map(c => c.cut) : null;
+  pintarMapa(i, foco);
   PW.barras("g-top", {
     items: filas.filter(c => c[i.k] != null).sort((a, b) => b[i.k] - a[i.k]).slice(0, 20)
       .map(c => ({ nombre: c.comuna, valor: c[i.k], extra: c.region })),

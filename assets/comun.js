@@ -662,6 +662,19 @@
     document.addEventListener("fullscreenchange", () => setTimeout(() => m.invalidateSize(), 120));
   }
 
+  // [ZOOM TERRITORIO] bounds de un conjunto de comunas (por cut) usando geo_comunas.
+  // Lo usan mapa() y choropleth() para el auto-zoom al filtrar por region/comuna, y esta
+  // exportado en PW para los mapas con capa persistente que hacen fitBounds a mano.
+  function boundsComunas(cuts) {
+    const geo = window.PW_DATA && window.PW_DATA.geo_comunas;
+    if (typeof L === "undefined" || !geo || !cuts || !cuts.length) return null;
+    const set = new Set(cuts.map(c => String(c)));
+    const fs = (geo.features || []).filter(f => set.has(String(f.properties.cut)));
+    if (!fs.length) return null;
+    const b = L.geoJSON({ type: "FeatureCollection", features: fs }).getBounds();
+    return b && b.isValid() ? b : null;
+  }
+
   function mapa(cont, cfg) {
     const el = typeof cont === "string" ? document.getElementById(cont) : cont;
     if (typeof L === "undefined") {
@@ -823,6 +836,11 @@
     if (fueraChile) {
       console.warn(`PW.mapa: ${fueraChile} punto(s) descartado(s) por coordenada fuera de Chile (bbox lat -56..-17, lon -76..-66).`);
     }
+    // [FOCO] auto-zoom al territorio filtrado (region/comuna): cfg.foco = lista de cuts de comuna.
+    if (cfg.foco && cfg.foco.length) {
+      const b = boundsComunas(cfg.foco);
+      if (b) m.fitBounds(b.pad(0.15));
+    }
     return m;
   }
 
@@ -981,6 +999,11 @@
       ley.appendChild(sp);
     });
     el.insertAdjacentElement("afterend", ley);
+    // [FOCO] auto-zoom al territorio filtrado (region/comuna): cfg.foco = lista de cuts de comuna.
+    if (cfg.foco && cfg.foco.length) {
+      const b = boundsComunas(cfg.foco);
+      if (b) m.fitBounds(b.pad(0.15));
+    }
     return m;
   }
 
@@ -997,6 +1020,6 @@
     });
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto };
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto };
 })();
 

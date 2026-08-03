@@ -9,7 +9,7 @@
 <title>Probabilidad de cortes — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260803a">
+<link rel="stylesheet" href="assets/estilo.css?v=260803b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 </head>
@@ -58,7 +58,7 @@
 </main>
 <script src="data/c_probcortes.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260803a"></script>
+<script src="assets/comun.js?v=260803b"></script>
 <script>
 PW.montarNav("probabilidad-cortes.html");
 const D = PW_DATA.c_probcortes;
@@ -99,15 +99,15 @@ function refrescar() {
   if (mapaProb) { mapaProb.remove(); mapaProb = null; }
   const leyVieja = document.querySelector("#mapa-prob + .leyenda");
   if (leyVieja) leyVieja.remove();
-  mapaProb = PW.choropleth("mapa-prob", {
-    valores: Object.fromEntries(D.comunas.map(c => [c.cut, c.prob[mes]])),
-    fmt: v => v == null ? "sin datos" : PW.fmt(v, 0) + "%",
-    alto: 560,
-  });
   const rcut = selR.value;
   const comSel = selC.value;
   const comunas = D.comunas.filter(c => (!rcut || c.rcut === rcut) && (!comSel || c.comuna === comSel));
   const comunaUnica = comSel ? comunas[0] : null;
+  mapaProb = PW.choropleth("mapa-prob", {
+    valores: Object.fromEntries(D.comunas.map(c => [c.cut, c.prob[mes]])),
+    fmt: v => v == null ? "sin datos" : PW.fmt(v, 0) + "%",
+    alto: 560, foco: (rcut || comSel) ? comunas.map(c => c.cut) : null,
+  });
 
   // KPIs: infraestructura expuesta en la seleccion para el mes elegido
   const expuestas = comunas.filter(c => c.prob[mes] >= UMBRAL);
