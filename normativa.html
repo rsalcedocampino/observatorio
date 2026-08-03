@@ -19,6 +19,29 @@
 .vin-declarativa { background: color-mix(in srgb, var(--critical) 12%, transparent); color: var(--critical); }
 .urg-maxima { color: var(--critical); font-weight: 700; }
 .urg-alta { color: var(--serious); font-weight: 600; }
+.ruta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 12px; margin-top: 10px; }
+.ruta-cat { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--surface-1); }
+.ruta-cat h3 { margin: 0 0 8px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.ruta-cat h3 .n { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--plane); color: var(--ink-2); }
+.ruta-item { padding: 8px 0; border-top: 1px solid var(--border); }
+.ruta-item:first-of-type { border-top: 0; }
+.ruta-item .t { font-weight: 600; font-size: 13px; }
+.ruta-item .d { font-size: 12px; color: var(--ink-2); margin: 3px 0; line-height: 1.4; }
+.ruta-item .h { font-size: 11px; color: var(--ink-3); }
+.cat-ruta_critica { border-left: 3px solid var(--critical); }
+.cat-oportunidad { border-left: 3px solid var(--good); }
+.cat-desafio { border-left: 3px solid var(--warning); }
+.cat-accion_faltante { border-left: 3px solid var(--serious); }
+.cat-recuadro { border-left: 3px solid var(--s1); }
+.timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 10px; }
+.tl-col { border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: var(--surface-1); }
+.tl-col.vacio { background: color-mix(in srgb, var(--critical) 8%, transparent); border-style: dashed; border-color: var(--critical); }
+.tl-col h4 { margin: 0 0 4px; font-size: 13px; display: flex; justify-content: space-between; align-items: baseline; }
+.tl-col h4 .c { font-size: 11px; color: var(--ink-3); font-weight: 600; }
+.tl-med { font-size: 11px; padding: 5px 0; border-top: 1px solid var(--border); color: var(--ink-2); line-height: 1.35; }
+.tl-med .e { color: var(--ink-3); font-weight: 600; }
+.tl-col.vacio .tl-med { border-top: 0; color: var(--critical); }
+@media (max-width: 760px) { .timeline { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -30,6 +53,24 @@
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Ruta a la Meta 2035: qué falta para llegar</h2>
+    <p class="nota">Síntesis accionable de la Estrategia Nacional de Electromovilidad cruzada con las
+    metas, leyes y brechas: las rutas críticas, las oportunidades, los desafíos, las acciones que aún
+    faltan y los datos-fuerza. Fuente: Documentos de Gobierno (análisis de la Estrategia 2030 y la Ruta
+    Energética).</p>
+    <div id="ruta-grupos" class="ruta-grid"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Timeline de medidas de la Estrategia (2026-2030)</h2>
+    <p class="nota">Las medidas con año de término comprometido se concentran en 2027-2029 y se apagan
+    en 2030: <b>no hay ninguna medida nueva programada para 2031-2035</b>, justo el tramo final hacia la
+    meta.</p>
+    <div id="ruta-timeline" class="timeline"></div>
+    <p class="nota" id="ruta-sf"></p>
+  </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Semáforo de metas oficiales: cuanta fuerza jurídica tienen</h2>
@@ -203,6 +244,42 @@ function pintarCifras() {
 }
 document.getElementById("busca-cifra").addEventListener("input", pintarCifras);
 pintarCifras();
+
+// Ruta a la Meta 2035: tarjetas por categoria + timeline de medidas por año
+const RUTA = D.ruta_2035 || { destacados: [], medidas: [] };
+const esc = s => (s == null ? "" : String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"));
+const corta = (s, n) => { s = s || ""; return s.length > n ? s.slice(0, n).trim() + "…" : s; };
+const CATS = [
+  ["ruta_critica", "Rutas críticas"], ["oportunidad", "Oportunidades"], ["desafio", "Desafíos"],
+  ["accion_faltante", "Acciones faltantes"], ["recuadro", "Datos-fuerza"],
+];
+document.getElementById("ruta-grupos").innerHTML = CATS.map(([cat, lbl]) => {
+  const items = RUTA.destacados.filter(d => d.categoria === cat);
+  if (!items.length) return "";
+  return `<div class="ruta-cat cat-${cat}"><h3>${lbl} <span class="n">${items.length}</span></h3>` +
+    items.map(d => `<div class="ruta-item"><div class="t">${esc(d.titulo)}</div>` +
+      (d.detalle ? `<div class="d">${esc(d.detalle)}</div>` : "") +
+      (d.horizonte || d.referencia
+        ? `<div class="h">${d.horizonte ? "Horizonte: " + esc(d.horizonte) : ""}${d.horizonte && d.referencia ? " · " : ""}${d.referencia ? esc(d.referencia) : ""}</div>`
+        : "") +
+      `</div>`).join("") + `</div>`;
+}).join("");
+
+const ANIOS = ["2026", "2027", "2028", "2029", "2030"];
+const ejeNum = e => (e || "").trim().split(/\s+/)[0];
+let tlHTML = ANIOS.map(a => {
+  const ms = RUTA.medidas.filter(m => String(m.anio) === a);
+  return `<div class="tl-col"><h4>${a} <span class="c">${ms.length}</span></h4>` +
+    ms.map(m => `<div class="tl-med" title="${esc(m.medida)}"><span class="e">Eje ${esc(ejeNum(m.eje))}</span> · ${esc(corta(m.medida, 85))}</div>`).join("") +
+    `</div>`;
+}).join("");
+tlHTML += `<div class="tl-col vacio"><h4>2031-2035 <span class="c">0</span></h4>` +
+  `<div class="tl-med">Sin medidas nuevas programadas para el tramo final hacia la meta.</div></div>`;
+document.getElementById("ruta-timeline").innerHTML = tlHTML;
+const sf = RUTA.medidas.filter(m => !ANIOS.includes(String(m.anio)));
+document.getElementById("ruta-sf").textContent = sf.length
+  ? sf.length + " medidas sin año de término definido (s/f) no se muestran en el timeline."
+  : "";
 </script>
 </body>
 </html>
