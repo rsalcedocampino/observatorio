@@ -384,7 +384,7 @@ function refrescarDetalle() {
   });
   const todosPts = pts.concat(ptsSolar, ptsBess);
   if (mapaRegion && todosPts.length) {
-    mapaRegion.fitBounds(L.latLngBounds(todosPts.map(p => [p.lat, p.lon])).pad(0.2));
+    mapaRegion.fitBounds(L.latLngBounds(todosPts.map(p => [p.lat, p.lon])).pad(0.2), { animate: false });
   }
   PW.leyendaMapa("ley-region", [
     ["Carga rapida (50 kW o mas)", PW.color("--s2")],

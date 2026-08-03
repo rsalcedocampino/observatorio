@@ -120,7 +120,7 @@ PW.montarNav("costo.html");
     });
     const todos = comb.concat(ev);
     if (mapaP && todos.length && (filtroTerr.rcut || filtroTerr.com)) {
-      mapaP.fitBounds(L.latLngBounds(todos.map(p => [p.lat, p.lon])).pad(0.2));
+      mapaP.fitBounds(L.latLngBounds(todos.map(p => [p.lat, p.lon])).pad(0.2), { animate: false });
     }
     document.getElementById("cont-mapa").textContent =
       comb.length + " estaciones de combustible y " + ev.length + " puntos de carga mostrados. " +

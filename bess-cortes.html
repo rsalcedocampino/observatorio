@@ -124,7 +124,7 @@ document.getElementById("nota").textContent = "Generado " + D.generado + ". " + 
     if (mapaB) { mapaB.remove(); mapaB = null; }
     mapaB = PW.mapa("mapa-bess", { capas: [{ nombre: "Proyectos BESS", puntos: pts }], centro: [-30, -71], zoom: 4.5 });
     if (mapaB && pts.length && (filtroTerr.rcut || filtroTerr.com)) {
-      mapaB.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.2));
+      mapaB.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.2), { animate: false });
     }
     const mwhTot = sel.reduce((a, p) => a + (p.mwh || 0), 0);
     document.getElementById("cont-bess").textContent =
