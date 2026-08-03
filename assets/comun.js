@@ -174,6 +174,17 @@
   function clp(v) { return v == null ? "—" : "$" + nf0.format(Math.round(v)); }
   function pct(v) { return v == null ? "—" : nf1.format(v) + "%"; }
 
+  // Escapa texto de DATOS antes de interpolarlo en HTML (innerHTML/bindPopup).
+  // Neutraliza markup que pudiera colarse desde fuentes externas mutables (nombre de
+  // estacion, operador, direccion de feeds de operadores/Aduana, etc.). NO aplicar
+  // sobre HTML que arma el propio sitio: los `fmt` de las tablas producen markup
+  // intencional. Expuesto en PW.esc para que los builders por pagina lo usen.
+  function esc(v) {
+    if (v == null) return "";
+    return String(v).replace(/[&<>"']/g, c =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
   // ---------- tooltip compartido
   function crearTip(wrap) {
     const tip = document.createElement("div");
@@ -517,7 +528,7 @@
       ).join("");
       const cuerpo = datos.map(f => "<tr>" + cols.map(c => {
         const v = f[c.k];
-        const txt = c.fmt ? c.fmt(v, f) : (v == null ? "—" : v);
+        const txt = c.fmt ? c.fmt(v, f) : (v == null ? "—" : esc(v));
         return `<td class="${c.num ? "num" : ""}">${txt}</td>`;
       }).join("") + "</tr>").join("");
       contTabla.innerHTML = `<div class="scroll-x"><table class="pw"><thead><tr>${th}</tr></thead><tbody>${cuerpo}</tbody></table></div>`;
@@ -829,18 +840,18 @@
       ? `<div class="pop-linea"><span>${etq}</span><div>${val}</div></div>` : "";
     const conectores = p.nc
       ? (p.nc === 1 ? "1 conector" : p.nc + " conectores") +
-        (p.tipos ? `<div class="pop-detalle">${p.tipos}</div>` : "")
+        (p.tipos ? `<div class="pop-detalle">${esc(p.tipos)}</div>` : "")
       : null;
     return `<div class="pop-est">` +
-      `<div class="pop-titulo">${p.n || (p.op ? "Estación " + p.op : "Estación de carga")}</div>` +
-      `<div class="pop-sub">${[p.dir, [p.com, p.reg].filter(Boolean).join(", ")].filter(Boolean).join("<br>")}</div>` +
-      fila("Operador", p.op) +
+      `<div class="pop-titulo">${esc(p.n) || (p.op ? "Estación " + esc(p.op) : "Estación de carga")}</div>` +
+      `<div class="pop-sub">${[esc(p.dir), [esc(p.com), esc(p.reg)].filter(Boolean).join(", ")].filter(Boolean).join("<br>")}</div>` +
+      fila("Operador", esc(p.op)) +
       `<div class="pop-linea"><span>Estado</span><div><b style="color:${estColor}">${estTxt}</b></div></div>` +
-      fila("Potencia", p.kw ? nf0.format(p.kw) + " kW" + (p.cor ? " (" + p.cor + ")" : "") : null) +
+      fila("Potencia", p.kw ? nf0.format(p.kw) + " kW" + (p.cor ? " (" + esc(p.cor) + ")" : "") : null) +
       fila("Conectores", conectores) +
       fila("Precio", p.pkwh ? "$" + nf0.format(p.pkwh) + "/kWh" : null) +
-      fila("Horario", p.hor) +
-      fila("Pago", p.pago) +
+      fila("Horario", esc(p.hor)) +
+      fila("Pago", esc(p.pago)) +
       (p.ofi ? `<div class="pop-detalle">En registro oficial IRVE</div>` : "") +
       waze(p.lat, p.lon) +
       `</div>`;
@@ -880,7 +891,7 @@
       .sort((a, b) => a[0].localeCompare(b[0]));
     el.insertAdjacentHTML("afterbegin",
       `<label>Region <select data-f="reg"><option value="">Todas</option>` +
-      regiones.map(([cut, nom]) => `<option value="${cut}">${nom}</option>`).join("") +
+      regiones.map(([cut, nom]) => `<option value="${esc(cut)}">${esc(nom)}</option>`).join("") +
       `</select></label>` +
       `<label>Comuna <select data-f="com" disabled><option value="">Todas</option></select></label>` +
       (extraHtml || ""));
@@ -889,7 +900,7 @@
     function pobComunas() {
       const rc = selR.value;
       const coms = [...new Set(puntos.filter(p => (!rc || p.rcut === rc) && p.com).map(p => p.com))].sort();
-      selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
+      selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${esc(c)}</option>`).join("");
       selC.disabled = !rc;
     }
     pobComunas();
@@ -986,6 +997,6 @@
     });
   }
 
-  window.PW = { montarNav, fmt, clp, pct, lineas, barras, columnas, tabla, color, mapa, choropleth, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto };
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto };
 })();
 
