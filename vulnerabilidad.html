@@ -9,7 +9,7 @@
 <title>Vulnerabilidad energética — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260803a">
+<link rel="stylesheet" href="assets/estilo.css?v=260803b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 </head>
@@ -48,12 +48,12 @@
 </main>
 <script src="data/c_vulnerab.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260803a"></script>
+<script src="assets/comun.js?v=260803b"></script>
 <script>
 PW.montarNav("vulnerabilidad.html");
 
 // Choropleth del indice
-PW.choropleth("mapa-indice", {
+const MAPA = PW.choropleth("mapa-indice", {
   valores: Object.fromEntries(PW_DATA.c_vulnerab.comunas.map(c => [c.cut, c.indice])),
   fmt: v => v == null ? "sin dato" : PW.fmt(v, 1),
   alto: 560,
@@ -92,6 +92,9 @@ function refrescar() {
   const reg = selR.value;
   const com = selC.value;
   const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
+  // Auto-zoom del mapa a la zona filtrada (o a todo Chile si no hay filtro)
+  const b = PW.boundsComunas((reg || com ? filas : D.comunas).map(c => c.cut));
+  if (MAPA && b) MAPA.fitBounds(b.pad(0.15));
   PW.barras("g-top", {
     items: filas.slice(0, 20).map(c => ({
       nombre: c.comuna, valor: c.indice,
