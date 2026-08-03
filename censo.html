@@ -87,8 +87,15 @@ PW.barras("g-edad", {
 });
 
 const selInd = document.getElementById("f-ind");
+let ogActual = null, ogNombre = null;
 D.indicadores.forEach(i => {
-  const o = document.createElement("option"); o.value = i.k; o.textContent = i.label; selInd.appendChild(o);
+  const g = i.grupo || "Otros";
+  if (g !== ogNombre) {
+    ogActual = document.createElement("optgroup"); ogActual.label = g;
+    selInd.appendChild(ogActual); ogNombre = g;
+  }
+  const o = document.createElement("option"); o.value = i.k; o.textContent = i.label;
+  (ogActual || selInd).appendChild(o);
 });
 selInd.value = "indice_envejecimiento";
 
