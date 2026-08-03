@@ -119,7 +119,7 @@ function pintarMapa(reg) {
   });
   if (mapaOferta && pts.length && (reg || selCom.value)) {
     const b = L.latLngBounds(pts.map(p => [p.lat, p.lon]));
-    mapaOferta.fitBounds(b.pad(0.2));
+    mapaOferta.fitBounds(b.pad(0.2), { animate: false });
   }
   document.getElementById("cont-oferta").textContent =
     pts.length + " estaciones mostradas de " + PW_DATA.mapa.carga.length + ".";

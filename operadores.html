@@ -95,7 +95,7 @@ PW.montarNav("operadores.html");
     if (mapaRed) { mapaRed.remove(); mapaRed = null; }
     mapaRed = PW.mapa("mapa-red", { capas: [{ nombre: "Estaciones", puntos: pts }], centro: [-35.5, -71.5], zoom: 5 });
     if (mapaRed && pts.length && (filtroTerr.rcut || filtroTerr.com)) {
-      mapaRed.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.2));
+      mapaRed.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.2), { animate: false });
     }
     document.getElementById("cont-mapa").textContent =
       pts.length + " estaciones mostradas de " + datos.length + ".";
