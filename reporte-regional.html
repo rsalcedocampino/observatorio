@@ -368,20 +368,38 @@ function renderResumenNacional() {
   const comCon = comunas.filter(c => c.conectores > 0).length;
   const comSin = comunas.filter(c => !c.conectores).length;
   const top3 = comunas.filter(c => c.parque_total != null).sort((a, b) => b.parque_total - a.parque_total).slice(0, 3);
+  const ve = D.ventas_enchufables || [];
+  const ult = ve.length ? ve[ve.length - 1].ym : "";
+  const mesLegible = ult ? (MESES[+ult.slice(5, 7) - 1] + " " + ult.slice(0, 4)) : "";
+  const anioAct = ult ? ult.slice(0, 4) : "";
+  const ytd = ve.filter(x => x.ym >= anioAct + "-01").reduce((s, x) => s + (x.unidades || 0), 0);
+  const ultUnid = ve.length ? ve[ve.length - 1].unidades : 0;
+  const par = D.participacion || [];
+  const pu = par.length ? par[par.length - 1] : {};
+  const nuevos12 = D.regiones.reduce((s, r) => s + (r.instalados_12m || 0), 0);
+  const parqueEV = D.regiones.reduce((s, r) => s + r.parque_ev, 0);
+  const cargHoy = D.regiones.reduce((s, r) => s + r.cargadores_hoy, 0);
+  const evCarg = cargHoy ? +(parqueEV / cargHoy).toFixed(1) : null;
+  const habSin = comunas.filter(c => !c.conectores).reduce((s, c) => s + (c.poblacion || 0), 0);
+  const rm = D.regiones.find(r => r.rcut === "13");
+  const pctRM = (rm && parqueEV) ? +(100 * rm.parque_ev / parqueEV).toFixed(1) : null;
   document.getElementById("resumen-nacional").innerHTML = kpiHTML([
     [PW.fmt(rv.cargadores_publico), "cargadores públicos (red viva)", "de " + PW.fmt(rv.cargadores) + " totales · " + PW.fmt(rv.estaciones) + " estaciones"],
+    [PW.fmt(nuevos12), "cargadores públicos nuevos (12 meses)", "ritmo de instalación · SEC EcoCarga"],
+    [evCarg != null ? PW.fmt(evCarg, 1) : "—", "EV por cargador (nacional)", "objetivo de servicio: 20"],
     [PW.fmt(sumB("BEV")), "vehículos BEV registrados (histórico)", "eléctricos puros · registros 2010-" + (VT.anios && VT.anios.length ? VT.anios[VT.anios.length - 1] : "")],
     [PW.fmt(sumB("PHEV + PEREV")), "híbridos enchufables (histórico)", "PHEV + PEREV acumulado"],
     [PW.fmt(sumB("E-BUSES")), "buses eléctricos (histórico)", "acumulado registrado"],
     [PW.fmt(sumB("E-TRUCKS")), "camiones eléctricos (histórico)", "acumulado registrado"],
+    [PW.fmt(ultUnid), "enchufables vendidos en " + mesLegible, "acumulado " + anioAct + ": " + PW.fmt(ytd)],
+    [pu.enchufables != null ? PW.fmt(pu.enchufables, 1) + "%" : "—", "participación enchufable (ventas del mes)", pu.hibridos != null ? "+" + PW.fmt(pu.hibridos, 1) + "% híbridos" : ""],
     [PW.fmt(pob), "habitantes (población total)", "Censo 2024"],
     [PW.fmt(comCon), "comunas con red de carga", "de " + comunas.length + " · con conectores públicos"],
     [PW.fmt(comSin), "comunas sin red de carga", "de " + comunas.length + " · sin conectores públicos"],
+    [PW.fmt(habSin), "habitantes en comunas sin carga", "en las " + comSin + " comunas sin conectores"],
     top3.length >= 3 ? [PW.fmt(top3[0].parque_total), "comuna con más vehículos: " + PW.esc(top3[0].comuna), "2° " + PW.esc(top3[1].comuna) + " " + PW.fmt(top3[1].parque_total) + " · 3° " + PW.esc(top3[2].comuna) + " " + PW.fmt(top3[2].parque_total)] : null,
+    [pctRM != null ? PW.fmt(pctRM, 1) + "%" : "—", "del parque EV está en la RM", "concentración de la electromovilidad"],
   ]);
-  const ve = D.ventas_enchufables;
-  const ult = ve && ve.length ? ve[ve.length - 1].ym : "";
-  const mesLegible = ult ? (MESES[+ult.slice(5, 7) - 1] + " " + ult.slice(0, 4)) : "";
   document.getElementById("resumen-nota").innerHTML =
     "Última actualización: datos generados el <b>" + D.generado + "</b>. " +
     "Red de carga: red viva (actualiza cada 30 min). Ventas EV: hasta " + mesLegible + ". " +
