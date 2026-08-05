@@ -359,15 +359,22 @@ function refrescarEnergiaReg(filasTodas, regSel) {
 function renderResumenNacional() {
   if (!REG_ESTADO) return;
   const filas = REG_ESTADO.filas;
-  const parqueEV = filas.reduce((s, f) => s + f.parque_ev, 0);
-  const cargadores = filas.reduce((s, f) => s + f.cargadores_hoy, 0);
-  const faltan = filas.reduce((s, f) => s + f.faltan, 0);
+  const VT = D.ventas_tecnologia || { buckets: {} };
+  const sumB = k => (VT.buckets && VT.buckets[k]) ? VT.buckets[k].reduce((s, v) => s + (v || 0), 0) : 0;
+  const rv = D.red_viva || {};
   const pob = D.regiones.reduce((s, r) => s + (r.poblacion || 0), 0);
+  const regCon = D.regiones.filter(r => r.cargadores_hoy > 0).length;
+  const regSin = D.regiones.filter(r => !r.cargadores_hoy).length;
+  const comunas = PW_DATA.sitios.comunas;
+  const comCon = comunas.filter(c => c.conectores > 0).length;
   document.getElementById("resumen-nacional").innerHTML = kpiHTML([
-    [PW.fmt(parqueEV), "vehículos enchufables (parque nacional)", "INE " + (D.anio_parque || "")],
-    [PW.fmt(cargadores), "cargadores hoy (red viva)", "público + privado"],
-    [PW.fmt(faltan), "cargadores faltantes a 2035", REG_ESTADO.ratio + " EV por cargador"],
-    [PW.fmt(pob), "habitantes", "Censo 2024"],
+    [PW.fmt(rv.cargadores_publico), "cargadores públicos (red viva)", "de " + PW.fmt(rv.cargadores) + " totales · " + PW.fmt(rv.estaciones) + " estaciones"],
+    [PW.fmt(sumB("BEV")), "vehículos BEV registrados (histórico)", "eléctricos puros · registros 2010-" + (VT.anios && VT.anios.length ? VT.anios[VT.anios.length - 1] : "")],
+    [PW.fmt(sumB("PHEV + PEREV")), "híbridos enchufables (histórico)", "PHEV + PEREV acumulado"],
+    [PW.fmt(sumB("E-BUSES")), "buses eléctricos (histórico)", "acumulado registrado"],
+    [PW.fmt(sumB("E-TRUCKS")), "camiones eléctricos (histórico)", "acumulado registrado"],
+    [PW.fmt(pob), "habitantes (población total)", "Censo 2024"],
+    [regCon + " con · " + regSin + " sin", "regiones con red de carga", comCon + " de " + comunas.length + " comunas con conectores públicos"],
   ]);
   const topReg = filas.slice().sort((a, b) => b.faltan - a.faltan).slice(0, 5);
   document.getElementById("mini-ranking").innerHTML =
