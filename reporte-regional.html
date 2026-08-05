@@ -63,6 +63,7 @@ details.seccion > summary { padding: 4px 0; }
   <div class="tarjeta" id="card-nacional">
     <div class="kpis" id="resumen-nacional"></div>
     <div id="mini-ranking"></div>
+    <p class="nota" id="resumen-nota" style="margin:12px 0 0"></p>
   </div>
 
   <!-- 3. BANNER DE CARGA -->
@@ -363,10 +364,10 @@ function renderResumenNacional() {
   const sumB = k => (VT.buckets && VT.buckets[k]) ? VT.buckets[k].reduce((s, v) => s + (v || 0), 0) : 0;
   const rv = D.red_viva || {};
   const pob = D.regiones.reduce((s, r) => s + (r.poblacion || 0), 0);
-  const regCon = D.regiones.filter(r => r.cargadores_hoy > 0).length;
-  const regSin = D.regiones.filter(r => !r.cargadores_hoy).length;
   const comunas = PW_DATA.sitios.comunas;
   const comCon = comunas.filter(c => c.conectores > 0).length;
+  const comSin = comunas.filter(c => !c.conectores).length;
+  const top3 = comunas.filter(c => c.parque_total != null).sort((a, b) => b.parque_total - a.parque_total).slice(0, 3);
   document.getElementById("resumen-nacional").innerHTML = kpiHTML([
     [PW.fmt(rv.cargadores_publico), "cargadores públicos (red viva)", "de " + PW.fmt(rv.cargadores) + " totales · " + PW.fmt(rv.estaciones) + " estaciones"],
     [PW.fmt(sumB("BEV")), "vehículos BEV registrados (histórico)", "eléctricos puros · registros 2010-" + (VT.anios && VT.anios.length ? VT.anios[VT.anios.length - 1] : "")],
@@ -374,8 +375,17 @@ function renderResumenNacional() {
     [PW.fmt(sumB("E-BUSES")), "buses eléctricos (histórico)", "acumulado registrado"],
     [PW.fmt(sumB("E-TRUCKS")), "camiones eléctricos (histórico)", "acumulado registrado"],
     [PW.fmt(pob), "habitantes (población total)", "Censo 2024"],
-    [regCon + " con · " + regSin + " sin", "regiones con red de carga", comCon + " de " + comunas.length + " comunas con conectores públicos"],
+    [PW.fmt(comCon), "comunas con red de carga", "de " + comunas.length + " · con conectores públicos"],
+    [PW.fmt(comSin), "comunas sin red de carga", "de " + comunas.length + " · sin conectores públicos"],
+    top3.length >= 3 ? [PW.fmt(top3[0].parque_total), "comuna con más vehículos: " + PW.esc(top3[0].comuna), "2° " + PW.esc(top3[1].comuna) + " " + PW.fmt(top3[1].parque_total) + " · 3° " + PW.esc(top3[2].comuna) + " " + PW.fmt(top3[2].parque_total)] : null,
   ]);
+  const ve = D.ventas_enchufables;
+  const ult = ve && ve.length ? ve[ve.length - 1].ym : "";
+  const mesLegible = ult ? (MESES[+ult.slice(5, 7) - 1] + " " + ult.slice(0, 4)) : "";
+  document.getElementById("resumen-nota").innerHTML =
+    "Última actualización: datos generados el <b>" + D.generado + "</b>. " +
+    "Red de carga: red viva (actualiza cada 30 min). Ventas EV: hasta " + mesLegible + ". " +
+    "Población: Censo 2024. Parque de vehículos por comuna: INE, permisos de circulación " + (D.anio_parque || "") + ".";
   const topReg = filas.slice().sort((a, b) => b.faltan - a.faltan).slice(0, 5);
   document.getElementById("mini-ranking").innerHTML =
     `<p class="nota" style="margin:10px 0 6px">Regiones con mayor brecha de carga al 2035 (toca para ver su dossier):</p>` +
