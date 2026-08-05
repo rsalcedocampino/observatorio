@@ -3,6 +3,26 @@
 (function () {
   "use strict";
 
+  // Blindaje de Leaflet contra una carrera del renderer canvas: si un _redraw quedó agendado
+  // (requestAnimFrame) y el mapa/renderer ya se removió (map.remove(), p.ej. al recrear el mapa
+  // al cambiar de territorio), this._ctx queda undefined y _clear() revienta con
+  // "Cannot read properties of undefined (reading 'clearRect'/'save')". Volvemos _redraw/_clear
+  // no-op cuando el renderer ya está desmontado (no afecta la operación normal, donde _ctx y _map
+  // existen). Solo aplica en páginas con Leaflet cargado.
+  if (window.L && L.Canvas && !L.Canvas.__pwGuarded) {
+    L.Canvas.__pwGuarded = true;
+    const cp = L.Canvas.prototype;
+    ["_redraw", "_clear"].forEach(function (nombre) {
+      const orig = cp[nombre];
+      if (typeof orig === "function") {
+        cp[nombre] = function () {
+          if (!this._ctx || !this._map || !this._container) return;
+          return orig.apply(this, arguments);
+        };
+      }
+    });
+  }
+
   const GRUPOS = [
     ["Mapas", [
       ["mapas.html", "Mapas Interactivos"],
