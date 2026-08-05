@@ -33,6 +33,8 @@ details.seccion > summary { padding: 4px 0; }
 #dossier-titulo { margin: 2px 0 2px; }
 #dossier-sub { color: var(--ink-2); font-size: 14px; margin: 0 0 12px; }
 #dossier-sub a { color: var(--s1); }
+.grupo-tit { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); margin: 16px 0 6px; }
+.grupo-tit:first-child { margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -61,8 +63,15 @@ details.seccion > summary { padding: 4px 0; }
 
   <!-- 2. RESUMEN NACIONAL -->
   <div class="tarjeta" id="card-nacional">
-    <div class="kpis" id="resumen-nacional"></div>
-    <div id="mini-ranking"></div>
+    <h3 class="grupo-tit">Red de carga pública</h3>
+    <div class="kpis" id="kpi-red"></div>
+    <h3 class="grupo-tit">Flota eléctrica registrada (histórico)</h3>
+    <div class="kpis" id="kpi-flota"></div>
+    <h3 class="grupo-tit">Mercado — ventas del último mes</h3>
+    <div class="kpis" id="kpi-ventas"></div>
+    <h3 class="grupo-tit">Territorio y cobertura</h3>
+    <div class="kpis" id="kpi-territorio"></div>
+    <div id="mini-ranking" style="margin-top:16px"></div>
     <p class="nota" id="resumen-nota" style="margin:12px 0 0"></p>
   </div>
 
@@ -383,16 +392,22 @@ function renderResumenNacional() {
   const habSin = comunas.filter(c => !c.conectores).reduce((s, c) => s + (c.poblacion || 0), 0);
   const rm = D.regiones.find(r => r.rcut === "13");
   const pctRM = (rm && parqueEV) ? +(100 * rm.parque_ev / parqueEV).toFixed(1) : null;
-  document.getElementById("resumen-nacional").innerHTML = kpiHTML([
+  document.getElementById("kpi-red").innerHTML = kpiHTML([
     [PW.fmt(rv.cargadores_publico), "cargadores públicos (red viva)", "de " + PW.fmt(rv.cargadores) + " totales · " + PW.fmt(rv.estaciones) + " estaciones"],
     [PW.fmt(nuevos12), "cargadores públicos nuevos (12 meses)", "ritmo de instalación · SEC EcoCarga"],
     [evCarg != null ? PW.fmt(evCarg, 1) : "—", "EV por cargador (nacional)", "objetivo de servicio: 20"],
-    [PW.fmt(sumB("BEV")), "vehículos BEV registrados (histórico)", "eléctricos puros · registros 2010-" + (VT.anios && VT.anios.length ? VT.anios[VT.anios.length - 1] : "")],
-    [PW.fmt(sumB("PHEV + PEREV")), "híbridos enchufables (histórico)", "PHEV + PEREV acumulado"],
-    [PW.fmt(sumB("E-BUSES")), "buses eléctricos (histórico)", "acumulado registrado"],
-    [PW.fmt(sumB("E-TRUCKS")), "camiones eléctricos (histórico)", "acumulado registrado"],
+  ]);
+  document.getElementById("kpi-flota").innerHTML = kpiHTML([
+    [PW.fmt(sumB("BEV")), "vehículos BEV registrados", "eléctricos puros · registros 2010-" + (VT.anios && VT.anios.length ? VT.anios[VT.anios.length - 1] : "")],
+    [PW.fmt(sumB("PHEV + PEREV")), "híbridos enchufables", "PHEV + PEREV acumulado"],
+    [PW.fmt(sumB("E-BUSES")), "buses eléctricos", "acumulado registrado"],
+    [PW.fmt(sumB("E-TRUCKS")), "camiones eléctricos", "acumulado registrado"],
+  ]);
+  document.getElementById("kpi-ventas").innerHTML = kpiHTML([
     [PW.fmt(ultUnid), "enchufables vendidos en " + mesLegible, "acumulado " + anioAct + ": " + PW.fmt(ytd)],
-    [pu.enchufables != null ? PW.fmt(pu.enchufables, 1) + "%" : "—", "participación enchufable (ventas del mes)", pu.hibridos != null ? "+" + PW.fmt(pu.hibridos, 1) + "% híbridos" : ""],
+    [pu.enchufables != null ? PW.fmt(pu.enchufables, 1) + "%" : "—", "participación enchufable (del total vendido)", pu.hibridos != null ? "+" + PW.fmt(pu.hibridos, 1) + "% híbridos" : ""],
+  ]);
+  document.getElementById("kpi-territorio").innerHTML = kpiHTML([
     [PW.fmt(pob), "habitantes (población total)", "Censo 2024"],
     [PW.fmt(comCon), "comunas con red de carga", "de " + comunas.length + " · con conectores públicos"],
     [PW.fmt(comSin), "comunas sin red de carga", "de " + comunas.length + " · sin conectores públicos"],
