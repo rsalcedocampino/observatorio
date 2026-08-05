@@ -97,6 +97,11 @@ details.metodo-card[open] > summary::before { content: "\25BE"; }
     </div>
     <div class="kpis" id="kpis-detalle"></div>
     <div class="kpis" id="kpis-energia"></div>
+    <div id="bloque-socio" style="display:none; margin-top:6px">
+      <h3 style="margin:6px 0 8px; font-size:16px">Contexto socioterritorial de la comuna <span class="pill">Censo 2024 + vulnerabilidad energética</span></h3>
+      <div class="kpis" id="kpis-socio"></div>
+      <p class="nota" id="nota-socio" style="margin:8px 0 0"></p>
+    </div>
     <div class="fila2">
       <div>
         <div id="mapa-region"></div>
@@ -126,10 +131,17 @@ details.metodo-card[open] > summary::before { content: "\25BE"; }
 <script src="data/c_demanda.js"></script>
 <script src="data/sitios.js"></script>
 <script src="data/mapa.js"></script>
+<script src="data/censo.js"></script>
+<script src="data/c_vulnerab.js"></script>
 <script src="assets/comun.js?v=260803c"></script>
 <script>
 PW.montarNav("reporte-regional.html");
 const D = PW_DATA.tracker;
+// Censo 2024 + vulnerabilidad energetica por comuna (join por CUT; 346/346 comunas cruzan)
+const CENSO_COM = {};
+((PW_DATA.censo && PW_DATA.censo.comunas) || []).forEach(c => { CENSO_COM[String(c.cut)] = c; });
+const VULN_COM = {};
+((PW_DATA.c_vulnerab && PW_DATA.c_vulnerab.comunas) || []).forEach(c => { VULN_COM[String(c.cut)] = c; });
 document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
 
 // ---------- utilidades y proyeccion nacional de parque (para repartir por region)
@@ -340,6 +352,7 @@ function refrescarDetalle() {
     document.getElementById("mapa-region").innerHTML = "";
     document.getElementById("ley-region").innerHTML = "";
     contEl.textContent = "";
+    document.getElementById("bloque-socio").style.display = "none";
     return;
   }
 
@@ -347,6 +360,8 @@ function refrescarDetalle() {
   const filaReg = filas.find(f => f.rcut === rcut) || filas.find(f => f.region === regNombre);
   const comunasReg = PW_DATA.sitios.comunas.filter(c => String(c.cod_region).padStart(2, "0") === rcut);
   const comData = comSel ? comunasReg.find(c => c.comuna === comSel) : null;
+  const socioEl = document.getElementById("bloque-socio");
+  socioEl.style.display = "none";
 
   // [MAPA] lo que ya existe en el territorio: carga + solar + almacenamiento
   const pts = PW_DATA.mapa.carga
@@ -442,6 +457,26 @@ function refrescarDetalle() {
       recos.push(`La comuna genera <b>${PW.fmt(eC.solar_mw, 1)} MW solares</b> pero no tiene carga publica: sinergia directa para carga diurna junto a las plantas.`);
     } else if (eC && eC.solar_mw > 5) {
       recos.push(`Con ${PW.fmt(eC.solar_mw, 1)} MW solares en la comuna, priorizar tarifas y habitos de <b>carga diurna (11:00-16:00)</b> para calzar con el excedente solar.`);
+    }
+    // [SOCIO] Censo 2024 + vulnerabilidad energetica de la comuna (join por CUT)
+    const cen = CENSO_COM[String(comData.cut)];
+    const vul = VULN_COM[String(comData.cut)];
+    if (vul && vul.indice >= 60) {
+      recos.push(`<b>Vulnerabilidad energética alta (${PW.fmt(vul.indice, 1)}/100)</b>: priorizar resiliencia (BESS o respaldo) junto con la nueva carga, y tarifas accesibles.`);
+    }
+    if (cen || vul) {
+      const kp = [];
+      if (cen) {
+        kp.push([PW.fmt(cen.poblacion), "habitantes (Censo 2024)", cen.pct_65_mas != null ? PW.fmt(cen.pct_65_mas, 1) + "% de 65 o más" : ""]);
+        kp.push([PW.fmt(cen.escolaridad_prom_18mas, 1) + " años", "escolaridad promedio (18+)", cen.pct_educacion_superior != null ? PW.fmt(cen.pct_educacion_superior, 1) + "% con educación superior" : ""]);
+        kp.push([PW.fmt(cen.pct_hacinamiento, 1) + "%", "hogares en hacinamiento", cen.tamano_medio_hogar != null ? PW.fmt(cen.tamano_medio_hogar, 1) + " personas por hogar" : ""]);
+      }
+      if (vul) {
+        kp.push([PW.fmt(vul.indice, 1) + " / 100", "vulnerabilidad energética", "cortes " + PW.fmt(vul.pilar_cortes, 0) + " · precio " + PW.fmt(vul.pilar_precio, 0) + " · social " + PW.fmt(vul.pilar_social, 0)]);
+      }
+      document.getElementById("kpis-socio").innerHTML = kp.map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+      document.getElementById("nota-socio").innerHTML = "Población e indicadores del <a href=\"censo.html\">Censo 2024</a> (INE). Índice de <a href=\"vulnerabilidad.html\">vulnerabilidad energética</a> (0-100, mayor = más vulnerable): 40% cortes, 25% precio de la energía, 35% social. Cruce por CUT.";
+      socioEl.style.display = "";
     }
   } else if (filaReg) {
     kpiEl.innerHTML = [
