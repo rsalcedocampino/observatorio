@@ -121,17 +121,14 @@ details.seccion > summary { padding: 4px 0; }
 
     <details class="tarjeta seccion" open>
       <summary>Mapa del territorio</summary>
-      <div class="fila2" style="margin-top:10px">
-        <div>
-          <div id="mapa-territorio"></div>
-          <div id="ley-territorio"></div>
-          <p class="nota" id="cont-territorio"></p>
-        </div>
-        <div>
-          <h3 style="margin-top:0">Recomendaciones</h3>
-          <ul id="reco" style="color:var(--ink-2); font-size:14px; line-height:1.7; padding-left:20px"></ul>
-        </div>
-      </div>
+      <div id="mapa-territorio" style="margin-top:10px"></div>
+      <div id="ley-territorio" style="margin-top:8px"></div>
+      <p class="nota" id="cont-territorio"></p>
+    </details>
+
+    <details class="tarjeta seccion" open>
+      <summary>Recomendaciones</summary>
+      <ul id="reco" style="color:var(--ink-2); font-size:14px; line-height:1.7; padding-left:20px; margin-top:10px"></ul>
     </details>
 
     <details class="tarjeta seccion" id="sec-comunas" open>
@@ -538,6 +535,7 @@ async function renderDossier(rcut, cut) {
   try { await cargarBundle(); } catch (err) { estado.textContent = "No se pudieron cargar los datos del dossier. Reintenta."; return; }
   estado.style.display = "none";
   dossier.style.display = "";
+  document.getElementById("card-nacional").style.display = "none";
   const reg = D.regiones.find(r => r.rcut === rcut);
   const regNombre = reg ? reg.region : ((CENSO_REG[rcut] && CENSO_REG[rcut].region) || rcut);
   const com = cut ? COM_BY_CUT[String(cut)] : null;
@@ -735,7 +733,7 @@ function llenarMapa(ctx) {
       { nombre: "Estaciones de carga", puntos: pts },
       { nombre: "Plantas solares", puntos: ptsSolar },
       { nombre: "Almacenamiento (BESS)", puntos: ptsBess },
-    ], centro: [-35.5, -71.5], zoom: 6, alto: 420, foco,
+    ], centro: [-35.5, -71.5], zoom: 6, alto: 540, foco,
   };
   if (!nivelComuna) {
     const valores = {};
