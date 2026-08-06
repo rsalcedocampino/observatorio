@@ -60,8 +60,8 @@
     <div class="fila2">
       <div class="tarjeta"><h2 style="margin-top:0">Costo acumulado por año</h2><div id="g-acum"></div>
         <p class="nota">Costo de tener el vehículo (compra menos reventa, más energía, mantención, seguro y permiso) acumulado. El cruce marca el año en que el eléctrico se vuelve más barato.</p></div>
-      <div class="tarjeta"><h2 style="margin-top:0">Ahorro del EV por partida</h2><div id="g-desglose"></div>
-        <p class="nota">Diferencia por partida a los años elegidos (barra positiva = el eléctrico gasta menos en esa partida).</p></div>
+      <div class="tarjeta"><h2 style="margin-top:0">Desglose del TCO eléctrico</h2><div id="g-desglose"></div>
+        <p class="nota">Cómo se reparte el costo total del eléctrico a los años elegidos. La comparación por partida contra el combustión está en la tabla de abajo.</p></div>
     </div>
     <div class="tarjeta"><h2 style="margin-top:0">Comparativa por partida</h2><div id="t-comp"></div></div>
   </section>
@@ -157,8 +157,8 @@ const numIn = (id, def) => { const el = g(id); if (!el) return def; const x = pa
 g("nota").textContent = "Generado " + D.generado + ". " + (D.nota || "");
 
 // -------- pools --------
-const POOL_EV = V.filter(x => (x.tp === "BEV" || x.tp === "PHEV") && x.ke > 0);
-const POOL_ICE = V.filter(x => (x.tp === "ICE" || x.tp === "HEV" || x.tp === "MHEV") && x.kl > 0);
+const POOL_EV = V.filter(x => x.pr > 0 && ((x.tp === "BEV" && x.ke > 0) || (x.tp === "PHEV" && x.ke > 0 && x.kl > 0)));
+const POOL_ICE = V.filter(x => x.pr > 0 && (x.tp === "ICE" || x.tp === "HEV" || x.tp === "MHEV") && x.kl > 0);
 
 // -------- motor de cálculo TCO --------
 const esEV = v => v.tp === "BEV" || v.tp === "PHEV" || v.tp === "FCEV";
@@ -167,27 +167,29 @@ function energiaKwhAnio(v, P) { return v.ke > 0 ? (kmAnio(P) / v.ke) * (1 + P.pc
 function litrosAnio(v, P) { return v.kl > 0 ? kmAnio(P) / v.kl : 0; }
 function costoEnergiaAnio(v, E, P) {
   const elec = energiaKwhAnio(v, P) * E.e_rm;
-  const comb = litrosAnio(v, P) * (v.ds ? E.die : E[P.oct]);
+  const comb = litrosAnio(v, P) * (v.ds ? E.die : (E[P.oct] || E.b93));
   if (v.tp === "BEV" || v.tp === "FCEV") return elec;
   if (v.tp === "PHEV") return P.uf * elec + (1 - P.uf) * comb;
   return comb;
 }
-function residualPct(v) { return (v.rs && v.rs > 0) ? v.rs : (v.rp || 0); }
+function residualPct(v) { const r = (v.rs && v.rs > 0) ? v.rs : (v.rp || 0); return r > 0 ? r : 40; }
 function valorResidual(v, N) {
+  if (!v.pr) return 0;
   const p = residualPct(v) / 100;
-  if (!v.pr || p <= 0) return 0;
-  if (N === 5) return v.pr * p;
-  const r = Math.pow(p, 1 / 5);
-  return v.pr * Math.pow(r, N);
+  const val = N === 5 ? v.pr * p : v.pr * Math.pow(Math.pow(p, 1 / 5), N);
+  return Math.max(val, v.pr * 0.05);   // piso: un auto conserva algo de valor (evita sobre-depreciar a N largo)
 }
 function permisoTotal(v, P) {
-  if (P.ny === 5 && v.p5 > 0) return v.p5;
+  if (v.p5 > 0) return v.p5 / 5 * P.ny;   // p5 = suma real a 5 años (ya incorpora el beneficio Ley 21.505); tarifa anual = p5/5, consistente para todo N
   const f = v.b21 ? P.pev : P.pice;
   return (v.p1 || 0) * f * P.ny;
 }
 function co2kgAnio(v, P) {
-  if (v.tp === "BEV" || v.tp === "FCEV") return energiaKwhAnio(v, P) * (P.fred / 1000);
-  return (v.co || 0) * kmAnio(P) / 1000;
+  const elec = energiaKwhAnio(v, P) * (P.fred / 1000);
+  const comb = (v.co || 0) * kmAnio(P) / 1000;
+  if (v.tp === "BEV" || v.tp === "FCEV") return elec;
+  if (v.tp === "PHEV") return P.uf * elec + (1 - P.uf) * comb;   // coherente con el split energético
+  return comb;
 }
 function tco(v, E, P) {
   const eA = costoEnergiaAnio(v, E, P);
@@ -220,7 +222,7 @@ function marcas(pool) { return [...new Set(pool.map(x => x.mk))].sort((a, b) => 
 function modelos(pool, mk) { return [...new Set(pool.filter(x => x.mk === mk).map(x => x.md))].sort((a, b) => a.localeCompare(b, "es")); }
 function anios(pool, mk, md) { return [...new Set(pool.filter(x => x.mk === mk && x.md === md).map(x => x.yr))].sort((a, b) => b - a); }
 function buscar(pool, mk, md, yr) { return pool.find(x => x.mk === mk && x.md === md && x.yr === +yr) || null; }
-function kpi(v, l, d, cls) { return `<div class="kpi"><div class="v ${cls || ""}">${v}</div><div class="l">${l}</div>${d ? `<div class="d">${d}</div>` : ""}</div>`; }
+function kpi(v, l, d, cls) { return `<div class="kpi"><div class="v ${cls || ""}">${PW.esc(v)}</div><div class="l">${PW.esc(l)}</div>${d ? `<div class="d">${PW.esc(d)}</div>` : ""}</div>`; }
 
 function selVeh(pool, mkS, mdS, yrS, cb, auto) {
   mkS.innerHTML = `<option value="">— marca —</option>` + opts(marcas(pool));
@@ -245,6 +247,7 @@ function mostrar(t) {
     g("tab-" + x).hidden = (x !== t);
     const b = g("tb-" + x);
     b.setAttribute("aria-selected", x === t ? "true" : "false");
+    b.tabIndex = x === t ? 0 : -1;
     b.classList.toggle("activo", x === t);
   });
   if (location.hash.slice(1) !== t) history.replaceState(null, "", "#" + t);
@@ -292,7 +295,7 @@ BUILD["comparador"] = function () {
     g("k-comp").innerHTML =
       kpi(PW.clp(te.total), "TCO eléctrico", "a " + P.ny + " años") +
       kpi(PW.clp(ti.total), "TCO combustión", "a " + P.ny + " años") +
-      kpi((dif >= 0 ? "" : "-") + PW.clp(Math.abs(dif)).slice(1), dif >= 0 ? "Ahorro del EV" : "Sobrecosto del EV", "a " + P.ny + " años").replace('class="v ', 'class="v ' + (dif >= 0 ? "estado-ok" : "estado-mal") + " ") +
+      kpi(PW.clp(Math.abs(dif)), dif >= 0 ? "Ahorro del EV" : "Sobrecosto del EV", "a " + P.ny + " años", dif >= 0 ? "estado-ok" : "estado-mal") +
       kpi(be == null ? "no aplica" : (be === 0 ? "inmediato" : be + (be === 1 ? " año" : " años")), "Punto de equilibrio", "el EV se vuelve más barato") +
       kpi(PW.clp(te.porKm), "Costo/km eléctrico", "") +
       kpi(PW.clp(ti.porKm), "Costo/km combustión", "");
@@ -300,7 +303,7 @@ BUILD["comparador"] = function () {
     g("v-comp").innerHTML = "En " + P.ny + " años el eléctrico " +
       (dif >= 0 ? "ahorra <b>" + PW.clp(dif) + "</b>" : "cuesta <b>" + PW.clp(-dif) + "</b> más") +
       " y evita <b>" + PW.fmt(Math.max(0, co2ic - co2ev)) + " kg</b> de CO2 (" +
-      PW.fmt(Math.max(0, (co2ic - co2ev) / P.arbol_kg)) + " árboles/año equivalentes).";
+      PW.fmt(Math.max(0, (co2ic - co2ev) / (P.arbol_kg || 21))) + " árboles-año equivalentes).";
     PW.lineas("g-acum", {
       labels: evC.map((_, i) => String(i)),
       series: [{ nombre: "Eléctrico", valores: evC, color: PW.color("--s1") },
@@ -312,7 +315,7 @@ BUILD["comparador"] = function () {
                   ["Seguro", "seguro"], ["Permiso", "permiso"], ["Imp. verde", "ivpv"]];
     PW.columnas("g-desglose", {
       labels: part.map(p => p[0]),
-      valores: part.map(p => ti.c[p[1]] - te.c[p[1]]),
+      valores: part.map(p => te.c[p[1]]),
       alto: 250, fmtV: PW.clp, fmtY: PW.clp,
     });
     const filas = part.map(p => ({ partida: p[0], ev: te.c[p[1]], ice: ti.c[p[1]], dif: ti.c[p[1]] - te.c[p[1]] }));
@@ -349,7 +352,7 @@ BUILD["mi-vehiculo"] = function () {
       const opexEv = costoEnergiaAnio(v, E, P) + (v.ma || 0) + (v.sg || 0) + permisoTotal(v, P) / P.ny;
       const ahorro = opexMio - opexEv;
       const difCompra = (v.pr || 0) + P0.wb - (mio.pr || 0);
-      const payback = ahorro > 0 ? difCompra / ahorro : Infinity;
+      const payback = difCompra <= 0 ? 0 : (ahorro > 0 ? difCompra / ahorro : Infinity);
       return { modelo: v.mk + " " + v.md + " " + v.yr, precio: v.pr, autonomia: v.au, energia: costoEnergiaAnio(v, E, P), ahorro, payback: isFinite(payback) ? payback : null, dif: difCompra };
     });
     cand.sort((a, b) => b.ahorro - a.ahorro);
@@ -367,7 +370,7 @@ BUILD["mi-vehiculo"] = function () {
       { k: "autonomia", titulo: "Autonomía", num: true, fmt: v => v == null ? "—" : PW.fmt(v) + " km" },
       { k: "energia", titulo: "Energía/año", num: true, fmt: PW.clp },
       { k: "ahorro", titulo: "Ahorro/año", num: true, fmt: v => (v >= 0 ? `<span class="estado-ok">${PW.clp(v)}</span>` : `<span class="estado-mal">${PW.clp(v)}</span>`) },
-      { k: "payback", titulo: "Payback (años)", num: true, fmt: v => v == null ? "no recupera" : (v <= P.ny ? `<span class="estado-ok">${PW.fmt(v, 1)}</span>` : `<span class="estado-mal">${PW.fmt(v, 1)}</span>`) },
+      { k: "payback", titulo: "Payback (años)", num: true, fmt: v => v == null ? "no recupera" : (v === 0 ? `<span class="estado-ok">inmediato</span>` : (v <= P.ny ? `<span class="estado-ok">${PW.fmt(v, 1)}</span>` : `<span class="estado-mal">${PW.fmt(v, 1)}</span>`)) },
       { k: "dif", titulo: "Dif. compra", num: true, fmt: PW.clp },
     ];
     if (tMv) tMv.actualizar(cand); else tMv = PW.tabla("t-mv", cols, cand, { orden: "ahorro", max: 60 });
@@ -447,7 +450,7 @@ BUILD["solar"] = function () {
     const cpanel = Math.max(0, numIn("so-cp", 320000));
     const pk = numIn("so-kwh", E0.e_rm);
     if (!ev) { g("k-so").innerHTML = ""; g("g-so-mes").innerHTML = ""; g("g-so-pb").innerHTML = ""; if (tSo) tSo.actualizar([]); return; }
-    const consumoAnual = energiaKwhAnio(ev, P);         // kWh/año que necesita el EV
+    const consumoAnual = energiaKwhAnio(ev, P) * (ev.tp === "PHEV" ? P.uf : 1);   // en PHEV solo la fracción eléctrica se carga
     const consumoMes = consumoAnual / 12;
     const genPanelAnual = P.ppanel * P.hsp * P.pr_solar * 365; // kWh/año por panel
     const genAnual = genPanelAnual * np;
@@ -463,7 +466,8 @@ BUILD["solar"] = function () {
       kpi(PW.clp(inversion), "Inversión", np + " paneles") +
       kpi(payback == null ? "—" : PW.fmt(payback, 1) + " años", "Recuperación", "payback simple") +
       kpi(PW.fmt(co2Evit) + " kg", "CO2 evitado/año", "");
-    const genMes = ESTAC.map(f => genPanelAnual / 12 * f * np);
+    const facSum = ESTAC.reduce((a, b) => a + b, 0);
+    const genMes = ESTAC.map(f => genAnual * f / facSum);   // normalizado: los 12 meses suman la generación anual
     PW.columnas("g-so-mes", { labels: MESES, valores: genMes, alto: 240, fmtV: v => PW.fmt(v) + " kWh", fmtY: PW.fmt, color: PW.color("--s4") });
     const anos = [], flujo = [];
     for (let t = 0; t <= 10; t++) { anos.push(String(t)); flujo.push(-inversion + ahorroAnual * t); }
