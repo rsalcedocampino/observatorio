@@ -70,6 +70,7 @@ const CAPAS = [
   { k: "carga",  nombre: "Cargadores y conectores", color: "--s3",       on: true  },
   { k: "sub",    nombre: "Subestaciones",           color: "--critical", on: false },
   { k: "lineas", nombre: "Líneas de transmisión",   color: "--s2",       on: true  },
+  { k: "lineas_nuevas", nombre: "Líneas nuevas (KMZ 2019)", color: "--s6", on: false },
   { k: "solar",  nombre: "Generación solar",        color: "--s4",       on: false },
   { k: "bess",   nombre: "Almacenamiento (BESS)",   color: "--s5",       on: false },
   { k: "censo",  nombre: "Censo por comuna",        color: "--s1",       on: false },
@@ -119,7 +120,10 @@ function popupLinea(p) {
     `<div class="pop-sub">${nivel || "Linea de transmision"}</div>` +
     (p.kv ? `<div class="pop-linea"><span>Tensión</span><div>${p.kv} kV</div></div>` : "") +
     (p.km ? `<div class="pop-linea"><span>Longitud</span><div>${PW.fmt(p.km, 1)} km</div></div>` : "") +
-    (p.prop ? `<div class="pop-linea"><span>Propietario</span><div>${p.prop}</div></div>` : "") + `</div>`;
+    (p.prop ? `<div class="pop-linea"><span>Propietario</span><div>${p.prop}</div></div>` : "") +
+    (p.fuente && p.fuente.indexOf("kmz") === 0
+      ? `<div class="pop-linea"><span>Origen</span><div>${p.fuente === "kmz2019_nueva" ? "Nueva (KMZ 2019)" : "Complemento de voltaje (KMZ 2019)"}</div></div>`
+      : "") + `</div>`;
 }
 function popupPlanta(p) {
   return `<div class="pop-est"><div class="pop-titulo">${p.n || "Planta"}</div>` +
@@ -137,9 +141,14 @@ function render(fit) {
   const subs  = (RED.subestaciones || []).filter(dentro);
   const solar = (M.solar || []).filter(dentro);
   const bess  = (M.bess || []).filter(dentro);
+  const esNueva = f => (f.properties.fuente || "").indexOf("kmz") === 0;
+  const linIDE = LIN ? { type: "FeatureCollection", features: LIN.features.filter(f => !esNueva(f)) } : null;
+  const linNew = LIN ? { type: "FeatureCollection", features: LIN.features.filter(esNueva) } : null;
   conteos = {
     carga: carga.length, sub: subs.length, solar: solar.length, bess: bess.length,
-    lineas: (LIN && LIN.features ? LIN.features.length : 0), censo: (CEN.comunas || []).length,
+    lineas: (linIDE ? linIDE.features.length : 0),
+    lineas_nuevas: (linNew ? linNew.features.length : 0),
+    censo: (CEN.comunas || []).length,
   };
 
   const capas = [
@@ -159,18 +168,23 @@ function render(fit) {
         popup: popupPlanta(p) })) },
   ];
 
-  const lineas = LIN ? [{
-    nombre: "Transmisión: líneas", visible: on("lineas"), geojson: LIN,
-    color: props => {
-      const kv = +(props.kv || 0);
-      return { color: C("--s2"),
-               weight: kv >= 220 ? 2.4 : 1.3, opacity: kv >= 220 ? 0.85 : 0.6 };
-    },
-    tip: p => (p.n || "Linea") + (p.kv ? " — " + p.kv + " kV" : "") +
-              (p.km ? " (" + PW.fmt(Math.round(p.km)) + " km)" : ""),
-    popup: popupLinea,
-    colorSel: "#00c2d6",
-  }] : [];
+  const lineas = LIN ? [
+    { nombre: "Transmisión: líneas", visible: on("lineas"), geojson: linIDE,
+      color: props => {
+        const kv = +(props.kv || 0);
+        return { color: C("--s2"), weight: kv >= 220 ? 2.4 : 1.3, opacity: kv >= 220 ? 0.85 : 0.6 };
+      },
+      tip: p => (p.n || "Linea") + (p.kv ? " — " + p.kv + " kV" : "") +
+                (p.km ? " (" + PW.fmt(Math.round(p.km)) + " km)" : ""),
+      popup: popupLinea, colorSel: "#00c2d6" },
+    { nombre: "Transmisión: líneas nuevas (KMZ 2019)", visible: on("lineas_nuevas"), geojson: linNew,
+      color: props => {
+        const kv = +(props.kv || 0);
+        return { color: C("--s6"), weight: kv >= 220 ? 2.6 : 1.8, opacity: 0.95, dashArray: "5 4" };
+      },
+      tip: p => (p.n || "Linea") + " — nueva 2019" + (p.kv ? " · " + p.kv + " kV" : ""),
+      popup: popupLinea, colorSel: "#ffffff" },
+  ] : [];
 
   const comunas = {
     nombre: IND[ind][0], visible: on("censo"), fmt: IND[ind][1],
@@ -225,6 +239,8 @@ function pintarContador(ind) {
   document.getElementById("ley-encoding").innerHTML =
     "Tamaño del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
     "Líneas de transmisión en naranjo (más gruesa y opaca = 220 kV o más). " +
+    (conteos.lineas_nuevas ? "Líneas nuevas (KMZ 2019) en verde punteado (" + PW.fmt(conteos.lineas_nuevas) +
+      ": 43 complementos de voltaje + 22 ausentes del troncal IDE, revisadas por geometría). " : "") +
     "Censo: fondo azul, más oscuro = mayor " +
     (ind === "viviendas" ? "numero de viviendas" : "porcentaje") + " en la comuna.";
 }
