@@ -22,7 +22,7 @@
   <p class="sub">Un solo mapa para cruzar las capas del sistema eléctrico y de
   electromovilidad: la <b>red de carga</b>, la <b>transmisión</b> que la alimenta (separada por
   rango de tensión), la <b>generación renovable</b> y el <b>almacenamiento</b> que la respaldan,
-  los <b>postes de distribución</b> (red CGE, por comuna, bajo demanda) y el <b>Censo</b> como
+  los <b>postes</b> y la <b>red de media tensión</b> de distribución (CGE, por comuna, bajo demanda) y el <b>Censo</b> como
   telón de fondo territorial. Parta de un <b>cruce sugerido</b> o encienda y apague capas a mano
   para encontrar relaciones sobre el territorio: cargadores lejos de una subestación, plantas
   solares junto a baterías, comunas con poca electrificación y sin red cercana.</p>
@@ -103,6 +103,19 @@ function postesRender() {
   }
   return pts;
 }
+// [MT] tramos de media tension (CGE) por comuna, on-demand. Densos => SOLO a nivel comuna.
+let tramosMtCache = {}, tramosMtCargando = {};
+function cutMt() { return filtroTerr.com ? cutPostes() : null; }
+async function sincronizarMt() {
+  if (!on("mt")) return;
+  const cut = cutMt();
+  if (!cut || (cut in tramosMtCache) || tramosMtCargando[cut]) return;
+  tramosMtCargando[cut] = true;
+  try { tramosMtCache[cut] = await fetch("data/tramos_mt/" + cut + ".json").then(r => r.json()); }
+  catch (e) { tramosMtCache[cut] = null; }
+  tramosMtCargando[cut] = false;
+  render(false);
+}
 // total de postes CGE segun el filtro: comuna, region (suma) o pais (Todas)
 function totalPostes() {
   if (filtroTerr.com) { const cut = cutPostes(); return cut ? POSTES_IDX[cut].n : 0; }
@@ -151,6 +164,7 @@ const CAPAS = [
   { k: "solar",  nombre: "Generación solar",        color: "--s4",       on: false },
   { k: "bess",   nombre: "Almacenamiento (BESS)",   color: "--s5",       on: false },
   { k: "postes", nombre: "Postes de distribución", color: "--ink-2", on: false },
+  { k: "mt",     nombre: "Red MT (media tensión)",  color: "#7c3aed",    on: false },
   { k: "censo",  nombre: "Censo por comuna",        color: "--s1",       on: false },
 ];
 const on = k => (CAPAS.find(c => c.k === k) || {}).on;
@@ -272,6 +286,17 @@ function render(fit) {
   const lineas = LIN ? [
     capaBanda("lin_a", bnd.a), capaBanda("lin_m", bnd.m), capaBanda("lin_b", bnd.b),
   ] : [];
+  // Red MT (media tension) de la comuna: un solo MultiLineString (liviano de pintar/anotar)
+  const mtCut = cutMt();
+  const mtData = (on("mt") && mtCut && tramosMtCache[mtCut]) ? tramosMtCache[mtCut] : null;
+  if (mtData && mtData.segs && mtData.segs.length) {
+    lineas.push({
+      nombre: "Red MT (media tensión)", visible: true,
+      geojson: { type: "FeatureCollection", features: [{ type: "Feature", properties: {}, geometry: { type: "MultiLineString", coordinates: mtData.segs } }] },
+      color: "#7c3aed", weight: 1, opacity: 0.75,
+      tip: () => "Red de distribución MT (CGE)",
+    });
+  }
 
   const comunas = {
     nombre: IND[ind][0], visible: on("censo"), fmt: IND[ind][1],
@@ -313,6 +338,9 @@ function pintarPanel() {
     if (c.k === "postes") {
       const t = totalPostes();  // comuna / suma de la region / suma pais (Todas), desde el indice CGE
       num = t ? PW.fmt(t) : "sin red CGE";
+    } else if (c.k === "mt") {  // MT es solo por comuna
+      const cut = cutMt();
+      num = cut ? PW.fmt(POSTES_IDX[cut].mt || 0) : "elige comuna";
     } else num = PW.fmt(conteos[c.k] || 0);
     return `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
       `<span class="dot"></span>${c.nombre} <span class="num">${num}</span></span>`;
@@ -322,6 +350,7 @@ function pintarPanel() {
     c.on = !c.on;
     render(false);
     if (c.k === "postes") sincronizarPostes();
+    if (c.k === "mt") sincronizarMt();
   }));
 }
 
@@ -337,18 +366,27 @@ function postesHint() {
   const donde = filtroTerr.com ? "en " + filtroTerr.com : "en la región";
   return " Postes: " + (shown < t ? PW.fmt(shown) + " de " + PW.fmt(t) + " (muestra)" : PW.fmt(t)) + " " + donde + ".";
 }
+function mtHint() {
+  const cut = cutMt();
+  if (!cut) return " Red MT: elige una comuna (CGE) para dibujarla.";
+  const d = tramosMtCache[cut];
+  if (!d) return " Red MT: cargando…";
+  return " Red MT: " + PW.fmt(d.n) + " tramos de media tensión en " + filtroTerr.com + ".";
+}
 function pintarContador(ind) {
   const activas = CAPAS.filter(c => c.on).map(c => c.nombre.replace(/ \(.*\)/, ""));
   document.getElementById("cont-todo").textContent =
     (activas.length ? "Capas activas: " + activas.join(", ") + "." : "Sin capas activas: encienda una arriba.") +
     (filtroTerr.rcut || filtroTerr.com ? " Filtrado por territorio." : " Todo Chile.") +
-    (on("postes") ? postesHint() : "");
+    (on("postes") ? postesHint() : "") +
+    (on("mt") ? mtHint() : "");
   const totNew = conteos.nuevas || 0;
   document.getElementById("ley-encoding").innerHTML =
     "Tamaño del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
     "Líneas de transmisión en naranjo, separadas por tensión (más gruesa = mayor kV: ≥200 / 66–154 / <66). " +
     (totNew ? "Líneas nuevas (KMZ 2019) en verde punteado, también por tensión (" + PW.fmt(totNew) +
       ": 43 complementos de voltaje + 22 ausentes del troncal IDE). " : "") +
+    (on("mt") ? "Red de distribución MT (media tensión, CGE) en violeta, por comuna. " : "") +
     "Censo: fondo azul, más oscuro = mayor " +
     (ind === "viviendas" ? "numero de viviendas" : "porcentaje") + " en la comuna.";
 }
@@ -366,7 +404,7 @@ const territorio = (RED.subestaciones || []).map(s => ({
 // que las comunas con postes CGE sean seleccionables aunque no tengan subestacion
 const regDe = {}; territorio.forEach(t => { if (t.rcut && t.reg) regDe[t.rcut] = t.reg; });
 Object.values(POSTES_IDX).forEach(o => territorio.push({ rcut: o.rcut, reg: regDe[o.rcut] || o.region, com: o.comuna }));
-PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; render(true); sincronizarPostes(); },
+PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; render(true); sincronizarPostes(); sincronizarMt(); },
   `<label>Telon de fondo (Censo)
      <select id="f-ind">
        <option value="pct_solar">% viviendas con generacion solar</option>
