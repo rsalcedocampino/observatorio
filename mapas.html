@@ -10,7 +10,7 @@
 <title>Mapas Interactivos — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260806a">
+<link rel="stylesheet" href="assets/estilo.css?v=260806b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -48,7 +48,7 @@
 <script src="data/geo_lineas.js"></script>
 <script src="data/geo_comunas.js"></script>
 <script src="data/postes_index.js"></script>
-<script src="assets/comun.js?v=260806a"></script>
+<script src="assets/comun.js?v=260806b"></script>
 <script>
 PW.montarNav("mapas.html");
 
@@ -64,102 +64,43 @@ const POSTES_IDX = window.PW_DATA.postes_index || {};
 const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim();
 const postesNameToCut = {};
 Object.entries(POSTES_IDX).forEach(([cut, o]) => { postesNameToCut[norm(o.comuna)] = cut; });
-let postesCache = {}, postesCargando = {};
-function cutPostes() {  // cut de la comuna elegida si tiene red CGE
-  if (!filtroTerr.com) return null;
-  const cut = postesNameToCut[norm(filtroTerr.com)];
-  return cut && POSTES_IDX[cut] ? cut : null;
+function cutPostes() { return filtroTerr.com ? (postesNameToCut[norm(filtroTerr.com)] || null) : null; }
+// filtro {rcut,cut} para las capas CGE (cut solo si la comuna tiene red CGE)
+function filtroCGE() {
+  const cut = cutPostes();
+  return { rcut: filtroTerr.rcut || null, cut: (cut && POSTES_IDX[cut]) ? cut : null };
 }
-// que comunas CGE dibujar segun el filtro: comuna | region (todas sus CGE) | Todas = ninguna (642k)
-function cutsPostesScope() {
-  if (filtroTerr.com) { const c = cutPostes(); return c ? [c] : []; }
-  if (filtroTerr.rcut) return Object.keys(POSTES_IDX).filter(c => POSTES_IDX[c].rcut === filtroTerr.rcut);
-  return [];
-}
-async function sincronizarPostes() {
-  if (!on("postes")) return;
-  const faltan = cutsPostesScope().filter(c => !(c in postesCache) && !postesCargando[c]);
-  if (!faltan.length) return;
-  await Promise.all(faltan.map(async c => {
-    postesCargando[c] = true;
-    try { postesCache[c] = await fetch("data/postes/" + c + ".json").then(r => r.json()); }
-    catch (e) { postesCache[c] = null; }
-    postesCargando[c] = false;
-  }));
-  render(false);
-}
-// puntos de postes a dibujar (combina las comunas del scope; tope de 15k por rendimiento)
-const CAP_POSTES = 15000;
-function postesRender() {
-  const cuts = cutsPostesScope();
-  if (!cuts.length) return null;
-  let pts = [];
-  for (const c of cuts) { const pd = postesCache[c]; if (pd && pd.pts) pts = pts.concat(pd.pts); }
-  if (!pts.length) return null;
-  if (pts.length > CAP_POSTES) {
-    const step = pts.length / CAP_POSTES, s = [];
-    for (let i = 0; i < CAP_POSTES; i++) s.push(pts[Math.floor(i * step)]);
-    pts = s;
-  }
-  return pts;
-}
-// [TRAMOS] red de distribucion CGE entre postes: MT (media tension) y BT (baja tension), on-demand.
-// MT tambien a nivel REGION (con tope); BT solo comuna (demasiado densa para region).
+// capas por comuna/region con carga DIFERIDA (helper homologado: PW.capaComunaOnDemand en comun.js)
+const capaPostes = PW.capaComunaOnDemand({ dir: "postes", indice: POSTES_IDX, campo: "pts", contarKey: "n", region: true, cap: 15000, alRefrescar: () => render(false) });
 const TRAMOS = {
-  mt: { dir: "tramos_mt", color: "#7c3aed", nombre: "media tensión", region: true,  cap: 45000 },
-  bt: { dir: "tramos_bt", color: "#ec4899", nombre: "baja tensión",   region: false, cap: 45000 },
+  mt: { color: "#7c3aed", nombre: "media tensión", region: true,
+        capa: PW.capaComunaOnDemand({ dir: "tramos_mt", indice: POSTES_IDX, campo: "segs", contarKey: "mt", region: true,  cap: 45000, alRefrescar: () => render(false) }) },
+  bt: { color: "#ec4899", nombre: "baja tensión",   region: false,
+        capa: PW.capaComunaOnDemand({ dir: "tramos_bt", indice: POSTES_IDX, campo: "segs", contarKey: "bt", region: false, cap: 45000, alRefrescar: () => render(false) }) },
 };
-const tramosCache = { mt: {}, bt: {} }, tramosCargando = { mt: {}, bt: {} };
-function cutsTramosScope(tipo) {
-  if (filtroTerr.com) { const c = cutPostes(); return c ? [c] : []; }
-  if (filtroTerr.rcut && TRAMOS[tipo].region) return Object.keys(POSTES_IDX).filter(c => POSTES_IDX[c].rcut === filtroTerr.rcut);
-  return [];  // Todas, o region para una capa que no la soporta (BT)
+// wrappers delgados (conservan las firmas que usan render/pintarPanel/hints)
+function cutsPostesScope() { return capaPostes.scope(filtroCGE()); }
+async function sincronizarPostes() { if (on("postes")) await capaPostes.sincronizar(filtroCGE()); }
+function postesRender() { return capaPostes.datos(filtroCGE()); }
+function totalPostes() {  // postes: comuna/region por scope; en "Todas" muestra el gran total nacional
+  if (!filtroTerr.com && !filtroTerr.rcut) return Object.values(POSTES_IDX).reduce((s, o) => s + (o.n || 0), 0);
+  return capaPostes.total(filtroCGE());
 }
-async function sincronizarTramos(tipo) {
-  if (!on(tipo)) return;
-  const faltan = cutsTramosScope(tipo).filter(c => !(c in tramosCache[tipo]) && !tramosCargando[tipo][c]);
-  if (!faltan.length) return;
-  await Promise.all(faltan.map(async c => {
-    tramosCargando[tipo][c] = true;
-    try { tramosCache[tipo][c] = await fetch("data/" + TRAMOS[tipo].dir + "/" + c + ".json").then(r => r.json()); }
-    catch (e) { tramosCache[tipo][c] = null; }
-    tramosCargando[tipo][c] = false;
-  }));
-  render(false);
-}
-function tramosSegs(tipo) {  // combina los tramos del scope; muestrea si supera el tope
-  const cuts = cutsTramosScope(tipo);
-  if (!cuts.length) return null;
-  let segs = [];
-  for (const c of cuts) { const d = tramosCache[tipo][c]; if (d && d.segs) segs = segs.concat(d.segs); }
-  if (!segs.length) return null;
-  const cap = TRAMOS[tipo].cap;
-  if (segs.length > cap) { const step = segs.length / cap, s = []; for (let i = 0; i < cap; i++) s.push(segs[Math.floor(i * step)]); segs = s; }
-  return segs;
-}
-function totalTramos(tipo) {  // conteo del scope, desde el indice (o cache si ya cargado)
-  return cutsTramosScope(tipo).reduce((s, c) => {
-    const d = tramosCache[tipo][c];
-    return s + (d ? d.n : (POSTES_IDX[c] ? (POSTES_IDX[c][tipo] || 0) : 0));
-  }, 0);
-}
-// total de postes CGE segun el filtro: comuna, region (suma) o pais (Todas)
-function totalPostes() {
-  if (filtroTerr.com) { const cut = cutPostes(); return cut ? POSTES_IDX[cut].n : 0; }
-  const rc = filtroTerr.rcut;
-  return Object.values(POSTES_IDX).filter(o => !rc || o.rcut === rc).reduce((s, o) => s + o.n, 0);
-}
+function cutsTramosScope(tipo) { return TRAMOS[tipo].capa.scope(filtroCGE()); }
+async function sincronizarTramos(tipo) { if (on(tipo)) await TRAMOS[tipo].capa.sincronizar(filtroCGE()); }
+function tramosSegs(tipo) { return TRAMOS[tipo].capa.datos(filtroCGE()); }
+function totalTramos(tipo) { return TRAMOS[tipo].capa.total(filtroCGE()); }
 // puente nombre de comuna -> CUT (todas, del censo) para el recorte EXACTO de lineas por comuna
 const cutDeComuna = {};
 (CEN.comunas || []).forEach(c => { cutDeComuna[norm(c.comuna)] = String(c.cut).padStart(5, "0"); });
-// recorte EXACTO de una linea al territorio por CUT (geo_lineas trae `cuts` = comunas que atraviesa,
-// homologacion oficial multi-comuna). Nada de bbox: una linea pertenece si pasa por la comuna/region.
-function lineaEnTerr(f) {
-  const cuts = f.properties.cuts;
-  if (filtroTerr.com) { const cut = cutDeComuna[norm(filtroTerr.com)]; return cut ? (cuts || []).indexOf(cut) >= 0 : true; }
-  if (filtroTerr.rcut) return (cuts || []).some(c => c.slice(0, 2) === filtroTerr.rcut);
-  return true;  // Todas
+// recorte EXACTO de lineas al territorio por CUT (helper homologado PW.lineaEnTerritorio en comun.js;
+// geo_lineas trae `cuts` = comunas que atraviesa cada linea). Comuna sin cut resuelto => sin filtro.
+function filtroLineas() {
+  if (filtroTerr.com) return { cut: cutDeComuna[norm(filtroTerr.com)] || null };
+  if (filtroTerr.rcut) return { rcut: filtroTerr.rcut };
+  return {};
 }
+function lineaEnTerr(f) { return PW.lineaEnTerritorio(f, filtroLineas()); }
 // geo_lineas.js se sirve SIN ?v=, asi que el navegador puede tener una copia cacheada SIN `cuts`
 // (rompe el recorte por comuna/region). Si detectamos eso, recargamos el archivo fresco una vez
 // (URL con query => evita la cache; re-asigna window.PW_DATA.geo_lineas) y re-render.
@@ -319,7 +260,7 @@ function render(fit) {
     const segs = on(tipo) ? tramosSegs(tipo) : null;
     if (segs && segs.length) lineas.push({
       nombre: "Red " + tipo.toUpperCase(), visible: true,
-      geojson: { type: "FeatureCollection", features: [{ type: "Feature", properties: {}, geometry: { type: "MultiLineString", coordinates: segs } }] },
+      geojson: PW.multiLinea(segs),
       color: TRAMOS[tipo].color, weight: 1, opacity: 0.7,
       tip: () => "Red de distribución " + TRAMOS[tipo].nombre + " (CGE)",
     });

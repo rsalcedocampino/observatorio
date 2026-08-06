@@ -1048,6 +1048,72 @@
     });
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto };
+  // [TERRITORIO] recorte EXACTO de una linea al territorio por CUT. La linea debe traer en sus
+  //   props una lista `cuts` (comunas que atraviesa, homologacion oficial multi-comuna, p.ej. la que
+  //   pone modulo_geo_lineas en geo_lineas.js). filtro = {cut?: "01101", rcut?: "01"} (cut resuelto
+  //   por el consumidor). Sin cuts en la feature => no pertenece a un territorio (excepto "todas").
+  function lineaEnTerritorio(feature, filtro) {
+    if (!filtro || (!filtro.cut && !filtro.rcut)) return true;
+    const cuts = feature && feature.properties && feature.properties.cuts;
+    if (!cuts) return false;
+    if (filtro.cut) return cuts.indexOf(filtro.cut) >= 0;
+    return cuts.some(c => String(c).slice(0, 2) === filtro.rcut);
+  }
+
+  // [MAPA] colapsa un arreglo de segmentos [[[lon,lat],...],...] en UN Feature MultiLineString
+  //   (1 tooltip, mucho mas liviano de pintar que N features). Para redes densas via cfg.lineas.
+  function multiLinea(segs, props) {
+    return { type: "FeatureCollection", features: [{ type: "Feature", properties: props || {},
+      geometry: { type: "MultiLineString", coordinates: segs || [] } }] };
+  }
+
+  // [MAPA] capa por comuna/region con CARGA DIFERIDA (bajo demanda). Encapsula cache + fetch + scope +
+  //   combinar + muestreo. cfg: {dir, indice, campo:'pts'|'segs', contarKey, region:bool, cap, alRefrescar}
+  //   - indice: { cut: {rcut, [contarKey]:n, ...} } (liviano, cargado upfront).
+  //   - archivos: data/<dir>/<cut>.json = { n, [campo]:[...] }.
+  //   - filtro: {cut?, rcut?} (cut resuelto por el consumidor; region solo si cfg.region).
+  //   Devuelve { scope(filtro), sincronizar(filtro)->Promise, datos(filtro)->[...] , total(filtro) }.
+  function capaComunaOnDemand(cfg) {
+    const cache = {}, cargando = {};
+    function scope(filtro) {
+      filtro = filtro || {};
+      if (filtro.cut) return cfg.indice[filtro.cut] ? [filtro.cut] : [];
+      if (filtro.rcut && cfg.region) return Object.keys(cfg.indice).filter(c => cfg.indice[c].rcut === filtro.rcut);
+      return [];
+    }
+    async function sincronizar(filtro) {
+      const faltan = scope(filtro).filter(c => !(c in cache) && !cargando[c]);
+      if (!faltan.length) return;
+      await Promise.all(faltan.map(async c => {
+        cargando[c] = true;
+        try { cache[c] = await fetch("data/" + cfg.dir + "/" + c + ".json").then(r => r.json()); }
+        catch (e) { cache[c] = null; }
+        cargando[c] = false;
+      }));
+      if (cfg.alRefrescar) cfg.alRefrescar();
+    }
+    function datos(filtro) {
+      const cuts = scope(filtro);
+      if (!cuts.length) return null;
+      let arr = [];
+      for (const c of cuts) { const d = cache[c]; if (d && d[cfg.campo]) arr = arr.concat(d[cfg.campo]); }
+      if (!arr.length) return null;
+      if (cfg.cap && arr.length > cfg.cap) {
+        const step = arr.length / cfg.cap, s = [];
+        for (let i = 0; i < cfg.cap; i++) s.push(arr[Math.floor(i * step)]);
+        arr = s;
+      }
+      return arr;
+    }
+    function total(filtro) {
+      return scope(filtro).reduce((s, c) => {
+        const d = cache[c];
+        return s + (d ? d.n : (cfg.indice[c] ? (cfg.indice[c][cfg.contarKey] || 0) : 0));
+      }, 0);
+    }
+    return { scope, sincronizar, datos, total };
+  }
+
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand };
 })();
 
