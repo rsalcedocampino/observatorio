@@ -94,8 +94,8 @@ details.seccion > summary { padding: 4px 0; }
     <details class="tarjeta seccion" open>
       <summary>Resiliencia y cortes de energía</summary>
       <div class="kpis" id="kpis-resiliencia" style="margin-top:10px"></div>
-      <h3 style="margin:14px 0 2px; font-size:15px">Historial de cortes — cliente-horas de interrupción</h3>
-      <p class="nota" style="margin:0 0 6px">Serie nacional (SEC, 2017 a hoy). Filtra por año y por mes; al elegir un año se ven sus meses.</p>
+      <h3 style="margin:14px 0 2px; font-size:15px">Historial de cortes — clientes</h3>
+      <p class="nota" style="margin:0 0 6px">Clientes afectados (peak simultáneo sin energía). Serie nacional (SEC, 2017 a hoy). Filtra por año y por mes; al elegir un año se ven sus meses.</p>
       <div class="filtros" style="margin:0 0 8px">
         <label>Año <select id="cortes-anio"></select></label>
         <label>Mes <select id="cortes-mes"></select></label>
@@ -442,7 +442,7 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarTodo);
 // ===================== LAZY-LOAD del bundle del dossier =====================
 const BUNDLE = ["mapa", "censo", "c_vulnerab", "riesgo", "c_probcortes", "c_redelec",
   "c_valorparque", "c_censoelec", "costo", "infraestructura", "c_concentracion",
-  "c_besscortes", "permisos", "geo_comunas", "cortes"];
+  "c_besscortes", "permisos", "geo_comunas", "cortes", "geo_lineas"];
 let bundleProm = null;
 function cargarBundle() {
   if (bundleProm) return bundleProm;
@@ -670,28 +670,30 @@ function renderCortes() {
   let labels, valores, subtxt;
   if (!anio && !mes) {
     const an = RI.anual || [];
-    labels = an.map(a => String(a.anho)); valores = an.map(a => a.cliente_horas);
-    subtxt = "Cliente-horas por año (2017 a hoy). Cliente-horas = clientes × horas sin energía.";
+    labels = an.map(a => String(a.anho)); valores = an.map(a => a.peak_clientes);
+    subtxt = "Peak de clientes afectados por año (2017 a hoy).";
   } else if (anio && !mes) {
     const f = mensual.filter(m => m.ym.slice(0, 4) === anio);
-    labels = f.map(m => MESES[+m.ym.slice(5, 7) - 1]); valores = f.map(m => m.cliente_horas);
-    subtxt = "Cliente-horas por mes en " + anio + ".";
+    labels = f.map(m => MESES[+m.ym.slice(5, 7) - 1]); valores = f.map(m => m.peak_clientes);
+    subtxt = "Peak de clientes afectados por mes en " + anio + ".";
   } else if (!anio && mes) {
     const mm = String(mes).padStart(2, "0");
     const f = mensual.filter(m => m.ym.slice(5, 7) === mm);
-    labels = f.map(m => m.ym.slice(0, 4)); valores = f.map(m => m.cliente_horas);
-    subtxt = "Cliente-horas de " + MESES[+mes - 1] + " en cada año.";
+    labels = f.map(m => m.ym.slice(0, 4)); valores = f.map(m => m.peak_clientes);
+    subtxt = "Peak de clientes afectados en " + MESES[+mes - 1] + " de cada año.";
   } else {
     const ym = anio + "-" + String(mes).padStart(2, "0");
     const rec = mensual.find(m => m.ym === ym);
-    labels = [MESES[+mes - 1] + " " + anio]; valores = [rec ? rec.cliente_horas : 0];
+    labels = [MESES[+mes - 1] + " " + anio]; valores = [rec ? rec.peak_clientes : 0];
     subtxt = rec ? "" : "Sin dato para " + MESES[+mes - 1] + " " + anio + " (posible hueco de fuente).";
   }
+  const mx = Math.max(0, ...valores.filter(v => v != null));
+  const fmtY = mx >= 2e6 ? (v => PW.fmt(v / 1e6, 1) + "M") : (v => PW.fmt(v / 1e3, 0) + "k");
   PW.columnas("g-probcortes", {
     labels, valores, color: PW.color("--s2"),
-    fmtV: v => PW.fmt(v) + " cliente-horas", fmtY: v => PW.fmt(v / 1e6, 1) + "M",
+    fmtV: v => PW.fmt(v) + " clientes", fmtY,
   });
-  document.getElementById("cortes-sub").textContent = subtxt + " Serie nacional (SEC); no cambia con el territorio elegido.";
+  document.getElementById("cortes-sub").textContent = subtxt + " Clientes = peak simultáneo sin energía (SEC). Serie nacional; no cambia con el territorio elegido.";
 }
 
 function llenarCenso(ctx) {
@@ -784,6 +786,32 @@ function llenarMapa(ctx) {
       { nombre: "Almacenamiento (BESS)", puntos: ptsBess },
     ], centro: [-35.5, -71.5], zoom: 6, alto: 540, foco,
   };
+  // [REDES] líneas de transmisión (geo_lineas) como capa conmutable, acotadas al territorio
+  const geoL = PW_DATA.geo_lineas;
+  if (geoL && geoL.features) {
+    const bnd = PW.boundsComunas(foco);
+    const bounds = bnd ? bnd.pad(0.15) : null;
+    const dentro = coords => coords.some(pt => Array.isArray(pt[0]) ? dentro(pt) : (!bounds || bounds.contains([pt[1], pt[0]])));
+    const feats = bounds
+      ? geoL.features.filter(f => f.geometry && f.geometry.coordinates && dentro(f.geometry.coordinates))
+      : geoL.features;
+    if (feats.length) {
+      cfg.lineas = [{
+        nombre: "Redes eléctricas (transmisión)",
+        geojson: { type: "FeatureCollection", features: feats },
+        visible: false,
+        color: p => {
+          const kv = +(p.kv || 0);
+          return {
+            color: kv >= 220 ? PW.color("--s2") : (kv >= 66 ? PW.color("--s1") : PW.color("--s3")),
+            weight: kv >= 220 ? 2 : 1.2, opacity: 0.7,
+          };
+        },
+        tip: p => (p.n || "Línea") + (p.kv ? " — " + p.kv + " kV" : "") + (p.km ? " (" + PW.fmt(Math.round(p.km)) + " km)" : ""),
+      }];
+      cfg.lineasCount = feats.length;
+    }
+  }
   if (!nivelComuna) {
     const valores = {};
     comunasReg.forEach(c => { if (c.score != null) valores[String(c.cut)] = c.score; });
@@ -799,7 +827,8 @@ function llenarMapa(ctx) {
     ["Planta solar", PW.color("--s4")], ["Almacenamiento", PW.color("--s3")],
   ]);
   document.getElementById("cont-territorio").textContent =
-    pts.length + " estaciones de carga, " + ptsSolar.length + " plantas solares y " + ptsBess.length + " proyectos de almacenamiento en la selección.";
+    pts.length + " estaciones de carga, " + ptsSolar.length + " plantas solares y " + ptsBess.length + " proyectos de almacenamiento en la selección." +
+    (cfg.lineasCount ? " Activa «Redes eléctricas» en el selector de capas (arriba a la derecha) para ver " + cfg.lineasCount + " líneas de transmisión." : "");
 }
 
 function llenarComunasRegion(ctx) {
