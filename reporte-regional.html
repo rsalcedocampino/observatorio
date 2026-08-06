@@ -94,8 +94,14 @@ details.seccion > summary { padding: 4px 0; }
     <details class="tarjeta seccion" open>
       <summary>Resiliencia y cortes de energía</summary>
       <div class="kpis" id="kpis-resiliencia" style="margin-top:10px"></div>
-      <h3 style="margin:12px 0 2px; font-size:15px">Estacionalidad de los cortes (por mes)</h3>
+      <h3 style="margin:14px 0 2px; font-size:15px">Historial de cortes — cliente-horas de interrupción</h3>
+      <p class="nota" style="margin:0 0 6px">Serie nacional (SEC, 2017 a hoy). Filtra por año y por mes; al elegir un año se ven sus meses.</p>
+      <div class="filtros" style="margin:0 0 8px">
+        <label>Año <select id="cortes-anio"></select></label>
+        <label>Mes <select id="cortes-mes"></select></label>
+      </div>
       <div id="g-probcortes"></div>
+      <p class="nota" id="cortes-sub" style="margin:6px 0 0"></p>
     </details>
 
     <details class="tarjeta seccion" open>
@@ -637,12 +643,55 @@ function llenarResiliencia(ctx) {
     ];
   }
   document.getElementById("kpis-resiliencia").innerHTML = kpiHTML(rows);
-  let serie = null, lbl = null;
-  if (nivelComuna) { const pc = PROB_COM[cut]; if (pc && pc.prob) { serie = pc.prob; lbl = "% de años con corte ≥500 clientes ese mes"; } }
-  else { const pr = PROB_REG[rcut]; if (pr && pr.pct_comunas) { serie = pr.pct_comunas; lbl = "% de comunas de la región afectadas"; } }
-  const g = document.getElementById("g-probcortes");
-  if (serie) PW.lineas("g-probcortes", { labels: MESES, series: [{ nombre: lbl, valores: serie, color: PW.color("--s2"), area: true }], alto: 190, fmtY: v => PW.fmt(v, 0) + "%", fmtV: v => PW.fmt(v, 1) + "%" });
-  else g.innerHTML = '<p class="nota">Sin serie de probabilidad de cortes para este territorio.</p>';
+  initCortes();
+  renderCortes();
+}
+
+// Historial nacional de cortes (riesgo.js): serie anual/mensual con filtro por año y mes.
+let cortesInit = false;
+function initCortes() {
+  if (cortesInit) return;
+  const RI = PW_DATA.riesgo; if (!RI) return;
+  const selA = document.getElementById("cortes-anio");
+  selA.innerHTML = `<option value="">Todos los años</option>` +
+    (RI.anual || []).map(a => `<option value="${a.anho}">${a.anho}</option>`).join("");
+  const selM = document.getElementById("cortes-mes");
+  selM.innerHTML = `<option value="">Todos los meses</option>` +
+    MESES.map((m, i) => `<option value="${i + 1}">${m}</option>`).join("");
+  selA.addEventListener("input", renderCortes);
+  selM.addEventListener("input", renderCortes);
+  cortesInit = true;
+}
+function renderCortes() {
+  const RI = PW_DATA.riesgo; if (!RI) return;
+  const anio = document.getElementById("cortes-anio").value;
+  const mes = document.getElementById("cortes-mes").value;
+  const mensual = (RI.mensual || []).filter(m => !m.hueco);
+  let labels, valores, subtxt;
+  if (!anio && !mes) {
+    const an = RI.anual || [];
+    labels = an.map(a => String(a.anho)); valores = an.map(a => a.cliente_horas);
+    subtxt = "Cliente-horas por año (2017 a hoy). Cliente-horas = clientes × horas sin energía.";
+  } else if (anio && !mes) {
+    const f = mensual.filter(m => m.ym.slice(0, 4) === anio);
+    labels = f.map(m => MESES[+m.ym.slice(5, 7) - 1]); valores = f.map(m => m.cliente_horas);
+    subtxt = "Cliente-horas por mes en " + anio + ".";
+  } else if (!anio && mes) {
+    const mm = String(mes).padStart(2, "0");
+    const f = mensual.filter(m => m.ym.slice(5, 7) === mm);
+    labels = f.map(m => m.ym.slice(0, 4)); valores = f.map(m => m.cliente_horas);
+    subtxt = "Cliente-horas de " + MESES[+mes - 1] + " en cada año.";
+  } else {
+    const ym = anio + "-" + String(mes).padStart(2, "0");
+    const rec = mensual.find(m => m.ym === ym);
+    labels = [MESES[+mes - 1] + " " + anio]; valores = [rec ? rec.cliente_horas : 0];
+    subtxt = rec ? "" : "Sin dato para " + MESES[+mes - 1] + " " + anio + " (posible hueco de fuente).";
+  }
+  PW.columnas("g-probcortes", {
+    labels, valores, color: PW.color("--s2"),
+    fmtV: v => PW.fmt(v) + " cliente-horas", fmtY: v => PW.fmt(v / 1e6, 1) + "M",
+  });
+  document.getElementById("cortes-sub").textContent = subtxt + " Serie nacional (SEC); no cambia con el territorio elegido.";
 }
 
 function llenarCenso(ctx) {
