@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org; connect-src 'self'; base-uri 'self'; object-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Costo total de propiedad (TCO) — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260804a">
+<style>
+.pestanas { display: flex; gap: 2px; flex-wrap: wrap; margin: 16px 0 4px; border-bottom: 1px solid var(--border); }
+.pestanas button { background: none; border: 0; padding: 8px 14px; font: inherit; color: var(--ink-2); cursor: pointer; border-radius: 8px 8px 0 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.pestanas button:hover { color: var(--ink-1); }
+.pestanas button.activo { background: var(--surface-1); color: var(--ink-1); border-bottom-color: var(--s1); font-weight: 600; }
+.fila2 > * { min-width: 0; }
+.kpi .v.estado-ok { color: var(--good); }
+.kpi .v.estado-mal { color: var(--critical); }
+.veredicto { margin: 10px 0 0; font-size: 13.5px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Costo total de propiedad</h1>
+  <p class="sub">Compara el costo real de tener un vehículo eléctrico frente a uno a combustión a lo
+  largo de los años: compra, energía, mantención, seguro, permiso de circulación e impuesto verde.
+  <span class="pill">Maestro TCO</span></p>
+  <p class="nota" id="nota"></p>
+
+  <nav class="pestanas" role="tablist" id="tabs">
+    <button role="tab" id="tb-comparador"  aria-controls="tab-comparador"  aria-selected="true">Comparar EV vs combustión</button>
+    <button role="tab" id="tb-mi-vehiculo" aria-controls="tab-mi-vehiculo" aria-selected="false">Desde mi vehículo</button>
+    <button role="tab" id="tb-recomendar"  aria-controls="tab-recomendar"  aria-selected="false">Recomiéndame un EV</button>
+    <button role="tab" id="tb-solar"       aria-controls="tab-solar"       aria-selected="false">Simulador solar</button>
+  </nav>
+
+  <!-- ============ 1. COMPARADOR ============ -->
+  <section id="tab-comparador" role="tabpanel" aria-labelledby="tb-comparador">
+    <div class="filtros">
+      <label>EV — marca <select id="ev-mk"></select></label>
+      <label>modelo <select id="ev-md"></select></label>
+      <label>año <select id="ev-yr"></select></label>
+    </div>
+    <div class="filtros">
+      <label>Combustión — marca <select id="ice-mk"></select></label>
+      <label>modelo <select id="ice-md"></select></label>
+      <label>año <select id="ice-yr"></select></label>
+    </div>
+    <div class="filtros">
+      <label>km/año <input type="number" id="c-km" value="18000" min="1000" step="1000"></label>
+      <label>Años <input type="number" id="c-ny" value="5" min="1" max="15"></label>
+      <label>$/kWh <input type="number" id="c-kwh" value="150" min="1"></label>
+      <label>$/L <input type="number" id="c-litro" value="1539" min="1"></label>
+    </div>
+    <div class="kpis" id="k-comp"></div>
+    <p class="veredicto" id="v-comp"></p>
+    <div class="fila2">
+      <div class="tarjeta"><h2 style="margin-top:0">Costo acumulado por año</h2><div id="g-acum"></div>
+        <p class="nota">Costo de tener el vehículo (compra menos reventa, más energía, mantención, seguro y permiso) acumulado. El cruce marca el año en que el eléctrico se vuelve más barato.</p></div>
+      <div class="tarjeta"><h2 style="margin-top:0">Ahorro del EV por partida</h2><div id="g-desglose"></div>
+        <p class="nota">Diferencia por partida a los años elegidos (barra positiva = el eléctrico gasta menos en esa partida).</p></div>
+    </div>
+    <div class="tarjeta"><h2 style="margin-top:0">Comparativa por partida</h2><div id="t-comp"></div></div>
+  </section>
+
+  <!-- ============ 2. DESDE MI VEHICULO ============ -->
+  <section id="tab-mi-vehiculo" role="tabpanel" aria-labelledby="tb-mi-vehiculo" hidden>
+    <p class="nota">Elige tu auto a combustión actual y te mostramos qué eléctricos te harían ahorrar,
+    cuánto por año y en cuántos años recuperarías la diferencia de compra.</p>
+    <div class="filtros">
+      <label>Mi auto — marca <select id="mv-mk"></select></label>
+      <label>modelo <select id="mv-md"></select></label>
+      <label>año <select id="mv-yr"></select></label>
+      <label>km/año <input type="number" id="mv-km" value="18000" min="1000" step="1000"></label>
+      <label>$/kWh <input type="number" id="mv-kwh" value="150" min="1"></label>
+      <label>Años <input type="number" id="mv-ny" value="5" min="1" max="15"></label>
+      <label>Presupuesto máx (opcional) <input type="number" id="mv-pmax" placeholder="sin límite" min="0" step="1000000"></label>
+    </div>
+    <div class="kpis" id="k-mv"></div>
+    <div class="fila2">
+      <div class="tarjeta"><h2 style="margin-top:0">Ahorro anual del top 10</h2><div id="g-mv"></div></div>
+      <div class="tarjeta"><h2 style="margin-top:0">Cómo elegir</h2>
+        <p class="nota">El ahorro anual compara energía, mantención, seguro y permiso de cada eléctrico
+        contra tu auto actual, con tus km/año. El <b>payback</b> es la diferencia de precio de compra
+        dividida por ese ahorro anual: menos años = te conviene antes. Un payback mayor que los años que
+        piensas tener el auto significa que no alcanzas a recuperar el sobreprecio.</p></div>
+    </div>
+    <div class="tarjeta"><h2 style="margin-top:0">Eléctricos ordenados por conveniencia</h2><div id="t-mv"></div></div>
+  </section>
+
+  <!-- ============ 3. RECOMIENDAME UN EV ============ -->
+  <section id="tab-recomendar" role="tabpanel" aria-labelledby="tb-recomendar" hidden>
+    <p class="nota">Dinos tu presupuesto y cómo usas el auto y te ordenamos los eléctricos por un
+    puntaje que combina costo total de propiedad, autonomía y ajuste a tu uso (mayor = mejor).</p>
+    <div class="filtros">
+      <label>Presupuesto máx <input type="number" id="rc-pmax" value="40000000" min="0" step="1000000"></label>
+      <label>km/año <input type="number" id="rc-km" value="18000" min="1000" step="1000"></label>
+      <label>Uso principal
+        <select id="rc-uso">
+          <option value="mixto">Mixto</option>
+          <option value="ciudad">Ciudad</option>
+          <option value="carretera">Carretera</option>
+        </select></label>
+      <label>Carrocería <select id="rc-cb"></select></label>
+      <label>$/kWh <input type="number" id="rc-kwh" value="150" min="1"></label>
+      <label>Años <input type="number" id="rc-ny" value="5" min="1" max="15"></label>
+    </div>
+    <div class="kpis" id="k-rc"></div>
+    <div class="fila2">
+      <div class="tarjeta"><h2 style="margin-top:0">Finalistas por costo total</h2><div id="g-rc"></div></div>
+      <div class="tarjeta" id="ficha-rc"><h2 style="margin-top:0">Recomendado</h2><div id="d-rc"></div></div>
+    </div>
+    <div class="tarjeta"><h2 style="margin-top:0">Catálogo eléctrico según tu perfil</h2><div id="t-rc"></div></div>
+  </section>
+
+  <!-- ============ 4. SIMULADOR SOLAR ============ -->
+  <section id="tab-solar" role="tabpanel" aria-labelledby="tb-solar" hidden>
+    <p class="nota">Estima cuántos paneles solares necesitas para cargar tu eléctrico, cuánto ahorrarías
+    frente a la red y en cuántos años se paga la inversión.</p>
+    <div class="filtros">
+      <label>EV — marca <select id="so-mk"></select></label>
+      <label>modelo <select id="so-md"></select></label>
+      <label>año <select id="so-yr"></select></label>
+      <label>Zona (sol)
+        <select id="so-zona">
+          <option value="6.2">Norte (HSP 6,2)</option>
+          <option value="5.2" selected>Centro (HSP 5,2)</option>
+          <option value="3.8">Sur (HSP 3,8)</option>
+        </select></label>
+      <label>km/año <input type="number" id="so-km" value="18000" min="1000" step="1000"></label>
+      <label>Paneles a instalar <input type="number" id="so-np" value="6" min="1" max="40"></label>
+      <label>Costo por panel instalado <input type="number" id="so-cp" value="320000" min="0" step="10000"></label>
+      <label>$/kWh red <input type="number" id="so-kwh" value="150" min="1"></label>
+    </div>
+    <div class="kpis" id="k-so"></div>
+    <div class="fila2">
+      <div class="tarjeta"><h2 style="margin-top:0">Generación solar mensual vs consumo del EV</h2><div id="g-so-mes"></div>
+        <p class="nota">Generación estimada por mes (según horas de sol de la zona) contra el consumo mensual de carga del vehículo.</p></div>
+      <div class="tarjeta"><h2 style="margin-top:0">Recuperación de la inversión</h2><div id="g-so-pb"></div>
+        <p class="nota">Flujo acumulado: parte en negativo por la inversión y sube con el ahorro anual. Cuando cruza el cero, se pagó.</p></div>
+    </div>
+    <div class="tarjeta"><h2 style="margin-top:0">Escenarios de tamaño</h2><div id="t-so"></div></div>
+  </section>
+</main>
+
+<script src="data/c_tco.js"></script>
+<script src="assets/comun.js?v=260804a"></script>
+<script>
+PW.montarNav("tco.html");
+const D = PW_DATA.c_tco;
+const V = D.v, P0 = D.p, E0 = D.e;
+const g = id => document.getElementById(id);
+const numIn = (id, def) => { const el = g(id); if (!el) return def; const x = parseFloat(el.value); return isFinite(x) ? x : def; };
+g("nota").textContent = "Generado " + D.generado + ". " + (D.nota || "");
+
+// -------- pools --------
+const POOL_EV = V.filter(x => (x.tp === "BEV" || x.tp === "PHEV") && x.ke > 0);
+const POOL_ICE = V.filter(x => (x.tp === "ICE" || x.tp === "HEV" || x.tp === "MHEV") && x.kl > 0);
+
+// -------- motor de cálculo TCO --------
+const esEV = v => v.tp === "BEV" || v.tp === "PHEV" || v.tp === "FCEV";
+const kmAnio = P => P.kmm * 12;
+function energiaKwhAnio(v, P) { return v.ke > 0 ? (kmAnio(P) / v.ke) * (1 + P.pc / 100) : 0; }
+function litrosAnio(v, P) { return v.kl > 0 ? kmAnio(P) / v.kl : 0; }
+function costoEnergiaAnio(v, E, P) {
+  const elec = energiaKwhAnio(v, P) * E.e_rm;
+  const comb = litrosAnio(v, P) * (v.ds ? E.die : E[P.oct]);
+  if (v.tp === "BEV" || v.tp === "FCEV") return elec;
+  if (v.tp === "PHEV") return P.uf * elec + (1 - P.uf) * comb;
+  return comb;
+}
+function residualPct(v) { return (v.rs && v.rs > 0) ? v.rs : (v.rp || 0); }
+function valorResidual(v, N) {
+  const p = residualPct(v) / 100;
+  if (!v.pr || p <= 0) return 0;
+  if (N === 5) return v.pr * p;
+  const r = Math.pow(p, 1 / 5);
+  return v.pr * Math.pow(r, N);
+}
+function permisoTotal(v, P) {
+  if (P.ny === 5 && v.p5 > 0) return v.p5;
+  const f = v.b21 ? P.pev : P.pice;
+  return (v.p1 || 0) * f * P.ny;
+}
+function co2kgAnio(v, P) {
+  if (v.tp === "BEV" || v.tp === "FCEV") return energiaKwhAnio(v, P) * (P.fred / 1000);
+  return (v.co || 0) * kmAnio(P) / 1000;
+}
+function tco(v, E, P) {
+  const eA = costoEnergiaAnio(v, E, P);
+  const capex = (v.pr || 0) + (esEV(v) ? P.wb : 0);
+  const c = {
+    dep: capex - valorResidual(v, P.ny),
+    energia: eA * P.ny,
+    mant: (v.ma || 0) * P.ny,
+    seguro: (v.sg || 0) * P.ny,
+    permiso: permisoTotal(v, P),
+    ivpv: (v.iv || 0) * P.utm,
+  };
+  const total = c.dep + c.energia + c.mant + c.seguro + c.permiso + c.ivpv;
+  return { total, mensual: total / (P.ny * 12), porKm: total / (kmAnio(P) * P.ny), c, energiaAnio: eA };
+}
+function curvaAcum(v, E, P) {
+  const opex = costoEnergiaAnio(v, E, P) + (v.ma || 0) + (v.sg || 0) + permisoTotal(v, P) / P.ny;
+  const capex = (v.pr || 0) + (esEV(v) ? P.wb : 0);
+  const iv = (v.iv || 0) * P.utm;
+  const arr = [];
+  for (let t = 0; t <= P.ny; t++) arr.push(capex - valorResidual(v, t) + opex * t + iv);
+  return arr;
+}
+function breakeven(evC, iceC) { for (let t = 0; t < evC.length; t++) if (evC[t] <= iceC[t]) return t; return null; }
+
+// -------- utilidades UI --------
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ") : "";
+function opts(arr, fmt) { return arr.map(x => `<option value="${PW.esc(String(x))}">${PW.esc(fmt ? fmt(x) : x)}</option>`).join(""); }
+function marcas(pool) { return [...new Set(pool.map(x => x.mk))].sort((a, b) => a.localeCompare(b, "es")); }
+function modelos(pool, mk) { return [...new Set(pool.filter(x => x.mk === mk).map(x => x.md))].sort((a, b) => a.localeCompare(b, "es")); }
+function anios(pool, mk, md) { return [...new Set(pool.filter(x => x.mk === mk && x.md === md).map(x => x.yr))].sort((a, b) => b - a); }
+function buscar(pool, mk, md, yr) { return pool.find(x => x.mk === mk && x.md === md && x.yr === +yr) || null; }
+function kpi(v, l, d, cls) { return `<div class="kpi"><div class="v ${cls || ""}">${v}</div><div class="l">${l}</div>${d ? `<div class="d">${d}</div>` : ""}</div>`; }
+
+function selVeh(pool, mkS, mdS, yrS, cb, auto) {
+  mkS.innerHTML = `<option value="">— marca —</option>` + opts(marcas(pool));
+  const onMk = () => { const mk = mkS.value; mdS.innerHTML = mk ? (`<option value="">— modelo —</option>` + opts(modelos(pool, mk))) : ""; onMd(); };
+  const onMd = () => { const mk = mkS.value, md = mdS.value; yrS.innerHTML = (mk && md) ? opts(anios(pool, mk, md)) : ""; onYr(); };
+  const onYr = () => cb(buscar(pool, mkS.value, mdS.value, yrS.value));
+  mkS.onchange = onMk; mdS.onchange = onMd; yrS.onchange = onYr;
+  onMk();
+  if (auto && mkS.options.length > 1) {
+    mkS.selectedIndex = 1; onMk();
+    if (mdS.options.length > 1) { mdS.selectedIndex = 1; onMd(); }
+  }
+}
+
+// ================= pestañas =================
+const TABS = ["comparador", "mi-vehiculo", "recomendar", "solar"];
+const construido = {};
+const DRAW = {};
+function mostrar(t) {
+  if (!TABS.includes(t)) t = "comparador";
+  TABS.forEach(x => {
+    g("tab-" + x).hidden = (x !== t);
+    const b = g("tb-" + x);
+    b.setAttribute("aria-selected", x === t ? "true" : "false");
+    b.classList.toggle("activo", x === t);
+  });
+  if (location.hash.slice(1) !== t) history.replaceState(null, "", "#" + t);
+  if (!construido[t]) { construido[t] = true; BUILD[t](); }
+  if (DRAW[t]) DRAW[t]();
+}
+g("tabs").addEventListener("click", e => { const b = e.target.closest("button[role=tab]"); if (b) mostrar(b.id.slice(3)); });
+g("tabs").addEventListener("keydown", e => {
+  const i = TABS.indexOf(document.activeElement.id.slice(3));
+  if (i < 0) return;
+  let j = i;
+  if (e.key === "ArrowRight") j = (i + 1) % TABS.length;
+  else if (e.key === "ArrowLeft") j = (i - 1 + TABS.length) % TABS.length;
+  else if (e.key === "Home") j = 0;
+  else if (e.key === "End") j = TABS.length - 1;
+  else return;
+  e.preventDefault(); const b = g("tb-" + TABS[j]); b.focus(); mostrar(TABS[j]);
+});
+
+// ================= 1. COMPARADOR =================
+const BUILD = {};
+BUILD["comparador"] = function () {
+  let ev = null, ice = null, tComp = null;
+  const envP = () => {
+    const P = Object.assign({}, P0);
+    P.kmm = Math.max(100, numIn("c-km", P0.kmm * 12)) / 12;
+    P.ny = Math.max(1, Math.round(numIn("c-ny", P0.ny)));
+    const pk = numIn("c-kwh", E0.e_rm), pl = numIn("c-litro", E0.b93);
+    const E = Object.assign({}, E0, { e_rm: pk, e_norte: pk, e_sur: pk, b93: pl, b95: pl, b97: pl, die: pl });
+    return { E, P };
+  };
+  const render = () => {
+    if (!ev || !ice) {
+      g("k-comp").innerHTML = "";
+      g("v-comp").textContent = "Selecciona un eléctrico y un combustión para ver la comparación.";
+      g("g-acum").innerHTML = ""; g("g-desglose").innerHTML = "";
+      if (tComp) tComp.actualizar([]);
+      return;
+    }
+    const { E, P } = envP();
+    const te = tco(ev, E, P), ti = tco(ice, E, P);
+    const dif = ti.total - te.total;
+    const evC = curvaAcum(ev, E, P), iceC = curvaAcum(ice, E, P);
+    const be = breakeven(evC, iceC);
+    g("k-comp").innerHTML =
+      kpi(PW.clp(te.total), "TCO eléctrico", "a " + P.ny + " años") +
+      kpi(PW.clp(ti.total), "TCO combustión", "a " + P.ny + " años") +
+      kpi((dif >= 0 ? "" : "-") + PW.clp(Math.abs(dif)).slice(1), dif >= 0 ? "Ahorro del EV" : "Sobrecosto del EV", "a " + P.ny + " años").replace('class="v ', 'class="v ' + (dif >= 0 ? "estado-ok" : "estado-mal") + " ") +
+      kpi(be == null ? "no aplica" : (be === 0 ? "inmediato" : be + (be === 1 ? " año" : " años")), "Punto de equilibrio", "el EV se vuelve más barato") +
+      kpi(PW.clp(te.porKm), "Costo/km eléctrico", "") +
+      kpi(PW.clp(ti.porKm), "Costo/km combustión", "");
+    const co2ev = co2kgAnio(ev, P) * P.ny, co2ic = co2kgAnio(ice, P) * P.ny;
+    g("v-comp").innerHTML = "En " + P.ny + " años el eléctrico " +
+      (dif >= 0 ? "ahorra <b>" + PW.clp(dif) + "</b>" : "cuesta <b>" + PW.clp(-dif) + "</b> más") +
+      " y evita <b>" + PW.fmt(Math.max(0, co2ic - co2ev)) + " kg</b> de CO2 (" +
+      PW.fmt(Math.max(0, (co2ic - co2ev) / P.arbol_kg)) + " árboles/año equivalentes).";
+    PW.lineas("g-acum", {
+      labels: evC.map((_, i) => String(i)),
+      series: [{ nombre: "Eléctrico", valores: evC, color: PW.color("--s1") },
+               { nombre: "Combustión", valores: iceC, color: PW.color("--s2") }],
+      alto: 250, fmtY: PW.clp, fmtV: PW.clp,
+      lineaX: be != null ? { i: be, texto: "equilibrio" } : null,
+    });
+    const part = [["Depreciación", "dep"], ["Energía", "energia"], ["Mantención", "mant"],
+                  ["Seguro", "seguro"], ["Permiso", "permiso"], ["Imp. verde", "ivpv"]];
+    PW.columnas("g-desglose", {
+      labels: part.map(p => p[0]),
+      valores: part.map(p => ti.c[p[1]] - te.c[p[1]]),
+      alto: 250, fmtV: PW.clp, fmtY: PW.clp,
+    });
+    const filas = part.map(p => ({ partida: p[0], ev: te.c[p[1]], ice: ti.c[p[1]], dif: ti.c[p[1]] - te.c[p[1]] }));
+    filas.push({ partida: "Total", ev: te.total, ice: ti.total, dif: dif });
+    const cols = [
+      { k: "partida", titulo: "Partida" },
+      { k: "ev", titulo: "Eléctrico", num: true, fmt: PW.clp },
+      { k: "ice", titulo: "Combustión", num: true, fmt: PW.clp },
+      { k: "dif", titulo: "Diferencia", num: true, fmt: (v) => (v >= 0 ? `<span class="estado-ok">${PW.clp(v)}</span>` : `<span class="estado-mal">${PW.clp(v)}</span>`) },
+    ];
+    if (tComp) tComp.actualizar(filas); else tComp = PW.tabla("t-comp", cols, filas, { buscador: false });
+  };
+  selVeh(POOL_EV, g("ev-mk"), g("ev-md"), g("ev-yr"), v => { ev = v; render(); }, true);
+  selVeh(POOL_ICE, g("ice-mk"), g("ice-md"), g("ice-yr"), v => { ice = v; render(); }, true);
+  ["c-km", "c-ny", "c-kwh", "c-litro"].forEach(id => g(id).addEventListener("input", render));
+  DRAW["comparador"] = render;
+  render();
+};
+
+// ================= 2. DESDE MI VEHICULO =================
+BUILD["mi-vehiculo"] = function () {
+  let mio = null, tMv = null;
+  const render = () => {
+    const P = Object.assign({}, P0);
+    P.kmm = Math.max(100, numIn("mv-km", P0.kmm * 12)) / 12;
+    P.ny = Math.max(1, Math.round(numIn("mv-ny", P0.ny)));
+    const pk = numIn("mv-kwh", E0.e_rm);
+    const E = Object.assign({}, E0, { e_rm: pk, e_norte: pk, e_sur: pk });
+    const pmax = numIn("mv-pmax", 0);
+    if (!mio) { g("k-mv").innerHTML = ""; g("g-mv").innerHTML = ""; if (tMv) tMv.actualizar([]); return; }
+    const tMio = tco(mio, E, P);
+    const opexMio = costoEnergiaAnio(mio, E, P) + (mio.ma || 0) + (mio.sg || 0) + permisoTotal(mio, P) / P.ny;
+    let cand = POOL_EV.filter(v => !pmax || (v.pr || 0) <= pmax).map(v => {
+      const opexEv = costoEnergiaAnio(v, E, P) + (v.ma || 0) + (v.sg || 0) + permisoTotal(v, P) / P.ny;
+      const ahorro = opexMio - opexEv;
+      const difCompra = (v.pr || 0) + P0.wb - (mio.pr || 0);
+      const payback = ahorro > 0 ? difCompra / ahorro : Infinity;
+      return { modelo: v.mk + " " + v.md + " " + v.yr, precio: v.pr, autonomia: v.au, energia: costoEnergiaAnio(v, E, P), ahorro, payback: isFinite(payback) ? payback : null, dif: difCompra };
+    });
+    cand.sort((a, b) => b.ahorro - a.ahorro);
+    const positivos = cand.filter(c => c.ahorro > 0).length;
+    const mejor = cand[0];
+    g("k-mv").innerHTML =
+      kpi(PW.clp(tMio.total), "TCO de mi auto", "a " + P.ny + " años") +
+      kpi(PW.fmt(positivos), "EVs que te ahorran", "de " + cand.length + " evaluados") +
+      (mejor ? kpi(PW.clp(mejor.ahorro), "Mayor ahorro anual", mejor.modelo, "estado-ok") : "") +
+      (mejor && mejor.payback != null ? kpi(PW.fmt(mejor.payback, 1) + " años", "Payback del mejor", "recuperas la diferencia") : "");
+    PW.barras("g-mv", { items: cand.slice(0, 10).map(c => ({ nombre: c.modelo, valor: Math.max(0, c.ahorro) })), fmtV: PW.clp, color: PW.color("--s3") });
+    const cols = [
+      { k: "modelo", titulo: "Eléctrico" },
+      { k: "precio", titulo: "Precio", num: true, fmt: PW.clp },
+      { k: "autonomia", titulo: "Autonomía", num: true, fmt: v => v == null ? "—" : PW.fmt(v) + " km" },
+      { k: "energia", titulo: "Energía/año", num: true, fmt: PW.clp },
+      { k: "ahorro", titulo: "Ahorro/año", num: true, fmt: v => (v >= 0 ? `<span class="estado-ok">${PW.clp(v)}</span>` : `<span class="estado-mal">${PW.clp(v)}</span>`) },
+      { k: "payback", titulo: "Payback (años)", num: true, fmt: v => v == null ? "no recupera" : (v <= P.ny ? `<span class="estado-ok">${PW.fmt(v, 1)}</span>` : `<span class="estado-mal">${PW.fmt(v, 1)}</span>`) },
+      { k: "dif", titulo: "Dif. compra", num: true, fmt: PW.clp },
+    ];
+    if (tMv) tMv.actualizar(cand); else tMv = PW.tabla("t-mv", cols, cand, { orden: "ahorro", max: 60 });
+  };
+  selVeh(POOL_ICE, g("mv-mk"), g("mv-md"), g("mv-yr"), v => { mio = v; render(); }, true);
+  ["mv-km", "mv-kwh", "mv-ny", "mv-pmax"].forEach(id => g(id).addEventListener("input", render));
+  DRAW["mi-vehiculo"] = render;
+  render();
+};
+
+// ================= 3. RECOMIENDAME UN EV =================
+BUILD["recomendar"] = function () {
+  let tRc = null;
+  const cbs = [...new Set(POOL_EV.map(v => v.cb).filter(Boolean))].sort();
+  g("rc-cb").innerHTML = `<option value="">Todas</option>` + opts(cbs, cap);
+  const render = () => {
+    const P = Object.assign({}, P0);
+    P.kmm = Math.max(100, numIn("rc-km", P0.kmm * 12)) / 12;
+    P.ny = Math.max(1, Math.round(numIn("rc-ny", P0.ny)));
+    const pk = numIn("rc-kwh", E0.e_rm);
+    const E = Object.assign({}, E0, { e_rm: pk, e_norte: pk, e_sur: pk });
+    const pmax = numIn("rc-pmax", 0), cb = g("rc-cb").value, uso = g("rc-uso").value;
+    let cand = POOL_EV.filter(v => (!pmax || (v.pr || 0) <= pmax) && (!cb || v.cb === cb) && v.tp === "BEV")
+      .map(v => ({ v, tco: tco(v, E, P).total, au: v.au || 0 }));
+    if (!cand.length) cand = POOL_EV.filter(v => (!pmax || (v.pr || 0) <= pmax) && (!cb || v.cb === cb)).map(v => ({ v, tco: tco(v, E, P).total, au: v.au || 0 }));
+    if (cand.length) {
+      const tMin = Math.min(...cand.map(c => c.tco)), tMax = Math.max(...cand.map(c => c.tco));
+      const aMax = Math.max(...cand.map(c => c.au), 1);
+      cand.forEach(c => {
+        const nT = tMax > tMin ? 1 - (c.tco - tMin) / (tMax - tMin) : 1;
+        const nA = c.au / aMax;
+        const usoW = uso === "carretera" ? nA : (uso === "ciudad" ? nT : 0.5 * nT + 0.5 * nA);
+        c.puntaje = Math.round((0.6 * nT + 0.25 * nA + 0.15 * usoW) * 100);
+      });
+      cand.sort((a, b) => b.puntaje - a.puntaje);
+    }
+    const filas = cand.map(c => ({ modelo: c.v.mk + " " + c.v.md + " " + c.v.yr, precio: c.v.pr, autonomia: c.v.au, tcoN: c.tco, porkm: tco(c.v, E, P).porKm, puntaje: c.puntaje }));
+    g("k-rc").innerHTML =
+      kpi(PW.fmt(cand.length), "Modelos que cumplen", "tu presupuesto y filtros") +
+      (cand[0] ? kpi(cand[0].v.mk + " " + cand[0].v.md, "Recomendado #1", "puntaje " + cand[0].puntaje) : kpi("—", "Recomendado #1", "sin resultados")) +
+      (cand[0] ? kpi(PW.clp(cand[0].tco), "Su TCO", "a " + P.ny + " años") : "") +
+      (cand[0] ? kpi(cand[0].au ? PW.fmt(cand[0].au) + " km" : "—", "Su autonomía", "") : "");
+    PW.barras("g-rc", { items: cand.slice(0, 6).map(c => ({ nombre: c.v.mk + " " + c.v.md, valor: c.tco, extra: "puntaje " + c.puntaje })), fmtV: PW.clp, color: PW.color("--s1") });
+    if (cand[0]) {
+      const b = cand[0].v, tb = tco(b, E, P);
+      g("d-rc").innerHTML =
+        `<p style="font-weight:600;margin:.2em 0">${PW.esc(b.mk + " " + b.md + " " + b.yr)}</p>` +
+        `<p class="nota" style="margin:.2em 0">Precio ${PW.clp(b.pr)} · autonomía ${b.au ? PW.fmt(b.au) + " km" : "—"} · batería ${b.bt ? PW.fmt(b.bt, 1) + " kWh" : "—"} · conector ${b.cdc ? b.cdc.toUpperCase() : (b.cac ? b.cac.toUpperCase() : "—")}</p>` +
+        `<p class="nota" style="margin:.2em 0">TCO ${P.ny} años: <b>${PW.clp(tb.total)}</b> · costo/km ${PW.clp(tb.porKm)} · energía/año ${PW.clp(tb.energiaAnio)}</p>`;
+    } else g("d-rc").innerHTML = `<p class="nota">Sin resultados para el filtro actual.</p>`;
+    const cols = [
+      { k: "modelo", titulo: "Eléctrico" },
+      { k: "precio", titulo: "Precio", num: true, fmt: PW.clp },
+      { k: "autonomia", titulo: "Autonomía", num: true, fmt: v => v == null ? "—" : PW.fmt(v) + " km" },
+      { k: "tcoN", titulo: "TCO " + P.ny + " años", num: true, fmt: PW.clp },
+      { k: "porkm", titulo: "Costo/km", num: true, fmt: PW.clp },
+      { k: "puntaje", titulo: "Puntaje", num: true, fmt: v => PW.fmt(v) },
+    ];
+    if (tRc) tRc.actualizar(filas); else tRc = PW.tabla("t-rc", cols, filas, { orden: "puntaje", max: 60 });
+  };
+  ["rc-pmax", "rc-km", "rc-kwh", "rc-ny"].forEach(id => g(id).addEventListener("input", render));
+  ["rc-uso", "rc-cb"].forEach(id => g(id).addEventListener("change", render));
+  DRAW["recomendar"] = render;
+  render();
+};
+
+// ================= 4. SIMULADOR SOLAR =================
+BUILD["solar"] = function () {
+  let ev = null, tSo = null;
+  const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  const ESTAC = [1.25, 1.18, 1.02, 0.85, 0.68, 0.6, 0.66, 0.8, 0.98, 1.14, 1.24, 1.3]; // perfil relativo de sol
+  const render = () => {
+    const P = Object.assign({}, P0);
+    P.kmm = Math.max(100, numIn("so-km", P0.kmm * 12)) / 12;
+    P.hsp = numIn("so-zona", P0.hsp);
+    const np = Math.max(1, Math.round(numIn("so-np", 6)));
+    const cpanel = Math.max(0, numIn("so-cp", 320000));
+    const pk = numIn("so-kwh", E0.e_rm);
+    if (!ev) { g("k-so").innerHTML = ""; g("g-so-mes").innerHTML = ""; g("g-so-pb").innerHTML = ""; if (tSo) tSo.actualizar([]); return; }
+    const consumoAnual = energiaKwhAnio(ev, P);         // kWh/año que necesita el EV
+    const consumoMes = consumoAnual / 12;
+    const genPanelAnual = P.ppanel * P.hsp * P.pr_solar * 365; // kWh/año por panel
+    const genAnual = genPanelAnual * np;
+    const cubierto = Math.min(1, consumoAnual > 0 ? genAnual / consumoAnual : 0);
+    const ahorroAnual = Math.min(genAnual, consumoAnual) * pk;
+    const inversion = np * cpanel;
+    const payback = ahorroAnual > 0 ? inversion / ahorroAnual : null;
+    const co2Evit = Math.min(genAnual, consumoAnual) * (P.fred / 1000);
+    g("k-so").innerHTML =
+      kpi(PW.fmt(genAnual) + " kWh", "Generación anual", np + " paneles · HSP " + PW.fmt(P.hsp, 1)) +
+      kpi(PW.pct(cubierto * 100), "Carga del EV cubierta", "por el sol") +
+      kpi(PW.clp(ahorroAnual), "Ahorro anual", "vs cargar de la red", "estado-ok") +
+      kpi(PW.clp(inversion), "Inversión", np + " paneles") +
+      kpi(payback == null ? "—" : PW.fmt(payback, 1) + " años", "Recuperación", "payback simple") +
+      kpi(PW.fmt(co2Evit) + " kg", "CO2 evitado/año", "");
+    const genMes = ESTAC.map(f => genPanelAnual / 12 * f * np);
+    PW.columnas("g-so-mes", { labels: MESES, valores: genMes, alto: 240, fmtV: v => PW.fmt(v) + " kWh", fmtY: PW.fmt, color: PW.color("--s4") });
+    const anos = [], flujo = [];
+    for (let t = 0; t <= 10; t++) { anos.push(String(t)); flujo.push(-inversion + ahorroAnual * t); }
+    PW.lineas("g-so-pb", {
+      labels: anos, series: [{ nombre: "Flujo acumulado", valores: flujo, color: PW.color("--s6"), area: true }],
+      alto: 240, fmtY: PW.clp, fmtV: PW.clp, lineaY: { v: 0, texto: "se paga" },
+    });
+    const filas = [3, 6, 9, 12].map(n => {
+      const gA = genPanelAnual * n, inv = n * cpanel, ah = Math.min(gA, consumoAnual) * pk;
+      return { esc: n + " paneles", inv, cub: consumoAnual > 0 ? Math.min(1, gA / consumoAnual) * 100 : 0, ah, pb: ah > 0 ? inv / ah : null };
+    });
+    const cols = [
+      { k: "esc", titulo: "Escenario" },
+      { k: "inv", titulo: "Inversión", num: true, fmt: PW.clp },
+      { k: "cub", titulo: "% carga solar", num: true, fmt: v => PW.pct(v) },
+      { k: "ah", titulo: "Ahorro/año", num: true, fmt: PW.clp },
+      { k: "pb", titulo: "Payback (años)", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
+    ];
+    if (tSo) tSo.actualizar(filas); else tSo = PW.tabla("t-so", cols, filas, { buscador: false });
+  };
+  selVeh(POOL_EV, g("so-mk"), g("so-md"), g("so-yr"), v => { ev = v; render(); }, true);
+  ["so-km", "so-np", "so-cp", "so-kwh"].forEach(id => g(id).addEventListener("input", render));
+  g("so-zona").addEventListener("change", render);
+  DRAW["solar"] = render;
+  render();
+};
+
+// arranque: pestaña del hash o comparador
+mostrar((location.hash || "").slice(1) || "comparador");
+window.addEventListener("hashchange", () => mostrar((location.hash || "").slice(1) || "comparador"));
+</script>
+</body>
+</html>

@@ -55,7 +55,7 @@ PW.montarNav("mapas.html");
 const M = window.PW_DATA.mapa || {};
 const RED = window.PW_DATA.c_redelec || { subestaciones: [] };
 const CEN = window.PW_DATA.c_censoelec || { comunas: [] };
-const LIN = window.PW_DATA.geo_lineas || null;
+let LIN = window.PW_DATA.geo_lineas || null;
 const C = PW.color;
 
 // [POSTES] postes de distribucion (CGE) por comuna, con carga DIFERIDA por comuna (bajo demanda).
@@ -119,6 +119,17 @@ function lineaEnTerr(f) {
   if (filtroTerr.com) { const cut = cutDeComuna[norm(filtroTerr.com)]; return cut ? (cuts || []).indexOf(cut) >= 0 : true; }
   if (filtroTerr.rcut) return (cuts || []).some(c => c.slice(0, 2) === filtroTerr.rcut);
   return true;  // Todas
+}
+// geo_lineas.js se sirve SIN ?v=, asi que el navegador puede tener una copia cacheada SIN `cuts`
+// (rompe el recorte por comuna/region). Si detectamos eso, recargamos el archivo fresco una vez
+// (URL con query => evita la cache; re-asigna window.PW_DATA.geo_lineas) y re-render.
+function hayCuts() { return !!(LIN && LIN.features.some(f => f.properties.cuts)); }
+function asegurarCuts() {
+  if (hayCuts()) return;
+  const s = document.createElement("script");
+  s.src = "data/geo_lineas.js?cuts=1";
+  s.onload = () => { LIN = window.PW_DATA.geo_lineas || LIN; render(false); };
+  document.head.appendChild(s);
 }
 
 // indicador del Censo para el telon de fondo comunal
@@ -214,7 +225,8 @@ function render(fit) {
   // RECORTE EXACTO por CUT: cada linea trae `cuts` (comunas que atraviesa); lineaEnTerr filtra por comuna/region.
   const banda = kv => (kv >= 200 ? "a" : (kv >= 66 ? "m" : "b"));
   const bnd = { a: [], m: [], b: [] };
-  const lineasTerr = (LIN ? LIN.features : []).filter(lineaEnTerr);
+  const hc = hayCuts();  // sin cuts (cache viejo) => no filtrar lineas, mostrar todo (nunca 0)
+  const lineasTerr = (LIN ? LIN.features : []).filter(f => !hc || lineaEnTerr(f));
   lineasTerr.forEach(f => bnd[banda(+(f.properties.kv || 0))].push(f));
   const fc = arr => ({ type: "FeatureCollection", features: arr });
   const nNuevas = lineasTerr.filter(f => (f.properties.fuente || "").indexOf("kmz") === 0).length;
@@ -371,6 +383,7 @@ cont.querySelectorAll(".preset-btn").forEach(b =>
   b.addEventListener("click", () => aplicarPreset(PRESETS[+b.dataset.i])));
 
 render(false);
+asegurarCuts();  // si geo_lineas llego cacheado sin `cuts`, recargarlo fresco para el recorte por CUT
 </script>
 </body>
 </html>
