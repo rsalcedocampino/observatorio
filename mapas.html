@@ -46,6 +46,7 @@
 <script src="data/c_censoelec.js"></script>
 <script src="data/geo_lineas.js"></script>
 <script src="data/geo_comunas.js"></script>
+<script src="data/postes_index.js"></script>
 <script src="assets/comun.js?v=260804a"></script>
 <script>
 PW.montarNav("mapas.html");
@@ -55,6 +56,29 @@ const RED = window.PW_DATA.c_redelec || { subestaciones: [] };
 const CEN = window.PW_DATA.c_censoelec || { comunas: [] };
 const LIN = window.PW_DATA.geo_lineas || null;
 const C = PW.color;
+
+// [POSTES] postes de distribucion (CGE) por comuna, con carga DIFERIDA por comuna (bajo demanda).
+// El indice (liviano) llega upfront; los puntos de cada comuna se piden con fetch al seleccionarla.
+const POSTES_IDX = window.PW_DATA.postes_index || {};
+const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim();
+const postesNameToCut = {};
+Object.entries(POSTES_IDX).forEach(([cut, o]) => { postesNameToCut[norm(o.comuna)] = cut; });
+let postesCache = {}, postesCargando = null;
+function cutPostes() {
+  if (!filtroTerr.com) return null;
+  const cut = postesNameToCut[norm(filtroTerr.com)];
+  return cut && POSTES_IDX[cut] ? cut : null;
+}
+async function sincronizarPostes() {
+  const cut = cutPostes();
+  if (on("postes") && cut && !postesCache[cut] && postesCargando !== cut) {
+    postesCargando = cut;
+    try { postesCache[cut] = await fetch("data/postes/" + cut + ".json").then(r => r.json()); }
+    catch (e) { postesCache[cut] = null; }
+    postesCargando = null;
+    render(false);
+  }
+}
 
 // indicador del Censo para el telon de fondo comunal
 const IND = {
@@ -69,17 +93,19 @@ const IND = {
 const CAPAS = [
   { k: "carga",  nombre: "Cargadores y conectores", color: "--s3",       on: true  },
   { k: "sub",    nombre: "Subestaciones",           color: "--critical", on: false },
-  { k: "lineas", nombre: "Líneas de transmisión",   color: "--s2",       on: true  },
-  { k: "lineas_nuevas", nombre: "Líneas nuevas (KMZ 2019)", color: "--s6", on: false },
+  { k: "lin_a", nombre: "Transmisión ≥200 kV",   color: "--s2", on: true },
+  { k: "lin_m", nombre: "Transmisión 66–154 kV", color: "--s2", on: true },
+  { k: "lin_b", nombre: "Transmisión <66 kV",    color: "--s2", on: true },
   { k: "solar",  nombre: "Generación solar",        color: "--s4",       on: false },
   { k: "bess",   nombre: "Almacenamiento (BESS)",   color: "--s5",       on: false },
+  { k: "postes", nombre: "Postes de distribución", color: "--ink-2", on: false },
   { k: "censo",  nombre: "Censo por comuna",        color: "--s1",       on: false },
 ];
 const on = k => (CAPAS.find(c => c.k === k) || {}).on;
 
 // cruces sugeridos: cada uno arma una combinacion para responder una pregunta
 const PRESETS = [
-  { t: "Carga vs red eléctrica", on: ["carga", "sub", "lineas"],
+  { t: "Carga vs red eléctrica", on: ["carga", "sub", "lin_a", "lin_m", "lin_b"],
     desc: "Los cargadores sobre la transmisión que los alimenta: quién está lejos de la red." },
   { t: "Generación + almacenamiento", on: ["solar", "bess"],
     desc: "Dónde se genera energía solar y dónde se guarda en baterías." },
@@ -87,7 +113,7 @@ const PRESETS = [
     desc: "La red de carga sobre la electrificación de los hogares por comuna." },
   { t: "Solar vs potencial del hogar", on: ["solar", "censo"], ind: "pct_solar",
     desc: "Plantas solares sobre el porcentaje de viviendas con generación solar propia." },
-  { t: "Ver todo", on: ["carga", "sub", "lineas", "solar", "bess", "censo"] },
+  { t: "Ver todo", on: ["carga", "sub", "lin_a", "lin_m", "lin_b", "solar", "bess", "censo"] },
   { t: "Limpiar", on: [] },
 ];
 
@@ -141,17 +167,25 @@ function render(fit) {
   const subs  = (RED.subestaciones || []).filter(dentro);
   const solar = (M.solar || []).filter(dentro);
   const bess  = (M.bess || []).filter(dentro);
-  const esNueva = f => (f.properties.fuente || "").indexOf("kmz") === 0;
-  const linIDE = LIN ? { type: "FeatureCollection", features: LIN.features.filter(f => !esNueva(f)) } : null;
-  const linNew = LIN ? { type: "FeatureCollection", features: LIN.features.filter(esNueva) } : null;
+  const cutP = cutPostes();
+  const pd = (on("postes") && cutP && postesCache[cutP]) ? postesCache[cutP] : null;
+  // transmision UNIFICADA (IDE + nuevas 2019) separada por banda de tension (potencia):
+  // a >=200 kV, m 66-154 kV, b <66 kV. Dentro de cada banda se distingue IDE (naranjo solido) de nueva (verde punteado).
+  const banda = kv => (kv >= 200 ? "a" : (kv >= 66 ? "m" : "b"));
+  const bnd = { a: [], m: [], b: [] };
+  (LIN ? LIN.features : []).forEach(f => bnd[banda(+(f.properties.kv || 0))].push(f));
+  const fc = arr => ({ type: "FeatureCollection", features: arr });
+  const nNuevas = LIN ? LIN.features.filter(f => (f.properties.fuente || "").indexOf("kmz") === 0).length : 0;
   conteos = {
     carga: carga.length, sub: subs.length, solar: solar.length, bess: bess.length,
-    lineas: (linIDE ? linIDE.features.length : 0),
-    lineas_nuevas: (linNew ? linNew.features.length : 0),
+    lin_a: bnd.a.length, lin_m: bnd.m.length, lin_b: bnd.b.length, nuevas: nNuevas,
+    postes: pd ? pd.n : 0,
     censo: (CEN.comunas || []).length,
   };
 
   const capas = [
+    { nombre: "Postes de distribución (CGE)", visible: on("postes"), color: C("--ink-2"),
+      puntos: pd ? pd.pts.map(c => ({ lat: c[1], lon: c[0], r: 2.2, color: C("--ink-2") })) : [] },
     { nombre: "Cargadores y conectores", visible: on("carga"), color: C("--s3"), puntos: carga.map(p => ({
         lat: p.lat, lon: p.lon, r: 5, color: C("--s3"),
         tip: p.n || (p.op ? "Estacion " + p.op : "Cargador"), popup: PW.popupEstacion(p) })) },
@@ -168,22 +202,21 @@ function render(fit) {
         popup: popupPlanta(p) })) },
   ];
 
+  const capaBanda = (key, arr) => ({
+    nombre: "trans-" + key, visible: on(key), geojson: fc(arr),
+    color: props => {
+      const kv = +(props.kv || 0);
+      const nueva = (props.fuente || "").indexOf("kmz") === 0;
+      return nueva
+        ? { color: C("--s6"), weight: kv >= 200 ? 2.6 : (kv >= 66 ? 2.0 : 1.6), opacity: 0.95, dashArray: "5 4" }
+        : { color: C("--s2"), weight: kv >= 200 ? 2.4 : (kv >= 66 ? 1.6 : 1.1), opacity: kv >= 200 ? 0.85 : 0.6 };
+    },
+    tip: p => (p.n || "Linea") + ((p.fuente || "").indexOf("kmz") === 0 ? " — nueva 2019" : "") +
+              (p.kv ? " — " + p.kv + " kV" : "") + (p.km ? " (" + PW.fmt(Math.round(p.km)) + " km)" : ""),
+    popup: popupLinea, colorSel: "#00c2d6",
+  });
   const lineas = LIN ? [
-    { nombre: "Transmisión: líneas", visible: on("lineas"), geojson: linIDE,
-      color: props => {
-        const kv = +(props.kv || 0);
-        return { color: C("--s2"), weight: kv >= 220 ? 2.4 : 1.3, opacity: kv >= 220 ? 0.85 : 0.6 };
-      },
-      tip: p => (p.n || "Linea") + (p.kv ? " — " + p.kv + " kV" : "") +
-                (p.km ? " (" + PW.fmt(Math.round(p.km)) + " km)" : ""),
-      popup: popupLinea, colorSel: "#00c2d6" },
-    { nombre: "Transmisión: líneas nuevas (KMZ 2019)", visible: on("lineas_nuevas"), geojson: linNew,
-      color: props => {
-        const kv = +(props.kv || 0);
-        return { color: C("--s6"), weight: kv >= 220 ? 2.6 : 1.8, opacity: 0.95, dashArray: "5 4" };
-      },
-      tip: p => (p.n || "Linea") + " — nueva 2019" + (p.kv ? " · " + p.kv + " kV" : ""),
-      popup: popupLinea, colorSel: "#ffffff" },
+    capaBanda("lin_a", bnd.a), capaBanda("lin_m", bnd.m), capaBanda("lin_b", bnd.b),
   ] : [];
 
   const comunas = {
@@ -228,19 +261,30 @@ function pintarPanel() {
     const c = CAPAS.find(x => x.k === ch.dataset.k);
     c.on = !c.on;
     render(false);
+    if (c.k === "postes") sincronizarPostes();
   }));
 }
 
+function postesHint() {
+  if (!filtroTerr.com) return " Postes: elige una comuna para cargarlos (CGE: 90 comunas del centro-sur).";
+  const cut = cutPostes();
+  if (!cut) return " Postes: sin red de distribución CGE en esta comuna.";
+  const pd = postesCache[cut];
+  if (!pd) return " Postes: cargando…";
+  return " Postes: " + PW.fmt(pd.shown) + (pd.n > pd.shown ? " de " + PW.fmt(pd.n) + " (muestra)" : "") + " en " + (pd.comuna || filtroTerr.com) + ".";
+}
 function pintarContador(ind) {
   const activas = CAPAS.filter(c => c.on).map(c => c.nombre.replace(/ \(.*\)/, ""));
   document.getElementById("cont-todo").textContent =
     (activas.length ? "Capas activas: " + activas.join(", ") + "." : "Sin capas activas: encienda una arriba.") +
-    (filtroTerr.rcut || filtroTerr.com ? " Filtrado por territorio." : " Todo Chile.");
+    (filtroTerr.rcut || filtroTerr.com ? " Filtrado por territorio." : " Todo Chile.") +
+    (on("postes") ? postesHint() : "");
+  const totNew = conteos.nuevas || 0;
   document.getElementById("ley-encoding").innerHTML =
     "Tamaño del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
-    "Líneas de transmisión en naranjo (más gruesa y opaca = 220 kV o más). " +
-    (conteos.lineas_nuevas ? "Líneas nuevas (KMZ 2019) en verde punteado (" + PW.fmt(conteos.lineas_nuevas) +
-      ": 43 complementos de voltaje + 22 ausentes del troncal IDE, revisadas por geometría). " : "") +
+    "Líneas de transmisión en naranjo, separadas por tensión (más gruesa = mayor kV: ≥200 / 66–154 / <66). " +
+    (totNew ? "Líneas nuevas (KMZ 2019) en verde punteado, también por tensión (" + PW.fmt(totNew) +
+      ": 43 complementos de voltaje + 22 ausentes del troncal IDE). " : "") +
     "Censo: fondo azul, más oscuro = mayor " +
     (ind === "viviendas" ? "numero de viviendas" : "porcentaje") + " en la comuna.";
 }
@@ -255,7 +299,10 @@ function aplicarPreset(p) {
 const territorio = (RED.subestaciones || []).map(s => ({
   rcut: s.rcut, reg: (RED.conexion_regiones || []).find(r => r.rcut === s.rcut)?.region || s.rcut, com: s.com,
 }));
-PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; render(true); },
+// que las comunas con postes CGE sean seleccionables aunque no tengan subestacion
+const regDe = {}; territorio.forEach(t => { if (t.rcut && t.reg) regDe[t.rcut] = t.reg; });
+Object.values(POSTES_IDX).forEach(o => territorio.push({ rcut: o.rcut, reg: regDe[o.rcut] || o.region, com: o.comuna }));
+PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; render(true); sincronizarPostes(); },
   `<label>Telon de fondo (Censo)
      <select id="f-ind">
        <option value="pct_solar">% viviendas con generacion solar</option>
