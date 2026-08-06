@@ -10,7 +10,7 @@
 <title>Mapas Interactivos — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260804a">
+<link rel="stylesheet" href="assets/estilo.css?v=260806a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -48,7 +48,7 @@
 <script src="data/geo_lineas.js"></script>
 <script src="data/geo_comunas.js"></script>
 <script src="data/postes_index.js"></script>
-<script src="assets/comun.js?v=260804a"></script>
+<script src="assets/comun.js?v=260806a"></script>
 <script>
 PW.montarNav("mapas.html");
 
@@ -64,40 +64,61 @@ const POSTES_IDX = window.PW_DATA.postes_index || {};
 const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim();
 const postesNameToCut = {};
 Object.entries(POSTES_IDX).forEach(([cut, o]) => { postesNameToCut[norm(o.comuna)] = cut; });
-let postesCache = {}, postesCargando = null;
-function cutPostes() {
+let postesCache = {}, postesCargando = {};
+function cutPostes() {  // cut de la comuna elegida si tiene red CGE
   if (!filtroTerr.com) return null;
   const cut = postesNameToCut[norm(filtroTerr.com)];
   return cut && POSTES_IDX[cut] ? cut : null;
 }
-async function sincronizarPostes() {
-  const cut = cutPostes();
-  if (on("postes") && cut && !postesCache[cut] && postesCargando !== cut) {
-    postesCargando = cut;
-    try { postesCache[cut] = await fetch("data/postes/" + cut + ".json").then(r => r.json()); }
-    catch (e) { postesCache[cut] = null; }
-    postesCargando = null;
-    render(false);
-  }
+// que comunas CGE dibujar segun el filtro: comuna | region (todas sus CGE) | Todas = ninguna (642k)
+function cutsPostesScope() {
+  if (filtroTerr.com) { const c = cutPostes(); return c ? [c] : []; }
+  if (filtroTerr.rcut) return Object.keys(POSTES_IDX).filter(c => POSTES_IDX[c].rcut === filtroTerr.rcut);
+  return [];
 }
-// total de postes CGE segun el filtro: comuna, region (suma de sus comunas CGE) o pais (todas)
+async function sincronizarPostes() {
+  if (!on("postes")) return;
+  const faltan = cutsPostesScope().filter(c => !(c in postesCache) && !postesCargando[c]);
+  if (!faltan.length) return;
+  await Promise.all(faltan.map(async c => {
+    postesCargando[c] = true;
+    try { postesCache[c] = await fetch("data/postes/" + c + ".json").then(r => r.json()); }
+    catch (e) { postesCache[c] = null; }
+    postesCargando[c] = false;
+  }));
+  render(false);
+}
+// puntos de postes a dibujar (combina las comunas del scope; tope de 15k por rendimiento)
+const CAP_POSTES = 15000;
+function postesRender() {
+  const cuts = cutsPostesScope();
+  if (!cuts.length) return null;
+  let pts = [];
+  for (const c of cuts) { const pd = postesCache[c]; if (pd && pd.pts) pts = pts.concat(pd.pts); }
+  if (!pts.length) return null;
+  if (pts.length > CAP_POSTES) {
+    const step = pts.length / CAP_POSTES, s = [];
+    for (let i = 0; i < CAP_POSTES; i++) s.push(pts[Math.floor(i * step)]);
+    pts = s;
+  }
+  return pts;
+}
+// total de postes CGE segun el filtro: comuna, region (suma) o pais (Todas)
 function totalPostes() {
   if (filtroTerr.com) { const cut = cutPostes(); return cut ? POSTES_IDX[cut].n : 0; }
   const rc = filtroTerr.rcut;
   return Object.values(POSTES_IDX).filter(o => !rc || o.rcut === rc).reduce((s, o) => s + o.n, 0);
 }
-// puente nombre de comuna -> CUT (todas las comunas, del censo) para filtrar espacialmente
+// puente nombre de comuna -> CUT (todas, del censo) para el recorte EXACTO de lineas por comuna
 const cutDeComuna = {};
 (CEN.comunas || []).forEach(c => { cutDeComuna[norm(c.comuna)] = String(c.cut).padStart(5, "0"); });
-// limites (bbox) del territorio elegido, para acotar las lineas de transmision a la region/comuna
-function boundsTerritorio() {
-  if (typeof L === "undefined" || !window.PW_DATA.geo_comunas) return null;
-  let cuts = null;
-  if (filtroTerr.com) { const cut = cutDeComuna[norm(filtroTerr.com)]; cuts = cut ? [cut] : null; }
-  else if (filtroTerr.rcut) { cuts = (CEN.comunas || []).map(c => String(c.cut).padStart(5, "0")).filter(c => c.slice(0, 2) === filtroTerr.rcut); }
-  if (!cuts || !cuts.length) return null;
-  const b = PW.boundsComunas(cuts);
-  return b ? b.pad(0.05) : null;
+// recorte EXACTO de una linea al territorio por CUT (geo_lineas trae `cuts` = comunas que atraviesa,
+// homologacion oficial multi-comuna). Nada de bbox: una linea pertenece si pasa por la comuna/region.
+function lineaEnTerr(f) {
+  const cuts = f.properties.cuts;
+  if (filtroTerr.com) { const cut = cutDeComuna[norm(filtroTerr.com)]; return cut ? (cuts || []).indexOf(cut) >= 0 : true; }
+  if (filtroTerr.rcut) return (cuts || []).some(c => c.slice(0, 2) === filtroTerr.rcut);
+  return true;  // Todas
 }
 
 // indicador del Censo para el telon de fondo comunal
@@ -187,14 +208,10 @@ function render(fit) {
   const subs  = (RED.subestaciones || []).filter(dentro);
   const solar = (M.solar || []).filter(dentro);
   const bess  = (M.bess || []).filter(dentro);
-  const cutP = cutPostes();
-  const pd = (on("postes") && cutP && postesCache[cutP]) ? postesCache[cutP] : null;
+  const postesPts = on("postes") ? postesRender() : null;
   // transmision UNIFICADA (IDE + nuevas 2019) separada por banda de tension (potencia):
   // a >=200 kV, m 66-154 kV, b <66 kV. Dentro de cada banda se distingue IDE (naranjo solido) de nueva (verde punteado).
-  // Se ACOTA a la region/comuna elegida por bbox (geo_lineas no trae region); "Todas" = pais entero.
-  const bTerr = boundsTerritorio();
-  const enBounds = coords => coords.some(pt => Array.isArray(pt[0]) ? enBounds(pt) : bTerr.contains([pt[1], pt[0]]));
-  const lineaEnTerr = f => !bTerr || (f.geometry && f.geometry.coordinates && enBounds(f.geometry.coordinates));
+  // RECORTE EXACTO por CUT: cada linea trae `cuts` (comunas que atraviesa); lineaEnTerr filtra por comuna/region.
   const banda = kv => (kv >= 200 ? "a" : (kv >= 66 ? "m" : "b"));
   const bnd = { a: [], m: [], b: [] };
   const lineasTerr = (LIN ? LIN.features : []).filter(lineaEnTerr);
@@ -204,13 +221,13 @@ function render(fit) {
   conteos = {
     carga: carga.length, sub: subs.length, solar: solar.length, bess: bess.length,
     lin_a: bnd.a.length, lin_m: bnd.m.length, lin_b: bnd.b.length, nuevas: nNuevas,
-    postes: pd ? pd.n : 0,
+    postes: totalPostes(),
     censo: (CEN.comunas || []).length,
   };
 
   const capas = [
-    { nombre: "Postes de distribución (CGE)", visible: on("postes"), color: C("--ink-2"),
-      puntos: pd ? pd.pts.map(c => ({ lat: c[1], lon: c[0], r: 2.2, color: C("--ink-2") })) : [] },
+    { nombre: "Postes de distribución", visible: on("postes"), color: C("--ink-2"), cluster: false,
+      puntos: postesPts ? postesPts.map(c => ({ lat: c[1], lon: c[0], r: 3, color: C("--ink-2") })) : [] },
     { nombre: "Cargadores y conectores", visible: on("carga"), color: C("--s3"), puntos: carga.map(p => ({
         lat: p.lat, lon: p.lon, r: 5, color: C("--s3"),
         tip: p.n || (p.op ? "Estacion " + p.op : "Cargador"), popup: PW.popupEstacion(p) })) },
@@ -297,16 +314,16 @@ function pintarPanel() {
 }
 
 function postesHint() {
-  if (filtroTerr.com) {
-    const cut = cutPostes();
-    if (!cut) return " Postes: sin red de distribución CGE en esta comuna.";
-    const pd = postesCache[cut];
-    if (!pd) return " Postes: cargando…";
-    return " Postes: " + PW.fmt(pd.shown) + (pd.n > pd.shown ? " de " + PW.fmt(pd.n) + " (muestra)" : "") + " en " + (pd.comuna || filtroTerr.com) + ".";
-  }
   const t = totalPostes();
-  if (!t) return " Postes: sin red de distribución CGE en esta región.";
-  return " Postes: " + PW.fmt(t) + (filtroTerr.rcut ? " en la región" : " en total (CGE, 90 comunas del centro-sur)") + "; elige una comuna para dibujarlos.";
+  if (!filtroTerr.com && !filtroTerr.rcut) {
+    return " Postes: " + PW.fmt(t) + " en total (CGE, 90 comunas del centro-sur); elige una región o comuna para dibujarlos.";
+  }
+  if (!t) return " Postes: sin red de distribución CGE aquí.";
+  const pts = postesRender();
+  const shown = pts ? pts.length : 0;
+  if (!shown) return " Postes: cargando…";
+  const donde = filtroTerr.com ? "en " + filtroTerr.com : "en la región";
+  return " Postes: " + (shown < t ? PW.fmt(shown) + " de " + PW.fmt(t) + " (muestra)" : PW.fmt(t)) + " " + donde + ".";
 }
 function pintarContador(ind) {
   const activas = CAPAS.filter(c => c.on).map(c => c.nombre.replace(/ \(.*\)/, ""));
