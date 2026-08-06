@@ -1114,6 +1114,38 @@
     return { scope, sincronizar, datos, total };
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand };
+  // [MAPA] Los data\*.js se sirven SIN ?v=: una cache vieja puede carecer de un campo de ESQUEMA nuevo
+  //   del que depende el front (p.ej. geo_lineas gano `cuts`; postes_index gano `mt`/`bt`). Detecta la
+  //   ausencia con el predicado `tiene(dataset)`, recarga el .js fresco UNA vez (query anticache =>
+  //   re-asigna window.PW_DATA[clave]) y llama a `onload(dataset)`. Idempotente por clave (no reintenta
+  //   en bucle). Devuelve true si disparo la recarga. Homologa el `asegurarCuts()` inline de mapas.html.
+  const _recargadosSchema = {};
+  function recargarSiFaltaCampo(clave, tiene, onload) {
+    const d = window.PW_DATA && window.PW_DATA[clave];
+    if (d && tiene && tiene(d)) return false;    // ya trae el campo: nada que hacer
+    if (_recargadosSchema[clave]) return false;  // ya se intento (evita bucle)
+    _recargadosSchema[clave] = true;
+    const s = document.createElement("script");
+    s.src = "data/" + clave + ".js?recarga=1";
+    s.onload = () => { if (onload) onload(window.PW_DATA && window.PW_DATA[clave]); };
+    document.head.appendChild(s);
+    return true;
+  }
+
+  // [MAPA] banda de tension de una linea de transmision: "a" (>=200 kV) / "m" (66-154 kV) / "b" (<66 kV).
+  function bandaTension(kv) { kv = +kv || 0; return kv >= 200 ? "a" : (kv >= 66 ? "m" : "b"); }
+
+  // [MAPA] estilo Leaflet homologado de una linea de transmision segun banda de tension + `fuente`:
+  //   IDE (fuente sin prefijo "kmz") naranjo --s2 solido; nuevas KMZ 2019 (fuente que empieza con "kmz")
+  //   verde --s6 punteado. weight/opacity escalan con la banda. Un solo lugar para todos los mapas de red.
+  function estiloTransmision(props) {
+    const kv = +((props && props.kv) || 0);
+    const nueva = String((props && props.fuente) || "").indexOf("kmz") === 0;
+    return nueva
+      ? { color: color("--s6"), weight: kv >= 200 ? 2.6 : (kv >= 66 ? 2.0 : 1.6), opacity: 0.95, dashArray: "5 4" }
+      : { color: color("--s2"), weight: kv >= 200 ? 2.4 : (kv >= 66 ? 1.6 : 1.1), opacity: kv >= 200 ? 0.85 : 0.6 };
+  }
+
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision };
 })();
 
