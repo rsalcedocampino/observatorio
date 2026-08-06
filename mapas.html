@@ -338,9 +338,10 @@ function pintarPanel() {
     if (c.k === "postes") {
       const t = totalPostes();  // comuna / suma de la region / suma pais (Todas), desde el indice CGE
       num = t ? PW.fmt(t) : "sin red CGE";
-    } else if (c.k === "mt") {  // MT es solo por comuna
+    } else if (c.k === "mt") {  // MT es solo por comuna; usa el conteo cargado si existe (indice puede venir cacheado sin `mt`)
       const cut = cutMt();
-      num = cut ? PW.fmt(POSTES_IDX[cut].mt || 0) : "elige comuna";
+      const d = cut && tramosMtCache[cut];
+      num = cut ? PW.fmt(d ? d.n : (POSTES_IDX[cut].mt || 0)) : "elige comuna";
     } else num = PW.fmt(conteos[c.k] || 0);
     return `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
       `<span class="dot"></span>${c.nombre} <span class="num">${num}</span></span>`;
