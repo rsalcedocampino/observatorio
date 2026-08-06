@@ -43,6 +43,9 @@
       ["inversion.html", "Inversión verde"],
       ["permisos.html", "Parque de vehículos"],
     ]],
+    ["TCO/Costos", [
+      ["tco.html", "Costo total (TCO)"],
+    ]],
     ["Importaciones", [
       ["radar.html", "Vehículos"],
       ["baterias.html", "Baterías de litio"],
@@ -130,6 +133,7 @@
   ICONOS["duales.html"] = ICONOS["costo.html"];
   ICONOS["autonomia.html"] = ICONOS["sitios.html"];
   ICONOS["conectores-red.html"] = ICONOS["operadores.html"];
+  ICONOS["tco.html"] = ICONOS["costo.html"];
   ICONOS["resiliencia.html"] = ICONOS["riesgo.html"];
   ICONOS["probabilidad-cortes.html"] = ICONOS["riesgo.html"];
   ICONOS["red-electrica.html"] = ICONOS["operadores.html"];
