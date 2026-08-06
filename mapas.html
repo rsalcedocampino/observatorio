@@ -255,9 +255,13 @@ function pintarKpis() {
 
 function pintarPanel() {
   const el = document.getElementById("panel-capas");
-  el.innerHTML = CAPAS.map(c =>
-    `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
-    `<span class="dot"></span>${c.nombre} <span class="num">${PW.fmt(conteos[c.k] || 0)}</span></span>`).join("");
+  el.innerHTML = CAPAS.map(c => {
+    let num;
+    if (c.k === "postes" && !conteos.postes) num = filtroTerr.com ? "sin red CGE" : "elige comuna";
+    else num = PW.fmt(conteos[c.k] || 0);
+    return `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
+      `<span class="dot"></span>${c.nombre} <span class="num">${num}</span></span>`;
+  }).join("");
   el.querySelectorAll(".capa-chip").forEach(ch => ch.addEventListener("click", () => {
     const c = CAPAS.find(x => x.k === ch.dataset.k);
     c.on = !c.on;
