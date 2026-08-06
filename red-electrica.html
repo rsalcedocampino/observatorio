@@ -10,7 +10,7 @@
 <title>Red eléctrica y potencial — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260806b">
+<link rel="stylesheet" href="assets/estilo.css?v=260806c">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -62,7 +62,7 @@
 <script src="data/c_redelec.js"></script>
 <script src="data/geo_comunas.js"></script>
 <script src="data/geo_lineas.js"></script>
-<script src="assets/comun.js?v=260806b"></script>
+<script src="assets/comun.js?v=260806c"></script>
 <script>
 PW.montarNav("red-electrica.html");
 const D = PW_DATA.c_redelec;
@@ -85,6 +85,25 @@ function colorKv(kv) {
   return PW.color("--s3");
 }
 const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+// [LINEAS por CUT] recorte de las lineas de transmision al territorio elegido (helper homologado
+// PW.lineaEnTerritorio; geo_lineas trae `cuts`). Puente nombre->CUT desde geo_comunas (las
+// subestaciones no traen cut). Con fallback: si geo_lineas llego cacheado SIN `cuts`, no filtra (todas).
+const cutDeComuna = {};
+((((window.PW_DATA.geo_comunas || {}).features) || [])).forEach(f => { cutDeComuna[norm(f.properties.comuna)] = String(f.properties.cut).padStart(5, "0"); });
+function filtroLineas() {
+  if (filtroTerr.com) return { cut: cutDeComuna[norm(filtroTerr.com)] || null };
+  if (filtroTerr.rcut) return { rcut: filtroTerr.rcut };
+  return {};
+}
+function hayCutsLineas() { const g = window.PW_DATA.geo_lineas; return !!(g && g.features.some(f => f.properties.cuts)); }
+// geo_lineas.js se sirve sin ?v=: si el navegador tiene copia vieja sin `cuts`, recargar fresco una vez.
+function asegurarCutsLineas() {
+  if (hayCutsLineas()) return;
+  const s = document.createElement("script");
+  s.src = "data/geo_lineas.js?cuts=1";
+  s.onload = () => pintarSub();
+  document.head.appendChild(s);
+}
 // radio por capacidad (MVA): las subestaciones grandes se ven mas grandes.
 // Escala raiz cuadrada acotada entre 6 y 15 px (6 = minimo / sin dato, 15 = satura ~2.000 MVA+).
 function radioMva(mva) {
@@ -128,7 +147,11 @@ function pintarSub() {
   }
   // Trazados: lineas de transmision (color por tension) y ductos de combustibles
   if (mapaSub && window.PW_DATA.geo_lineas) {
-    const capaLineas = L.geoJSON(window.PW_DATA.geo_lineas, {
+    // recorte EXACTO por CUT al territorio elegido (si el filtro esta activo y geo_lineas trae `cuts`)
+    const fl = filtroLineas();
+    const hc = hayCutsLineas();
+    const featsLin = (window.PW_DATA.geo_lineas.features || []).filter(f => !hc || PW.lineaEnTerritorio(f, fl));
+    const capaLineas = L.geoJSON({ type: "FeatureCollection", features: featsLin }, {
       style: f => {
         const kv = +(f.properties.kv || 0);
         return {
@@ -152,7 +175,7 @@ function pintarSub() {
     });
     capaLineas.addTo(mapaSub);
     L.control.layers(null, {
-      ["Lineas de transmision (" + window.PW_DATA.geo_lineas.features.length + ")"]: capaLineas,
+      ["Lineas de transmision (" + featsLin.length + ")"]: capaLineas,
       ["Ductos de combustibles (" + window.PW_DATA.geo_ductos.features.length + ")"]: capaDuctos,
     }, { collapsed: false }).addTo(mapaSub);
   }
@@ -173,6 +196,7 @@ PW.filtrosTerritorio("filtros-mapa",
 document.getElementById("f-kv").addEventListener("input", pintarSub);
 document.getElementById("f-busca-sub").addEventListener("input", pintarSub);
 pintarSub();
+asegurarCutsLineas();  // si geo_lineas llego cacheado sin `cuts`, recargarlo fresco para el recorte por CUT
 PW.leyendaMapa("ley-sub", [
   ["220 kV o mas (troncal)", PW.color("--s2")],
   ["66 a 220 kV", PW.color("--s1")],
