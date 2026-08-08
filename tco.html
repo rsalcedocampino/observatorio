@@ -20,6 +20,12 @@
 .kpi .v.estado-ok { color: var(--good); }
 .kpi .v.estado-mal { color: var(--critical); }
 .veredicto { margin: 10px 0 0; font-size: 13.5px; }
+.ajustes { margin: 4px 0 8px; }
+.ajustes > summary { cursor: pointer; color: var(--ink-2); font-size: 13px; padding: 5px 0; user-select: none; }
+.ajustes > summary:hover { color: var(--ink-1); }
+.ajustes .filtros { margin: 6px 0 4px; }
+.btn-mini { padding: 5px 12px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 12.5px; border: 1px solid var(--border); background: var(--surface-1); color: var(--ink-1); }
+.btn-mini:hover { border-color: var(--s1); }
 </style>
 </head>
 <body>
@@ -55,6 +61,28 @@
       <label>$/kWh <input type="number" id="c-kwh" value="150" min="1"></label>
       <label>$/L <input type="number" id="c-litro" value="1539" min="1"></label>
     </div>
+    <details class="ajustes"><summary>Ajustar valores del eléctrico (precio, seguro, mantención...)</summary>
+      <div class="filtros">
+        <label>Precio <input type="number" id="ev-pr" min="0" step="100000"></label>
+        <label>Seguro/año <input type="number" id="ev-sg" min="0" step="10000"></label>
+        <label>Mantención/año <input type="number" id="ev-ma" min="0" step="10000"></label>
+        <label>Permiso/año <input type="number" id="ev-pm" min="0" step="10000"></label>
+        <label>Residual % <input type="number" id="ev-res" min="0" max="100" step="0.1"></label>
+        <label>km/kWh <input type="number" id="ev-cons" min="0.1" step="0.1"></label>
+        <button type="button" class="btn-mini" id="ev-reset">Restablecer</button>
+      </div>
+    </details>
+    <details class="ajustes"><summary>Ajustar valores del combustión (precio, seguro, mantención...)</summary>
+      <div class="filtros">
+        <label>Precio <input type="number" id="ice-pr" min="0" step="100000"></label>
+        <label>Seguro/año <input type="number" id="ice-sg" min="0" step="10000"></label>
+        <label>Mantención/año <input type="number" id="ice-ma" min="0" step="10000"></label>
+        <label>Permiso/año <input type="number" id="ice-pm" min="0" step="10000"></label>
+        <label>Residual % <input type="number" id="ice-res" min="0" max="100" step="0.1"></label>
+        <label>km/L <input type="number" id="ice-cons" min="0.1" step="0.1"></label>
+        <button type="button" class="btn-mini" id="ice-reset">Restablecer</button>
+      </div>
+    </details>
     <div class="kpis" id="k-comp"></div>
     <p class="veredicto" id="v-comp"></p>
     <div class="fila2">
@@ -172,12 +200,12 @@ function costoEnergiaAnio(v, E, P) {
   if (v.tp === "PHEV") return P.uf * elec + (1 - P.uf) * comb;
   return comb;
 }
-function residualPct(v) { const r = (v.rs && v.rs > 0) ? v.rs : (v.rp || 0); return r > 0 ? r : 40; }
+function residualPct(v) { if (v._res != null) return v._res; const r = (v.rs && v.rs > 0) ? v.rs : (v.rp || 0); return r > 0 ? r : 40; }
 function valorResidual(v, N) {
   if (!v.pr) return 0;
   const p = residualPct(v) / 100;
-  const val = N === 5 ? v.pr * p : v.pr * Math.pow(Math.pow(p, 1 / 5), N);
-  return Math.max(val, v.pr * 0.05);   // piso: un auto conserva algo de valor (evita sobre-depreciar a N largo)
+  if (N === 5) return v.pr * p;   // directo: respeta el residual (incl. un 0 editado a mano)
+  return Math.max(v.pr * Math.pow(Math.pow(p, 1 / 5), N), v.pr * 0.05);   // piso solo en la extrapolacion geometrica a N largo
 }
 function permisoTotal(v, P) {
   if (v.p5 > 0) return v.p5 / 5 * P.ny;   // p5 = suma real a 5 años (ya incorpora el beneficio Ley 21.505); tarifa anual = p5/5, consistente para todo N
@@ -275,9 +303,33 @@ BUILD["comparador"] = function () {
     const P = Object.assign({}, P0);
     P.kmm = Math.max(100, numIn("c-km", P0.kmm * 12)) / 12;
     P.ny = Math.max(1, Math.round(numIn("c-ny", P0.ny)));
-    const pk = numIn("c-kwh", E0.e_rm), pl = numIn("c-litro", E0.b93);
+    const pk = Math.max(0, numIn("c-kwh", E0.e_rm)), pl = Math.max(0, numIn("c-litro", E0.b93));
     const E = Object.assign({}, E0, { e_rm: pk, e_norte: pk, e_sur: pk, b93: pl, b95: pl, b97: pl, die: pl });
     return { E, P };
+  };
+  const permAnualDe = v => Math.round(v.p5 > 0 ? v.p5 / 5 : (v.b21 ? P0.pev : P0.pice) * (v.p1 || 0));
+  const prefill = (px, v, esEv) => {
+    if (!v) return;
+    g(px + "-pr").value = v.pr || 0;
+    g(px + "-sg").value = v.sg || 0;
+    g(px + "-ma").value = v.ma || 0;
+    g(px + "-pm").value = permAnualDe(v);
+    g(px + "-res").value = residualPct(v);
+    g(px + "-cons").value = esEv ? (v.ke || "") : (v.kl || "");
+  };
+  // Vehículo "efectivo": clona el seleccionado y aplica los valores que el usuario editó a mano.
+  const efectivo = (v, px, esEv) => {
+    if (!v) return v;
+    const e = Object.assign({}, v);
+    e.pr = Math.max(0, numIn(px + "-pr", v.pr));
+    e.sg = Math.max(0, numIn(px + "-sg", v.sg));
+    e.ma = Math.max(0, numIn(px + "-ma", v.ma));
+    const pa = Math.max(0, numIn(px + "-pm", permAnualDe(v)));
+    e.p5 = pa * 5; e.p1 = pa;                 // edición directa del permiso/año -> permisoTotal = pa*ny
+    e._res = Math.max(0, Math.min(100, numIn(px + "-res", residualPct(v))));  // residual explícito, respeta un 0
+    const cons = Math.max(0.1, numIn(px + "-cons", esEv ? v.ke : v.kl));
+    if (esEv) e.ke = cons; else e.kl = cons;
+    return e;
   };
   const render = () => {
     if (!ev || !ice) {
@@ -288,18 +340,19 @@ BUILD["comparador"] = function () {
       return;
     }
     const { E, P } = envP();
-    const te = tco(ev, E, P), ti = tco(ice, E, P);
+    const eEv = efectivo(ev, "ev", true), eIce = efectivo(ice, "ice", false);
+    const te = tco(eEv, E, P), ti = tco(eIce, E, P);
     const dif = ti.total - te.total;
-    const evC = curvaAcum(ev, E, P), iceC = curvaAcum(ice, E, P);
+    const evC = curvaAcum(eEv, E, P), iceC = curvaAcum(eIce, E, P);
     const be = breakeven(evC, iceC);
     g("k-comp").innerHTML =
       kpi(PW.clp(te.total), "TCO eléctrico", "a " + P.ny + " años") +
       kpi(PW.clp(ti.total), "TCO combustión", "a " + P.ny + " años") +
       kpi(PW.clp(Math.abs(dif)), dif >= 0 ? "Ahorro del EV" : "Sobrecosto del EV", "a " + P.ny + " años", dif >= 0 ? "estado-ok" : "estado-mal") +
       kpi(be == null ? "no aplica" : (be === 0 ? "inmediato" : be + (be === 1 ? " año" : " años")), "Punto de equilibrio", "el EV se vuelve más barato") +
-      kpi(PW.clp(te.porKm), "Costo/km eléctrico", "") +
-      kpi(PW.clp(ti.porKm), "Costo/km combustión", "");
-    const co2ev = co2kgAnio(ev, P) * P.ny, co2ic = co2kgAnio(ice, P) * P.ny;
+      kpi(PW.clp((te.energiaAnio + (eEv.ma || 0)) / (P.kmm * 12)), "Operación/km eléctrico", "energía + mantención") +
+      kpi(PW.clp((ti.energiaAnio + (eIce.ma || 0)) / (P.kmm * 12)), "Operación/km combustión", "energía + mantención");
+    const co2ev = co2kgAnio(eEv, P) * P.ny, co2ic = co2kgAnio(eIce, P) * P.ny;
     g("v-comp").innerHTML = "En " + P.ny + " años el eléctrico " +
       (dif >= 0 ? "ahorra <b>" + PW.clp(dif) + "</b>" : "cuesta <b>" + PW.clp(-dif) + "</b> más") +
       " y evita <b>" + PW.fmt(Math.max(0, co2ic - co2ev)) + " kg</b> de CO2 (" +
@@ -328,9 +381,20 @@ BUILD["comparador"] = function () {
     ];
     if (tComp) tComp.actualizar(filas); else tComp = PW.tabla("t-comp", cols, filas, { buscador: false });
   };
-  selVeh(POOL_EV, g("ev-mk"), g("ev-md"), g("ev-yr"), v => { ev = v; render(); }, true);
-  selVeh(POOL_ICE, g("ice-mk"), g("ice-md"), g("ice-yr"), v => { ice = v; render(); }, true);
-  ["c-km", "c-ny", "c-kwh", "c-litro"].forEach(id => g(id).addEventListener("input", render));
+  const fijar = (mkS, mdS, yrS, v) => { mkS.value = v.mk; mkS.onchange(); mdS.value = v.md; mdS.onchange(); yrS.value = String(v.yr); yrS.onchange(); };
+  selVeh(POOL_EV, g("ev-mk"), g("ev-md"), g("ev-yr"), v => { ev = v; prefill("ev", v, true); render(); });
+  selVeh(POOL_ICE, g("ice-mk"), g("ice-md"), g("ice-yr"), v => { ice = v; prefill("ice", v, false); render(); });
+  // Default sensato: BEV puro de precio mediano vs gasolina puro de OTRA marca (evita "Alfa vs Alfa" y PHEV/MHEV como default)
+  const _bevs = POOL_EV.filter(v => v.tp === "BEV").sort((a, b) => a.pr - b.pr);
+  const evDef = _bevs[Math.floor(_bevs.length / 2)];
+  if (evDef) fijar(g("ev-mk"), g("ev-md"), g("ev-yr"), evDef);
+  const _ices = POOL_ICE.filter(v => v.tp === "ICE" && !v.ds && (!evDef || v.mk !== evDef.mk)).sort((a, b) => a.pr - b.pr);
+  const iceDef = _ices[Math.floor(_ices.length / 2)] || POOL_ICE[0];
+  if (iceDef) fijar(g("ice-mk"), g("ice-md"), g("ice-yr"), iceDef);
+  const AJUSTES = ["ev-pr", "ev-sg", "ev-ma", "ev-pm", "ev-res", "ev-cons", "ice-pr", "ice-sg", "ice-ma", "ice-pm", "ice-res", "ice-cons"];
+  ["c-km", "c-ny", "c-kwh", "c-litro"].concat(AJUSTES).forEach(id => g(id).addEventListener("input", render));
+  g("ev-reset").addEventListener("click", () => { prefill("ev", ev, true); render(); });
+  g("ice-reset").addEventListener("click", () => { prefill("ice", ice, false); render(); });
   DRAW["comparador"] = render;
   render();
 };
@@ -418,7 +482,7 @@ BUILD["recomendar"] = function () {
       const b = cand[0].v, tb = tco(b, E, P);
       g("d-rc").innerHTML =
         `<p style="font-weight:600;margin:.2em 0">${PW.esc(b.mk + " " + b.md + " " + b.yr)}</p>` +
-        `<p class="nota" style="margin:.2em 0">Precio ${PW.clp(b.pr)} · autonomía ${b.au ? PW.fmt(b.au) + " km" : "—"} · batería ${b.bt ? PW.fmt(b.bt, 1) + " kWh" : "—"} · conector ${b.cdc ? b.cdc.toUpperCase() : (b.cac ? b.cac.toUpperCase() : "—")}</p>` +
+        `<p class="nota" style="margin:.2em 0">Precio ${PW.clp(b.pr)} · autonomía ${b.au ? PW.fmt(b.au) + " km" : "—"} · batería ${b.bt ? PW.fmt(b.bt, 1) + " kWh" : "—"} · conector ${PW.esc((b.cdc || b.cac || "").toUpperCase()) || "—"}</p>` +
         `<p class="nota" style="margin:.2em 0">TCO ${P.ny} años: <b>${PW.clp(tb.total)}</b> · costo/km ${PW.clp(tb.porKm)} · energía/año ${PW.clp(tb.energiaAnio)}</p>`;
     } else g("d-rc").innerHTML = `<p class="nota">Sin resultados para el filtro actual.</p>`;
     const cols = [
