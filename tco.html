@@ -452,9 +452,9 @@ BUILD["recomendar"] = function () {
   const cbs = [...new Set(POOL_EV.map(v => v.cb).filter(Boolean))].sort();
   g("rc-cb").innerHTML = `<option value="">Todas</option>` + opts(cbs, cap);
   const aniosRc = [...new Set(POOL_EV.map(v => v.yr).filter(Boolean))].sort((a, b) => b - a);
-  g("rc-anio").innerHTML = `<option value="reciente">2025 y 2026</option><option value="">Todos</option>` +
+  g("rc-anio").innerHTML = `<option value="">Todos</option>` +
     aniosRc.map(y => `<option value="${y}">${y}</option>`).join("");
-  g("rc-anio").value = "reciente";
+  g("rc-anio").value = aniosRc.includes(2026) ? "2026" : String(aniosRc[0] || "");
   const render = () => {
     const P = Object.assign({}, P0);
     P.kmm = Math.max(100, numIn("rc-km", P0.kmm * 12)) / 12;
@@ -463,7 +463,7 @@ BUILD["recomendar"] = function () {
     const E = Object.assign({}, E0, { e_rm: pk, e_norte: pk, e_sur: pk });
     const pmax = numIn("rc-pmax", 0), cb = g("rc-cb").value, uso = g("rc-uso").value;
     const anioSel = g("rc-anio").value;
-    const okAnio = v => anioSel === "" ? true : (anioSel === "reciente" ? (v.yr >= 2025) : (v.yr === +anioSel));
+    const okAnio = v => anioSel === "" ? true : (v.yr === +anioSel);
     let cand = POOL_EV.filter(v => (!pmax || (v.pr || 0) <= pmax) && (!cb || v.cb === cb) && okAnio(v) && v.tp === "BEV")
       .map(v => ({ v, tco: tco(v, E, P).total, au: v.au || 0 }));
     if (!cand.length) cand = POOL_EV.filter(v => (!pmax || (v.pr || 0) <= pmax) && (!cb || v.cb === cb) && okAnio(v)).map(v => ({ v, tco: tco(v, E, P).total, au: v.au || 0 }));
