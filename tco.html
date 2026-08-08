@@ -179,15 +179,17 @@
 <script src="assets/comun.js?v=260806c"></script>
 <script>
 PW.montarNav("tco.html");
-const D = PW_DATA.c_tco;
-const V = D.v, P0 = D.p, E0 = D.e;
+let D = PW_DATA.c_tco;
+let V = D.v, P0 = D.p, E0 = D.e;
 const g = id => document.getElementById(id);
 const numIn = (id, def) => { const el = g(id); if (!el) return def; const x = parseFloat(el.value); return isFinite(x) ? x : def; };
 g("nota").textContent = "Generado " + D.generado + ". " + (D.nota || "");
 
 // -------- pools --------
-const POOL_EV = V.filter(x => x.pr > 0 && ((x.tp === "BEV" && x.ke > 0) || (x.tp === "PHEV" && x.ke > 0 && x.kl > 0)));
-const POOL_ICE = V.filter(x => x.pr > 0 && (x.tp === "ICE" || x.tp === "HEV" || x.tp === "MHEV") && x.kl > 0);
+const _esPoolEv = x => x.pr > 0 && ((x.tp === "BEV" && x.ke > 0) || (x.tp === "PHEV" && x.ke > 0 && x.kl > 0));
+const _esPoolIce = x => x.pr > 0 && (x.tp === "ICE" || x.tp === "HEV" || x.tp === "MHEV") && x.kl > 0;
+let POOL_EV = V.filter(_esPoolEv);
+let POOL_ICE = V.filter(_esPoolIce);
 
 // -------- motor de cálculo TCO --------
 const esEV = v => v.tp === "BEV" || v.tp === "PHEV" || v.tp === "FCEV";
@@ -246,6 +248,9 @@ function breakeven(evC, iceC) { for (let t = 0; t < evC.length; t++) if (evC[t] 
 
 // -------- utilidades UI --------
 const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ") : "";
+// carga: texto "AC X kW · DC Y kW" y estimacion de minutos de carga rapida DC al 80% (aprox, potencia constante).
+const cargaTxt = v => { const p = []; if (v.pac) p.push("AC " + v.pac + " kW"); if (v.pdc) p.push("DC " + v.pdc + " kW"); return p.join(" · "); };
+const dcMin = v => (v.pdc && v.bt) ? Math.round(v.bt * 0.7 / v.pdc * 60) : null;
 function opts(arr, fmt) { return arr.map(x => `<option value="${PW.esc(String(x))}">${PW.esc(fmt ? fmt(x) : x)}</option>`).join(""); }
 function marcas(pool) { return [...new Set(pool.map(x => x.mk))].sort((a, b) => a.localeCompare(b, "es")); }
 function modelos(pool, mk) { return [...new Set(pool.filter(x => x.mk === mk).map(x => x.md))].sort((a, b) => a.localeCompare(b, "es")); }
@@ -357,7 +362,12 @@ BUILD["comparador"] = function () {
     g("v-comp").innerHTML = "En " + P.ny + " años el eléctrico " +
       (dif >= 0 ? "ahorra <b>" + PW.clp(dif) + "</b>" : "cuesta <b>" + PW.clp(-dif) + "</b> más") +
       " y evita <b>" + PW.fmt(Math.max(0, co2ic - co2ev)) + " kg</b> de CO2 (" +
-      PW.fmt(Math.max(0, (co2ic - co2ev) / (P.arbol_kg || 21))) + " árboles-año equivalentes).";
+      PW.fmt(Math.max(0, (co2ic - co2ev) / (P.arbol_kg || 21))) + " árboles-año equivalentes)." +
+      ((cargaTxt(eEv) || eEv.eu || eEv.nm) ? "<br><span class=\"nota\">Eléctrico: " +
+        (cargaTxt(eEv) ? "carga " + PW.esc(cargaTxt(eEv)) + " &middot; " : "") +
+        (eEv.nm ? "norma " + PW.esc(eEv.nm) + " &middot; " : "") +
+        (eEv.eu ? "<a href=\"" + PW.esc(eEv.eu) + "\" target=\"_blank\" rel=\"noopener\">etiqueta de eficiencia oficial</a>" : "") +
+        "</span>" : "");
     PW.lineas("g-acum", {
       labels: evC.map((_, i) => String(i)),
       series: [{ nombre: "Eléctrico", valores: evC, color: PW.color("--s1") },
@@ -478,7 +488,7 @@ BUILD["recomendar"] = function () {
       });
       cand.sort((a, b) => b.puntaje - a.puntaje);
     }
-    const filas = cand.map(c => ({ modelo: c.v.mk + " " + c.v.md, anio: c.v.yr, precio: c.v.pr, autonomia: c.v.au, tcoN: c.tco, porkm: tco(c.v, E, P).porKm, puntaje: c.puntaje }));
+    const filas = cand.map(c => ({ modelo: c.v.mk + " " + c.v.md, anio: c.v.yr, precio: c.v.pr, autonomia: c.v.au, cdc: c.v.pdc, tcoN: c.tco, porkm: tco(c.v, E, P).porKm, puntaje: c.puntaje, eu: c.v.eu, nm: c.v.nm }));
     g("k-rc").innerHTML =
       kpi(PW.fmt(cand.length), "Modelos que cumplen", "tu presupuesto y filtros") +
       (cand[0] ? kpi(cand[0].v.mk + " " + cand[0].v.md, "Recomendado #1", "puntaje " + cand[0].puntaje) : kpi("—", "Recomendado #1", "sin resultados")) +
@@ -490,16 +500,25 @@ BUILD["recomendar"] = function () {
       g("d-rc").innerHTML =
         `<p style="font-weight:600;margin:.2em 0">${PW.esc(b.mk + " " + b.md + " " + b.yr)}</p>` +
         `<p class="nota" style="margin:.2em 0">Precio ${PW.clp(b.pr)} · autonomía ${b.au ? PW.fmt(b.au) + " km" : "—"} · batería ${b.bt ? PW.fmt(b.bt, 1) + " kWh" : "—"} · conector ${PW.esc((b.cdc || b.cac || "").toUpperCase()) || "—"}</p>` +
-        `<p class="nota" style="margin:.2em 0">TCO ${P.ny} años: <b>${PW.clp(tb.total)}</b> · costo/km ${PW.clp(tb.porKm)} · energía/año ${PW.clp(tb.energiaAnio)}</p>`;
+        `<p class="nota" style="margin:.2em 0">TCO ${P.ny} años: <b>${PW.clp(tb.total)}</b> · costo/km ${PW.clp(tb.porKm)} · energía/año ${PW.clp(tb.energiaAnio)}</p>` +
+        ((b.pac || b.pdc) ? `<p class="nota" style="margin:.2em 0">Carga: ${PW.esc(cargaTxt(b))}` + (dcMin(b) ? ` (~${dcMin(b)} min al 80% en carga rápida, estimado)` : "") + `</p>` : "") +
+        `<p class="nota" style="margin:.2em 0">` +
+          (b.cch ? `<span class="pill">Homologado en Chile</span> ` : "") +
+          (b.nm ? `Norma ${PW.esc(b.nm)} · ` : "") +
+          (b.eu ? `<a href="${PW.esc(b.eu)}" target="_blank" rel="noopener">Etiqueta de eficiencia oficial</a>` : "sin etiqueta oficial") +
+        `</p>` +
+        (b.frr ? `<p class="nota" style="margin:.2em 0"><a href="${PW.esc(b.frr)}" target="_blank" rel="noopener">Ficha de rescate (SEC)</a>` + (b.frn ? ` · ${b.frn} documentos` : "") + `</p>` : "");
     } else g("d-rc").innerHTML = `<p class="nota">Sin resultados para el filtro actual.</p>`;
     const cols = [
       { k: "modelo", titulo: "Eléctrico" },
       { k: "anio", titulo: "Año", num: true, fmt: v => v || "—" },
       { k: "precio", titulo: "Precio", num: true, fmt: PW.clp },
       { k: "autonomia", titulo: "Autonomía", num: true, fmt: v => v == null ? "—" : PW.fmt(v) + " km" },
+      { k: "cdc", titulo: "Carga DC", num: true, fmt: v => v ? PW.fmt(v) + " kW" : "—" },
       { k: "tcoN", titulo: "TCO " + P.ny + " años", num: true, fmt: PW.clp },
       { k: "porkm", titulo: "Costo/km", num: true, fmt: PW.clp },
       { k: "puntaje", titulo: "Puntaje", num: true, fmt: v => PW.fmt(v) },
+      { k: "eu", titulo: "Etiqueta oficial", fmt: v => v ? `<a href="${PW.esc(v)}" target="_blank" rel="noopener">ver</a>` : "—" },
     ];
     if (tRc) tRc.actualizar(filas); else tRc = PW.tabla("t-rc", cols, filas, { orden: "anio", asc: false, max: 150 });
   };
@@ -570,6 +589,15 @@ BUILD["solar"] = function () {
 // arranque: pestaña del hash o comparador
 mostrar((location.hash || "").slice(1) || "comparador");
 window.addEventListener("hashchange", () => mostrar((location.hash || "").slice(1) || "comparador"));
+
+// Si el navegador tiene c_tco.js cacheado SIN los campos de trazabilidad oficial (eu/nm/cch),
+// recargar el dato (bypass de cache) y reconstruir con la version fresca. Patron de comun.js.
+PW.recargarSiFaltaCampo("c_tco", d => d.v && d.v.length && ("frr" in d.v[0]), d => {
+  D = d; V = d.v; P0 = d.p; E0 = d.e;
+  POOL_EV = V.filter(_esPoolEv); POOL_ICE = V.filter(_esPoolIce);
+  Object.keys(construido).forEach(k => delete construido[k]);
+  mostrar((location.hash || "").slice(1) || "comparador");
+});
 </script>
 </body>
 </html>
