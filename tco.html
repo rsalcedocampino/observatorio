@@ -135,6 +135,7 @@
       <label>Carrocería <select id="rc-cb"></select></label>
       <label>$/kWh <input type="number" id="rc-kwh" value="150" min="1"></label>
       <label>Años <input type="number" id="rc-ny" value="5" min="1" max="15"></label>
+      <label>Año del modelo <select id="rc-anio"></select></label>
     </div>
     <div class="kpis" id="k-rc"></div>
     <div class="fila2">
@@ -450,6 +451,10 @@ BUILD["recomendar"] = function () {
   let tRc = null;
   const cbs = [...new Set(POOL_EV.map(v => v.cb).filter(Boolean))].sort();
   g("rc-cb").innerHTML = `<option value="">Todas</option>` + opts(cbs, cap);
+  const aniosRc = [...new Set(POOL_EV.map(v => v.yr).filter(Boolean))].sort((a, b) => b - a);
+  g("rc-anio").innerHTML = `<option value="reciente">2025 y 2026</option><option value="">Todos</option>` +
+    aniosRc.map(y => `<option value="${y}">${y}</option>`).join("");
+  g("rc-anio").value = "reciente";
   const render = () => {
     const P = Object.assign({}, P0);
     P.kmm = Math.max(100, numIn("rc-km", P0.kmm * 12)) / 12;
@@ -457,9 +462,11 @@ BUILD["recomendar"] = function () {
     const pk = numIn("rc-kwh", E0.e_rm);
     const E = Object.assign({}, E0, { e_rm: pk, e_norte: pk, e_sur: pk });
     const pmax = numIn("rc-pmax", 0), cb = g("rc-cb").value, uso = g("rc-uso").value;
-    let cand = POOL_EV.filter(v => (!pmax || (v.pr || 0) <= pmax) && (!cb || v.cb === cb) && v.tp === "BEV")
+    const anioSel = g("rc-anio").value;
+    const okAnio = v => anioSel === "" ? true : (anioSel === "reciente" ? (v.yr >= 2025) : (v.yr === +anioSel));
+    let cand = POOL_EV.filter(v => (!pmax || (v.pr || 0) <= pmax) && (!cb || v.cb === cb) && okAnio(v) && v.tp === "BEV")
       .map(v => ({ v, tco: tco(v, E, P).total, au: v.au || 0 }));
-    if (!cand.length) cand = POOL_EV.filter(v => (!pmax || (v.pr || 0) <= pmax) && (!cb || v.cb === cb)).map(v => ({ v, tco: tco(v, E, P).total, au: v.au || 0 }));
+    if (!cand.length) cand = POOL_EV.filter(v => (!pmax || (v.pr || 0) <= pmax) && (!cb || v.cb === cb) && okAnio(v)).map(v => ({ v, tco: tco(v, E, P).total, au: v.au || 0 }));
     if (cand.length) {
       const tMin = Math.min(...cand.map(c => c.tco)), tMax = Math.max(...cand.map(c => c.tco));
       const aMax = Math.max(...cand.map(c => c.au), 1);
@@ -471,7 +478,7 @@ BUILD["recomendar"] = function () {
       });
       cand.sort((a, b) => b.puntaje - a.puntaje);
     }
-    const filas = cand.map(c => ({ modelo: c.v.mk + " " + c.v.md + " " + c.v.yr, precio: c.v.pr, autonomia: c.v.au, tcoN: c.tco, porkm: tco(c.v, E, P).porKm, puntaje: c.puntaje }));
+    const filas = cand.map(c => ({ modelo: c.v.mk + " " + c.v.md, anio: c.v.yr, precio: c.v.pr, autonomia: c.v.au, tcoN: c.tco, porkm: tco(c.v, E, P).porKm, puntaje: c.puntaje }));
     g("k-rc").innerHTML =
       kpi(PW.fmt(cand.length), "Modelos que cumplen", "tu presupuesto y filtros") +
       (cand[0] ? kpi(cand[0].v.mk + " " + cand[0].v.md, "Recomendado #1", "puntaje " + cand[0].puntaje) : kpi("—", "Recomendado #1", "sin resultados")) +
@@ -487,16 +494,17 @@ BUILD["recomendar"] = function () {
     } else g("d-rc").innerHTML = `<p class="nota">Sin resultados para el filtro actual.</p>`;
     const cols = [
       { k: "modelo", titulo: "Eléctrico" },
+      { k: "anio", titulo: "Año", num: true, fmt: v => v || "—" },
       { k: "precio", titulo: "Precio", num: true, fmt: PW.clp },
       { k: "autonomia", titulo: "Autonomía", num: true, fmt: v => v == null ? "—" : PW.fmt(v) + " km" },
       { k: "tcoN", titulo: "TCO " + P.ny + " años", num: true, fmt: PW.clp },
       { k: "porkm", titulo: "Costo/km", num: true, fmt: PW.clp },
       { k: "puntaje", titulo: "Puntaje", num: true, fmt: v => PW.fmt(v) },
     ];
-    if (tRc) tRc.actualizar(filas); else tRc = PW.tabla("t-rc", cols, filas, { orden: "puntaje", max: 60 });
+    if (tRc) tRc.actualizar(filas); else tRc = PW.tabla("t-rc", cols, filas, { orden: "anio", asc: false, max: 150 });
   };
   ["rc-pmax", "rc-km", "rc-kwh", "rc-ny"].forEach(id => g(id).addEventListener("input", render));
-  ["rc-uso", "rc-cb"].forEach(id => g(id).addEventListener("change", render));
+  ["rc-uso", "rc-cb", "rc-anio"].forEach(id => g(id).addEventListener("change", render));
   DRAW["recomendar"] = render;
   render();
 };
