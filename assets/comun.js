@@ -80,6 +80,7 @@
     ]],
     ["Normativa", [
       ["normativa.html", "Metas y marco legal"],
+      ["reporte-energetico.html", "Reporte Energético 2026 CCGE"],
     ]],
     ["Seguros", [
       ["seguros.html", "Coberturas EV"],
@@ -139,6 +140,7 @@
   ICONOS["red-electrica.html"] = ICONOS["operadores.html"];
   ICONOS["censo-electricidad.html"] = ICONOS["sitios.html"];
   ICONOS["normativa.html"] = IC('<path d="M12 3v18M5 21h14"/><path d="M5 7h14M7 7l-3 6h6zM17 7l-3 6h6z"/>');
+  ICONOS["reporte-energetico.html"] = IC('<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M12 10l-2 4h3l-1 4"/>');
   ICONOS["seguros.html"] = IC('<path d="M12 3l8 3v6c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6z"/><path d="M12 8v7M14.6 9.8c-.5-.7-1.4-1.2-2.6-1.2-1.4 0-2.5.8-2.5 1.9 0 2.4 5 1.4 5 3.8 0 1.1-1.1 1.9-2.5 1.9-1.2 0-2.1-.5-2.6-1.2"/>');
   ICONOS["vulnerabilidad.html"] = ICONOS["riesgo.html"];
   ICONOS["bess-cortes.html"] = ICONOS["baterias.html"];

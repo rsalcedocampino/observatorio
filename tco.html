@@ -10,7 +10,7 @@
 <title>Costo total de propiedad (TCO) — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260812a">
+<link rel="stylesheet" href="assets/estilo.css?v=260813a">
 <style>
 .pestanas { display: flex; gap: 2px; flex-wrap: wrap; margin: 16px 0 4px; border-bottom: 1px solid var(--border); }
 .pestanas button { background: none; border: 0; padding: 8px 14px; font: inherit; color: var(--ink-2); cursor: pointer; border-radius: 8px 8px 0 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
@@ -176,7 +176,7 @@
 </main>
 
 <script src="data/c_tco.js"></script>
-<script src="assets/comun.js?v=260812a"></script>
+<script src="assets/comun.js?v=260813a"></script>
 <script>
 PW.montarNav("tco.html");
 let D = PW_DATA.c_tco;
@@ -488,7 +488,7 @@ BUILD["recomendar"] = function () {
       });
       cand.sort((a, b) => b.puntaje - a.puntaje);
     }
-    const filas = cand.map(c => ({ modelo: c.v.mk + " " + c.v.md, anio: c.v.yr, precio: c.v.pr, autonomia: c.v.au, cdc: c.v.pdc, tcoN: c.tco, porkm: tco(c.v, E, P).porKm, puntaje: c.puntaje, eu: c.v.eu, nm: c.v.nm }));
+    const filas = cand.map(c => ({ modelo: c.v.mk + " " + c.v.md, anio: c.v.yr, precio: c.v.pr, prensa: c.v.pp, autonomia: c.v.au, cdc: c.v.pdc, remolque: c.v.rem, tcoN: c.tco, porkm: tco(c.v, E, P).porKm, puntaje: c.puntaje, eu: c.v.eu, nm: c.v.nm }));
     g("k-rc").innerHTML =
       kpi(PW.fmt(cand.length), "Modelos que cumplen", "tu presupuesto y filtros") +
       (cand[0] ? kpi(cand[0].v.mk + " " + cand[0].v.md, "Recomendado #1", "puntaje " + cand[0].puntaje) : kpi("—", "Recomendado #1", "sin resultados")) +
@@ -502,6 +502,10 @@ BUILD["recomendar"] = function () {
         `<p class="nota" style="margin:.2em 0">Precio ${PW.clp(b.pr)} · autonomía ${b.au ? PW.fmt(b.au) + " km" : "—"} · batería ${b.bt ? PW.fmt(b.bt, 1) + " kWh" : "—"} · conector ${PW.esc((b.cdc || b.cac || "").toUpperCase()) || "—"}</p>` +
         `<p class="nota" style="margin:.2em 0">TCO ${P.ny} años: <b>${PW.clp(tb.total)}</b> · costo/km ${PW.clp(tb.porKm)} · energía/año ${PW.clp(tb.energiaAnio)}</p>` +
         ((b.pac || b.pdc) ? `<p class="nota" style="margin:.2em 0">Carga: ${PW.esc(cargaTxt(b))}` + (dcMin(b) ? ` (~${dcMin(b)} min al 80% en carga rápida, estimado)` : "") + `</p>` : "") +
+        ((b.pp || b.rem) ? `<p class="nota" style="margin:.2em 0">` +
+          (b.pp ? `Precio de agencia (prensa): ${PW.clp(b.pp)}` : "") +
+          (b.pp && b.rem ? " · " : "") +
+          (b.rem ? `remolque hasta ${PW.fmt(b.rem)} kg` : "") + `</p>` : "") +
         `<p class="nota" style="margin:.2em 0">` +
           (b.cch ? `<span class="pill">Homologado en Chile</span> ` : "") +
           (b.nm ? `Norma ${PW.esc(b.nm)} · ` : "") +
@@ -513,8 +517,10 @@ BUILD["recomendar"] = function () {
       { k: "modelo", titulo: "Eléctrico" },
       { k: "anio", titulo: "Año", num: true, fmt: v => v || "—" },
       { k: "precio", titulo: "Precio", num: true, fmt: PW.clp },
+      { k: "prensa", titulo: "Precio agencia", num: true, fmt: v => v ? PW.clp(v) : "—" },
       { k: "autonomia", titulo: "Autonomía", num: true, fmt: v => v == null ? "—" : PW.fmt(v) + " km" },
       { k: "cdc", titulo: "Carga DC", num: true, fmt: v => v ? PW.fmt(v) + " kW" : "—" },
+      { k: "remolque", titulo: "Remolque", num: true, fmt: v => v ? PW.fmt(v) + " kg" : "—" },
       { k: "tcoN", titulo: "TCO " + P.ny + " años", num: true, fmt: PW.clp },
       { k: "porkm", titulo: "Costo/km", num: true, fmt: PW.clp },
       { k: "puntaje", titulo: "Puntaje", num: true, fmt: v => PW.fmt(v) },
@@ -590,9 +596,10 @@ BUILD["solar"] = function () {
 mostrar((location.hash || "").slice(1) || "comparador");
 window.addEventListener("hashchange", () => mostrar((location.hash || "").slice(1) || "comparador"));
 
-// Si el navegador tiene c_tco.js cacheado SIN los campos de trazabilidad oficial (eu/nm/cch),
-// recargar el dato (bypass de cache) y reconstruir con la version fresca. Patron de comun.js.
-PW.recargarSiFaltaCampo("c_tco", d => d.v && d.v.length && ("frr" in d.v[0]), d => {
+// Si el navegador tiene c_tco.js cacheado SIN los campos nuevos (rem = precio agencia + remolque
+// de prensa; el ultimo agregado), recargar el dato (bypass de cache) y reconstruir con la version
+// fresca. Patron de comun.js.
+PW.recargarSiFaltaCampo("c_tco", d => d.v && d.v.length && ("rem" in d.v[0]), d => {
   D = d; V = d.v; P0 = d.p; E0 = d.e;
   POOL_EV = V.filter(_esPoolEv); POOL_ICE = V.filter(_esPoolIce);
   Object.keys(construido).forEach(k => delete construido[k]);
