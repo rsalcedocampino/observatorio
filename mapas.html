@@ -34,6 +34,9 @@
     <div id="panel-capas" class="capas-panel"></div>
     <div id="mapa-todo"></div>
     <p id="cont-todo" class="nota" style="margin-top:10px"></p>
+    <div id="ley-transmision-wrap" class="nota" style="display:none;margin:6px 0 2px;align-items:center;gap:8px;flex-wrap:wrap">
+      <span style="font-weight:600">Transmisión:</span><span id="ley-transmision"></span>
+    </div>
     <p class="nota" id="ley-encoding"></p>
     <p class="nota">Consejo: cada capa mantiene su estado al filtrar o cambiar el telón de
     fondo; el mapa conserva el zoom cuando activa o apaga capas. Use "Ver todo" para encuadrar
@@ -358,11 +361,19 @@ function pintarContador(ind) {
     (on("mt") ? tramosHint("mt") : "") +
     (on("bt") ? tramosHint("bt") : "");
   const totNew = conteos.nuevas || 0;
+  // leyenda VISUAL de transmision (swatches por banda; fuente unica PW.leyendaTransmision, consistente
+  // con estiloTransmision): se muestra solo cuando alguna banda de transmision esta encendida.
+  const transVis = on("lin_a") || on("lin_m") || on("lin_b");
+  const leyTWrap = document.getElementById("ley-transmision-wrap");
+  if (transVis) {
+    PW.leyendaTransmision("ley-transmision", { nuevas: totNew > 0 });
+    leyTWrap.style.display = "flex";
+  } else {
+    leyTWrap.style.display = "none";
+  }
   document.getElementById("ley-encoding").innerHTML =
     "Tamaño del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
-    "Líneas de transmisión en naranjo, separadas por tensión (más gruesa = mayor kV: ≥200 / 66–154 / <66). " +
-    (totNew ? "Líneas nuevas (KMZ 2019) en verde punteado, también por tensión (" + PW.fmt(totNew) +
-      ": 43 complementos de voltaje + 22 ausentes del troncal IDE). " : "") +
+    (transVis && totNew ? "Líneas nuevas (KMZ 2019): " + PW.fmt(totNew) + " (complemento de voltaje + ausentes del troncal IDE). " : "") +
     (on("mt") || on("bt") ? "Red de distribución CGE: MT (media tensión) en violeta, BT (baja tensión) en rosado; por comuna (MT también por región). " : "") +
     "Censo: fondo azul, más oscuro = mayor " +
     (ind === "viviendas" ? "numero de viviendas" : "porcentaje") + " en la comuna.";
