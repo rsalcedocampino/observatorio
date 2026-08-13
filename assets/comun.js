@@ -583,7 +583,7 @@
   //   [POPUP]     tarjeta al hacer clic (estilada en estilo.css)
   //   [LEYENDA]   leyendaMapa() bajo el mapa
   //   [FILTROS]   filtrosTerritorio() + filtros propios de cada pagina
-  // API: mapa(cont, {capas, centro, zoom, alto, clusterDesde, sinCluster})
+  // API: mapa(cont, {capas, centro, zoom, alto, clusterDesde, sinCluster, comunas, lineas, foco, vacioMsg})
   // =====================================================================
 
   // [TERRITORIO] bounding box canonico de Chile — MISMO criterio que dentro_chile()
@@ -632,20 +632,35 @@
   // opts: { centro, zoom, puntos?:[{ll,nombre}], bounds?:L.LatLngBounds }
   function controlesMapa(m, el, opts) {
     let miUbic = null;
+    let btnFs = null;   // boton de pantalla completa (toggle: se le refleja aria-pressed)
     const Botones = L.Control.extend({
       options: { position: "topleft" },
       onAdd() {
         const div = L.DomUtil.create("div", "leaflet-bar pw-mapa-botones");
+        // [A11Y] grupo etiquetado; cada boton es role=button con nombre accesible y teclado (Enter/Space)
+        div.setAttribute("role", "group");
+        div.setAttribute("aria-label", "Controles del mapa");
         const boton = (glifo, titulo, fn) => {
           const a = L.DomUtil.create("a", "", div);
-          a.href = "#"; a.title = titulo; a.innerHTML = glifo;
-          L.DomEvent.on(a, "click", ev => { L.DomEvent.stop(ev); fn(a); });
+          a.href = "#";
+          a.setAttribute("role", "button");
+          a.setAttribute("aria-label", titulo);
+          a.title = titulo;
+          // el glifo es decorativo: aria-hidden para que el lector use el aria-label, no el simbolo
+          a.innerHTML = `<span aria-hidden="true">${glifo}</span>`;
+          const activar = ev => { L.DomEvent.stop(ev); fn(a); };
+          L.DomEvent.on(a, "click", activar);
+          // teclado: en un <a> Enter ya dispara "click"; Space no (haria scroll) -> lo activamos aqui
+          L.DomEvent.on(a, "keydown", ev => {
+            if (ev.key === " " || ev.key === "Spacebar" || ev.keyCode === 32) activar(ev);
+          });
           return a;
         };
-        boton("&#x26F6;", "Pantalla completa", () => {
+        btnFs = boton("&#x26F6;", "Pantalla completa", () => {
           if (document.fullscreenElement) document.exitFullscreen();
           else el.requestFullscreen && el.requestFullscreen();
         });
+        btnFs.setAttribute("aria-pressed", "false");
         boton("&#x2302;", "Vista inicial", () => m.setView(opts.centro, opts.zoom));
         boton("&#x2922;", "Ver todo", () => {
           const b = (opts.puntos && opts.puntos.length)
@@ -657,8 +672,9 @@
         if (navigator.geolocation) {
           boton("&#x2316;", "Mi ubicación" + (opts.puntos ? " (y punto más cercano)" : ""), a => {
             a.classList.add("cargando");
+            a.setAttribute("aria-busy", "true");
             navigator.geolocation.getCurrentPosition(pos => {
-              a.classList.remove("cargando");
+              a.classList.remove("cargando"); a.removeAttribute("aria-busy");
               const ll = [pos.coords.latitude, pos.coords.longitude];
               if (miUbic) m.removeLayer(miUbic);
               miUbic = L.layerGroup([
@@ -674,7 +690,7 @@
               miUbic.getLayers()[1].bindPopup(html).openPopup();
               m.setView(ll, 11);
             }, () => {
-              a.classList.remove("cargando");
+              a.classList.remove("cargando"); a.removeAttribute("aria-busy");
               alert("No se pudo obtener tu ubicación. Revisa los permisos del navegador.");
             }, { enableHighAccuracy: true, timeout: 8000 });
           });
@@ -683,7 +699,16 @@
       },
     });
     m.addControl(new Botones());
-    document.addEventListener("fullscreenchange", () => setTimeout(() => m.invalidateSize(), 120));
+    document.addEventListener("fullscreenchange", () => {
+      setTimeout(() => m.invalidateSize(), 120);
+      // [A11Y] reflejar el estado del toggle de pantalla completa (salir con Esc es nativo del navegador)
+      if (btnFs) {
+        const activo = document.fullscreenElement === el;
+        btnFs.setAttribute("aria-pressed", activo ? "true" : "false");
+        const t = activo ? "Salir de pantalla completa" : "Pantalla completa";
+        btnFs.setAttribute("aria-label", t); btnFs.title = t;
+      }
+    });
   }
 
   // [ZOOM TERRITORIO] bounds de un conjunto de comunas (por cut) usando geo_comunas.
@@ -866,6 +891,27 @@
     if (cfg.foco && cfg.foco.length) {
       const b = boundsComunas(cfg.foco);
       if (b) m.fitBounds(b.pad(0.15), { animate: false });
+    }
+
+    // [VACIO] estado "sin datos": si tras filtrar no queda NINGUN punto visible (y no hay lineas ni
+    //   comunas visibles que muestren algo), sobrepone un aviso en vez de dejar el mapa en blanco.
+    //   mapa() se reconstruye en cada llamada (el.innerHTML=""), asi que el aviso aparece/desaparece
+    //   solo cuando la pagina re-renderiza al cambiar el filtro territorial. pointer-events:none => no
+    //   estorba el paneo/zoom. Solo aplica si el mapa TIENE capas de puntos (no en mapas de solo
+    //   lineas/comunas). Mensaje configurable con cfg.vacioMsg. Temas via variables (surface/ink/border).
+    const hayLineasVis = (cfg.lineas || []).some(lc => lc.visible && lc.geojson && (lc.geojson.features || []).length);
+    const hayComunasVis = !!(cfg.comunas && cfg.comunas.visible && window.PW_DATA && window.PW_DATA.geo_comunas);
+    const hayCapasPuntos = (cfg.capas || []).some(c => c.visible !== false);
+    if (hayCapasPuntos && !todosPts.length && !hayLineasVis && !hayComunasVis) {
+      const av = document.createElement("div");
+      av.className = "pw-mapa-vacio";
+      av.textContent = cfg.vacioMsg || "Sin datos en esta zona.";
+      av.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);" +
+        "z-index:800;pointer-events:none;max-width:80%;text-align:center;" +
+        "background:var(--surface-1);color:var(--ink-1);border:1px solid var(--border);" +
+        "border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;" +
+        "box-shadow:0 2px 12px rgba(0,0,0,.18)";
+      el.appendChild(av);
     }
     return m;
   }
@@ -1146,6 +1192,52 @@
       : { color: color("--s2"), weight: kv >= 200 ? 2.4 : (kv >= 66 ? 1.6 : 1.1), opacity: kv >= 200 ? 0.85 : 0.6 };
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision };
+  // [MAPA] leyenda homologada de lineas de transmision, CONSISTENTE con estiloTransmision(): dibuja
+  //   swatches de LINEA (no el punto cuadrado de leyendaMapa) para las 3 bandas de tension (grosor
+  //   creciente, IDE naranjo solido) y, opcional, la fuente "nueva" (KMZ 2019, verde punteado). Los
+  //   colores/grosor/trazo salen de estiloTransmision(), asi la leyenda calza SIEMPRE con el mapa; es
+  //   la fuente unica de la leyenda para cualquier mapa de transmision (mapas.html, red-electrica) en
+  //   vez de texto a mano. Layout inline (mismo look que .leyenda, sin el ::before cuadrado). cont =
+  //   id|elemento; opts = { nuevas?: bool (incluir la entrada KMZ 2019) }. Devuelve el elemento.
+  function leyendaTransmision(cont, opts) {
+    opts = opts || {};
+    const el = typeof cont === "string" ? document.getElementById(cont) : cont;
+    if (!el) return null;
+    el.className = "pw-leyenda-lineas";
+    el.style.display = "flex";
+    el.style.gap = "16px";
+    el.style.flexWrap = "wrap";
+    el.style.margin = "6px 0 2px";
+    el.style.fontSize = "12.5px";
+    el.style.color = "var(--ink-2)";
+    el.innerHTML = "";
+    const filas = [
+      [estiloTransmision({ kv: 500, fuente: "ide" }), "≥200 kV"],
+      [estiloTransmision({ kv: 154, fuente: "ide" }), "66–154 kV"],
+      [estiloTransmision({ kv: 33,  fuente: "ide" }), "<66 kV"],
+    ];
+    if (opts.nuevas) filas.push([estiloTransmision({ kv: 220, fuente: "kmz2019_nueva" }), "Nueva (KMZ 2019)"]);
+    filas.forEach(([est, etq]) => {
+      const item = document.createElement("span");
+      item.style.whiteSpace = "nowrap";
+      const sw = document.createElement("i");
+      sw.style.display = "inline-block";
+      sw.style.width = "24px";
+      sw.style.verticalAlign = "middle";
+      sw.style.marginRight = "7px";
+      sw.style.borderTopStyle = est.dashArray ? "dashed" : "solid";
+      // el swatch escala ~1.3x el weight del mapa (piso 1.5px) para que el gradiente por banda
+      // se lea en la leyenda; color y trazo (solido/punteado) quedan EXACTOS al mapa.
+      sw.style.borderTopWidth = Math.max(1.5, est.weight * 1.3).toFixed(1) + "px";
+      sw.style.borderTopColor = est.color;
+      if (est.opacity != null) sw.style.opacity = String(est.opacity);
+      item.appendChild(sw);
+      item.appendChild(document.createTextNode(etq));
+      el.appendChild(item);
+    });
+    return el;
+  }
+
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision };
 })();
 
