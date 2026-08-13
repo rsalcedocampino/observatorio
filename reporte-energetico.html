@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org; connect-src 'self'; base-uri 'self'; object-src 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Reporte Energético 2026 CCGE — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260813a">
+<style>
+  .re-oblig { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px 24px; }
+  .re-field .k { font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-3); margin:0 0 3px; }
+  .re-field .v { font-size:14.5px; color:var(--ink-1); margin:0; }
+  .re-plazo { border-top:1px solid var(--border); margin-top:14px; padding-top:13px; font-size:15px; color:var(--ink-1); }
+  .re-plazo b { color:var(--s2); }
+  .origen-chips { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:2px 0 12px; }
+  .ochip { cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--ink-1);
+           border-radius:999px; padding:5px 12px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; }
+  .ochip:hover { border-color:var(--ink-3); }
+  .ochip.activo { background:var(--ink-1); color:var(--surface-1); border-color:var(--ink-1); }
+  .ochip.activo .odot { outline:1px solid var(--surface-1); }
+  .odot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:7px; vertical-align:middle; flex:none; }
+  .oexp { display:flex; gap:9px; align-items:flex-start; margin:9px 0; font-size:13.5px; color:var(--ink-2); }
+  .oexp .odot { margin-top:5px; margin-right:0; }
+  .oexp b { color:var(--ink-1); }
+  .chip-o { display:inline-flex; align-items:center; font-size:12.5px; white-space:nowrap; color:var(--ink-2); }
+  .bc { display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.02em; border-radius:5px;
+        padding:1px 6px; margin-right:6px; background:var(--grid); color:var(--ink-2); border:1px solid var(--border); vertical-align:middle; }
+  .re-tbl-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+  .btn-csv { cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--ink-1);
+             border-radius:8px; padding:6px 13px; font-size:13px; font-weight:600; font-family:inherit; }
+  .btn-csv:hover { border-color:var(--ink-3); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Reporte Energético 2026 CCGE</h1>
+  <p class="sub">El Ministerio de Energía publicó el listado actualizado de <b>Consumidores con Capacidad
+  de Gestión de Energía 2026 (CCGE)</b>, dando inicio a nuevos plazos y obligaciones asociados a la gestión
+  energética. Aquí puedes buscar las <b>1.869 empresas</b> obligadas al Proceso de Reporte Energético 2026
+  y distinguir cuáles son CCGE (deben además implementar un Sistema de Gestión de Energía).</p>
+
+  <div class="tarjeta" style="margin-bottom:18px">
+    <div class="re-oblig" id="oblig"></div>
+    <p class="re-plazo" id="plazo"></p>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Qué significa cada Origen</h2>
+    <p class="nota" style="margin:0 0 8px">Todas las empresas del listado deben realizar el Proceso de
+    Reporte Energético 2026 (declarar sus consumos e intensidad energética de 2025). El Origen indica por
+    qué criterio quedaron obligadas; los <b>CCGE</b> tienen además la obligación de implementar un SGE.</p>
+    <div id="origen-explica"></div>
+  </div>
+
+  <div class="tarjeta">
+    <div class="re-tbl-head">
+      <h2 style="margin:0">Listado de empresas obligadas</h2>
+      <button class="btn-csv" id="btn-csv" type="button">Descargar CSV del filtrado</button>
+    </div>
+    <p class="nota" style="margin:8px 0 10px">Busca por razón social o RUT; filtra por Origen con los chips.
+    Los <b>27 CCGE</b> aparecen primero. Los distintivos indican empresas que además figuran en el
+    observatorio como operador de carga o importador de vehículos.</p>
+    <div class="origen-chips" id="chips"></div>
+    <div id="tabla"></div>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+
+<script src="data/c_ccge.js"></script>
+<script src="assets/comun.js?v=260813a"></script>
+<script>
+PW.montarNav("reporte-energetico.html");
+const D = window.PW_DATA.c_ccge, M = D.meta;
+const esc = PW.esc, fmt = PW.fmt;
+
+// color por Origen (paleta del observatorio); CCGE destacado en naranjo.
+const OCOL = { ccge: "--s2", publica: "--s1", libre: "--s4", ds340: "--ink-3" };
+const OMAP = {};
+M.origenes.forEach(o => { OMAP[o.k] = o; });
+const dot = k => '<span class="odot" style="background:var(' + (OCOL[k] || "--ink-3") + ')"></span>';
+
+// --- tarjeta de obligacion + plazo
+document.getElementById("oblig").innerHTML = [
+  ["Obligación", "Proceso de Reporte Energético 2026"],
+  ["Fuente", esc(M.fuente)],
+  ["Base legal", esc(M.base_legal)],
+  ["Empresas en el listado", fmt(M.total) + " (RUT únicos, referencial)"],
+].map(f => '<div class="re-field"><p class="k">' + f[0] + '</p><p class="v">' + f[1] + "</p></div>").join("");
+document.getElementById("plazo").innerHTML =
+  "Plazo del proceso: <b>" + esc(M.plazo) + "</b>. Es la declaración de los consumos y la intensidad " +
+  "energética de la empresa correspondientes al año 2025 en el Sistema de Balance Nacional de Energía.";
+
+// --- KPIs
+const ccgeN = (OMAP.ccge || {}).n || 0;
+const ct = M.crosstag || {};
+document.getElementById("kpis").innerHTML = [
+  [fmt(M.total), "empresas obligadas", "al Proceso de Reporte Energético 2026"],
+  [fmt(ccgeN), "CCGE (REX 49)", "deben implementar un Sistema de Gestión de Energía"],
+  ["2 ene – 11 may 2026", "plazo para reportar", "declaración de consumos e intensidad 2025"],
+  [fmt((ct.operador || 0) + (ct.importador || 0)), "también en el observatorio",
+   (ct.operador || 0) + " operadores de carga · " + (ct.importador || 0) + " importadores"],
+].map(d => '<div class="kpi"><div class="v">' + d[0] + '</div><div class="l">' + d[1] +
+  '</div><div class="d">' + d[2] + "</div></div>").join("");
+document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+
+// --- explicador de Origen
+document.getElementById("origen-explica").innerHTML = M.origenes.map(o =>
+  '<div class="oexp">' + dot(o.k) + "<div><b>" + esc(o.label) + "</b> — " + fmt(o.n) +
+  " empresas. " + esc(o.desc) + "</div></div>").join("");
+
+// --- chips de filtro por Origen
+let filtroO = "";
+const chipsDefs = [{ k: "", label: "Todas", n: M.total }]
+  .concat(M.origenes.map(o => ({ k: o.k, label: o.label, n: o.n })));
+function pintarChips() {
+  document.getElementById("chips").innerHTML = chipsDefs.map(c =>
+    '<button type="button" class="ochip' + (filtroO === c.k ? " activo" : "") + '" data-k="' + c.k + '">' +
+    (c.k ? dot(c.k) : "") + esc(c.label) + " (" + fmt(c.n) + ")</button>").join("");
+  document.querySelectorAll("#chips .ochip").forEach(b => b.addEventListener("click", () => {
+    filtroO = b.dataset.k; pintarChips(); aplicar();
+  }));
+}
+
+// --- chip de Origen en la celda + distintivos de cruce
+function chipOrigen(k) {
+  const o = OMAP[k] || {};
+  return '<span class="chip-o">' + dot(k) + esc(o.label || k) + "</span>";
+}
+function cruces(f) {
+  let s = "";
+  if (f.op) s += '<span class="bc" title="Operador de carga: ' + esc(f.op) + '">Operador</span>';
+  if (f.im) s += '<span class="bc" title="Importador: ' + esc(f.im) + '">Importador</span>';
+  return s;
+}
+
+// --- tabla (buscador incorporado de PW.tabla: razon social / RUT, acento-insensible)
+const cols = [
+  { k: "n", titulo: "Razón social", fmt: (v, f) => cruces(f) + esc(v) },
+  { k: "r", titulo: "RUT" },
+  { k: "o", titulo: "Origen", fmt: v => chipOrigen(v) },
+];
+const T = PW.tabla("tabla", cols, D.v.slice(), { orden: null });
+function filtradas() { return filtroO ? D.v.filter(x => x.o === filtroO) : D.v.slice(); }
+function aplicar() { T.actualizar(filtradas()); }
+pintarChips();
+
+// --- descarga CSV del filtrado
+document.getElementById("btn-csv").addEventListener("click", () => {
+  const rows = filtradas();
+  const head = ["Razon social", "RUT", "Origen", "Operador de carga", "Importador"];
+  const cell = c => '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"';
+  const csv = [head].concat(rows.map(f =>
+    [f.n, f.r, (OMAP[f.o] || {}).label || f.o, f.op || "", f.im || ""]))
+    .map(r => r.map(cell).join(",")).join("\r\n");
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "reporte_energetico_2026" + (filtroO ? "_" + filtroO : "") + ".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+});
+
+// --- fuente
+document.getElementById("fuente").textContent =
+  "Fuente: " + M.fuente + " — " + M.titulo_oficial + ". Base legal: " + M.base_legal +
+  ". El listado es referencial y no exime de la obligación a empresas que consuman 50 o más " +
+  "teracalorías al año. Datos preparados por el proyecto Documentos de Gobierno. Generado " + D.generado + ".";
+</script>
+</body>
+</html>
