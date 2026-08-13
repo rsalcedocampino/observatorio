@@ -387,6 +387,7 @@ footer.pw {
   border-bottom: 1px solid var(--border);
 }
 .pw-mapa .leaflet-bar a:hover { background: var(--plane); }
+.pw-mapa .leaflet-bar a:focus-visible { outline: 2px solid var(--s1); outline-offset: -2px; background: var(--plane); }
 .pw-mapa-botones a { font-size: 15px; position: relative; }
 .pw-mapa-botones a.cargando { color: transparent; pointer-events: none; }
 .pw-mapa-botones a.cargando::after {
