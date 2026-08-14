@@ -158,11 +158,10 @@ details.seccion > summary { padding: 4px 0; }
     <details class="tarjeta seccion" open>
       <summary>Resiliencia y cortes de energía</summary>
       <div class="kpis" id="kpis-resiliencia" style="margin-top:10px"></div>
-      <h3 style="margin:14px 0 2px; font-size:15px">Historial de cortes — clientes</h3>
-      <p class="nota" style="margin:0 0 6px">Clientes afectados (peak simultáneo sin energía). Serie nacional (SEC, 2017 a hoy). Filtra por año y por mes; al elegir un año se ven sus meses.</p>
+      <h3 style="margin:14px 0 2px; font-size:15px">Historial de cortes del territorio</h3>
+      <p class="nota" style="margin:0 0 6px">Cliente-horas sin energía por año (SEC, 2017-2026) para la región o comuna elegida arriba. Elige un año para ver su detalle.</p>
       <div class="filtros" style="margin:0 0 8px">
         <label>Año <select id="cortes-anio"></select></label>
-        <label>Mes <select id="cortes-mes"></select></label>
       </div>
       <div id="g-probcortes"></div>
       <p class="nota" id="cortes-sub" style="margin:6px 0 0"></p>
@@ -338,9 +337,10 @@ function refrescarRegiones(p2035Nac, ratio) {
     const share = r.parque_ev / parqueNacHoy;
     const parque2035 = Math.round(p2035Nac * share);
     const necesarios = Math.round(parque2035 / ratio);
-    const faltan = Math.max(0, necesarios - r.cargadores_hoy);
+    const cargPub = r.cargadores_pub || 0;  // brecha sobre cargadores PUBLICOS (mismo universo que comuna)
+    const faltan = Math.max(0, necesarios - cargPub);
     const ritmoReq = Math.round(faltan / Math.max(aniosFalt, 1));
-    const evPorCarg = r.cargadores_hoy ? +(r.parque_ev / r.cargadores_hoy).toFixed(1) : null;
+    const evPorCarg = cargPub ? +(r.parque_ev / cargPub).toFixed(1) : null;
     return {
       rcut: r.rcut, region: r.region, parque_ev: r.parque_ev, parque_2035: parque2035,
       ev_1000hab: r.poblacion ? +(1000 * r.parque_ev / r.poblacion).toFixed(2) : null,
@@ -364,10 +364,10 @@ function refrescarRegiones(p2035Nac, ratio) {
     { k: "parque_ev", titulo: th("Parque EV hoy", "Vehiculos electricos registrados (INE, permisos 2024; puede incluir hibridos)"), num: true, fmt: v => PW.fmt(v) },
     { k: "ev_1000hab", titulo: th("EV / 1.000 hab", "Parque EV / poblacion regional (INE + Censo 2024)"), num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
     { k: "parque_2035", titulo: th("Parque 2035 proy.", "Proyeccion nacional repartida por participacion actual"), num: true, fmt: v => PW.fmt(v) },
-    { k: "cargadores_hoy", titulo: th("Cargadores hoy", "Red viva de la region (publico + privado/restringido)"), num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
-    { k: "ev_por_carg", titulo: th("EV por cargador", "Presion sobre la red local"), num: true, fmt: v => v == null ? "sin red" : PW.fmt(v, 1) },
+    { k: "cargadores_pub", titulo: th("Cargadores públicos", "Cargadores de acceso publico (base de la brecha; excluye privado/restringido)"), num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
+    { k: "ev_por_carg", titulo: th("EV por cargador", "Parque EV / cargadores publicos"), num: true, fmt: v => v == null ? "sin red" : PW.fmt(v, 1) },
     { k: "necesarios_2035", titulo: th("Necesarios 2035", "Parque 2035 / ratio"), num: true, fmt: v => PW.fmt(v) },
-    { k: "faltan", titulo: th("Faltan a 2035", "Necesarios - cargadores hoy"), num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
+    { k: "faltan", titulo: th("Faltan a 2035", "Necesarios - cargadores publicos"), num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
     { k: "ritmo_actual", titulo: th("Ritmo real 12m", "Cargadores publicos nuevos ult. 12 meses (SEC)"), num: true, fmt: v => PW.fmt(v) },
     { k: "ritmo_req", titulo: th("Ritmo requerido/año", "Faltantes / años a 2035"), num: true, fmt: v => PW.fmt(v) },
     { k: "estado", titulo: "Estado", fmt: v => `<span class="${v === "En ritmo" ? "estado-ok" : "estado-mal"}">${v}</span>` },
@@ -379,7 +379,7 @@ function refrescarRegiones(p2035Nac, ratio) {
   PW.barras("g-faltantes", {
     items: filas.filter(f => f.faltan > 0).sort((a, b) => b.faltan - a.faltan).map(f => ({
       nombre: f.region, valor: f.faltan,
-      extra: "Hoy: " + PW.fmt(f.cargadores_hoy) + " — necesarios 2035: " + PW.fmt(f.necesarios_2035),
+      extra: "Hoy: " + PW.fmt(f.cargadores_pub) + " públicos — necesarios 2035: " + PW.fmt(f.necesarios_2035),
       color: f.estado === "En ritmo" ? PW.color("--s3") : PW.color("--s2"),
     })), fmtV: v => PW.fmt(v),
   });
@@ -447,7 +447,7 @@ function renderResumenNacional() {
   const pu = par.length ? par[par.length - 1] : {};
   const nuevos12 = D.regiones.reduce((s, r) => s + (r.instalados_12m || 0), 0);
   const parqueEV = D.regiones.reduce((s, r) => s + r.parque_ev, 0);
-  const cargHoy = D.regiones.reduce((s, r) => s + r.cargadores_hoy, 0);
+  const cargHoy = D.regiones.reduce((s, r) => s + (r.cargadores_pub || 0), 0);
   const evCarg = cargHoy ? +(parqueEV / cargHoy).toFixed(1) : null;
   const habSin = comunas.filter(c => !c.cargadores).reduce((s, c) => s + (c.poblacion || 0), 0);
   const rm = D.regiones.find(r => r.rcut === "13");
@@ -503,7 +503,7 @@ function refrescarTodo() {
 document.getElementById("ratio-ev").addEventListener("input", refrescarTodo);
 
 // ===================== LAZY-LOAD del bundle del dossier =====================
-const BUNDLE = ["mapa", "censo", "c_vulnerab", "riesgo", "c_probcortes", "c_redelec",
+const BUNDLE = ["mapa", "censo", "c_vulnerab", "riesgo", "c_redelec",
   "c_valorparque", "c_censoelec", "costo", "infraestructura", "c_concentracion",
   "c_besscortes", "permisos", "geo_comunas", "cortes", "geo_lineas", "c_normativa"];
 // Opcionales: si aún no están publicados (p.ej. dato nuevo antes del ciclo de datos),
@@ -657,7 +657,7 @@ function llenarEmov(ctx) {
   if (nivelComuna) {
     const p2035c = Math.round(REG_ESTADO.p2035Nac * (com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1)));
     const nec = Math.round(p2035c / REG_ESTADO.ratio);
-    const faltan = Math.max(0, nec - com.estaciones);
+    const faltan = Math.max(0, nec - (com.cargadores || 0));
     const val = VALOR_COM[ctx.cut];
     rows = [
       [PW.fmt(com.ev_parque), "vehículos enchufables", "INE " + (D.anio_parque || "")],
@@ -670,7 +670,7 @@ function llenarEmov(ctx) {
   } else {
     rows = [
       [PW.fmt(filaReg.parque_ev), "vehículos enchufables", "INE " + (D.anio_parque || "")],
-      [PW.fmt(filaReg.cargadores_hoy), "cargadores hoy (red viva)", PW.fmt(filaReg.cargadores_pub || 0) + " de acceso público · " + PW.fmt(filaReg.cargadores_hoy - (filaReg.cargadores_pub || 0)) + " restringido" + (filaReg.ev_por_carg != null ? " · " + PW.fmt(filaReg.ev_por_carg, 1) + " EV/cargador" : "")],
+      [PW.fmt(filaReg.cargadores_pub || 0), "cargadores de acceso público", PW.fmt(filaReg.cargadores_hoy - (filaReg.cargadores_pub || 0)) + " de acceso restringido · " + PW.fmt(filaReg.cargadores_hoy) + " totales" + (filaReg.ev_por_carg != null ? " · " + PW.fmt(filaReg.ev_por_carg, 1) + " EV/cargador" : "")],
       [PW.fmt(filaReg.parque_2035), "parque proyectado 2035", filaReg.estado],
       [PW.fmt(filaReg.faltan), "cargadores faltantes 2035", REG_ESTADO.ratio + " EV por cargador"],
       [PW.fmt(filaReg.ritmo_actual) + "/año", "ritmo actual de instalación", "se requieren " + PW.fmt(filaReg.ritmo_req) + "/año"],
@@ -735,57 +735,54 @@ function llenarResiliencia(ctx) {
     ];
   }
   document.getElementById("kpis-resiliencia").innerHTML = kpiHTML(rows);
+  CORTES_CTX = ctx;
   initCortes();
   renderCortes();
 }
 
-// Historial nacional de cortes (riesgo.js): serie anual/mensual con filtro por año y mes.
-let cortesInit = false;
+// Historial TERRITORIAL de cortes (riesgo.ranking_anual): cliente-horas por año de la region/comuna
+// elegida (aditivo -> correcto en ambos niveles). El año es filtro; no hay serie mensual territorial.
+let cortesInit = false, CORTES_CTX = null;
 function initCortes() {
   if (cortesInit) return;
   const RI = PW_DATA.riesgo; if (!RI) return;
   const selA = document.getElementById("cortes-anio");
+  const anhos = (RI.anhos || []).slice().sort();
   selA.innerHTML = `<option value="">Todos los años</option>` +
-    (RI.anual || []).map(a => `<option value="${a.anho}">${a.anho}</option>`).join("");
-  const selM = document.getElementById("cortes-mes");
-  selM.innerHTML = `<option value="">Todos los meses</option>` +
-    MESES.map((m, i) => `<option value="${i + 1}">${m}</option>`).join("");
+    anhos.map(a => `<option value="${a}">${a}</option>`).join("");
   selA.addEventListener("input", renderCortes);
-  selM.addEventListener("input", renderCortes);
   cortesInit = true;
 }
 function renderCortes() {
-  const RI = PW_DATA.riesgo; if (!RI) return;
-  const anio = document.getElementById("cortes-anio").value;
-  const mes = document.getElementById("cortes-mes").value;
-  const mensual = (RI.mensual || []).filter(m => !m.hueco);
-  let labels, valores, subtxt;
-  if (!anio && !mes) {
-    const an = RI.anual || [];
-    labels = an.map(a => String(a.anho)); valores = an.map(a => a.peak_clientes);
-    subtxt = "Peak de clientes afectados por año (2017 a hoy).";
-  } else if (anio && !mes) {
-    const f = mensual.filter(m => m.ym.slice(0, 4) === anio);
-    labels = f.map(m => MESES[+m.ym.slice(5, 7) - 1]); valores = f.map(m => m.peak_clientes);
-    subtxt = "Peak de clientes afectados por mes en " + anio + ".";
-  } else if (!anio && mes) {
-    const mm = String(mes).padStart(2, "0");
-    const f = mensual.filter(m => m.ym.slice(5, 7) === mm);
-    labels = f.map(m => m.ym.slice(0, 4)); valores = f.map(m => m.peak_clientes);
-    subtxt = "Peak de clientes afectados en " + MESES[+mes - 1] + " de cada año.";
+  const RI = PW_DATA.riesgo; if (!RI || !CORTES_CTX) return;
+  const { nivelComuna, cut, rcut } = CORTES_CTX;
+  const filtro = nivelComuna ? (x => String(x.cut) === cut) : (x => String(x.cod_region) === rcut);
+  const porAnio = {};
+  (RI.ranking_anual || []).filter(filtro).forEach(x => {
+    const g = porAnio[x.anho] || (porAnio[x.anho] = { ch: 0, peak: 0, com: new Set() });
+    g.ch += (x.cliente_horas || 0); g.peak = Math.max(g.peak, x.peak_clientes || 0); g.com.add(x.cut);
+  });
+  const anhos = (RI.anhos || Object.keys(porAnio).map(Number)).slice().sort();
+  const anioSel = document.getElementById("cortes-anio").value;
+  let labels, valores, sub;
+  if (anioSel) {
+    const g = porAnio[anioSel];
+    labels = [anioSel]; valores = [g ? g.ch : 0];
+    sub = g ? anioSel + ": " + PW.fmt(Math.round(g.ch / 1e3)) + "k cliente-horas · peak " + PW.fmt(g.peak) + " clientes" + (nivelComuna ? "" : " · " + g.com.size + " comunas")
+            : "Sin registro de cortes para " + anioSel + ".";
   } else {
-    const ym = anio + "-" + String(mes).padStart(2, "0");
-    const rec = mensual.find(m => m.ym === ym);
-    labels = [MESES[+mes - 1] + " " + anio]; valores = [rec ? rec.peak_clientes : 0];
-    subtxt = rec ? "" : "Sin dato para " + MESES[+mes - 1] + " " + anio + " (posible hueco de fuente).";
+    labels = anhos.map(String);
+    valores = anhos.map(a => porAnio[a] ? porAnio[a].ch : 0);
+    const tot = valores.reduce((s, v) => s + v, 0);
+    sub = tot > 0 ? "Cliente-horas sin energía por año." : "Sin registro de cortes para este territorio.";
   }
-  const mx = Math.max(0, ...valores.filter(v => v != null));
-  const fmtY = mx >= 2e6 ? (v => PW.fmt(v / 1e6, 1) + "M") : (v => PW.fmt(v / 1e3, 0) + "k");
+  const mx = Math.max(0, ...valores);
+  const fmtY = mx >= 1e6 ? (v => PW.fmt(v / 1e6, 1) + "M") : (v => PW.fmt(v / 1e3, 0) + "k");
   PW.columnas("g-probcortes", {
     labels, valores, color: PW.color("--s2"),
-    fmtV: v => PW.fmt(v) + " clientes", fmtY,
+    fmtV: v => PW.fmt(Math.round(v)) + " cliente-horas", fmtY,
   });
-  document.getElementById("cortes-sub").textContent = subtxt + " Clientes = peak simultáneo sin energía (SEC). Serie nacional; no cambia con el territorio elegido.";
+  document.getElementById("cortes-sub").textContent = sub + " Serie del territorio elegido (SEC, cliente-horas = clientes × horas sin energía).";
 }
 
 function llenarCenso(ctx) {
@@ -873,7 +870,7 @@ function llenarVeredicto(ctx) {
       (rPos ? `<span class="pos-chip ${rPos <= 5 ? "mal" : (rPos > arrR.length - 5 ? "ok" : "")}">Puesto ${rPos} de ${arrR.length} en exposición a cortes</span>` : "");
 
     let cE = "ok", cF = "red de carga en objetivo";
-    if (!filaReg.cargadores_hoy) { cE = "bad"; cF = "sin red de carga"; }
+    if (!filaReg.cargadores_pub) { cE = "bad"; cF = "sin red de carga pública"; }
     else if (filaReg.ev_por_carg == null) { cE = "warn"; cF = "red incipiente"; }
     else if (filaReg.ev_por_carg > ratio * 1.5 || filaReg.estado === "Bajo ritmo") { cE = "bad"; cF = filaReg.estado === "Bajo ritmo" ? "instalación bajo el ritmo requerido" : "red bajo fuerte presión"; }
     else if (filaReg.ev_por_carg > ratio) { cE = "warn"; cF = "red algo tensionada"; }
@@ -941,7 +938,7 @@ function llenarProyeccion(ctx) {
   const ratio = REG_ESTADO.ratio;
   let hoy, ritmoAct, ritmoReq, necesarios, parque2035;
   if (!nivelComuna) {
-    hoy = filaReg.cargadores_hoy; ritmoAct = filaReg.ritmo_actual; ritmoReq = filaReg.ritmo_req;
+    hoy = filaReg.cargadores_pub || 0; ritmoAct = filaReg.ritmo_actual; ritmoReq = filaReg.ritmo_req;
     necesarios = filaReg.necesarios_2035; parque2035 = filaReg.parque_2035;
   } else {
     hoy = com.cargadores || 0;
@@ -1012,7 +1009,7 @@ function llenarMeta(ctx) {
   const pobNac = D.regiones.reduce((s, r) => s + (r.poblacion || 0), 0);
   let hoy, parque2035, pobShare;
   if (!nivelComuna) {
-    hoy = filaReg.cargadores_hoy; parque2035 = filaReg.parque_2035;
+    hoy = filaReg.cargadores_pub || 0; parque2035 = filaReg.parque_2035;
     const reg = D.regiones.find(r => r.rcut === rcut) || {};
     pobShare = pobNac ? (reg.poblacion || 0) / pobNac : 0;
   } else {

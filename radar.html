@@ -43,6 +43,14 @@
   </div>
 
   <div class="tarjeta">
+    <h2 style="margin-top:0">Top importadores (últimos 12 meses)</h2>
+    <p class="nota">Quién trae estos vehículos, por razón social del importador (identidad por DIN de
+    Aduana). La cobertura de identificación varía por categoría; el resto figura como importador
+    confidencial en la fuente y queda fuera del ranking.</p>
+    <div id="g-importadores"></div>
+  </div>
+
+  <div class="tarjeta">
     <h2 style="margin-top:0">Modelos que debutan (últimos 6 meses)</h2>
     <p class="nota">Primer mes en que un (marca, modelo) aparece en el registro aduanero
     2015-2026: senal temprana de lanzamientos.</p>
@@ -82,6 +90,12 @@ function refrescar() {
     })),
   });
   PW.barras("g-paises", { items: G.paises_12m.map(p => ({ nombre: p.pais, valor: p.unidades })), color: PW.color("--s2") });
+  PW.barras("g-importadores", {
+    items: (G.top_importadores_12m || []).map(i => ({
+      nombre: i.importador, valor: i.unidades, extra: "CIF: US$" + PW.fmt(i.cif_usd),
+    })),
+    color: PW.color("--s4"),
+  });
 
   const colsD = [
     { k: "debut", titulo: "Debut" },

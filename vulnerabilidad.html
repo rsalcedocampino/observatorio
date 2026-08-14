@@ -25,6 +25,7 @@
   <div class="filtros">
     <label>Región <select id="f-region"><option value="">Todas</option></select></label>
     <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
+    <span class="pill">Índice compuesto (cortes 2017-2026 + Censo 2024; sin serie anual)</span>
   </div>
 
   <div class="tarjeta">
@@ -53,13 +54,21 @@
 <script>
 PW.montarNav("vulnerabilidad.html");
 
-// Choropleth del indice
-const MAPA = PW.choropleth("mapa-indice", {
-  valores: Object.fromEntries(PW_DATA.c_vulnerab.comunas.map(c => [c.cut, c.indice])),
-  fmt: v => v == null ? "sin dato" : PW.fmt(v, 1),
-  alto: 560,
-});
 const D = PW_DATA.c_vulnerab;
+// Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
+// region) y hace foco/zoom a la seleccion (comuna: zoom a la comuna dentro de su region).
+let MAPA = null;
+function pintarMapa(reg, com, filas) {
+  if (MAPA) { MAPA.remove(); MAPA = null; }
+  const ley = document.querySelector("#mapa-indice + .leyenda"); if (ley) ley.remove();
+  const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas;
+  const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null);
+  MAPA = PW.choropleth("mapa-indice", {
+    valores: Object.fromEntries(comunasMapa.map(c => [c.cut, c.indice])),
+    fmt: v => v == null ? "sin dato" : PW.fmt(v, 1),
+    alto: 560, foco,
+  });
+}
 document.getElementById("nota").textContent =
   "Generado " + D.generado + ". " + D.nota + " Pesos: cortes " + Math.round(100 * D.pesos.cortes) +
   "%, precio " + Math.round(100 * D.pesos.precio) + "%, social " + Math.round(100 * D.pesos.social) + "%.";
@@ -93,10 +102,7 @@ function refrescar() {
   const reg = selR.value;
   const com = selC.value;
   const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
-  // Auto-zoom del mapa a la zona filtrada (o a todo Chile si no hay filtro). animate:false para
-  // evitar la carrera con el setView inicial del mapa cuando el fit corre al cargar.
-  const b = PW.boundsComunas((reg || com ? filas : D.comunas).map(c => c.cut));
-  if (MAPA && b) MAPA.fitBounds(b.pad(0.15), { animate: false });
+  pintarMapa(reg, com, filas);
   PW.barras("g-top", {
     items: filas.slice(0, 20).map(c => ({
       nombre: c.comuna, valor: c.indice,

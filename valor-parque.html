@@ -11,6 +11,8 @@
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=260814b">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 </head>
 <body>
 <main>
@@ -23,6 +25,19 @@
   <div class="filtros">
     <label>Región <select id="f-region"><option value="">Todas</option></select></label>
     <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa comunal</h2>
+    <div class="filtros" style="margin:0 0 8px">
+      <label>Métrica <select id="f-metrica">
+        <option value="valor_pc">Valor por habitante</option>
+        <option value="pct_electrico">% del parque eléctrico</option>
+        <option value="veh_pc">Vehículos per cápita</option>
+      </select></label>
+    </div>
+    <div id="mapa-valor"></div>
+    <p class="nota">Comunas coloreadas por quintiles (más oscuro = mayor). Cartografía Censo 2024. Los filtros de arriba acotan y hacen foco en el mapa.</p>
   </div>
 
   <div class="fila2">
@@ -48,6 +63,7 @@
   </div>
 </main>
 <script src="data/c_valorparque.js"></script>
+<script src="data/geo_comunas.js"></script>
 <script src="assets/comun.js?v=260814b"></script>
 <script>
 PW.montarNav("valor-parque.html");
@@ -104,11 +120,31 @@ if (D.tipos_ultimo_anio) {
   });
 }
 
+// Mapa coropletico comunal (se reconstruye al filtrar / cambiar metrica; join por CUT).
+let MAPA = null;
+const METRICA_FMT = {
+  valor_pc: v => v == null ? "sin dato" : PW.clp(v),
+  pct_electrico: v => v == null ? "sin dato" : PW.fmt(v, 1) + "%",
+  veh_pc: v => v == null ? "sin dato" : PW.fmt(v, 1),
+};
+function pintarMapa(reg, com, filas) {
+  if (MAPA) { MAPA.remove(); MAPA = null; }
+  const ley = document.querySelector("#mapa-valor + .leyenda"); if (ley) ley.remove();
+  const metrica = document.getElementById("f-metrica").value;
+  const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas;
+  const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null);
+  MAPA = PW.choropleth("mapa-valor", {
+    valores: Object.fromEntries(comunasMapa.map(c => [c.cut, c[metrica]])),
+    fmt: METRICA_FMT[metrica], alto: 520, foco,
+  });
+}
+
 let tab = null;
 function refrescar() {
   const reg = selR.value;
   const com = selC.value;
   const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
+  pintarMapa(reg, com, filas);
   PW.barras("g-top", {
     items: filas.slice(0, 20).map(c => ({
       nombre: c.comuna, valor: c.valor_mm,
@@ -120,6 +156,7 @@ function refrescar() {
 }
 selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
 selC.addEventListener("input", refrescar);
+document.getElementById("f-metrica").addEventListener("input", refrescar);
 refrescar();
 </script>
 </body>
