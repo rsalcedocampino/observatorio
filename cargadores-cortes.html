@@ -7,10 +7,10 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Cortes de energía en vivo — Energías Futuro</title>
+<title>Cargadores Públicos y Cortes de Energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260813a">
+<link rel="stylesheet" href="assets/estilo.css?v=260814a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -18,17 +18,17 @@
 </head>
 <body>
 <main>
-  <h1>Cortes de energía: en vivo y grandes eventos</h1>
-  <p class="sub"><b>Mapa en vivo</b> de la SEC (apps.sec.cl): qué comunas están sin luz ahora, cruzado
-  con la <b>red pública de carga</b> — para ver qué cargadores podrían quedar sin servicio. Más abajo,
-  los peores apagones y días de la historia reciente. Para el análisis por comuna, año y estacionalidad,
-  ver <a href="riesgo.html">Cortes eléctricos</a>.</p>
+  <h1>Cargadores Públicos y Cortes de Energía</h1>
+  <p class="sub"><b>Mapa en vivo</b>: la <b>red pública de carga</b> cruzada con los <b>cortes de energía</b>
+  de la SEC (apps.sec.cl) — qué comunas están sin luz ahora y qué cargadores podrían quedar sin servicio.
+  Para el registro histórico de apagones (peores eventos, peores días, análisis por comuna/año), ver
+  <a href="riesgo.html">Cortes histórico</a>.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Mapa en vivo: cortes y red de carga</h2>
+    <h2 style="margin-top:0">Mapa en vivo: cargadores y cortes</h2>
     <p class="nota" id="nota-mapa"></p>
     <div id="panel-capas-cortes" class="capas-panel"></div>
     <div id="mapa-cortes"></div>
@@ -54,50 +54,29 @@
     <p class="nota" id="dist-caveats" style="margin-top:12px"></p>
   </div>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Peores apagones registrados (por evento)</h2>
-    <div class="scroll-x"><table class="pw" id="t-eventos"></table></div>
-    <p class="nota">Eventos individuales con mayor peak de clientes afectados desde 2017 (umbral 500
-    clientes). El apagón nacional del 25 de febrero de 2025 domina el registro.</p>
-  </div>
-
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Los peores días del país</h2>
-    <div id="g-dias"></div>
-    <p class="nota">Peak de clientes simultáneamente sin luz en el día (barra) y cliente-horas
-    acumuladas en la etiqueta.</p>
-  </div>
-
   <p class="fuente" id="fuente"></p>
 </main>
 
 <script src="data/cortes.js"></script>
 <script src="data/mapa.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260813a"></script>
+<script src="assets/comun.js?v=260814a"></script>
 <script>
-PW.montarNav("cortes.html");
+PW.montarNav("cargadores-cortes.html");
 const D = window.PW_DATA.cortes;
-const V = D.vivo, K = D.kpis, PH = K.peak_historico || {};
+const V = D.vivo, K = D.kpis;
 
 document.getElementById("nota").textContent =
   "Fuente: " + D.fuente + ". Foto en vivo SEC: " + D.hora_sec + ". Generado " + D.generado + ".";
 document.getElementById("fuente").textContent = D.nota;
 
-document.getElementById("kpis").innerHTML = [
-  [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + D.hora_sec],
-  [PW.fmt(V.pct_pais, 2) + "%", "del país sin suministro", PW.fmt(V.n_comunas) + " comunas afectadas"],
-  [PW.fmt(PH.clientes), "peak histórico", PH.evento || PH.cuando || ""],
-  [PW.fmt(K.eventos_totales), "eventos registrados", "desde 2017, umbral 500 clientes"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-// ===== Mapa en vivo: choropleth de cortes por comuna + red de carga =====
+// ===== Mapa en vivo: choropleth de cortes por region + red de carga =====
 const MAPA = window.PW_DATA.mapa || {};
 const _norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim();
 // Corte confirmado por distribuidora, a nivel COMUNA (preciso pero parcial): resalta cargadores.
 const DIST = (D.distribuidoras && D.distribuidoras.por_comuna) || [];
 const afectadas = new Set(DIST.map(c => _norm(c.comuna)));
-// Choropleth por REGIÓN (la SEC publica el vivo por región): cada comuna toma el total de su región.
+// Choropleth por REGION (la SEC publica el vivo por region): cada comuna toma el total de su region.
 const regCli = {};
 (V.por_region || []).forEach(r => { if ((r.clientes || 0) > 0) regCli[r.rcut] = r.clientes; });
 const GEO = window.PW_DATA.geo_comunas;
@@ -106,7 +85,16 @@ const valoresCorte = {};
   const rc = String(f.properties.cut).slice(0, 2);
   if (regCli[rc] != null) valoresCorte[f.properties.cut] = regCli[rc];
 });
+const nCarga = (MAPA.carga || []).length;
 const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length;
+
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + D.hora_sec],
+  [PW.fmt(V.pct_pais, 2) + "%", "del país sin suministro", PW.fmt(V.n_comunas) + " comunas afectadas"],
+  [PW.fmt(nCarga), "cargadores públicos", "en la red mapeada"],
+  [PW.fmt(nCargAfect), "cargadores en zona de corte", "comuna con corte confirmado por distribuidora"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
 document.getElementById("nota-mapa").textContent =
   V.clientes > 0
     ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). El color es por REGIÓN (la SEC publica el vivo por región)." +
@@ -169,22 +157,6 @@ document.getElementById("nota-vivo").textContent =
     ? PW.fmt(V.clientes) + " clientes sin luz en " + PW.fmt(V.n_comunas) + " comunas al momento de la última lectura de la SEC (" + D.hora_sec + ")."
     : "Sin cortes relevantes al momento de la última lectura de la SEC (" + D.hora_sec + ").";
 
-PW.tabla("t-eventos", [
-  { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "Región" },
-  { k: "inicio", titulo: "Inicio" },
-  { k: "duracion_h", titulo: "Duración (h)", num: true, fmt: v => PW.fmt(v) },
-  { k: "peak", titulo: "Peak clientes", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
-], D.top_eventos, { orden: "peak", buscador: false });
-
-PW.barras("g-dias", {
-  items: D.peores_dias.map(x => ({
-    nombre: x.fecha, valor: x.peak,
-    extra: PW.fmt(x.cliente_horas) + " cliente-horas",
-  })),
-  fmtV: v => PW.fmt(v),
-});
-
 // Por empresa distribuidora (en vivo, best-effort: puede faltar el bloque)
 const DI = D.distribuidoras;
 if (DI && (DI.por_grupo || []).length) {
@@ -211,8 +183,8 @@ if (DI && (DI.por_grupo || []).length) {
     "construye con los feeds de fallas de las propias distribuidoras. " +
     "<b>Cobertura parcial:</b> SAESA, CGE, Edelmag y Enel; falta Chilquinta (su feed responde 403) y las " +
     "cooperativas/menores — lo no cubierto queda sin empresa. " +
-    "<b>Solo en vivo:</b> los feeds no tienen histórico, así que el registro SEC 2017–hoy del resto del " +
-    "módulo sigue sin empresa (la atribución se acumula hacia adelante). " +
+    "<b>Solo en vivo:</b> los feeds no tienen histórico, así que el registro SEC 2017–hoy del análisis " +
+    "histórico sigue sin empresa (la atribución se acumula hacia adelante). " +
     "<b>No cuadra con el total SEC:</b> son fuentes y horas de captura distintas (feed por empresa vs. SEC " +
     "agregado por comuna); no es una reconciliación del total nacional. Las fallas hipotéticas de SAESA " +
     "(predicciones) están excluidas de los conteos.";
