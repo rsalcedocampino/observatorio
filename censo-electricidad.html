@@ -17,20 +17,34 @@
 <body>
 <main>
   <h1>De donde viene la electricidad de las viviendas</h1>
-  <p class="sub">El <b>desglose completo de la fuente eléctrica del hogar</b> — red pública,
-  <b>generador propio</b>, panel solar o sin electricidad — por comuna, directo del microdato del
+  <p class="sub">El <b>desglose de la fuente eléctrica del hogar</b> — red pública, <b>generador
+  propio</b>, panel solar, eólica, otra o sin electricidad — por comuna, directo del microdato del
   Censo 2024 (18,5 millones de registros). Complementa el mapa amplio del <a href="censo.html">Censo
-  Nacional</a> con la composición de las 4 fuentes (incluida la de generador, que el mapa general no
-  separa). La base real para dimensionar la carga domiciliaria de vehículos eléctricos.</p>
+  Nacional</a> separando la generación domiciliaria que el mapa general no distingue. La base real
+  para dimensionar la carga domiciliaria de vehículos eléctricos.</p>
   <p class="nota" id="nota"></p>
+
+  <div class="filtros">
+    <label>Región <select id="f-region"><option value="">Todas</option></select></label>
+    <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
+    <span class="pill">Foto Censo 2024 (sin serie anual)</span>
+  </div>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Viviendas con placa solar por comuna (%)</h2>
-    <p class="nota">Quintiles: más oscuro = mayor proporción de viviendas con placa solar como
-    fuente principal. En el extremo están las comunas aisladas sin red (General Lagos 68%,
-    Río Verde 51%): allí el solar domiciliario ES la red.</p>
+    <h2 style="margin-top:0">Mapa comunal por fuente</h2>
+    <div class="filtros" style="margin:0 0 8px">
+      <label>Fuente <select id="f-metrica">
+        <option value="pct_solar">Placa solar</option>
+        <option value="pct_generador">Generador diesel/bencina</option>
+        <option value="pct_sin">Sin electricidad</option>
+        <option value="pct_red">Red pública</option>
+      </select></label>
+    </div>
+    <p class="nota">Quintiles: más oscuro = mayor proporción. En el extremo, comunas aisladas sin red
+    (General Lagos 68% solar, Río Verde 51%): allí la generación domiciliaria ES la red. Los filtros
+    de arriba acotan y hacen foco en el mapa.</p>
     <div id="mapa-solar"></div>
   </div>
 
@@ -60,47 +74,85 @@ PW.montarNav("censo-electricidad.html");
 const D = PW_DATA.c_censoelec;
 document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
 
-const N = D.nacional;
-document.getElementById("kpis").innerHTML = [
-  [PW.fmt(N.viviendas), "viviendas censadas con dato", "particulares ocupadas, 2024"],
-  [PW.fmt(N.pct_red, 1) + "%", "conectadas a la red publica", "la base de la carga domiciliaria"],
-  [PW.fmt(N.n_solar), "con placa solar", PW.fmt(N.pct_solar, 1) + "% del pais"],
-  [PW.fmt(N.n_generador), "con generador diesel/bencina", ""],
-  [PW.fmt(N.n_sin), "sin electricidad", PW.fmt(N.pct_sin, 1) + "%"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-PW.choropleth("mapa-solar", {
-  valores: Object.fromEntries(D.comunas.map(c => [c.cut, c.pct_solar])),
-  fmt: v => v == null ? "sin dato" : PW.fmt(v, 1) + "%",
-  alto: 540,
+// Filtros region/comuna. Censo 2024 es FOTO UNICA -> no hay filtro de año.
+const selR = document.getElementById("f-region");
+const selC = document.getElementById("f-comuna");
+[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o);
 });
+function poblarComunas() {
+  const reg = selR.value;
+  const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort();
+  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
+  selC.disabled = !reg;
+}
 
-PW.barras("g-generador", {
-  items: D.comunas.slice().sort((a, b) => b.pct_generador - a.pct_generador).slice(0, 12).map(c => ({
-    nombre: c.comuna, valor: c.pct_generador,
-    extra: c.region + " — " + PW.fmt(c.viviendas) + " viviendas",
-  })),
-  color: PW.color("--s2"),
-  fmtV: v => PW.fmt(v, 1) + "%",
-});
-PW.barras("g-sin", {
-  items: D.comunas.slice().sort((a, b) => b.pct_sin - a.pct_sin).slice(0, 12).map(c => ({
-    nombre: c.comuna, valor: c.pct_sin,
-    extra: c.region,
-  })),
-  color: PW.color("--critical"),
-  fmtV: v => PW.fmt(v, 1) + "%",
-});
+// KPIs del territorio: nacional exacto (D.nacional) o agregado ponderado por viviendas al filtrar.
+function aggregado(filas) {
+  const viv = filas.reduce((s, c) => s + c.viviendas, 0);
+  const w = k => viv ? filas.reduce((s, c) => s + (c[k] || 0) * c.viviendas, 0) / viv : 0;
+  return { viviendas: viv, pct_red: w("pct_red"), pct_solar: w("pct_solar"),
+    pct_generador: w("pct_generador"), pct_sin: w("pct_sin"),
+    n_solar: Math.round(w("pct_solar") / 100 * viv), n_generador: Math.round(w("pct_generador") / 100 * viv),
+    n_sin: Math.round(w("pct_sin") / 100 * viv) };
+}
+function pintarKpis(A) {
+  document.getElementById("kpis").innerHTML = [
+    [PW.fmt(A.viviendas), "viviendas censadas con dato", "particulares ocupadas, 2024"],
+    [PW.fmt(A.pct_red, 1) + "%", "conectadas a la red publica", "la base de la carga domiciliaria"],
+    [PW.fmt(A.n_solar), "con placa solar", PW.fmt(A.pct_solar, 1) + "%"],
+    [PW.fmt(A.n_generador), "con generador diesel/bencina", PW.fmt(A.pct_generador, 1) + "%"],
+    [PW.fmt(A.n_sin), "sin electricidad", PW.fmt(A.pct_sin, 1) + "%"],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+}
 
-PW.tabla("t-comunas", [
+let MAPA = null;
+function pintarMapa(reg, com, filas) {
+  if (MAPA) { MAPA.remove(); MAPA = null; }
+  const ley = document.querySelector("#mapa-solar + .leyenda"); if (ley) ley.remove();
+  const metrica = document.getElementById("f-metrica").value;
+  const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas;
+  const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null);
+  MAPA = PW.choropleth("mapa-solar", {
+    valores: Object.fromEntries(comunasMapa.map(c => [c.cut, c[metrica]])),
+    fmt: v => v == null ? "sin dato" : PW.fmt(v, 1) + "%", alto: 540, foco,
+  });
+}
+
+const cols = [
   { k: "comuna", titulo: "Comuna" },
   { k: "region", titulo: "Región" },
   { k: "viviendas", titulo: "Viviendas", num: true, fmt: v => PW.fmt(v) },
   { k: "pct_red", titulo: "% red publica", num: true, fmt: v => PW.fmt(v, 1) + "%" },
   { k: "pct_solar", titulo: "% placa solar", num: true, fmt: v => v >= 5 ? `<b>${PW.fmt(v, 1)}%</b>` : PW.fmt(v, 1) + "%" },
   { k: "pct_generador", titulo: "% generador", num: true, fmt: v => PW.fmt(v, 1) + "%" },
+  { k: "pct_eolica", titulo: "% eólica", num: true, fmt: v => v == null ? "—" : (v >= 2 ? `<b>${PW.fmt(v, 1)}%</b>` : PW.fmt(v, 1) + "%") },
+  { k: "pct_otro", titulo: "% otra", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) + "%" },
   { k: "pct_sin", titulo: "% sin electricidad", num: true, fmt: v => v >= 2 ? `<span class="estado-mal">${PW.fmt(v, 1)}%</span>` : PW.fmt(v, 1) + "%" },
-], D.comunas, { orden: "pct_solar", max: 400 });
+];
+
+let tab = null;
+function refrescar() {
+  const reg = selR.value, com = selC.value;
+  const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
+  pintarKpis((reg || com) ? aggregado(filas) : D.nacional);
+  pintarMapa(reg, com, filas);
+  PW.barras("g-generador", {
+    items: filas.slice().sort((a, b) => b.pct_generador - a.pct_generador).slice(0, 12).map(c => ({
+      nombre: c.comuna, valor: c.pct_generador, extra: c.region + " — " + PW.fmt(c.viviendas) + " viviendas" })),
+    color: PW.color("--s2"), fmtV: v => PW.fmt(v, 1) + "%",
+  });
+  PW.barras("g-sin", {
+    items: filas.slice().sort((a, b) => b.pct_sin - a.pct_sin).slice(0, 12).map(c => ({
+      nombre: c.comuna, valor: c.pct_sin, extra: c.region })),
+    color: PW.color("--critical"), fmtV: v => PW.fmt(v, 1) + "%",
+  });
+  if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "pct_solar", max: 400 });
+}
+selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
+selC.addEventListener("input", refrescar);
+document.getElementById("f-metrica").addEventListener("input", refrescar);
+refrescar();
 </script>
 </body>
 </html>

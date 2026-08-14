@@ -42,6 +42,16 @@
     <div id="g-pais"></div>
   </div>
 
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Top importadores (CIF, últimos 12 meses)</h2>
+    <p class="nota"><b>Ojo:</b> la partida 8507.60 cubre <b>todas</b> las baterías de litio (notebooks,
+    celulares, herramientas, data centers y vehículos), no solo las de tracción EV. Por eso dominan
+    tecnológicas y operadores de data center (Amazon, Huawei, Samsung…), que <b>no</b> son importadores
+    de baterías para autos eléctricos. Identidad por razón social vía DIN de Aduana (cobertura ~49%; el
+    resto es importador confidencial en la fuente).</p>
+    <div id="g-importadores"></div>
+  </div>
+
   <p class="nota">El despliegue físico del almacenamiento (mapa de proyectos, estados,
   descarga diaria en el SEN e inversión de la cartera SEA) esta en la sección Energía:
   <a href="bess-cortes.html">Almacenamiento (BESS)</a>.</p>
@@ -77,6 +87,14 @@ PW.barras("g-segmento", {
 PW.barras("g-pais", {
   items: D.pais_12m.map(p => ({ nombre: p.pais, valor: p.cif_usd })),
   color: PW.color("--s3"),
+  fmtV: v => "US$" + PW.fmt(v / 1e6, 1) + "M",
+});
+PW.barras("g-importadores", {
+  items: (D.top_importadores_12m || []).map(i => ({
+    nombre: i.importador, valor: i.cif_usd,
+    extra: PW.fmt(i.unidades) + " ítems importados",
+  })),
+  color: PW.color("--s4"),
   fmtV: v => "US$" + PW.fmt(v / 1e6, 1) + "M",
 });
 </script>
