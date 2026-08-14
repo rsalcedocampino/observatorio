@@ -767,8 +767,10 @@
     const clusterDesde = cfg.clusterDesde || 250;
     const control = {};
 
-    // [COMUNAS] capa coroplética de fondo opcional (cfg.comunas = {nombre, valores, fmt, visible})
+    // [COMUNAS] capa coroplética de fondo opcional (cfg.comunas = {nombre, valores, fmt, visible, tip})
     //   valores: {cut -> numero}. Colorea los poligonos de geo_comunas por quintiles.
+    //   tip (opcional): (cut, comuna, valor) -> string HTML para un tooltip enriquecido por comuna;
+    //   sin tip, cae al formato simple "comuna: fmt(valor)".
     if (cfg.comunas && window.PW_DATA && window.PW_DATA.geo_comunas) {
       const cc = cfg.comunas;
       const vals = Object.values(cc.valores).filter(v => v != null && !Number.isNaN(v)).sort((a, b) => a - b);
@@ -785,7 +787,9 @@
         style: f => ({ fillColor: colorDe(cc.valores[f.properties.cut]), fillOpacity: 0.72,
                        color: oscuro ? "#0d0d0d" : "#ffffff", weight: 0.5 }),
         onEachFeature: (f, capa) => capa.bindTooltip(
-          `${f.properties.comuna}: ${fmtc(cc.valores[f.properties.cut])}`, { sticky: true }),
+          cc.tip ? cc.tip(f.properties.cut, f.properties.comuna, cc.valores[f.properties.cut])
+                 : `${f.properties.comuna}: ${fmtc(cc.valores[f.properties.cut])}`,
+          { sticky: true }),
       });
       control[cc.nombre || "Comunas (Censo)"] = capaC;
       if (cc.visible) capaC.addTo(m);

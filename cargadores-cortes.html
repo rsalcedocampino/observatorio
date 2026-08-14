@@ -2,7 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org; connect-src 'self'; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -10,13 +17,17 @@
 <title>Cargadores Públicos y Cortes de Energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260814b">
+<link rel="stylesheet" href="assets/estilo.css?v=260814c">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <main>
   <h1>Cargadores Públicos y Cortes de Energía</h1>
   <p class="sub"><b>Mapa en vivo</b>: la <b>red pública de carga</b> cruzada con los <b>cortes de energía</b>
@@ -60,7 +71,7 @@
 <script src="data/cortes.js"></script>
 <script src="data/mapa.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260814b"></script>
+<script src="assets/comun.js?v=260814c"></script>
 <script>
 PW.montarNav("cargadores-cortes.html");
 const D = window.PW_DATA.cortes;
@@ -87,6 +98,40 @@ const valoresCorte = {};
 });
 const nCarga = (MAPA.carga || []).length;
 const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length;
+
+// ===== Tooltip por comuna: cortes activos + % (cuando la fuente lo provea) + cortes 12 meses =====
+const HIST12 = D.hist12m_comuna || {};                 // {cut: {ev12,peak12,ch12,h12}} historico
+const DIST_CUT = {};                                   // corte activo confirmado por distribuidora (parcial)
+DIST.forEach(c => { if (c.cut) DIST_CUT[String(c.cut).padStart(5, "0")] = c; });
+const VIVO_CUT = {};                                   // vivo por comuna (afectados+totales+pct) si la SEC lo expone
+((V && V.por_comuna) || []).forEach(c => { if (c.cut) VIVO_CUT[String(c.cut).padStart(5, "0")] = c; });
+function tipComuna(cut, comuna, _valReg) {
+  cut = String(cut).padStart(5, "0");
+  const rc = cut.slice(0, 2);
+  const vc = VIVO_CUT[cut], dc = DIST_CUT[cut], h = HIST12[cut];
+  const L = [`<b>${PW.esc(comuna)}</b>`];
+  // 1) Cortes activos ahora (y % real de la comuna solo si la fuente lo trae)
+  if (vc && (vc.clientes || 0) > 0) {
+    L.push(`Sin luz ahora: <b style="color:var(--critical)">${PW.fmt(vc.clientes)}</b>` +
+           (vc.pct != null ? ` · <b>${PW.fmt(vc.pct, 1)}%</b> de la comuna` : ""));
+  } else if (dc && (dc.clientes || 0) > 0) {
+    L.push(`Corte activo: <b style="color:var(--critical)">${PW.fmt(dc.clientes)}</b> clientes` +
+           (dc.outages ? ` · ${PW.fmt(dc.outages)} falla${dc.outages === 1 ? "" : "s"}` : "") +
+           (dc.empresa ? ` (${PW.esc(dc.empresa)})` : ""));
+  } else if (regCli[rc]) {
+    L.push(`Región con ${PW.fmt(regCli[rc])} sin luz ahora <span style="opacity:.7">(la SEC no detalla por comuna)</span>`);
+  } else {
+    L.push(`<span style="color:var(--good)">Sin corte reportado ahora</span>`);
+  }
+  // 2) Historico: cortes en los ultimos 12 meses
+  if (h && h.ev12 != null) {
+    L.push(`Últimos 12 meses: <b>${PW.fmt(h.ev12)}</b> corte${h.ev12 === 1 ? "" : "s"}` +
+           (h.peak12 ? ` · peak ${PW.fmt(h.peak12)} clientes` : ""));
+  } else {
+    L.push(`Últimos 12 meses: sin cortes registrados`);
+  }
+  return L.join("<br>");
+}
 
 document.getElementById("kpis").innerHTML = [
   [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + D.hora_sec],
@@ -125,7 +170,8 @@ function renderMapaCortes() {
     }),
   }] : [];
   const comunas = { nombre: "Clientes sin luz ahora", visible: onCap("cortes"),
-                    fmt: v => v == null ? "sin corte" : PW.fmt(v) + " sin luz", valores: valoresCorte };
+                    fmt: v => v == null ? "sin corte" : PW.fmt(v) + " sin luz",
+                    tip: tipComuna, valores: valoresCorte };
   const prev = mapaCortes ? { c: mapaCortes.getCenter(), z: mapaCortes.getZoom() } : null;
   if (mapaCortes) { mapaCortes.remove(); mapaCortes = null; }
   mapaCortes = PW.mapa("mapa-cortes", {
