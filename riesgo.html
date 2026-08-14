@@ -10,14 +10,14 @@
 <title>Cortes eléctricos — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260813a">
+<link rel="stylesheet" href="assets/estilo.css?v=260814a">
 </head>
 <body>
 <main>
   <h1>Cortes eléctricos</h1>
   <p class="sub">Historial de interrupciones de suministro (SEC, 2017 a hoy). Dos miradas
   separadas: cuantos CLIENTES quedan sin energía (magnitud) y cuantas HORAS sin energía
-  acumula cada territorio (duración). Filtra por región y comuna. Para la foto en vivo y los grandes apagones, ver <a href="cortes.html">Cortes en vivo</a>.</p>
+  acumula cada territorio (duración). Filtra por región y comuna. Para la foto en vivo (mapa de cargadores y cortes), ver <a href="cargadores-cortes.html">Cargadores Públicos y Cortes de Energía</a>.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
@@ -67,9 +67,24 @@
     <p class="nota">Clientes sin energía = peak simultáneo; Horas sin energía = horas con
     afectación; Cliente-horas = producto de ambos. Por habitante normaliza con Censo 2024.</p>
   </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Peores apagones registrados (por evento)</h2>
+    <div class="scroll-x"><table class="pw" id="t-eventos"></table></div>
+    <p class="nota">Eventos individuales con mayor peak de clientes afectados desde 2017 (umbral 500
+    clientes). El apagón nacional del 25 de febrero de 2025 domina el registro.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Los peores días del país</h2>
+    <div id="g-dias"></div>
+    <p class="nota">Peak de clientes simultáneamente sin luz en el día (barra) y cliente-horas
+    acumuladas en la etiqueta.</p>
+  </div>
 </main>
 <script src="data/riesgo.js"></script>
-<script src="assets/comun.js?v=260813a"></script>
+<script src="data/cortes.js"></script>
+<script src="assets/comun.js?v=260814a"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
@@ -224,6 +239,26 @@ function dibujarNacional(anho) {
 }
 
 refrescar();
+
+// ===== Registro historico de grandes apagones (datos de cortes.js) =====
+const DC = window.PW_DATA.cortes;
+if (DC) {
+  PW.tabla("t-eventos", [
+    { k: "comuna", titulo: "Comuna" },
+    { k: "region", titulo: "Región" },
+    { k: "inicio", titulo: "Inicio" },
+    { k: "duracion_h", titulo: "Duración (h)", num: true, fmt: v => PW.fmt(v) },
+    { k: "peak", titulo: "Peak clientes", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
+  ], DC.top_eventos || [], { orden: "peak", buscador: false });
+
+  PW.barras("g-dias", {
+    items: (DC.peores_dias || []).map(x => ({
+      nombre: x.fecha, valor: x.peak,
+      extra: PW.fmt(x.cliente_horas) + " cliente-horas",
+    })),
+    fmtV: v => PW.fmt(v),
+  });
+}
 </script>
 </body>
 </html>
