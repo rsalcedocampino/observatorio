@@ -7,17 +7,46 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Cortes eléctricos — Energías Futuro</title>
+<title>Cortes de energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260814a">
+<link rel="stylesheet" href="assets/estilo.css?v=260814b">
 </head>
 <body>
 <main>
-  <h1>Cortes eléctricos</h1>
-  <p class="sub">Historial de interrupciones de suministro (SEC, 2017 a hoy). Dos miradas
-  separadas: cuantos CLIENTES quedan sin energía (magnitud) y cuantas HORAS sin energía
-  acumula cada territorio (duración). Filtra por región y comuna. Para la foto en vivo (mapa de cargadores y cortes), ver <a href="cargadores-cortes.html">Cargadores Públicos y Cortes de Energía</a>.</p>
+  <h1>Cortes de energía</h1>
+  <p class="sub">El estado del suministro eléctrico de Chile en un solo lugar: primero la <b>foto en
+  vivo</b> de la SEC (quién está sin luz ahora, por región y por distribuidora) y luego el <b>registro
+  histórico</b> 2017 a hoy (magnitud, duración, peores eventos y ranking territorial). Para el mapa en
+  vivo de cortes cruzado con la red pública de carga, ver
+  <a href="cargadores-cortes.html">Cargadores Públicos y Cortes de Energía</a>.</p>
+
+  <!-- =================== PARTE 1: EN VIVO =================== -->
+  <h2 id="h-vivo" style="margin-top:22px">En vivo — clientes sin luz ahora <span class="pill" id="vivo-estado"></span></h2>
+  <p class="nota" id="nota-vivo-head"></p>
+
+  <div class="kpis" id="kpis-vivo"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Clientes sin luz ahora, por región</h2>
+    <div id="g-vivo"></div>
+    <p class="nota" id="nota-vivo"></p>
+  </div>
+
+  <div class="tarjeta" id="card-dist" style="display:none">
+    <h2 style="margin-top:0">Por empresa distribuidora (en vivo)</h2>
+    <p class="nota" id="dist-head"></p>
+    <div id="g-dist-grupo"></div>
+    <h3 style="margin:14px 0 6px;font-size:14px">Comunas con más clientes afectados (top 20)</h3>
+    <div class="scroll-x"><table class="pw" id="t-dist-comuna"></table></div>
+    <p class="nota" id="dist-caveats" style="margin-top:12px"></p>
+  </div>
+
+  <!-- =================== PARTE 2: HISTÓRICO =================== -->
+  <h2 id="h-hist" style="border-top:1px solid var(--border); padding-top:28px; margin-top:42px">Histórico — 2017 a hoy</h2>
+  <p class="sub">Historial de interrupciones de suministro (SEC). Dos miradas separadas: cuántos
+  CLIENTES quedan sin energía (magnitud) y cuántas HORAS sin energía acumula cada territorio
+  (duración). Filtra por región, comuna y año.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
@@ -84,22 +113,100 @@
 </main>
 <script src="data/riesgo.js"></script>
 <script src="data/cortes.js"></script>
-<script src="assets/comun.js?v=260814a"></script>
+<script src="assets/comun.js?v=260814b"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
+const DC = window.PW_DATA.cortes || null;
+const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`;
+
+// ============================================================
+// PARTE 1 — EN VIVO (cortes.js: foto SEC del momento)
+// ============================================================
+(function vivo() {
+  const estado = document.getElementById("vivo-estado");
+  if (!DC || !DC.vivo) {
+    estado.textContent = "sin datos en vivo";
+    document.getElementById("nota-vivo-head").textContent =
+      "La foto en vivo de la SEC no está disponible en este momento.";
+    document.getElementById("kpis-vivo").style.display = "none";
+    return;
+  }
+  const V = DC.vivo;
+  const hayCorte = (V.clientes || 0) > 0;
+  estado.textContent = hayCorte ? PW.fmt(V.clientes) + " sin luz" : "sin cortes relevantes";
+  estado.style.color = hayCorte ? "var(--critical)" : "var(--good)";
+  estado.style.borderColor = hayCorte ? "var(--critical)" : "var(--good)";
+  estado.style.fontWeight = "600";
+
+  document.getElementById("nota-vivo-head").textContent =
+    "Fuente: " + (DC.fuente || "SEC") + " · lectura en vivo " + (DC.hora_sec || "—") +
+    " · generado " + (DC.generado || "—") + ".";
+
+  document.getElementById("kpis-vivo").innerHTML = [
+    [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + (DC.hora_sec || "")],
+    [PW.fmt(V.pct_pais, 2) + "%", "del país sin suministro", ""],
+    [PW.fmt(V.n_comunas), "comunas con corte ahora", "de 346 en el país"],
+  ].map(kpiHTML).join("");
+
+  const conCorte = (V.por_region || []).filter(r => (r.clientes || 0) > 0)
+    .sort((a, b) => b.clientes - a.clientes);
+  PW.barras("g-vivo", {
+    items: conCorte.map(r => ({ nombre: r.region, valor: r.clientes, color: PW.color("--critical") })),
+    fmtV: v => PW.fmt(v),
+  });
+  document.getElementById("nota-vivo").textContent = hayCorte
+    ? PW.fmt(V.clientes) + " clientes sin luz en " + PW.fmt(V.n_comunas) + " comunas al momento de la última lectura de la SEC (" + DC.hora_sec + ")."
+    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + (DC.hora_sec || "—") + ").";
+
+  // Por empresa distribuidora (best-effort: el bloque puede faltar)
+  const DI = DC.distribuidoras;
+  if (DI && (DI.por_grupo || []).length) {
+    document.getElementById("card-dist").style.display = "";
+    const cap = DI.capturado ? DI.capturado.slice(0, 16).replace("T", " ") : "s/f";
+    document.getElementById("dist-head").textContent =
+      "Snapshot " + cap + " · " + (DI.cobertura || "") + " · " +
+      PW.fmt(DI.n_reales) + " fallas reales / " + PW.fmt(DI.clientes_reales) + " clientes.";
+    PW.barras("g-dist-grupo", {
+      items: (DI.por_grupo || []).map(g => ({
+        nombre: g.grupo, valor: g.clientes, extra: PW.fmt(g.outages) + " fallas",
+      })),
+      fmtV: v => PW.fmt(v),
+    });
+    PW.tabla("t-dist-comuna", [
+      { k: "comuna", titulo: "Comuna" },
+      { k: "region", titulo: "Región" },
+      { k: "empresa", titulo: "Empresa", fmt: v => v ? `<span class="pill">${PW.esc(v)}</span>` : "—" },
+      { k: "clientes", titulo: "Clientes", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
+      { k: "outages", titulo: "Fallas", num: true, fmt: v => PW.fmt(v) },
+    ], DI.por_comuna || [], { orden: "clientes", buscador: false });
+    document.getElementById("dist-caveats").innerHTML =
+      "<b>Cómo se arma:</b> la SEC entrega el corte por comuna <b>sin empresa</b>; esta atribución se " +
+      "construye con los feeds de fallas de las propias distribuidoras. " +
+      "<b>Cobertura parcial:</b> SAESA, CGE, Edelmag y Enel; falta Chilquinta (su feed responde 403) y las " +
+      "cooperativas/menores — lo no cubierto queda sin empresa. " +
+      "<b>Solo en vivo:</b> los feeds no tienen histórico, así que el registro SEC 2017–hoy del análisis " +
+      "histórico sigue sin empresa (la atribución se acumula hacia adelante). " +
+      "<b>No cuadra con el total SEC:</b> son fuentes y horas de captura distintas (feed por empresa vs. SEC " +
+      "agregado por comuna); no es una reconciliación del total nacional. Las fallas hipotéticas de SAESA " +
+      "(predicciones) están excluidas de los conteos.";
+  }
+})();
+
+// ============================================================
+// PARTE 2 — HISTÓRICO (riesgo.js)
+// ============================================================
 document.getElementById("nota").textContent =
   "Generado " + D.generado + " (fuente actualizada " + (D.actualizado_fuente || "—") + "). " + D.nota;
 
-// KPIs nacionales fijos (estado historico + vivo)
+// KPIs históricos nacionales (el "sin luz ahora" vive arriba, en la parte en vivo)
 const K = D.kpis || {};
 document.getElementById("kpis").innerHTML = [
-  [PW.fmt((K.cliente_horas_total || 0) / 1e6, 1) + "M", "cliente-horas acumuladas (pais)", "2017 a hoy"],
+  [PW.fmt((K.cliente_horas_total || 0) / 1e6, 1) + "M", "cliente-horas acumuladas (país)", "2017 a hoy"],
   [PW.fmt(K.eventos_totales), "eventos registrados", "umbral 500 clientes"],
-  [K.peak_historico ? PW.fmt(K.peak_historico.clientes) : "—", "peak historico de clientes",
+  [K.peak_historico ? PW.fmt(K.peak_historico.clientes) : "—", "peak histórico de clientes",
     K.peak_historico ? (K.peak_historico.evento || K.peak_historico.cuando) : ""],
-  [K.clientes_afectados_ahora != null ? PW.fmt(K.clientes_afectados_ahora) : "—", "clientes sin luz ahora", "SEC " + (K.vivo_hora || "")],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+].map(kpiHTML).join("");
 
 // Filtros region -> comuna
 const selR = document.getElementById("f-region");
@@ -145,12 +252,12 @@ function refrescar() {
   document.getElementById("kpis-clientes").innerHTML = [
     [PW.fmt(totClientes), com ? "peak de clientes sin energia" : "clientes sin energia (peak sumado)", ambito],
     [comunas.length, com ? "comuna" : "comunas con registro", periodo],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+  ].map(kpiHTML).join("");
 
   document.getElementById("kpis-horas").innerHTML = [
     [PW.fmt(totHoras), com ? "horas con corte" : "horas-comuna sin energia", ambito],
     [PW.fmt(totCH / 1e6, 1) + "M", "cliente-horas de la seleccion", periodo],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+  ].map(kpiHTML).join("");
 
   // graficos: ranking de comunas de la seleccion (peak de clientes / horas afectadas)
   const ordClientes = comunas.slice().sort((a, b) => b.peak_clientes - a.peak_clientes).slice(0, 15);
@@ -240,8 +347,7 @@ function dibujarNacional(anho) {
 
 refrescar();
 
-// ===== Registro historico de grandes apagones (datos de cortes.js) =====
-const DC = window.PW_DATA.cortes;
+// Registro historico de grandes apagones (datos de cortes.js)
 if (DC) {
   PW.tabla("t-eventos", [
     { k: "comuna", titulo: "Comuna" },
