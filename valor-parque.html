@@ -2,7 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org; connect-src 'self'; base-uri 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -10,11 +17,15 @@
 <title>Valor del parque vehicular — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260814b">
+<link rel="stylesheet" href="assets/estilo.css?v=260814c">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <main>
   <h1>Valor del parque vehicular comunal</h1>
   <p class="sub">Cuanta riqueza vehicular hay en cada comuna: parque por tipo de motor (INE)
@@ -23,6 +34,7 @@
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
+    <label>Año <select id="f-anio"></select></label>
     <label>Región <select id="f-region"><option value="">Todas</option></select></label>
     <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
   </div>
@@ -64,20 +76,20 @@
 </main>
 <script src="data/c_valorparque.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260814b"></script>
+<script src="assets/comun.js?v=260814c"></script>
 <script>
 PW.montarNav("valor-parque.html");
 const D = PW_DATA.c_valorparque;
-document.getElementById("nota").textContent =
-  "Parque " + D.anio + ". Generado " + D.generado + ". " + D.nota +
-  " Tasaciones medias usadas: bencina " + PW.clp(D.tasaciones.bencina) + ", diesel " +
-  PW.clp(D.tasaciones.diesel) + ", electrico " + PW.clp(D.tasaciones.electrico) + ".";
-
 const selR = document.getElementById("f-region");
 const selC = document.getElementById("f-comuna");
+const selA = document.getElementById("f-anio");
 [...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
   const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o);
 });
+(D.anios || [D.anio]).slice().sort((a, b) => b - a).forEach(a => {
+  const o = document.createElement("option"); o.value = a; o.textContent = a; selA.appendChild(o);
+});
+selA.value = D.anio;
 function poblarComunas() {
   const reg = selR.value;
   const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort();
@@ -127,11 +139,11 @@ const METRICA_FMT = {
   pct_electrico: v => v == null ? "sin dato" : PW.fmt(v, 1) + "%",
   veh_pc: v => v == null ? "sin dato" : PW.fmt(v, 1),
 };
-function pintarMapa(reg, com, filas) {
+function pintarMapa(reg, com, filas, base) {
   if (MAPA) { MAPA.remove(); MAPA = null; }
   const ley = document.querySelector("#mapa-valor + .leyenda"); if (ley) ley.remove();
   const metrica = document.getElementById("f-metrica").value;
-  const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas;
+  const comunasMapa = reg ? base.filter(c => c.region === reg) : base;
   const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null);
   MAPA = PW.choropleth("mapa-valor", {
     valores: Object.fromEntries(comunasMapa.map(c => [c.cut, c[metrica]])),
@@ -141,10 +153,14 @@ function pintarMapa(reg, com, filas) {
 
 let tab = null;
 function refrescar() {
+  const anio = selA.value;
+  const base = (D.por_anio && D.por_anio[anio]) ? D.por_anio[anio] : D.comunas;
   const reg = selR.value;
   const com = selC.value;
-  const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
-  pintarMapa(reg, com, filas);
+  const filas = base.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
+  document.getElementById("nota").textContent = "Parque " + anio + " (INE). Generado " + D.generado + ". " + D.nota +
+    " Tasaciones: bencina " + PW.clp(D.tasaciones.bencina) + ", diesel " + PW.clp(D.tasaciones.diesel) + ", eléctrico " + PW.clp(D.tasaciones.electrico) + ".";
+  pintarMapa(reg, com, filas, base);
   PW.barras("g-top", {
     items: filas.slice(0, 20).map(c => ({
       nombre: c.comuna, valor: c.valor_mm,
@@ -156,6 +172,7 @@ function refrescar() {
 }
 selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
 selC.addEventListener("input", refrescar);
+selA.addEventListener("input", refrescar);
 document.getElementById("f-metrica").addEventListener("input", refrescar);
 refrescar();
 </script>
