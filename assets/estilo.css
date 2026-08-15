@@ -326,7 +326,7 @@ footer.pw {
 .colaboradores {
   max-width: 1180px;
   margin: 42px auto 0;
-  padding: 24px 20px 0;
+  padding: 24px 20px 40px;
   border-top: 1px solid var(--border);
   text-align: center;
 }

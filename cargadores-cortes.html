@@ -17,7 +17,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cargadores Públicos y Cortes de Energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260815b">
+<link rel="stylesheet" href="assets/estilo.css?v=260815c">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -43,9 +43,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota" id="nota-mapa"></p>
     <div id="panel-capas-cortes" class="capas-panel"></div>
     <div id="mapa-cortes"></div>
-    <p class="nota">El color de cada comuna refleja los clientes sin luz de su <b>región</b> (la SEC
-    publica el vivo por región; más oscuro = región más afectada). Los puntos son la red pública de
-    carga (clic para operador, conector, potencia y estado). Los cargadores en
+    <p class="nota">Se colorean <b>solo las comunas con corte ahora</b> (más intenso = más clientes sin
+    luz), según el detalle por comuna de la SEC. Los puntos son la red pública de carga (clic para
+    operador, conector, potencia y estado). Los cargadores en
     <span style="color:var(--critical);font-weight:600">rojo</span> están en comunas con corte
     confirmado por la distribuidora (posiblemente sin servicio).</p>
   </div>
@@ -71,7 +71,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/cortes.js"></script>
 <script src="data/mapa.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260815b"></script>
+<script src="assets/comun.js?v=260815c"></script>
 <script>
 PW.montarNav("cargadores-cortes.html");
 const D = window.PW_DATA.cortes;
@@ -91,10 +91,17 @@ const afectadas = new Set(DIST.map(c => _norm(c.comuna)));
 const regCli = {};
 (V.por_region || []).forEach(r => { if ((r.clientes || 0) > 0) regCli[r.rcut] = r.clientes; });
 const GEO = window.PW_DATA.geo_comunas;
+// [DEMARCACIÓN PRECISA] colorear por COMUNA real (afectados SEC de vivo.por_comuna): pinta SOLO las
+// comunas efectivamente con corte, no toda la región (antes se teñía el país entero). Fallback a
+// región solo si la fuente no trae el detalle por comuna.
+const comCli = {};
+((V.por_comuna) || []).forEach(c => { if (c.cut && (c.clientes || 0) > 0) comCli[String(c.cut).padStart(5, "0")] = c.clientes; });
+const usarComuna = Object.keys(comCli).length > 0;
 const valoresCorte = {};
 (GEO && GEO.features ? GEO.features : []).forEach(f => {
-  const rc = String(f.properties.cut).slice(0, 2);
-  if (regCli[rc] != null) valoresCorte[f.properties.cut] = regCli[rc];
+  const cut = String(f.properties.cut).padStart(5, "0");
+  if (usarComuna) { if (comCli[cut] != null) valoresCorte[cut] = comCli[cut]; }
+  else { const rc = cut.slice(0, 2); if (regCli[rc] != null) valoresCorte[cut] = regCli[rc]; }
 });
 const nCarga = (MAPA.carga || []).length;
 const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length;
@@ -214,7 +221,7 @@ document.getElementById("kpis").innerHTML = [
 
 document.getElementById("nota-mapa").textContent =
   V.clientes > 0
-    ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). El color es por REGIÓN (la SEC publica el vivo por región)." +
+    ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Se marcan SOLO las comunas con corte; más intenso = más clientes sin luz." +
       (nCargAfect ? " " + PW.fmt(nCargAfect) + " cargadores están en comunas con corte confirmado por la distribuidora." : "")
     : "Sin cortes relevantes ahora (SEC " + D.hora_sec + "): el mapa muestra la red de carga sobre el territorio.";
 const CAP_CORTES = [
