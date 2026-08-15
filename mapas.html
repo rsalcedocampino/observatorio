@@ -33,7 +33,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="sub">Un solo mapa para cruzar las capas del sistema eléctrico y de
   electromovilidad: la <b>red de carga</b>, la <b>transmisión</b> que la alimenta (separada por
   rango de tensión), la <b>generación renovable</b> y el <b>almacenamiento</b> que la respaldan,
-  los <b>postes</b> y la <b>red de distribución</b> media/baja tensión (CGE, por comuna, bajo demanda) y el <b>Censo</b> como
+  los <b>postes</b> y la <b>red de distribución</b> media/baja tensión (CGE, bajo demanda por su volumen: elige una <b>región</b> para ver la MT o una <b>comuna</b> para la BT) y el <b>Censo</b> como
   telón de fondo territorial. Parta de un <b>cruce sugerido</b> o encienda y apague capas a mano
   para encontrar relaciones sobre el territorio: cargadores lejos de una subestación, plantas
   solares junto a baterías, comunas con poca electrificación y sin red cercana.</p>
@@ -43,7 +43,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="filtros-mapa" class="filtros"></div>
     <div id="presets" class="presets"></div>
     <div id="panel-capas" class="capas-panel"></div>
-    <div id="mapa-todo"></div>
+    <div style="position:relative">
+      <div id="mapa-todo"></div>
+      <div id="aviso-tramos" style="display:none;position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:1000;max-width:92%;background:var(--warning);color:#1a1a1a;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;line-height:1.35;box-shadow:0 2px 10px rgba(0,0,0,.28);pointer-events:none;text-align:center"></div>
+    </div>
     <p id="cont-todo" class="nota" style="margin-top:10px"></p>
     <div id="ley-transmision-wrap" class="nota" style="display:none;margin:6px 0 2px;align-items:center;gap:8px;flex-wrap:wrap">
       <span style="font-weight:600">Transmisión:</span><span id="ley-transmision"></span>
@@ -324,7 +327,7 @@ function pintarPanel() {
       const scope = cutsTramosScope(c.k);
       if (scope.length) num = PW.fmt(totalTramos(c.k));
       else if (filtroTerr.com) num = "sin red CGE";
-      else num = "elige comuna";
+      else num = TRAMOS[c.k].region ? "elige región" : "elige comuna";
     } else num = PW.fmt(conteos[c.k] || 0);
     return `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
       `<span class="dot"></span>${c.nombre} <span class="num">${num}</span></span>`;
@@ -388,6 +391,23 @@ function pintarContador(ind) {
     (on("mt") || on("bt") ? "Red de distribución CGE: MT (media tensión) en violeta, BT (baja tensión) en rosado; por comuna (MT también por región). " : "") +
     "Censo: fondo azul, más oscuro = mayor " +
     (ind === "viviendas" ? "numero de viviendas" : "porcentaje") + " en la comuna.";
+  actualizarAvisoTramos();
+}
+
+// Aviso destacado SOBRE el mapa: la red de distribucion CGE (MT/BT) se carga por territorio; con
+// "todas las regiones" no se dibuja. Guia al usuario a elegir region (MT) o comuna (BT).
+function actualizarAvisoTramos() {
+  const av = document.getElementById("aviso-tramos");
+  if (!av) return;
+  const faltan = [];
+  if (on("mt") && !cutsTramosScope("mt").length) faltan.push("Red MT: elige una región o comuna");
+  if (on("bt") && !cutsTramosScope("bt").length) faltan.push("Red BT: elige una comuna");
+  if (faltan.length) {
+    av.textContent = "La red de distribución CGE se dibuja por territorio (es muy densa para todo Chile): " + faltan.join(" · ") + ".";
+    av.style.display = "";
+  } else {
+    av.style.display = "none";
+  }
 }
 
 function aplicarPreset(p) {

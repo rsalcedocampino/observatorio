@@ -112,8 +112,10 @@ function tipComuna(cut, comuna, _valReg) {
   const L = [`<b>${PW.esc(comuna)}</b>`];
   // 1) Cortes activos ahora (y % real de la comuna solo si la fuente lo trae)
   if (vc && (vc.clientes || 0) > 0) {
+    const pctTxt = vc.pct == null ? null
+      : (vc.pct >= 0.05 ? PW.fmt(vc.pct, 1) : (vc.pct > 0 ? "<0,1" : "0"));
     L.push(`Sin luz ahora: <b style="color:var(--critical)">${PW.fmt(vc.clientes)}</b>` +
-           (vc.pct != null ? ` · <b>${PW.fmt(vc.pct, 1)}%</b> de la comuna` : ""));
+           (pctTxt != null ? ` · <b>${pctTxt}%</b> de la comuna` : ""));
   } else if (dc && (dc.clientes || 0) > 0) {
     L.push(`Corte activo: <b style="color:var(--critical)">${PW.fmt(dc.clientes)}</b> clientes` +
            (dc.outages ? ` · ${PW.fmt(dc.outages)} falla${dc.outages === 1 ? "" : "s"}` : "") +
@@ -131,6 +133,67 @@ function tipComuna(cut, comuna, _valReg) {
     L.push(`Últimos 12 meses: sin cortes registrados`);
   }
   return L.join("<br>");
+}
+
+// ===== Hover por comuna =====
+// La coroplética se dibuja en CANVAS (preferCanvas) en un pane bajo el canvas de puntos, que
+// intercepta el mouse -> el tooltip por-feature de Leaflet nunca llega a la comuna. Solucion
+// independiente del z-order: un handler mousemove a nivel de MAPA (los eventos suben al contenedor)
+// + point-in-polygon sobre geo_comunas, mostrando tipComuna() en un tooltip que sigue el cursor.
+const COM_IDX = [];
+(GEO && GEO.features ? GEO.features : []).forEach(f => {
+  const g = f.geometry; if (!g) return;
+  const polys = g.type === "MultiPolygon" ? g.coordinates : (g.type === "Polygon" ? [g.coordinates] : []);
+  let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
+  polys.forEach(poly => poly.forEach(ring => ring.forEach(pt => {
+    if (pt[0] < minx) minx = pt[0]; if (pt[0] > maxx) maxx = pt[0];
+    if (pt[1] < miny) miny = pt[1]; if (pt[1] > maxy) maxy = pt[1];
+  })));
+  if (minx < Infinity) COM_IDX.push({
+    cut: String(f.properties.cut).padStart(5, "0"), comuna: f.properties.comuna,
+    bbox: [minx, miny, maxx, maxy], polys,
+  });
+});
+function _inRing(x, y, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+    if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+  }
+  return inside;
+}
+function comunaEn(latlng) {
+  const x = latlng.lng, y = latlng.lat;
+  for (const c of COM_IDX) {
+    const b = c.bbox;
+    if (x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue;
+    for (const poly of c.polys) {                 // poly = [anillo exterior, huecos...]
+      if (!_inRing(x, y, poly[0])) continue;
+      let enHueco = false;
+      for (let k = 1; k < poly.length; k++) if (_inRing(x, y, poly[k])) { enHueco = true; break; }
+      if (!enHueco) return c;
+    }
+  }
+  return null;
+}
+let hoverTip = null;
+function attachHoverComuna(map) {
+  hoverTip = null;
+  // Eventos NATIVOS del contenedor (no el 'mousemove'/'mouseout' de Leaflet): el mousemove nativo
+  // sube desde cualquier canvas hijo (funciona con la capa de cargadores ENCIMA) y 'mouseleave'
+  // solo dispara al salir de verdad del mapa (no en transiciones a hijos, a diferencia de mouseout).
+  // point-in-polygon con prefiltro bbox -> barato, corre directo por evento (sin rAF ni throttle).
+  const cont = map.getContainer();
+  cont.addEventListener("mousemove", ev => {
+    const c = comunaEn(map.mouseEventToLatLng(ev));
+    if (!c) { if (hoverTip && map.hasLayer(hoverTip)) map.removeLayer(hoverTip); return; }
+    if (!hoverTip) hoverTip = L.tooltip({ direction: "top", offset: [0, -4], opacity: 0.96, sticky: true });
+    hoverTip.setLatLng(map.mouseEventToLatLng(ev)).setContent(tipComuna(c.cut, c.comuna, valoresCorte[c.cut]));
+    if (!map.hasLayer(hoverTip)) hoverTip.addTo(map);
+  });
+  cont.addEventListener("mouseleave", () => {
+    if (hoverTip && map.hasLayer(hoverTip)) map.removeLayer(hoverTip);
+  });
 }
 
 document.getElementById("kpis").innerHTML = [
@@ -179,6 +242,8 @@ function renderMapaCortes() {
     centro: prev ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3],
     zoom: prev ? prev.z : 5,
   });
+  // Hover por comuna (independiente del z-order de los canvas): activo mientras la capa de cortes lo esté.
+  if (onCap("cortes") && mapaCortes) attachHoverComuna(mapaCortes);
 }
 function pintarToggleCortes() {
   const el = document.getElementById("panel-capas-cortes");
