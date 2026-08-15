@@ -322,6 +322,34 @@ footer.pw {
   margin: 0 auto;
   text-align: center;
 }
+/* ---------- colaboradores: banda de logos arriba del pie ---------- */
+.colaboradores {
+  max-width: 1180px;
+  margin: 42px auto 0;
+  padding: 24px 20px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.colaboradores h3 {
+  font-size: 12.5px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--ink-3); margin: 0 0 16px;
+}
+.colab-grid {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 14px 20px;
+}
+/* chip blanco: cualquier logo (incluso oscuro sobre transparente) se ve en tema claro y oscuro */
+.colab-logo {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 58px; padding: 9px 16px; background: #fff;
+  border: 1px solid var(--border); border-radius: 10px;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.colab-logo:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0, 0, 0, .12); }
+.colab-logo img { max-height: 40px; max-width: 150px; width: auto; object-fit: contain; display: block; }
+@media (max-width: 560px) {
+  .colab-logo { height: 48px; padding: 7px 12px; }
+  .colab-logo img { max-height: 32px; max-width: 120px; }
+}
 /* ---------- mapa: partes visuales ---------- */
 .pw-mapa { border-radius: 10px; border: 1px solid var(--border); }
 .pw-mapa:fullscreen { border-radius: 0; }

@@ -17,7 +17,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cortes de energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260814c">
+<link rel="stylesheet" href="assets/estilo.css?v=260815a">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -28,8 +32,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Cortes de energía</h1>
   <p class="sub">El estado del suministro eléctrico de Chile en un solo lugar: primero la <b>foto en
   vivo</b> de la SEC (quién está sin luz ahora, por región y por distribuidora) y luego el <b>registro
-  histórico</b> 2017 a hoy (magnitud, duración, peores eventos y ranking territorial). Para el mapa en
-  vivo de cortes cruzado con la red pública de carga, ver
+  histórico</b> 2017 a hoy (magnitud, duración, peores eventos y ranking territorial). El mapa en vivo
+  cruza los cortes con la red pública de carga; también disponible en el grupo Mapas como
   <a href="cargadores-cortes.html">Cargadores Públicos y Cortes de Energía</a>.</p>
 
   <!-- =================== PARTE 1: EN VIVO =================== -->
@@ -37,6 +41,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="nota" id="nota-vivo-head"></p>
 
   <div class="kpis" id="kpis-vivo"></div>
+
+  <div class="tarjeta" id="card-mapa">
+    <h2 style="margin-top:0">Mapa en vivo: cortes y cargadores</h2>
+    <p class="nota" id="nota-mapa"></p>
+    <div id="panel-capas-cortes" class="capas-panel"></div>
+    <div id="mapa-cortes"></div>
+    <p class="nota">El color de cada comuna refleja los clientes sin luz de su <b>región</b> (la SEC
+    publica el vivo por región; más oscuro = región más afectada). Los puntos son la red pública de
+    carga; los que están en comunas con corte confirmado por la distribuidora aparecen en
+    <span style="color:var(--critical);font-weight:600">rojo</span>. Pasa el mouse por una comuna para
+    ver sus cortes activos, el % de la comuna y los cortes de los últimos 12 meses.</p>
+  </div>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Clientes sin luz ahora, por región</h2>
@@ -124,7 +140,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script src="data/riesgo.js"></script>
 <script src="data/cortes.js"></script>
-<script src="assets/comun.js?v=260814c"></script>
+<script src="data/mapa.js"></script>
+<script src="data/geo_comunas.js"></script>
+<script src="assets/comun.js?v=260815a"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
@@ -202,6 +220,168 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
       "agregado por comuna); no es una reconciliación del total nacional. Las fallas hipotéticas de SAESA " +
       "(predicciones) están excluidas de los conteos.";
   }
+})();
+
+// ============================================================
+// PARTE 1b — MAPA EN VIVO (mismo mapa de "Cargadores Públicos y Cortes": choropleth de cortes por
+// región + red de carga + tooltip por comuna anti-solape + foco Chile + zoom mínimo Chile). Usa DC
+// (cortes.js). IIFE autocontenido; degrada si falta Leaflet / geo_comunas / datos.
+// ============================================================
+(function mapaVivo() {
+  const cardMapa = document.getElementById("card-mapa");
+  const GEO = window.PW_DATA && window.PW_DATA.geo_comunas;
+  if (typeof L === "undefined" || !GEO || !DC || !DC.vivo) { if (cardMapa) cardMapa.style.display = "none"; return; }
+  const V = DC.vivo;
+  const MAPA = window.PW_DATA.mapa || {};
+  const _norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim();
+  const DIST = (DC.distribuidoras && DC.distribuidoras.por_comuna) || [];
+  const afectadas = new Set(DIST.map(c => _norm(c.comuna)));
+  const regCli = {};
+  (V.por_region || []).forEach(r => { if ((r.clientes || 0) > 0) regCli[r.rcut] = r.clientes; });
+  const valoresCorte = {};
+  (GEO.features || []).forEach(f => {
+    const rc = String(f.properties.cut).slice(0, 2);
+    if (regCli[rc] != null) valoresCorte[f.properties.cut] = regCli[rc];
+  });
+  const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length;
+
+  // Tooltip por comuna: cortes activos + % (si la fuente lo provee) + cortes de los últimos 12 meses.
+  const HIST12 = DC.hist12m_comuna || {};
+  const DIST_CUT = {};
+  DIST.forEach(c => { if (c.cut) DIST_CUT[String(c.cut).padStart(5, "0")] = c; });
+  const VIVO_CUT = {};
+  ((V && V.por_comuna) || []).forEach(c => { if (c.cut) VIVO_CUT[String(c.cut).padStart(5, "0")] = c; });
+  function tipComuna(cut, comuna) {
+    cut = String(cut).padStart(5, "0");
+    const rc = cut.slice(0, 2);
+    const vc = VIVO_CUT[cut], dc = DIST_CUT[cut], h = HIST12[cut];
+    const Lc = [`<b>${PW.esc(comuna)}</b>`];
+    if (vc && (vc.clientes || 0) > 0) {
+      const pctTxt = vc.pct == null ? null : (vc.pct >= 0.05 ? PW.fmt(vc.pct, 1) : (vc.pct > 0 ? "<0,1" : "0"));
+      Lc.push(`Sin luz ahora: <b style="color:var(--critical)">${PW.fmt(vc.clientes)}</b>` + (pctTxt != null ? ` · <b>${pctTxt}%</b> de la comuna` : ""));
+    } else if (dc && (dc.clientes || 0) > 0) {
+      Lc.push(`Corte activo: <b style="color:var(--critical)">${PW.fmt(dc.clientes)}</b> clientes` + (dc.outages ? ` · ${PW.fmt(dc.outages)} falla${dc.outages === 1 ? "" : "s"}` : "") + (dc.empresa ? ` (${PW.esc(dc.empresa)})` : ""));
+    } else if (regCli[rc]) {
+      Lc.push(`Región con ${PW.fmt(regCli[rc])} sin luz ahora <span style="opacity:.7">(la SEC no detalla por comuna)</span>`);
+    } else {
+      Lc.push(`<span style="color:var(--good)">Sin corte reportado ahora</span>`);
+    }
+    if (h && h.ev12 != null) {
+      Lc.push(`Últimos 12 meses: <b>${PW.fmt(h.ev12)}</b> corte${h.ev12 === 1 ? "" : "s"}` + (h.peak12 ? ` · peak ${PW.fmt(h.peak12)} clientes` : ""));
+    } else {
+      Lc.push(`Últimos 12 meses: sin cortes registrados`);
+    }
+    return Lc.join("<br>");
+  }
+
+  // Índice geométrico (bbox por comuna) para point-in-polygon del hover.
+  const COM_IDX = [];
+  (GEO.features || []).forEach(f => {
+    const g = f.geometry; if (!g) return;
+    const polys = g.type === "MultiPolygon" ? g.coordinates : (g.type === "Polygon" ? [g.coordinates] : []);
+    let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
+    polys.forEach(poly => poly.forEach(ring => ring.forEach(pt => {
+      if (pt[0] < minx) minx = pt[0]; if (pt[0] > maxx) maxx = pt[0];
+      if (pt[1] < miny) miny = pt[1]; if (pt[1] > maxy) maxy = pt[1];
+    })));
+    if (minx < Infinity) COM_IDX.push({ cut: String(f.properties.cut).padStart(5, "0"), comuna: f.properties.comuna, bbox: [minx, miny, maxx, maxy], polys });
+  });
+  function _inRing(x, y, ring) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+    }
+    return inside;
+  }
+  function comunaEn(latlng) {
+    const x = latlng.lng, y = latlng.lat;
+    for (const c of COM_IDX) {
+      const b = c.bbox;
+      if (x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue;
+      for (const poly of c.polys) {
+        if (!_inRing(x, y, poly[0])) continue;
+        let enHueco = false;
+        for (let k = 1; k < poly.length; k++) if (_inRing(x, y, poly[k])) { enHueco = true; break; }
+        if (!enHueco) return c;
+      }
+    }
+    return null;
+  }
+  // Hover por comuna: DIV propio (no L.tooltip standalone), se oculta cuando Leaflet ya muestra la card
+  // de un cargador (anti-solape) — robusto a cualquier zoom. mousemove/mouseleave nativos del contenedor.
+  function attachHoverComuna(map) {
+    const cont = map.getContainer();
+    const card = document.createElement("div");
+    card.className = "leaflet-tooltip leaflet-tooltip-top pw-tip-comuna";
+    card.style.cssText = "position:absolute; z-index:700; pointer-events:none; display:none; white-space:nowrap;";
+    cont.appendChild(card);
+    const ocultar = () => { card.style.display = "none"; };
+    cont.addEventListener("mousemove", ev => {
+      if (document.querySelector(".leaflet-tooltip:not(.pw-tip-comuna)")) { ocultar(); return; }
+      const c = comunaEn(map.mouseEventToLatLng(ev));
+      if (!c) { ocultar(); return; }
+      const p = map.mouseEventToContainerPoint(ev);
+      card.innerHTML = tipComuna(c.cut, c.comuna);
+      card.style.left = p.x + "px";
+      card.style.top = p.y + "px";
+      card.style.transform = "translate(-50%, calc(-100% - 12px))";
+      card.style.display = "";
+    });
+    cont.addEventListener("mouseleave", ocultar);
+  }
+
+  document.getElementById("nota-mapa").textContent =
+    V.clientes > 0
+      ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). El color es por REGIÓN (la SEC publica el vivo por región)." +
+        (nCargAfect ? " " + PW.fmt(nCargAfect) + " cargadores están en comunas con corte confirmado por la distribuidora." : "")
+      : "Sin cortes relevantes ahora (SEC " + (DC.hora_sec || "—") + "): el mapa muestra la red de carga sobre el territorio.";
+
+  const CAP_CORTES = [
+    { k: "cortes", nombre: "Cortes en vivo", col: "--seq-400", on: true },
+    { k: "carga", nombre: "Cargadores", col: "--s3", on: true },
+  ];
+  const onCap = k => (CAP_CORTES.find(c => c.k === k) || {}).on;
+  let mapaCortes = null;
+  function popupCargaCorte(p) {
+    const afx = afectadas.has(_norm(p.com));
+    return PW.popupEstacion(p) + (afx ? `<div class="pop-detalle" style="color:var(--critical);font-weight:600">Corte activo en ${PW.esc(p.com)}: posiblemente sin servicio.</div>` : "");
+  }
+  function renderMapaCortes() {
+    const capas = onCap("carga") ? [{
+      nombre: "Cargadores", visible: true, color: PW.color("--s3"),
+      puntos: (MAPA.carga || []).map(p => {
+        const afx = afectadas.has(_norm(p.com));
+        return { lat: p.lat, lon: p.lon, r: 5, color: afx ? PW.color("--critical") : PW.color("--s3"),
+          tip: (p.n || (p.op ? "Estación " + p.op : "Cargador")) + (afx ? " — corte activo" : ""), popup: popupCargaCorte(p) };
+      }),
+    }] : [];
+    const comunas = { nombre: "Clientes sin luz ahora", visible: onCap("cortes"),
+      fmt: v => v == null ? "sin corte" : PW.fmt(v) + " sin luz", valores: valoresCorte };
+    const prev = mapaCortes ? { c: mapaCortes.getCenter(), z: mapaCortes.getZoom() } : null;
+    if (mapaCortes) { mapaCortes.remove(); mapaCortes = null; }
+    mapaCortes = PW.mapa("mapa-cortes", {
+      capas, comunas, sinSelector: true, sinCluster: true, alto: 560,
+      centro: prev ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3], zoom: prev ? prev.z : 5,
+    });
+    // [FOCO CHILE] encuadre inicial + no paear fuera + zoom mínimo = Chile completo.
+    const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]);
+    if (!prev) mapaCortes.fitBounds(CHILE, { animate: false });
+    mapaCortes.setMaxBounds(CHILE.pad(0.12));
+    mapaCortes.options.maxBoundsViscosity = 1.0;
+    mapaCortes.setMinZoom(mapaCortes.getBoundsZoom(CHILE));
+    if (onCap("cortes") && mapaCortes) attachHoverComuna(mapaCortes);
+  }
+  function pintarToggleCortes() {
+    const el = document.getElementById("panel-capas-cortes");
+    el.innerHTML = CAP_CORTES.map(c => `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${PW.color(c.col)}"><span class="dot"></span>${c.nombre}</span>`).join("");
+    el.querySelectorAll(".capa-chip").forEach(ch => ch.addEventListener("click", () => {
+      const c = CAP_CORTES.find(x => x.k === ch.dataset.k); c.on = !c.on;
+      renderMapaCortes(); pintarToggleCortes();
+    }));
+  }
+  pintarToggleCortes();
+  renderMapaCortes();
 })();
 
 // ============================================================
