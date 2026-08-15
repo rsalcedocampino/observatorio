@@ -62,6 +62,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/mapa.js"></script>
 <script src="data/c_redelec.js"></script>
 <script src="data/c_censoelec.js"></script>
+<script src="data/c_distribucion.js"></script>
 <script src="data/geo_lineas.js"></script>
 <script src="data/geo_comunas.js"></script>
 <script src="data/postes_index.js"></script>
@@ -72,6 +73,7 @@ PW.montarNav("mapas.html");
 const M = window.PW_DATA.mapa || {};
 const RED = window.PW_DATA.c_redelec || { subestaciones: [] };
 const CEN = window.PW_DATA.c_censoelec || { comunas: [] };
+const DIST = window.PW_DATA.c_distribucion || { comunas: [] };  // [DISTRIBUCION SEC] km BT/MT por comuna (346, 25+ empresas)
 let LIN = window.PW_DATA.geo_lineas || null;
 const C = PW.color;
 
@@ -130,12 +132,16 @@ function asegurarCuts() {
   document.head.appendChild(s);
 }
 
-// indicador del Censo para el telon de fondo comunal
+// indicador del telon de fondo comunal: Censo (fuente CEN) o Distribucion SEC (fuente DIST)
 const IND = {
   pct_solar: ["Censo: % viviendas con generación solar", v => PW.fmt(v, 1) + "%"],
   pct_red:   ["Censo: % viviendas conectadas a la red", v => PW.fmt(v, 1) + "%"],
   viviendas: ["Censo: viviendas por comuna", v => PW.fmt(v)],
+  km_bt:     ["Distribución: km de red BT (SEC)", v => PW.fmt(v, 0) + " km"],
+  km_mt:     ["Distribución: km de red MT (SEC)", v => PW.fmt(v, 0) + " km"],
 };
+// que dataset alimenta cada indicador del telon: "cen" (Censo) o "dist" (Distribucion SEC)
+const FUENTE_IND = { pct_solar: "cen", pct_red: "cen", viviendas: "cen", km_bt: "dist", km_mt: "dist" };
 
 // capas: estado on/off persistente entre re-render
 // colores bien diferenciados: azul reservado para el fondo Censo (paleta SEQ azul),
@@ -151,7 +157,7 @@ const CAPAS = [
   { k: "postes", nombre: "Postes de distribución", color: "--ink-2", on: false },
   { k: "mt",     nombre: "Red MT (media tensión)",  color: "#7c3aed",    on: false },
   { k: "bt",     nombre: "Red BT (baja tensión)",   color: "#ec4899",    on: false },
-  { k: "censo",  nombre: "Censo por comuna",        color: "--s1",       on: false },
+  { k: "censo",  nombre: "Telón por comuna (Censo / SEC)", color: "--s1",  on: false },
 ];
 const on = k => (CAPAS.find(c => c.k === k) || {}).on;
 
@@ -165,6 +171,8 @@ const PRESETS = [
     desc: "La red de carga sobre la electrificación de los hogares por comuna." },
   { t: "Solar vs potencial del hogar", on: ["solar", "censo"], ind: "pct_solar",
     desc: "Plantas solares sobre el porcentaje de viviendas con generación solar propia." },
+  { t: "Red de distribución (SEC)", on: ["censo"], ind: "km_bt",
+    desc: "Kilómetros de red de baja tensión (BT) por comuna, del GIS de la SEC (todas las distribuidoras de Chile, 346 comunas)." },
   { t: "Ver todo", on: ["carga", "sub", "lin_a", "lin_m", "lin_b", "solar", "bess", "censo"] },
   { t: "Limpiar", on: [] },
 ];
@@ -283,9 +291,11 @@ function render(fit) {
     });
   });
 
+  // el telon comunal toma la fuente segun el indicador: Censo (CEN) o Distribucion SEC (DIST)
+  const filas = FUENTE_IND[ind] === "dist" ? (DIST.comunas || []) : (CEN.comunas || []);
   const comunas = {
     nombre: IND[ind][0], visible: on("censo"), fmt: IND[ind][1],
-    valores: Object.fromEntries((CEN.comunas || []).map(c => [c.cut, c[ind]])),
+    valores: Object.fromEntries(filas.map(c => [c.cut, c[ind]])),
   };
 
   const prev = mapa ? { c: mapa.getCenter(), z: mapa.getZoom() } : null;
@@ -389,8 +399,9 @@ function pintarContador(ind) {
     "Tamaño del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
     (transVis && totNew ? "Líneas nuevas (KMZ 2019): " + PW.fmt(totNew) + " (complemento de voltaje + ausentes del troncal IDE). " : "") +
     (on("mt") || on("bt") ? "Red de distribución CGE: MT (media tensión) en violeta, BT (baja tensión) en rosado; por comuna (MT también por región). " : "") +
-    "Censo: fondo azul, más oscuro = mayor " +
-    (ind === "viviendas" ? "numero de viviendas" : "porcentaje") + " en la comuna.";
+    (FUENTE_IND[ind] === "dist"
+      ? "Distribución SEC: fondo azul, más oscuro = más kilómetros de red " + (ind === "km_bt" ? "BT (baja tensión)" : "MT (media tensión)") + " en la comuna (GIS de la SEC, todas las distribuidoras)."
+      : "Censo: fondo azul, más oscuro = mayor " + (ind === "viviendas" ? "numero de viviendas" : "porcentaje") + " en la comuna.");
   actualizarAvisoTramos();
 }
 
@@ -424,11 +435,17 @@ const territorio = (RED.subestaciones || []).map(s => ({
 const regDe = {}; territorio.forEach(t => { if (t.rcut && t.reg) regDe[t.rcut] = t.reg; });
 Object.values(POSTES_IDX).forEach(o => territorio.push({ rcut: o.rcut, reg: regDe[o.rcut] || o.region, com: o.comuna }));
 PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; render(true); sincronizarPostes(); sincronizarTramos("mt"); sincronizarTramos("bt"); },
-  `<label>Telon de fondo (Censo)
+  `<label>Telón de fondo por comuna
      <select id="f-ind">
-       <option value="pct_solar">% viviendas con generacion solar</option>
-       <option value="pct_red">% viviendas conectadas a la red</option>
-       <option value="viviendas">Viviendas por comuna</option>
+       <optgroup label="Censo 2024">
+         <option value="pct_solar">% viviendas con generación solar</option>
+         <option value="pct_red">% viviendas conectadas a la red</option>
+         <option value="viviendas">Viviendas por comuna</option>
+       </optgroup>
+       <optgroup label="Distribución eléctrica (SEC)">
+         <option value="km_bt">km de red BT (baja tensión)</option>
+         <option value="km_mt">km de red MT (media tensión)</option>
+       </optgroup>
      </select></label>`);
 document.getElementById("f-ind").addEventListener("input", () => render(false));
 
