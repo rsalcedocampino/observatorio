@@ -176,24 +176,33 @@ function comunaEn(latlng) {
   }
   return null;
 }
-let hoverTip = null;
 function attachHoverComuna(map) {
-  hoverTip = null;
-  // Eventos NATIVOS del contenedor (no el 'mousemove'/'mouseout' de Leaflet): el mousemove nativo
-  // sube desde cualquier canvas hijo (funciona con la capa de cargadores ENCIMA) y 'mouseleave'
-  // solo dispara al salir de verdad del mapa (no en transiciones a hijos, a diferencia de mouseout).
-  // point-in-polygon con prefiltro bbox -> barato, corre directo por evento (sin rAF ni throttle).
+  // Eventos NATIVOS del contenedor (no el 'mousemove'/'mouseout' de Leaflet): el mousemove nativo sube
+  // desde cualquier canvas hijo (funciona con la capa de cargadores ENCIMA) y 'mouseleave' solo dispara al
+  // salir de verdad del mapa (no en transiciones a hijos). point-in-polygon con prefiltro bbox -> barato.
+  // La card es un DIV propio (no L.tooltip standalone, cuyo removeLayer/closeTooltip no la quita) -> el
+  // mostrar/ocultar es fiable y la SUPRESIÓN anti-solape sobre cargadores funciona con certeza.
   const cont = map.getContainer();
+  const card = document.createElement("div");
+  card.className = "leaflet-tooltip leaflet-tooltip-top pw-tip-comuna";
+  card.style.cssText = "position:absolute; z-index:700; pointer-events:none; display:none; white-space:nowrap;";
+  cont.appendChild(card);
+  const ocultar = () => { card.style.display = "none"; };
   cont.addEventListener("mousemove", ev => {
+    // [ANTI-SOLAPE] si Leaflet ya muestra la card de un cargador (hover real sobre un punto, según su
+    // hit-detection), no superponer la de la comuna. Robusto a cualquier zoom/densidad (a diferencia de un
+    // radio fijo en píxeles, que a zoom bajo -país completo- taparía casi todo).
+    if (document.querySelector(".leaflet-tooltip:not(.pw-tip-comuna)")) { ocultar(); return; }
     const c = comunaEn(map.mouseEventToLatLng(ev));
-    if (!c) { if (hoverTip && map.hasLayer(hoverTip)) map.removeLayer(hoverTip); return; }
-    if (!hoverTip) hoverTip = L.tooltip({ direction: "top", offset: [0, -4], opacity: 0.96, sticky: true });
-    hoverTip.setLatLng(map.mouseEventToLatLng(ev)).setContent(tipComuna(c.cut, c.comuna, valoresCorte[c.cut]));
-    if (!map.hasLayer(hoverTip)) hoverTip.addTo(map);
+    if (!c) { ocultar(); return; }
+    const p = map.mouseEventToContainerPoint(ev);
+    card.innerHTML = tipComuna(c.cut, c.comuna, valoresCorte[c.cut]);
+    card.style.left = p.x + "px";
+    card.style.top = p.y + "px";
+    card.style.transform = "translate(-50%, calc(-100% - 12px))";
+    card.style.display = "";
   });
-  cont.addEventListener("mouseleave", () => {
-    if (hoverTip && map.hasLayer(hoverTip)) map.removeLayer(hoverTip);
-  });
+  cont.addEventListener("mouseleave", ocultar);
 }
 
 document.getElementById("kpis").innerHTML = [
@@ -242,6 +251,12 @@ function renderMapaCortes() {
     centro: prev ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3],
     zoom: prev ? prev.z : 5,
   });
+  // [FOCO CHILE] encuadre inicial a Chile + no paear fuera + zoom mínimo = Chile completo.
+  const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]);
+  if (!prev) mapaCortes.fitBounds(CHILE, { animate: false });
+  mapaCortes.setMaxBounds(CHILE.pad(0.12));
+  mapaCortes.options.maxBoundsViscosity = 1.0;
+  mapaCortes.setMinZoom(mapaCortes.getBoundsZoom(CHILE));   // no se puede alejar más allá de "todo Chile"
   // Hover por comuna (independiente del z-order de los canvas): activo mientras la capa de cortes lo esté.
   if (onCap("cortes") && mapaCortes) attachHoverComuna(mapaCortes);
 }
