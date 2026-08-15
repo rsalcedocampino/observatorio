@@ -17,7 +17,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cortes de energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260815c">
+<link rel="stylesheet" href="assets/estilo.css?v=260815d">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -48,14 +48,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="panel-capas-cortes" class="capas-panel"></div>
     <div id="mapa-cortes"></div>
     <div id="leyenda-wrap" style="display:none; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px">
-      <span class="nota" style="margin:0">Clientes sin luz por comuna:</span>
+      <span class="nota" style="margin:0">Estado por comuna:</span>
       <div id="leyenda-mapa" class="leyenda" style="margin:0"></div>
     </div>
-    <p class="nota">Se colorean <b>solo las comunas con corte ahora</b> (más intenso = más clientes sin
-    luz), según el detalle por comuna de la SEC. Los puntos son la red pública de carga; los que están en
-    comunas con corte confirmado por la distribuidora aparecen en
-    <span style="color:var(--critical);font-weight:600">rojo</span>. Pasa el mouse por una comuna para
-    ver sus cortes activos, el % de la comuna y los cortes de los últimos 12 meses.</p>
+    <p class="nota">En <b>azul</b> las comunas <b>sin luz ahora</b> (más intenso = más clientes sin luz,
+    según el detalle por comuna de la SEC); en <b>amarillo claro</b> las que <b>tienen luz</b>. Los puntos
+    son la red pública de carga; los que están en comunas con corte confirmado por la distribuidora
+    aparecen en <span style="color:var(--critical);font-weight:600">rojo</span>. Pasa el mouse por una
+    comuna para ver sus cortes activos, el % de la comuna y los cortes de los últimos 12 meses.</p>
   </div>
 
   <div class="tarjeta">
@@ -146,7 +146,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/cortes.js"></script>
 <script src="data/mapa.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260815c"></script>
+<script src="assets/comun.js?v=260815d"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
@@ -344,7 +344,7 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
 
   document.getElementById("nota-mapa").textContent =
     V.clientes > 0
-      ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Se marcan SOLO las comunas con corte; más intenso = más clientes sin luz." +
+      ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
         (nCargAfect ? " " + PW.fmt(nCargAfect) + " cargadores están en comunas con corte confirmado por la distribuidora." : "")
       : "Sin cortes relevantes ahora (SEC " + (DC.hora_sec || "—") + "): el mapa muestra la red de carga sobre el territorio.";
 
@@ -368,7 +368,8 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
       }),
     }] : [];
     const comunas = { nombre: "Clientes sin luz ahora", visible: onCap("cortes"),
-      fmt: v => v == null ? "sin corte" : PW.fmt(v) + " sin luz", valores: valoresCorte };
+      fmt: v => v == null ? "con luz" : PW.fmt(v) + " sin luz",
+      colorNulo: COLOR_CONLUZ, valores: valoresCorte };
     const prev = mapaCortes ? { c: mapaCortes.getCenter(), z: mapaCortes.getZoom() } : null;
     if (mapaCortes) { mapaCortes.remove(); mapaCortes = null; }
     mapaCortes = PW.mapa("mapa-cortes", {
@@ -384,6 +385,7 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
     if (onCap("cortes") && mapaCortes) attachHoverComuna(mapaCortes);
     pintarLeyenda();
   }
+  const COLOR_CONLUZ = "#f7ebb0"; // amarillo claro = con luz (sin corte)
   const SEQ_LEY = ["#cde2fb", "#9ec5f4", "#5598e7", "#256abf", "#0d366b"];
   function pintarLeyenda() {
     const wrap = document.getElementById("leyenda-wrap");
@@ -394,6 +396,7 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
     const c = [qn(0.2), qn(0.4), qn(0.6), qn(0.8)];
     const f = v => PW.fmt(Math.round(v));
     PW.leyendaMapa("leyenda-mapa", [
+      ["Con luz", COLOR_CONLUZ],
       ["hasta " + f(c[0]), SEQ_LEY[0]],
       [f(c[0]) + " - " + f(c[1]), SEQ_LEY[1]],
       [f(c[1]) + " - " + f(c[2]), SEQ_LEY[2]],

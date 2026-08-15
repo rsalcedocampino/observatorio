@@ -800,13 +800,15 @@
     //   valores: {cut -> numero}. Colorea los poligonos de geo_comunas por quintiles.
     //   tip (opcional): (cut, comuna, valor) -> string HTML para un tooltip enriquecido por comuna;
     //   sin tip, cae al formato simple "comuna: fmt(valor)".
+    //   colorNulo (opcional): color de relleno para las comunas SIN valor (por defecto gris); p.ej.
+    //   amarillo claro para marcar "con luz / sin corte" cuando los valores son las zonas con corte.
     if (cfg.comunas && window.PW_DATA && window.PW_DATA.geo_comunas) {
       const cc = cfg.comunas;
       const vals = Object.values(cc.valores).filter(v => v != null && !Number.isNaN(v)).sort((a, b) => a - b);
       const qn = p => vals.length ? vals[Math.min(vals.length - 1, Math.floor(p * vals.length))] : 0;
       const cortes = [qn(0.2), qn(0.4), qn(0.6), qn(0.8)];
       const colorDe = v => {
-        if (v == null || Number.isNaN(v)) return oscuro ? "#2c2c2a" : "#e8e7e2";
+        if (v == null || Number.isNaN(v)) return cc.colorNulo || (oscuro ? "#2c2c2a" : "#e8e7e2");
         let i = 0; while (i < 4 && v > cortes[i]) i++;
         return SEQ[i];
       };
