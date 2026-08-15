@@ -147,11 +147,11 @@ const FUENTE_IND = { pct_solar: "cen", pct_red: "cen", viviendas: "cen", km_bt: 
 // colores bien diferenciados: azul reservado para el fondo Censo (paleta SEQ azul),
 // el resto en hues separados y con semantica (EV verde, alta tension roja, sol oro...).
 const CAPAS = [
-  { k: "carga",  nombre: "Cargadores y conectores", color: "--s3",       on: true  },
+  { k: "carga",  nombre: "Cargadores y conectores", color: "--s3",       on: false },
   { k: "sub",    nombre: "Subestaciones",           color: "--critical", on: false },
-  { k: "lin_a", nombre: "Transmisión ≥200 kV",   color: "--s2", on: true },
-  { k: "lin_m", nombre: "Transmisión 66–154 kV", color: "--s2", on: true },
-  { k: "lin_b", nombre: "Transmisión <66 kV",    color: "--s2", on: true },
+  { k: "lin_a", nombre: "Transmisión ≥200 kV",   color: "--s2", on: false },
+  { k: "lin_m", nombre: "Transmisión 66–154 kV", color: "--s2", on: false },
+  { k: "lin_b", nombre: "Transmisión <66 kV",    color: "--s2", on: false },
   { k: "solar",  nombre: "Generación solar",        color: "--s4",       on: false },
   { k: "bess",   nombre: "Almacenamiento (BESS)",   color: "--s5",       on: false },
   { k: "postes", nombre: "Postes de distribución", color: "--ink-2", on: false },
