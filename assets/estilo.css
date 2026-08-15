@@ -340,15 +340,15 @@ footer.pw {
 /* chip blanco: cualquier logo (incluso oscuro sobre transparente) se ve en tema claro y oscuro */
 .colab-logo {
   display: inline-flex; align-items: center; justify-content: center;
-  height: 58px; padding: 9px 16px; background: #fff;
+  height: 70px; padding: 10px 18px; background: #fff;
   border: 1px solid var(--border); border-radius: 10px;
   transition: transform .15s ease, box-shadow .15s ease;
 }
 .colab-logo:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0, 0, 0, .12); }
-.colab-logo img { max-height: 40px; max-width: 150px; width: auto; object-fit: contain; display: block; }
+.colab-logo img { max-height: 50px; max-width: 210px; width: auto; object-fit: contain; display: block; }
 @media (max-width: 560px) {
-  .colab-logo { height: 48px; padding: 7px 12px; }
-  .colab-logo img { max-height: 32px; max-width: 120px; }
+  .colab-logo { height: 58px; padding: 8px 14px; }
+  .colab-logo img { max-height: 40px; max-width: 170px; }
 }
 /* ---------- mapa: partes visuales ---------- */
 .pw-mapa { border-radius: 10px; border: 1px solid var(--border); }
