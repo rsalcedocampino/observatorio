@@ -156,6 +156,33 @@
   ICONOS["cargadores-cortes.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/><path d="M3 3l18 18"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
 
+  // ---------- colaboradores (empresas / instituciones): banda de logos ARRIBA del pie.
+  // Para agregar uno: deja el archivo en web/assets/colaboradores/ y suma una linea aqui:
+  //   { nombre: "Nombre visible", logo: "assets/colaboradores/archivo.svg", url: "https://..." }
+  // (url es opcional). Si la lista esta vacia, la seccion NO se muestra.
+  const COLABORADORES = [
+    { nombre: "ANDES Rental", logo: "assets/colaboradores/andes-rental.jpg", url: "https://www.linkedin.com/company/andes-rental/" },
+    { nombre: "Representaciones RB", logo: "assets/colaboradores/representaciones-rb.jpg", url: "https://www.linkedin.com/company/representaciones-r-b/" },
+    { nombre: "AVEC — Asociación Gremial de Vehículos Eléctricos de Chile", logo: "assets/colaboradores/avec.jpg", url: "https://www.linkedin.com/company/avec-ag/" },
+  ];
+  function renderColaboradores(lista) {
+    const prev = document.getElementById("colaboradores");
+    if (prev) prev.remove();
+    if (!lista || !lista.length) return;
+    const sec = document.createElement("section");
+    sec.className = "colaboradores pw";
+    sec.id = "colaboradores";
+    const chips = lista.map(c => {
+      const img = `<img src="${esc(c.logo)}" alt="${esc(c.nombre)}" loading="lazy">`;
+      return c.url
+        ? `<a class="colab-logo" href="${esc(c.url)}" target="_blank" rel="noopener" title="${esc(c.nombre)}">${img}</a>`
+        : `<span class="colab-logo" title="${esc(c.nombre)}">${img}</span>`;
+    }).join("");
+    sec.innerHTML = `<h3>Empresas e instituciones colaboradoras</h3><div class="colab-grid">${chips}</div>`;
+    const f = document.querySelector("footer.pw");
+    if (f) document.body.insertBefore(sec, f); else document.body.appendChild(sec);
+  }
+
   // ---------- navegacion + pie
   function montarNav(activa) {
     const h = document.createElement("header");
@@ -188,6 +215,8 @@
       "y tecnología.<br>" +
       "Elaboración propia.";
     document.body.appendChild(f);
+
+    renderColaboradores(COLABORADORES);   // banda de logos arriba del pie (vacia -> no se muestra)
   }
 
   // ---------- formato
@@ -1244,6 +1273,6 @@
     return el;
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision };
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores };
 })();
 
