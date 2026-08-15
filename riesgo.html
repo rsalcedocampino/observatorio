@@ -47,6 +47,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota" id="nota-mapa"></p>
     <div id="panel-capas-cortes" class="capas-panel"></div>
     <div id="mapa-cortes"></div>
+    <div id="leyenda-wrap" style="display:none; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px">
+      <span class="nota" style="margin:0">Clientes sin luz por comuna:</span>
+      <div id="leyenda-mapa" class="leyenda" style="margin:0"></div>
+    </div>
     <p class="nota">Se colorean <b>solo las comunas con corte ahora</b> (más intenso = más clientes sin
     luz), según el detalle por comuna de la SEC. Los puntos son la red pública de carga; los que están en
     comunas con corte confirmado por la distribuidora aparecen en
@@ -378,6 +382,25 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
     mapaCortes.options.maxBoundsViscosity = 1.0;
     mapaCortes.setMinZoom(mapaCortes.getBoundsZoom(CHILE));
     if (onCap("cortes") && mapaCortes) attachHoverComuna(mapaCortes);
+    pintarLeyenda();
+  }
+  const SEQ_LEY = ["#cde2fb", "#9ec5f4", "#5598e7", "#256abf", "#0d366b"];
+  function pintarLeyenda() {
+    const wrap = document.getElementById("leyenda-wrap");
+    if (!wrap) return;
+    const vals = Object.values(valoresCorte).filter(v => v != null && !Number.isNaN(v)).sort((a, b) => a - b);
+    if (!onCap("cortes") || !vals.length) { wrap.style.display = "none"; return; }
+    const qn = p => vals[Math.min(vals.length - 1, Math.floor(p * vals.length))];
+    const c = [qn(0.2), qn(0.4), qn(0.6), qn(0.8)];
+    const f = v => PW.fmt(Math.round(v));
+    PW.leyendaMapa("leyenda-mapa", [
+      ["hasta " + f(c[0]), SEQ_LEY[0]],
+      [f(c[0]) + " - " + f(c[1]), SEQ_LEY[1]],
+      [f(c[1]) + " - " + f(c[2]), SEQ_LEY[2]],
+      [f(c[2]) + " - " + f(c[3]), SEQ_LEY[3]],
+      ["sobre " + f(c[3]), SEQ_LEY[4]],
+    ]);
+    wrap.style.display = "flex";
   }
   function pintarToggleCortes() {
     const el = document.getElementById("panel-capas-cortes");
