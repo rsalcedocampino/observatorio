@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Infraestructura de Carga — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260816a">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <h1>Infraestructura de Carga</h1>
+  <p class="sub">Mapa interactivo de la <b>red pública de carga</b> de Chile: cada punto es un cargador,
+  con su operador, conector, potencia, estado, dirección y horario. Filtra por operador, corriente
+  (AC/DC), potencia y región. Para el registro declarado a la SEC (agregados por región y potencia) ver
+  <a href="infraestructura.html">Infraestructura declarada (SEC)</a>.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="filtros">
+    <label>Operador <select id="f-op"><option value="">Todos</option></select></label>
+    <label>Corriente <select id="f-cor"><option value="">Todas</option><option value="DC">Carga rápida (DC)</option><option value="AC">Carga AC</option></select></label>
+    <label>Potencia <select id="f-pot"><option value="">Todas</option><option value="ultra">Ultrarrápida (≥50 kW)</option><option value="rapida">Rápida (22–49 kW)</option><option value="lenta">Lenta (&lt;22 kW)</option></select></label>
+    <label>Región <select id="f-reg"><option value="">Todas</option></select></label>
+    <span class="pill" id="ambito"></span>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa de cargadores públicos</h2>
+    <div id="mapa-carga"></div>
+    <div id="leyenda-wrap" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px">
+      <span class="nota" style="margin:0">Tipo de carga:</span>
+      <div id="leyenda-mapa" class="leyenda" style="margin:0"></div>
+    </div>
+    <p class="nota">Los puntos se agrupan en clústeres al alejar; acércate o haz clic en un clúster para
+    separarlos. Clic en un cargador para ver operador, conectores, potencia, estado, dirección, horario y
+    medios de pago. Color por tipo de carga: <b style="color:var(--s2)">DC (rápida)</b> /
+    <b style="color:var(--s3)">AC</b>.</p>
+  </div>
+</main>
+<script src="data/mapa.js"></script>
+<script src="assets/comun.js?v=260816a"></script>
+<script>
+PW.montarNav("mapa-carga.html");
+const MAPA = window.PW_DATA.mapa || {};
+const CARGA = (MAPA.carga || []).map(p => ({
+  ...p, lat: +p.lat, lon: +p.lon, _kw: parseFloat(p.kw) || 0, _nc: parseInt(p.nc, 10) || 0,
+  _dc: String(p.cor || "").toUpperCase() === "DC",
+})).filter(p => !Number.isNaN(p.lat) && !Number.isNaN(p.lon));
+
+document.getElementById("nota").textContent =
+  "Fuente: red pública de carga (OCPI + Ministerio de Energía + operadores). Generado " + (MAPA.generado || "—") + ".";
+
+const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`;
+const COL_DC = PW.color("--s2"), COL_AC = PW.color("--s3");
+
+// Poblar selects (operadores y regiones presentes en el dato)
+const selOp = document.getElementById("f-op");
+[...new Set(CARGA.map(p => p.op).filter(Boolean))].sort((a, b) => a.localeCompare(b))
+  .forEach(op => { const o = document.createElement("option"); o.value = op; o.textContent = op; selOp.appendChild(o); });
+const selReg = document.getElementById("f-reg");
+const REG = {};
+CARGA.forEach(p => { if (p.rcut) REG[p.rcut] = p.reg; });
+Object.entries(REG).sort((a, b) => (a[1] || "").localeCompare(b[1] || ""))
+  .forEach(([rc, nom]) => { const o = document.createElement("option"); o.value = rc; o.textContent = nom; selReg.appendChild(o); });
+const selCor = document.getElementById("f-cor");
+const selPot = document.getElementById("f-pot");
+
+function claseP(kw) { return kw >= 50 ? "ultra" : (kw >= 22 ? "rapida" : "lenta"); }
+function filtrar() {
+  const op = selOp.value, cor = selCor.value, pot = selPot.value, rc = selReg.value;
+  return CARGA.filter(p =>
+    (!op || p.op === op) &&
+    (!cor || (cor === "DC" ? p._dc : !p._dc)) &&
+    (!pot || claseP(p._kw) === pot) &&
+    (!rc || p.rcut === rc));
+}
+
+const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]);
+let mapa = null;
+function render() {
+  const pts = filtrar();
+  const rc = selReg.value;
+  const ambito = rc ? (REG[rc] || rc) : "todo el país";
+  document.getElementById("ambito").textContent = PW.fmt(pts.length) + " cargadores · " + ambito;
+
+  document.getElementById("kpis").innerHTML = [
+    [PW.fmt(pts.length), "cargadores", ambito],
+    [PW.fmt(pts.reduce((s, p) => s + p._nc, 0)), "conectores", "suma de conectores"],
+    [PW.fmt(new Set(pts.map(p => p.op).filter(Boolean)).size), "operadores", "distintos"],
+    [PW.fmt(pts.reduce((s, p) => s + p._kw, 0) / 1000, 1) + " MW", "potencia instalada", "suma de kW"],
+  ].map(kpiHTML).join("");
+
+  const capas = [{
+    nombre: "Cargadores", visible: true, color: COL_AC,
+    puntos: pts.map(p => ({
+      lat: p.lat, lon: p.lon, r: 5, color: p._dc ? COL_DC : COL_AC,
+      tip: (p.n || (p.op ? "Estación " + p.op : "Cargador")) + (p._kw ? " — " + PW.fmt(p._kw) + " kW" : ""),
+      popup: PW.popupEstacion(p),
+    })),
+  }];
+  const prev = mapa ? { c: mapa.getCenter(), z: mapa.getZoom() } : null;
+  if (mapa) { mapa.remove(); mapa = null; }
+  mapa = PW.mapa("mapa-carga", {
+    capas, sinSelector: true, alto: 560,
+    centro: prev ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3], zoom: prev ? prev.z : 5,
+  });
+  // [FOCO CHILE] no paear fuera + zoom mínimo = Chile completo; encuadre inicial a Chile.
+  if (!prev) mapa.fitBounds(CHILE, { animate: false });
+  mapa.setMaxBounds(CHILE.pad(0.12));
+  mapa.options.maxBoundsViscosity = 1.0;
+  mapa.setMinZoom(mapa.getBoundsZoom(CHILE));
+}
+
+PW.leyendaMapa("leyenda-mapa", [["DC (rápida)", COL_DC], ["AC", COL_AC]]);
+[selOp, selCor, selPot, selReg].forEach(s => s.addEventListener("input", render));
+render();
+</script>
+</body>
+</html>

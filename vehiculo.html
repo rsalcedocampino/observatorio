@@ -17,7 +17,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Ficha vehículo 360 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260815e">
+<link rel="stylesheet" href="assets/estilo.css?v=260816a">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -48,7 +48,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script src="data/vehiculo.js"></script>
-<script src="assets/comun.js?v=260815e"></script>
+<script src="assets/comun.js?v=260816a"></script>
 <script>
 PW.montarNav("vehiculo.html");
 const D = PW_DATA.vehiculo;
@@ -66,18 +66,11 @@ function norm(s) {
 function mostrarDetalle(m) {
   const marcaN = norm(m.marca);
   const info = D.marcas[marcaN] || {};
-  const filas = [];
-  const anios = new Set([
-    ...Object.keys(info.ventas_anual || {}),
-    ...Object.keys(info.import_anual || {}),
-  ]);
-  [...anios].sort().forEach(a => {
-    filas.push({
-      anio: a,
-      ventas: (info.ventas_anual || {})[a] ?? null,
-      imports: (info.import_anual || {})[a] ?? null,
-    });
-  });
+  const totV = Object.values(info.ventas_anual || {}).reduce((s, v) => s + (v || 0), 0);
+  const totI = Object.values(info.import_anual || {}).reduce((s, v) => s + (v || 0), 0);
+  const marcaHTML = (totV || totI)
+    ? `<p class="nota" style="margin-top:12px"><b>Marca ${m.marca}:</b> ${PW.fmt(totV)} vendidos y ${PW.fmt(totI)} importados (acumulado electrificado). La <b>rotación mensual</b> por marca —importación vs venta, stock y rezago— está en <a href="rotacion.html">Rotación de inventario</a>.</p>`
+    : `<p class="nota" style="margin-top:12px">La <b>rotación por marca</b> (importación vs venta, stock, rezago) está en <a href="rotacion.html">Rotación de inventario</a>.</p>`;
   const det = document.getElementById("detalle");
   det.innerHTML = `
   <div class="tarjeta">
@@ -91,22 +84,8 @@ function mostrarDetalle(m) {
       <div class="kpi"><div class="v">${m.imp_unidades != null ? PW.fmt(m.imp_unidades) : "—"}</div><div class="l">unidades importadas</div><div class="d">${m.imp_unidades != null ? "microdato DIN de Aduanas" : "sin registro por modelo"}</div></div>
       <div class="kpi"><div class="v">${m.ficha_docs != null ? m.ficha_docs : "0"}</div><div class="l">documentos de rescate</div><div class="d">${m.ficha_docs ? '<a href="rescate.html">ver en Rescate</a>' : "sin ficha"}</div></div>
     </div>
-    <h2>Marca ${m.marca}: ventas vs importaciones por año</h2>
-    <div id="g-marca"></div>
-    <p class="nota">Ventas a nivel marca (todas las tecnologias electrificadas de la fuente
-    mensual); importaciones del microdato aduanero homologado. Las curvas no son comparables
-    uno a uno: sirven de tendencia.</p>
+    ${marcaHTML}
   </div>`;
-  if (filas.length) {
-    PW.lineas("g-marca", {
-      labels: filas.map(f => f.anio),
-      series: [
-        { nombre: "Ventas marca", valores: filas.map(f => f.ventas) },
-        { nombre: "Importaciones marca", valores: filas.map(f => f.imports) },
-      ],
-      fmtV: v => PW.fmt(v) + " unid.",
-    });
-  }
   det.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 

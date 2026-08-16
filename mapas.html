@@ -14,10 +14,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Mapas Interactivos — Energías Futuro</title>
+<title>Mapas Interactivos con Capas — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260815e">
+<link rel="stylesheet" href="assets/estilo.css?v=260816a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -29,7 +29,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
-  <h1>Mapas Interactivos</h1>
+  <h1>Mapas Interactivos con Capas</h1>
   <p class="sub">Un solo mapa para cruzar las capas del sistema eléctrico y de
   electromovilidad: la <b>red de carga</b>, la <b>transmisión</b> que la alimenta (separada por
   rango de tensión), la <b>generación renovable</b> y el <b>almacenamiento</b> que la respaldan,
@@ -66,7 +66,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/geo_lineas.js"></script>
 <script src="data/geo_comunas.js"></script>
 <script src="data/postes_index.js"></script>
-<script src="assets/comun.js?v=260815e"></script>
+<script src="assets/comun.js?v=260816a"></script>
 <script>
 PW.montarNav("mapas.html");
 
@@ -328,20 +328,12 @@ function pintarKpis() {
 
 function pintarPanel() {
   const el = document.getElementById("panel-capas");
-  el.innerHTML = CAPAS.map(c => {
-    let num;
-    if (c.k === "postes") {
-      const t = totalPostes();  // comuna / suma de la region / suma pais (Todas), desde el indice CGE
-      num = t ? PW.fmt(t) : "sin red CGE";
-    } else if (c.k === "mt" || c.k === "bt") {  // usa el conteo cargado/indice del scope (comuna o region-MT)
-      const scope = cutsTramosScope(c.k);
-      if (scope.length) num = PW.fmt(totalTramos(c.k));
-      else if (filtroTerr.com) num = "sin red CGE";
-      else num = TRAMOS[c.k].region ? "elige región" : "elige comuna";
-    } else num = PW.fmt(conteos[c.k] || 0);
-    return `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
-      `<span class="dot"></span>${c.nombre} <span class="num">${num}</span></span>`;
-  }).join("");
+  // Los chips NO muestran conteo: la cantidad de cada capa no es fija (cambia con el filtro
+  // territorial / el muestreo), así que confundía. La guía ("elige región/comuna") y los totales
+  // siguen disponibles en el contador/hints bajo el mapa y en los KPIs.
+  el.innerHTML = CAPAS.map(c =>
+    `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
+    `<span class="dot"></span>${c.nombre}</span>`).join("");
   el.querySelectorAll(".capa-chip").forEach(ch => ch.addEventListener("click", () => {
     const c = CAPAS.find(x => x.k === ch.dataset.k);
     c.on = !c.on;
