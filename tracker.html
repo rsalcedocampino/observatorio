@@ -17,7 +17,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Meta 2035 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260815e">
+<link rel="stylesheet" href="assets/estilo.css?v=260816a">
 <style>
 .semaforo td:first-child { font-weight: 600; }
 .sem-punto { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 7px; vertical-align: -1px; }
@@ -115,6 +115,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2 style="margin-top:0">El parque que viene y lo que exigirá</h2>
     <div class="kpis" id="kpis-parque"></div>
     <p class="nota" id="nota-parque"></p>
+    <p class="nota">Base del parque: padrón <b>INE 2024</b> de vehículos con permiso de circulación
+    (ver <a href="permisos.html">Parque de vehículos</a>); sobre esa base se acumulan las ventas
+    enchufables mensuales. La serie histórica del parque no se repite aquí.</p>
   </div>
 
   <h2 class="pregunta">3. ¿Con que energía se cargaran?</h2>
@@ -131,9 +134,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <h2 class="pregunta">4. ¿Qué esta comprometido y que se propone?</h2>
   <p class="puente">Todas las metas oficiales ordenadas por su año objetivo con su fuerza
-  jurídica real, y las propuestas sobre la mesa para cerrar las brechas — del gobierno, del
-  estudio de copropiedad y del gremio renovable. Fuente: biblioteca normativa
-  (<a href="normativa.html">detalle completo</a>).</p>
+  jurídica real. Las propuestas para cerrar las brechas —por actor y norma por norma— viven
+  en la biblioteca normativa completa: <a href="normativa.html">Normativa y metas</a>.</p>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Cronología de metas oficiales</h2>
@@ -142,23 +144,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     azul = compromiso de gobierno, amarillo = indicativa, rojo = declarativa.</p>
   </div>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Propuestas sobre la mesa, por actor</h2>
-    <div id="t-propuestas"></div>
-    <p class="nota">Digitalizado del resumen de los 9 documentos estratégicos (22-07-2026).
-    La más relevante: el PdL de Incentivo a la Electromovilidad, comprometido para 2026-2027
-    y aun sin ingresar.</p>
-  </div>
-
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Propuestas de actualización norma por norma</h2>
-    <div class="filtros">
-      <label>Buscar <input type="search" id="busca-prop" placeholder="Norma o propuesta..."></label>
-    </div>
-    <div id="t-normas-prop"></div>
-    <p class="nota">Las 32 normas con redaccion de actualización propuesta en el análisis de
-    brechas — el "que habría que cambiar" concreto de cada instrumento.</p>
-  </div>
+  <p class="nota" style="margin-top:14px">Las <b>propuestas sobre la mesa por actor</b> (gobierno,
+  estudio de copropiedad, gremio renovable) y las <b>normas con su actualización propuesta</b>
+  están en la biblioteca normativa, junto con las 25 brechas, la matriz por eje y el radar
+  legislativo: <a href="normativa.html">ver en Normativa y metas &rarr;</a></p>
 
   <h2 class="pregunta">5. ¿El sistema eléctrico sigue el plan?</h2>
   <p class="puente">La PELP definió tres escenarios de expansión. Que trayectoria esta
@@ -175,7 +164,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/c_pelp.js"></script>
 <script src="data/c_demanda.js"></script>
 <script src="data/c_normativa.js"></script>
-<script src="assets/comun.js?v=260815e"></script>
+<script src="assets/comun.js?v=260816a"></script>
 <script>
 PW.montarNav("tracker.html");
 const D = PW_DATA.tracker;
@@ -514,29 +503,8 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
         `<li>${m.Meta}${m.Valor != null ? ": <b>" + PW.fmt(+m.Valor) + (m.Unidad ? " " + m.Unidad : "") + "</b>" : ""}` +
         `<span class="vin vin-${m.clase}">${m.clase}</span></li>`).join("") +
       `</ul></div>`).join("");
-
-  PW.tabla("t-propuestas", [
-    { k: "actor", titulo: "Actor", fmt: v => `<span class="pill">${v}</span>` },
-    { k: "propuesta", titulo: "Propuesta", fmt: (v, r) => `<b>${v}</b><br><span style="color:var(--ink-2);font-size:12.5px">${r.detalle}</span>` },
-    { k: "estado", titulo: "Estado" },
-    { k: "fuente", titulo: "Fuente" },
-  ], N.propuestas_actor, {});
-
-  const normQ = s => (s || "").toLowerCase();
-  let tNP = null;
-  function pintarNP() {
-    const q = normQ(document.getElementById("busca-prop").value);
-    const filas = N.normas_propuestas.filter(n => !q ||
-      normQ(n.norma + " " + n.propuesta).includes(q));
-    const cols = [
-      { k: "norma", titulo: "Norma" },
-      { k: "numero", titulo: "Número" },
-      { k: "propuesta", titulo: "Actualizacion propuesta" },
-    ];
-    if (tNP) tNP.actualizar(filas); else tNP = PW.tabla("t-normas-prop", cols, filas, { max: 40, buscador: false });
-  }
-  document.getElementById("busca-prop").addEventListener("input", pintarNP);
-  pintarNP();
+  // Las propuestas por actor y las 32 normas con actualización propuesta se trasladaron
+  // a normativa.html (biblioteca normativa completa). Aquí queda solo la cronología de metas.
 })();
 
 // ---------- 5. veredicto PELP

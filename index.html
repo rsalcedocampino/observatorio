@@ -17,7 +17,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Energías Futuro — Chile</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260815e">
+<link rel="stylesheet" href="assets/estilo.css?v=260816a">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -51,11 +51,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h2 id="mapas">Mapas Interactivos</h2>
   <div class="grid-modulos">
     <a class="modulo-card" href="mapas.html">
-      <h3>Mapas Interactivos</h3>
+      <h3>Mapas Interactivos con Capas</h3>
       <p>Un solo mapa para cruzar cinco capas: red de carga, transmisión (subestaciones y
       líneas), generación solar, almacenamiento BESS y el Censo por comuna. Superponga las
       capas que quiera y encuentre las relaciones sobre el territorio.</p>
       <div class="aud"><span class="pill">5 fuentes en un mapa</span> <span class="pill">Explorador</span></div>
+    </a>
+    <a class="modulo-card" href="cargadores-cortes.html">
+      <h3>Cargadores Públicos y Cortes de Energía</h3>
+      <p>Mapa en vivo: la red pública de carga cruzada con los cortes de la SEC — qué comunas están
+      sin luz ahora y qué cargadores podrían quedar sin servicio.</p>
+      <div class="aud"><span class="pill">SEC en vivo</span> <span class="pill">Mapa</span></div>
+    </a>
+    <a class="modulo-card" href="mapa-carga.html">
+      <h3>Infraestructura de Carga</h3>
+      <p>Mapa de la red pública de carga: cada cargador con su operador, conector, potencia (AC/DC),
+      estado, dirección y horario. Filtra por operador, corriente, potencia y región.</p>
+      <div class="aud"><span class="pill">912 cargadores</span> <span class="pill">Mapa</span></div>
     </a>
   </div>
 
@@ -236,12 +248,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <h2 id="energia">Energía</h2>
   <div class="grid-modulos">
-    <a class="modulo-card" href="cargadores-cortes.html">
-      <h3>Cargadores Públicos y Cortes de Energía</h3>
-      <p>Mapa en vivo: la red pública de carga cruzada con los cortes de la SEC — qué comunas están
-      sin luz ahora y qué cargadores podrían quedar sin servicio.</p>
-      <div class="aud"><span class="pill">SEC en vivo</span> <span class="pill">Mapa</span></div>
-    </a>
     <a class="modulo-card" href="riesgo.html">
       <h3>Cortes eléctricos (histórico)</h3>
       <p>Cuántos clientes y cuántas horas sin luz acumula cada comuna en el histórico (2017 a
@@ -341,7 +347,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script src="data/resumen.js"></script>
-<script src="assets/comun.js?v=260815e"></script>
+<script src="assets/comun.js?v=260816a"></script>
 <script>
 PW.montarNav("index.html");
 const k = PW_DATA.resumen.kpis;

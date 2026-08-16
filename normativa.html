@@ -17,7 +17,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Normativa y metas — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260815e">
+<link rel="stylesheet" href="assets/estilo.css?v=260816a">
 <style>
 .vin { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
 .vin-vinculante { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
@@ -193,6 +193,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="t-brechas"></div>
   </div>
 
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Propuestas sobre la mesa, por actor</h2>
+    <p class="nota">Lo que cada actor propone para cerrar las brechas: gobierno, estudio de
+    copropiedad y gremio renovable. Digitalizado del resumen de los 9 documentos estratégicos
+    (22-07-2026). La más relevante: el PdL de Incentivo a la Electromovilidad, comprometido para
+    2026-2027 y aun sin ingresar.</p>
+    <div id="t-propuestas"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Propuestas de actualización, norma por norma</h2>
+    <p class="nota">Cada norma con su redacción de actualización propuesta en el análisis de
+    brechas — el "qué habría que cambiar" concreto de cada instrumento.</p>
+    <div class="filtros">
+      <label>Buscar <input type="search" id="busca-prop" placeholder="Norma o propuesta..."></label>
+    </div>
+    <div id="t-normas-prop"></div>
+  </div>
+
   <div class="fila2">
     <div class="tarjeta">
       <h2 style="margin-top:0">Radar legislativo: lo que viene</h2>
@@ -240,7 +259,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script src="data/c_normativa.js"></script>
-<script src="assets/comun.js?v=260815e"></script>
+<script src="assets/comun.js?v=260816a"></script>
 <script>
 PW.montarNav("normativa.html");
 const D = PW_DATA.c_normativa;
@@ -290,6 +309,33 @@ function pintarBrechas() {
 }
 document.getElementById("f-urg").addEventListener("input", pintarBrechas);
 pintarBrechas();
+
+// Propuestas sobre la mesa, por actor (trasladado desde tracker.html)
+PW.tabla("t-propuestas", [
+  { k: "actor", titulo: "Actor", fmt: v => `<span class="pill">${v}</span>` },
+  { k: "propuesta", titulo: "Propuesta", fmt: (v, r) => `<b>${v}</b><br><span style="color:var(--ink-2);font-size:12.5px">${r.detalle || ""}</span>` },
+  { k: "estado", titulo: "Estado" },
+  { k: "fuente", titulo: "Fuente" },
+], D.propuestas_actor || [], {});
+
+// Propuestas de actualización, norma por norma (las 32; trasladado desde tracker.html)
+(function () {
+  const NP = D.normas_propuestas || [];
+  const q0 = s => (s || "").toLowerCase();
+  let tNP = null;
+  function pintarNP() {
+    const q = q0(document.getElementById("busca-prop").value);
+    const filas = NP.filter(n => !q || q0(n.norma + " " + n.propuesta).includes(q));
+    const cols = [
+      { k: "norma", titulo: "Norma" },
+      { k: "numero", titulo: "Número" },
+      { k: "propuesta", titulo: "Actualizacion propuesta" },
+    ];
+    if (tNP) tNP.actualizar(filas); else tNP = PW.tabla("t-normas-prop", cols, filas, { max: 40, buscador: false });
+  }
+  document.getElementById("busca-prop").addEventListener("input", pintarNP);
+  pintarNP();
+})();
 
 PW.tabla("t-monitoreo", [
   { k: "Item", titulo: "Pendiente" },

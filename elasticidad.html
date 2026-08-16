@@ -17,7 +17,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Elasticidad bencina-EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260815e">
+<link rel="stylesheet" href="assets/estilo.css?v=260816a">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -34,8 +34,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Participación de mercado enchufable (mensual)</h2>
-    <div id="g-part"></div>
+    <h2 style="margin-top:0">Cómo se leerá este cruce</h2>
+    <p class="nota">Cuando se acumulen suficientes capturas, esta página cruzará la <b>participación
+    de ventas enchufables</b> con el <b>precio real de la bencina 93</b> (regresión con rezagos de
+    0-6 meses) para medir si las alzas de combustible empujan la adopción EV. La evolución completa de
+    la participación enchufable ya vive en <a href="tracker.html">Meta 2035</a> (no se repite aquí);
+    el precio de la bencina que se va acumulando está en la tabla de abajo.</p>
   </div>
 
   <div class="tarjeta">
@@ -46,7 +50,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script src="data/c_elasticidad.js"></script>
-<script src="assets/comun.js?v=260815e"></script>
+<script src="assets/comun.js?v=260816a"></script>
 <script>
 PW.montarNav("elasticidad.html");
 const D = PW_DATA.c_elasticidad;
@@ -60,12 +64,6 @@ document.getElementById("kpis").innerHTML = [
   [D.participacion.length ? PW.fmt(D.participacion[D.participacion.length - 1].pct, 1) + "%" : "—",
     "participacion enchufable actual", D.participacion.length ? "mes " + D.participacion[D.participacion.length - 1].ym : ""],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-PW.lineas("g-part", {
-  labels: D.participacion.map(p => p.ym),
-  series: [{ nombre: "Enchufables %", valores: D.participacion.map(p => p.pct) }],
-  fmtV: v => PW.fmt(v, 1) + "%", fmtY: v => Math.round(v) + "%", alto: 240,
-});
 
 PW.tabla("t-capturas", [
   { k: "captura", titulo: "Fecha de captura" },
