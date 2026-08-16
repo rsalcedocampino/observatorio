@@ -82,12 +82,10 @@
       ["normativa.html", "Metas y marco legal"],
       ["reporte-energetico.html", "Reporte Energético 2026 CCGE"],
     ]],
-    ["Seguros", [
-      ["seguros.html", "Coberturas EV"],
-    ]],
     ["Seguridad", [
       ["rescate.html", "Fichas de rescate"],
       ["fichacober.html", "Cobertura de rescate"],
+      ["seguros.html", "Coberturas EV"],
     ]],
   ];
 
