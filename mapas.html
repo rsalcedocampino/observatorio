@@ -175,8 +175,9 @@ const CAPAS = [
   { k: "postes", nombre: "Postes de distribución", color: "--ink-2", on: false, g: "Distribución (CGE)" },
   { k: "mt",     nombre: "Red MT (media tensión)",  color: "#7c3aed",    on: false, g: "Distribución (CGE)" },
   { k: "bt",     nombre: "Red BT (baja tensión)",   color: "#ec4899",    on: false, g: "Distribución (CGE)" },
-  { k: "censo",  nombre: "Telón por comuna (Censo / SEC)", color: "--s1",  on: false, g: "Fondo comunal" },
 ];
+// El telon comunal (Censo/SEC) ya no es un chip: se enciende/apaga con el selector
+// "Telon de fondo por comuna" (opcion "— (apagado)" = off).
 const on = k => (CAPAS.find(c => c.k === k) || {}).on;
 
 // cruces sugeridos: cada uno arma una combinacion para responder una pregunta
@@ -185,14 +186,14 @@ const PRESETS = [
     desc: "Los cargadores sobre la transmisión que los alimenta: quién está lejos de la red." },
   { t: "Generación + almacenamiento", on: ["solar", "bess"],
     desc: "Dónde se genera energía solar y dónde se guarda en baterías." },
-  { t: "Cobertura vs Censo", on: ["carga", "censo"], ind: "pct_red",
+  { t: "Cobertura vs Censo", on: ["carga"], ind: "pct_red",
     desc: "La red de carga sobre la electrificación de los hogares por comuna." },
-  { t: "Solar vs potencial del hogar", on: ["solar", "censo"], ind: "pct_solar",
+  { t: "Solar vs potencial del hogar", on: ["solar"], ind: "pct_solar",
     desc: "Plantas solares sobre el porcentaje de viviendas con generación solar propia." },
-  { t: "Red de distribución (SEC)", on: ["censo"], ind: "km_bt",
+  { t: "Red de distribución (SEC)", on: [], ind: "km_bt",
     desc: "Kilómetros de red de baja tensión (BT) por comuna, del GIS de la SEC (todas las distribuidoras de Chile, 346 comunas)." },
-  { t: "Ver todo", on: ["carga", "sub", "lin_a", "lin_m", "lin_b", "solar", "bess", "censo"] },
-  { t: "Limpiar", on: [] },
+  { t: "Ver todo", on: ["carga", "sub", "lin_a", "lin_m", "lin_b", "solar", "bess"], ind: "pct_red" },
+  { t: "Limpiar", on: [], ind: "" },
 ];
 
 let mapa = null, filtroTerr = {}, conteos = {};
@@ -309,12 +310,13 @@ function render(fit) {
     });
   });
 
-  // el telon comunal toma la fuente segun el indicador: Censo (CEN) o Distribucion SEC (DIST)
+  // el telon comunal se enciende ELIGIENDO un indicador en el selector ("" = apagado);
+  // la fuente depende del indicador: Censo (CEN) o Distribucion SEC (DIST)
   const filas = FUENTE_IND[ind] === "dist" ? (DIST.comunas || []) : (CEN.comunas || []);
-  const comunas = {
-    nombre: IND[ind][0], visible: on("censo"), fmt: IND[ind][1],
+  const comunas = ind ? {
+    nombre: IND[ind][0], visible: true, fmt: IND[ind][1],
     valores: Object.fromEntries(filas.map(c => [c.cut, c[ind]])),
-  };
+  } : { nombre: "", visible: false, valores: {} };
 
   const prev = mapa ? { c: mapa.getCenter(), z: mapa.getZoom() } : null;
   if (mapa) { mapa.remove(); mapa = null; }
@@ -369,10 +371,21 @@ function pintarPanel() {
   }));
 }
 
+// [GUIA] regiones que SI tienen dato para una capa de distribucion (desde el indice, por conteo real)
+function regionesCon(key) {
+  return [...new Set(Object.values(POSTES_IDX)
+    .filter(o => (o[key] || 0) > 0)
+    .map(o => (o.region || "").replace("OHiggins", "O'Higgins")))].filter(Boolean).sort();
+}
+function txtRegiones(key) {
+  const rs = regionesCon(key);
+  return rs.length >= 16 ? "las 16 regiones" : rs.join(", ");
+}
+
 function postesHint() {
   const t = totalPostes();
   if (!filtroTerr.com && !filtroTerr.rcut) {
-    return " Postes: " + PW.fmt(t) + " en total (CGE, 90 comunas del centro-sur); elige una región o comuna para dibujarlos.";
+    return " Postes: " + PW.fmt(t) + " en total (CGE); con dato en: " + txtRegiones("n") + " — elige una de esas regiones (o una comuna) para dibujarlos.";
   }
   if (!t) return " Postes: sin red de distribución CGE aquí.";
   const pts = postesRender();
@@ -385,8 +398,9 @@ function tramosHint(tipo) {
   const T = tipo.toUpperCase(), nom = TRAMOS[tipo].nombre;
   const scope = cutsTramosScope(tipo);
   if (!scope.length) {
-    if (filtroTerr.com) return " Red " + T + ": sin red CGE en esta comuna.";
-    return " Red " + T + ": elige una comuna" + (TRAMOS[tipo].region ? " o región" : "") + " (CGE) para dibujarla.";
+    if (filtroTerr.com) return " Red " + T + ": sin red en esta comuna.";
+    return " Red " + T + ": elige una comuna" + (TRAMOS[tipo].region ? " o región" : "") +
+      " para dibujarla (con dato en " + txtRegiones(tipo) + ").";
   }
   const segs = tramosSegs(tipo);
   if (!segs) return " Red " + T + ": cargando…";
@@ -417,7 +431,8 @@ function pintarContador(ind) {
     "Tamaño del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
     (transVis && totNew ? "Líneas nuevas (KMZ 2019): " + PW.fmt(totNew) + " (complemento de voltaje + ausentes del troncal IDE). " : "") +
     (on("mt") || on("bt") ? "Red de distribución CGE: MT (media tensión) en violeta, BT (baja tensión) en rosado; por comuna (MT también por región). " : "") +
-    (FUENTE_IND[ind] === "dist"
+    (!ind ? "Telón de fondo comunal apagado (elígelo en el selector para colorear las comunas)."
+      : FUENTE_IND[ind] === "dist"
       ? "Distribución SEC: fondo azul, más oscuro = más kilómetros de red " + (ind === "km_bt" ? "BT (baja tensión)" : "MT (media tensión)") + " en la comuna (GIS de la SEC, todas las distribuidoras)."
       : "Censo: fondo azul, más oscuro = mayor " + (ind === "viviendas" ? "numero de viviendas" : "porcentaje") + " en la comuna.");
   actualizarAvisoTramos();
@@ -429,10 +444,14 @@ function actualizarAvisoTramos() {
   const av = document.getElementById("aviso-tramos");
   if (!av) return;
   const faltan = [];
-  if (on("mt") && !cutsTramosScope("mt").length) faltan.push("Red MT: elige una región o comuna");
-  if (on("bt") && !cutsTramosScope("bt").length) faltan.push("Red BT: elige una comuna");
+  if (on("postes") && !cutsPostesScope().length)
+    faltan.push("Postes: elige una región o comuna — con dato en: " + txtRegiones("n"));
+  if (on("mt") && !cutsTramosScope("mt").length)
+    faltan.push("Red MT: elige una región o comuna — con dato en " + txtRegiones("mt"));
+  if (on("bt") && !cutsTramosScope("bt").length)
+    faltan.push("Red BT: elige una comuna — con dato en " + txtRegiones("bt"));
   if (faltan.length) {
-    av.textContent = "La red de distribución CGE se dibuja por territorio (es muy densa para todo Chile): " + faltan.join(" · ") + ".";
+    av.textContent = "La red de distribución se dibuja por territorio (es muy densa para todo Chile). " + faltan.join(" · ") + ".";
     av.style.display = "";
   } else {
     av.style.display = "none";
@@ -441,7 +460,7 @@ function actualizarAvisoTramos() {
 
 function aplicarPreset(p) {
   CAPAS.forEach(c => { c.on = p.on.includes(c.k); });
-  if (p.ind) document.getElementById("f-ind").value = p.ind;
+  if (p.ind !== undefined) document.getElementById("f-ind").value = p.ind;  // "" = telon apagado
   render(false);
 }
 
@@ -455,6 +474,7 @@ Object.values(POSTES_IDX).forEach(o => territorio.push({ rcut: o.rcut, reg: regD
 PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; render(true); sincronizarPostes(); sincronizarTramos("mt"); sincronizarTramos("bt"); },
   `<label>Telón de fondo por comuna
      <select id="f-ind">
+       <option value="" selected>— (apagado)</option>
        <optgroup label="Censo 2024">
          <option value="pct_solar">% viviendas con generación solar</option>
          <option value="pct_red">% viviendas conectadas a la red</option>
