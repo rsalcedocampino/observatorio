@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -32,6 +32,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
+<style>
+  /* [PANEL DE CAPAS] chips agrupados por categoría (page-local) */
+  #panel-capas { align-items: flex-start; row-gap: 10px; }
+  .capa-grupo { display: flex; flex-direction: column; gap: 5px; }
+  .capa-grupo:not(:last-child) { padding-right: 12px; border-right: 1px solid var(--border); }
+  .capa-grupo-tit { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-3); }
+  .capa-grupo-chips { display: flex; gap: 7px; flex-wrap: wrap; }
+</style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -157,17 +165,17 @@ const FUENTE_IND = { pct_solar: "cen", pct_red: "cen", viviendas: "cen", km_bt: 
 // colores bien diferenciados: azul reservado para el fondo Censo (paleta SEQ azul),
 // el resto en hues separados y con semantica (EV verde, alta tension roja, sol oro...).
 const CAPAS = [
-  { k: "carga",  nombre: "Cargadores y conectores", color: "--s3",       on: false },
-  { k: "sub",    nombre: "Subestaciones",           color: "--critical", on: false },
-  { k: "lin_a", nombre: "Transmisión ≥200 kV",   color: "--s2", on: false },
-  { k: "lin_m", nombre: "Transmisión 66–154 kV", color: "--s2", on: false },
-  { k: "lin_b", nombre: "Transmisión <66 kV",    color: "--s2", on: false },
-  { k: "solar",  nombre: "Generación solar",        color: "--s4",       on: false },
-  { k: "bess",   nombre: "Almacenamiento (BESS)",   color: "--s5",       on: false },
-  { k: "postes", nombre: "Postes de distribución", color: "--ink-2", on: false },
-  { k: "mt",     nombre: "Red MT (media tensión)",  color: "#7c3aed",    on: false },
-  { k: "bt",     nombre: "Red BT (baja tensión)",   color: "#ec4899",    on: false },
-  { k: "censo",  nombre: "Telón por comuna (Censo / SEC)", color: "--s1",  on: false },
+  { k: "carga",  nombre: "Cargadores y conectores", color: "--s3",       on: false, g: "Carga" },
+  { k: "sub",    nombre: "Subestaciones",           color: "--critical", on: false, g: "Transmisión" },
+  { k: "lin_a", nombre: "Transmisión ≥200 kV",   color: "--s2", on: false, g: "Transmisión" },
+  { k: "lin_m", nombre: "Transmisión 66–154 kV", color: "--s2", on: false, g: "Transmisión" },
+  { k: "lin_b", nombre: "Transmisión <66 kV",    color: "--s2", on: false, g: "Transmisión" },
+  { k: "solar",  nombre: "Generación solar",        color: "--s4",       on: false, g: "Generación y almacenamiento" },
+  { k: "bess",   nombre: "Almacenamiento (BESS)",   color: "--s5",       on: false, g: "Generación y almacenamiento" },
+  { k: "postes", nombre: "Postes de distribución", color: "--ink-2", on: false, g: "Distribución (CGE)" },
+  { k: "mt",     nombre: "Red MT (media tensión)",  color: "#7c3aed",    on: false, g: "Distribución (CGE)" },
+  { k: "bt",     nombre: "Red BT (baja tensión)",   color: "#ec4899",    on: false, g: "Distribución (CGE)" },
+  { k: "censo",  nombre: "Telón por comuna (Censo / SEC)", color: "--s1",  on: false, g: "Fondo comunal" },
 ];
 const on = k => (CAPAS.find(c => c.k === k) || {}).on;
 
@@ -338,12 +346,20 @@ function pintarKpis() {
 
 function pintarPanel() {
   const el = document.getElementById("panel-capas");
-  // Los chips NO muestran conteo: la cantidad de cada capa no es fija (cambia con el filtro
-  // territorial / el muestreo), así que confundía. La guía ("elige región/comuna") y los totales
-  // siguen disponibles en el contador/hints bajo el mapa y en los KPIs.
-  el.innerHTML = CAPAS.map(c =>
-    `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
-    `<span class="dot"></span>${c.nombre}</span>`).join("");
+  // Los chips NO muestran conteo (la cantidad no es fija: cambia con el filtro/muestreo). Se AGRUPAN por
+  // categoría (Carga · Transmisión · Generación y almacenamiento · Distribución CGE · Fondo comunal) con
+  // subtítulo, para escanearlos más rápido. La guía y los totales siguen en el contador/hints y KPIs.
+  const chip = c => `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
+    `<span class="dot"></span>${c.nombre}</span>`;
+  const grupos = [];
+  CAPAS.forEach(c => {
+    let g = grupos.find(x => x.g === c.g);
+    if (!g) { g = { g: c.g, items: [] }; grupos.push(g); }
+    g.items.push(c);
+  });
+  el.innerHTML = grupos.map(g =>
+    `<div class="capa-grupo"><span class="capa-grupo-tit">${g.g}</span>` +
+    `<div class="capa-grupo-chips">${g.items.map(chip).join("")}</div></div>`).join("");
   el.querySelectorAll(".capa-chip").forEach(ch => ch.addEventListener("click", () => {
     const c = CAPAS.find(x => x.k === ch.dataset.k);
     c.on = !c.on;
