@@ -37,18 +37,32 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
-  <h1>Censo Nacional 2024</h1>
-  <p class="sub">El retrato demográfico y habitacional del país según el <b>Censo 2024 (INE)</b>:
+  <h1>Censo Nacional</h1>
+  <p class="sub">El retrato demográfico y habitacional del país según el <b>Censo 2002, 2017 y 2024 (INE)</b>:
   población, estructura de edad, educación, empleo, vivienda, conectividad y servicios básicos, por
   región y por las 346 comunas. Es el contexto territorial que sostiene todos los demás módulos.</p>
   <p class="nota" id="nota"></p>
 
+  <div class="tarjeta" id="card-filtros">
+    <div class="filtros">
+      <label>Año <select id="f-ano">
+        <option value="2024">Censo 2024</option>
+        <option value="2017">Censo 2017</option>
+        <option value="2002">Censo 2002</option>
+      </select></label>
+      <label>Región <select id="f-region"><option value="">Todas</option></select></label>
+      <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
+      <button type="button" id="f-limpiar" class="preset-btn">Limpiar filtros</button>
+    </div>
+    <p class="nota" id="ctx"></p>
+  </div>
+
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Estructura de edad del país</h2>
+    <h2 style="margin-top:0">Estructura de edad</h2>
     <div id="g-edad"></div>
-    <p class="nota">Distribución de la población por tramo de edad (Censo 2024).</p>
+    <p class="nota" id="nota-edad">Distribución de la población por tramo de edad (Censo 2024).</p>
   </div>
 
   <div class="tarjeta" id="card-serie" style="display:none">
@@ -62,14 +76,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="filtros">
       <label>Indicador <select id="f-ind"></select></label>
       <label>Cruzar con <select id="f-ind2"><option value="">— (ninguno)</option></select></label>
-      <label>Región <select id="f-region"><option value="">Todas</option></select></label>
-      <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
     </div>
     <div id="mapa-wrap"><div id="mapa"></div></div>
     <div id="ley"></div>
-    <p class="nota">Colores por quintiles del indicador elegido. Pasa el mouse por una comuna para ver
-    su valor. Al elegir una <b>región</b> el mapa hace zoom; al elegir una <b>comuna</b> se resalta en
-    <b style="color:#e11d48">rojo</b>.</p>
+    <p class="nota">Colores por quintiles del indicador elegido; usa los filtros de arriba (Año, Región,
+    Comuna). Al elegir una <b>región</b> el mapa hace zoom a ella; al elegir una <b>comuna</b> se muestra
+    su región de contexto y la comuna se resalta en <b style="color:#e11d48">rojo</b>. El indicador
+    "Población" cambia con el <b>Año</b>; los demás son del Censo 2024.</p>
     <h3 style="margin:14px 0 4px">Top 20 comunas por el indicador elegido</h3>
     <div id="g-top"></div>
   </div>
@@ -103,64 +116,111 @@ const D = window.PW_DATA.censo;
 document.getElementById("nota").textContent = "Fuente: " + D.fuente + ". Generado " + D.generado + ".";
 document.getElementById("fuente").textContent = D.nota;
 
-document.getElementById("kpis").innerHTML = [
-  [PW.fmt(D.nacional.poblacion), "habitantes", "Censo 2024"],
-  [PW.fmt(D.nacional.hogares), "hogares", ""],
-  [PW.fmt(D.nacional.viviendas), "viviendas ocupadas", ""],
-  [PW.fmt(D.nacional.edad_promedio, 1) + " años", "edad promedio", D.nacional.pct_65_mas + "% tiene 65 o más"],
-  [PW.fmt(D.nacional.escolaridad, 1) + " años", "escolaridad (18+)", "promedio nacional"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+// ---------- indices + helpers ----------
+const comByCut = Object.fromEntries(D.comunas.map(c => [c.cut, c]));
+const cutByComuna = Object.fromEntries(D.comunas.map(c => [c.comuna, c.cut]));
+const regByName = Object.fromEntries(D.regiones.map(r => [r.region, r]));
+const VAR = D.variacion || {};
+const serieByAno = Object.fromEntries((D.serie_nacional || []).filter(x => x.tipo === "censado").map(x => [String(x.ano), x.poblacion]));
 
-PW.barras("g-edad", {
-  items: D.edad.map(e => ({ nombre: e.grupo, valor: e.pct })),
-  fmtV: v => PW.fmt(v, 1) + "%",
-});
-
-const selInd = document.getElementById("f-ind");
-let ogActual = null, ogNombre = null;
-D.indicadores.forEach(i => {
-  const g = i.grupo || "Otros";
-  if (g !== ogNombre) {
-    ogActual = document.createElement("optgroup"); ogActual.label = g;
-    selInd.appendChild(ogActual); ogNombre = g;
+// indicadores del mapa: 2 especiales que dependen del AÑO (poblacion / variacion) + los del Censo 2024
+const ESPECIALES = {
+  __pob: { k: "__pob", label: "Población (Censo del año elegido)", dec: 0, suf: "", grupo: "Población" },
+  __var: { k: "__var", label: "Variación de población 2017 a 2024 (%)", dec: 1, suf: "%", grupo: "Población" },
+};
+function indMeta(k) { return ESPECIALES[k] || D.indicadores.find(i => i.k === k) || D.indicadores[0]; }
+function fmtInd(m, v) { return v == null ? "—" : PW.fmt(v, m.dec) + m.suf; }
+function valorInd(c, k, ano) {
+  if (k === "__pob") {
+    if (ano === "2002") return null;
+    if (ano === "2017") { const p = (VAR[c.cut] || {}).pob_2017; return p != null ? p : null; }
+    return c.poblacion;
   }
-  const o = document.createElement("option"); o.value = i.k; o.textContent = i.label;
-  (ogActual || selInd).appendChild(o);
-});
-selInd.value = "indice_envejecimiento";
-// 2o selector para el cruce: mismas opciones (grupos incluidos) + "— (ninguno)" por defecto
-const selInd2 = document.getElementById("f-ind2");
-selInd2.innerHTML = '<option value="">— (ninguno)</option>' + selInd.innerHTML;
+  if (k === "__var") { const v = (VAR[c.cut] || {}).var; return v != null ? v : null; }
+  return c[k];
+}
+function poblacionTerritorio(ano, reg, com) {
+  if (com) {
+    const cut = cutByComuna[com];
+    if (ano === "2024") return comByCut[cut].poblacion;
+    if (ano === "2017") { const p = (VAR[cut] || {}).pob_2017; return p != null ? p : null; }
+    return null;
+  }
+  if (reg) {
+    if (ano === "2024") return regByName[reg].poblacion;
+    if (ano === "2017") {
+      let s = 0, any = false;
+      D.comunas.filter(c => c.region === reg).forEach(c => { const p = (VAR[c.cut] || {}).pob_2017; if (p != null) { s += p; any = true; } });
+      return any ? s : null;
+    }
+    return null;
+  }
+  return serieByAno[ano] != null ? serieByAno[ano] : null;
+}
+function edadItems(reg, com) {
+  const row = com ? comByCut[cutByComuna[com]] : reg ? regByName[reg] : null;
+  if (!row || row.pct_0_14 == null || row.pct_65_mas == null) return D.edad.map(e => ({ nombre: e.grupo, valor: e.pct }));
+  const p0 = row.pct_0_14, p65 = row.pct_65_mas;
+  return [
+    { nombre: "0 a 14 años", valor: p0 },
+    { nombre: "15 a 64 años", valor: Math.max(0, Math.round((100 - p0 - p65) * 10) / 10) },
+    { nombre: "65 años y más", valor: p65 },
+  ];
+}
 
+// ---------- controles (filtros globales arriba + selectores del mapa) ----------
+const selAno = document.getElementById("f-ano");
 const selR = document.getElementById("f-region");
 const selC = document.getElementById("f-comuna");
-[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
-  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o);
-});
+const selInd = document.getElementById("f-ind");
+const selInd2 = document.getElementById("f-ind2");
+
+[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => selR.appendChild(new Option(r, r)));
 function poblarComunas() {
-  const reg = selR.value;
+  const reg = selR.value, prev = selC.value;
   const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort();
-  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
+  selC.innerHTML = '<option value="">Todas</option>' + coms.map(c => `<option>${c}</option>`).join("");
+  if (reg && coms.indexOf(prev) >= 0) selC.value = prev;  // conserva la comuna si sigue en la region
   selC.disabled = !reg;
 }
+// poblar indicador: especiales de poblacion primero, luego los grupos del Censo 2024; clonar al 2o selector
+(function () {
+  const ogP = document.createElement("optgroup"); ogP.label = "Población";
+  ogP.appendChild(new Option(ESPECIALES.__pob.label, "__pob"));
+  ogP.appendChild(new Option(ESPECIALES.__var.label, "__var"));
+  selInd.appendChild(ogP);
+  let og = null, gn = null;
+  D.indicadores.forEach(i => {
+    const g = i.grupo || "Otros";
+    if (g !== gn) { og = document.createElement("optgroup"); og.label = g; selInd.appendChild(og); gn = g; }
+    og.appendChild(new Option(i.label, i.k));
+  });
+  selInd.value = "indice_envejecimiento";
+  selInd2.innerHTML = '<option value="">— (ninguno)</option>' + selInd.innerHTML;
+})();
 
-function indActual() { return D.indicadores.find(i => i.k === selInd.value); }
-function fmtInd(i, v) { return v == null ? "—" : PW.fmt(v, i.dec) + i.suf; }
-function colsCon(nameCols) {
-  return nameCols.concat(D.indicadores.map(i =>
-    ({ k: i.k, titulo: i.label, num: true, fmt: v => fmtInd(i, v) })));
+function colsCon(base) {
+  return base.concat(D.indicadores.map(i => ({ k: i.k, titulo: i.label, num: true, fmt: v => fmtInd(i, v) })));
+}
+// tabla region + evolucion nacional: fijas (no dependen de los filtros)
+PW.tabla("t-regiones", colsCon([{ k: "region", titulo: "Región" }]), D.regiones, { orden: "poblacion", buscador: false });
+const SERC = (D.serie_nacional || []).filter(x => x.tipo === "censado");
+if (SERC.length > 1) {
+  document.getElementById("card-serie").style.display = "";
+  PW.lineas("g-serie", {
+    labels: SERC.map(x => String(x.ano)),
+    series: [{ nombre: "Población censada", valores: SERC.map(x => x.poblacion) }],
+    fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
+  });
 }
 
-PW.tabla("t-regiones", colsCon([{ k: "region", titulo: "Región" }]), D.regiones,
-  { orden: "poblacion", buscador: false });
-
 let tab = null;
-function pintarMapa(i, foco, resaltar) {
-  const wrap = document.getElementById("mapa-wrap");
-  wrap.innerHTML = '<div id="mapa"></div>';
+function pintarMapa(mk, ano, foco, resaltar) {
+  const m = indMeta(mk);
+  document.getElementById("mapa-wrap").innerHTML = '<div id="mapa"></div>';
   PW.choropleth("mapa", {
-    valores: Object.fromEntries(D.comunas.map(c => [c.cut, c[i.k]])),
-    fmt: v => fmtInd(i, v), alto: 520,
+    valores: Object.fromEntries(D.comunas.map(c => [c.cut, valorInd(c, mk, ano)])),
+    fmt: v => fmtInd(m, v), alto: 520,
     foco: foco, focoPad: foco ? 0.05 : 0.15, focoMaxZoom: 11,  // [#2] zoom mas ajustado por region/comuna
     resaltar: resaltar,                                        // [#3] borde rojo en la comuna elegida
   });
@@ -195,64 +255,99 @@ function scatterCruce(cont, cfg) {
   </svg></div>`;
   return r;
 }
-function refrescar() {
-  const i = indActual();
-  const reg = selR.value, com = selC.value;
-  const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
-  const foco = (reg || com) ? filas.map(c => c.cut) : null;
-  const resaltar = com ? (D.comunas.find(c => c.comuna === com) || {}).cut : null;  // [#3] comuna a resaltar
-  pintarMapa(i, foco, resaltar);
+// ---------- aplicar: TODA la pagina reacciona al estado {ano, reg, com, ind, ind2} ----------
+function aplicar() {
+  const ano = selAno.value, reg = selR.value, com = selC.value;
+  const mk = selInd.value, m = indMeta(mk);
+  const terr = com ? (com + ", " + reg) : reg ? reg : "Chile (346 comunas)";
+  const row = com ? comByCut[cutByComuna[com]] : reg ? regByName[reg] : null;
+
+  document.getElementById("ctx").innerHTML =
+    "Mostrando <b>" + PW.esc(terr) + "</b> · población del <b>Censo " + ano + "</b>. " +
+    "Los indicadores detallados (edad, escolaridad, envejecimiento…) son del <b>Censo 2024</b>; " +
+    "el filtro de Año cambia la población.";
+
+  // KPIs: poblacion por AÑO + territorio; el resto por territorio (Censo 2024)
+  const pob = poblacionTerritorio(ano, reg, com);
+  const kpis = [];
+  if (pob != null) kpis.push([PW.fmt(pob), "habitantes", "Censo " + ano + " · " + terr]);
+  else kpis.push([PW.fmt(serieByAno["2024"]), "habitantes (país)", "Censo 2002: solo total nacional"]);
+  if (row) {
+    kpis.push([PW.fmt(row.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]);
+    kpis.push([PW.fmt(row.escolaridad_prom_18mas, 1) + " años", "escolaridad (18+)", "Censo 2024"]);
+    kpis.push([PW.fmt(row.pct_65_mas, 1) + "%", "65 años o más", "Censo 2024"]);
+    kpis.push([PW.fmt(row.indice_envejecimiento, 0), "índice de envejecimiento", "Censo 2024"]);
+  } else {
+    kpis.push([PW.fmt(D.nacional.hogares), "hogares", "Censo 2024"]);
+    kpis.push([PW.fmt(D.nacional.viviendas), "viviendas ocupadas", "Censo 2024"]);
+    kpis.push([PW.fmt(D.nacional.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]);
+    kpis.push([PW.fmt(D.nacional.escolaridad, 1) + " años", "escolaridad (18+)", "Censo 2024"]);
+  }
+  document.getElementById("kpis").innerHTML = kpis.map(d =>
+    `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  // Edad (territorial)
+  PW.barras("g-edad", { items: edadItems(reg, com), fmtV: v => PW.fmt(v, 1) + "%" });
+  document.getElementById("nota-edad").textContent =
+    "Distribución de la población por tramo de edad — " + (row ? terr : "país") + " (Censo 2024).";
+
+  // Evolucion nacional: nota con el año elegido
+  const pn = serieByAno[ano];
+  document.getElementById("nota-serie").textContent =
+    "Población censada por año censal (INE), 1952-2024. Año elegido: Censo " + ano +
+    (pn != null ? " = " + PW.fmt(pn) + " habitantes (país)." : ".");
+
+  // Mapa: comuna => contexto de su region (no colapsa a 1 resultado) + resaltado rojo; region => zoom; nada => Chile
+  const scopeReg = com ? (comByCut[cutByComuna[com]] || {}).region : reg;
+  const foco = scopeReg ? D.comunas.filter(c => c.region === scopeReg).map(c => c.cut) : null;
+  const resaltar = com ? cutByComuna[com] : null;
+  pintarMapa(mk, ano, foco, resaltar);
+
+  // Top-20 (region de contexto o todas) + tabla de comunas (detalle: filtra por comuna si hay)
+  const baseReg = D.comunas.filter(c => !scopeReg || c.region === scopeReg);
   PW.barras("g-top", {
-    items: filas.filter(c => c[i.k] != null).sort((a, b) => b[i.k] - a[i.k]).slice(0, 20)
-      .map(c => ({ nombre: c.comuna, valor: c[i.k], extra: c.region })),
-    fmtV: v => fmtInd(i, v),
+    items: baseReg.map(c => ({ nombre: c.comuna, valor: valorInd(c, mk, ano), extra: c.region }))
+      .filter(x => x.valor != null).sort((a, b) => b.valor - a.valor).slice(0, 20),
+    fmtV: v => fmtInd(m, v),
   });
-  if (tab) tab.actualizar(filas);
+  const filasTabla = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
+  if (tab) tab.actualizar(filasTabla);
   else tab = PW.tabla("t-comunas",
     colsCon([{ k: "comuna", titulo: "Comuna" }, { k: "region", titulo: "Región" }]),
-    filas, { orden: "poblacion", max: 400 });
+    filasTabla, { orden: "poblacion", max: 400 });
 
-  // [#1] cruce: scatter del indicador A (mapa) vs B (2o selector), sobre las comunas filtradas
+  // [#1] cruce: scatter A (mapa) vs B (2o selector), sobre la region de contexto (o todas)
   const k2 = selInd2.value, card = document.getElementById("card-cruce");
-  if (k2 && k2 !== i.k) {
-    const i2 = D.indicadores.find(x => x.k === k2);
-    const pts = filas.filter(c => c[i.k] != null && c[i2.k] != null)
-      .map(c => ({ x: c[i.k], y: c[i2.k], nombre: c.comuna }));
-    const r = scatterCruce("g-cruce", { puntos: pts, xlab: i.label, ylab: i2.label,
-      fmtX: v => fmtInd(i, v), fmtY: v => fmtInd(i2, v) });
+  if (k2 && k2 !== mk) {
+    const m2 = indMeta(k2);
+    const pts = baseReg.map(c => ({ x: valorInd(c, mk, ano), y: valorInd(c, k2, ano), nombre: c.comuna }))
+      .filter(p => p.x != null && p.y != null);
+    const r = scatterCruce("g-cruce", { puntos: pts, xlab: m.label, ylab: m2.label,
+      fmtX: v => fmtInd(m, v), fmtY: v => fmtInd(m2, v) });
     const ar = r == null ? 0 : Math.abs(r);
     const fuerza = r == null ? "" : (ar >= 0.7 ? " (correlación fuerte)" : ar >= 0.4 ? " (moderada)" :
       ar >= 0.2 ? " (débil)" : " (casi nula)");
     document.getElementById("nota-cruce").textContent =
-      pts.length + " comunas" + (reg ? " de " + reg : "") + ". Pearson r = " +
-      (r == null ? "—" : PW.fmt(r, 2)) + fuerza + ". Cada punto es una comuna: eje X = " + i.label +
-      ", eje Y = " + i2.label + ". Pasa el mouse por un punto para ver la comuna.";
+      pts.length + " comunas" + (scopeReg ? " de " + scopeReg : "") + ". Pearson r = " +
+      (r == null ? "—" : PW.fmt(r, 2)) + fuerza + ". Eje X = " + m.label + ", eje Y = " + m2.label +
+      ". Pasa el mouse por un punto para ver la comuna.";
     card.style.display = "";
   } else {
     card.style.display = "none";
   }
 }
-selInd.addEventListener("input", refrescar);
-selInd2.addEventListener("input", refrescar);
-selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
-selC.addEventListener("input", refrescar);
-refrescar();
 
-// Evolución de la población (serie intercensal 1952-2024)
-const SER = D.serie_nacional || [];
-if (SER.length > 1) {
-  document.getElementById("card-serie").style.display = "";
-  PW.lineas("g-serie", {
-    labels: SER.map(x => String(x.ano)),
-    series: [{ nombre: "Población censada", valores: SER.map(x => x.poblacion) }],
-    fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
-  });
-  const ult = SER[SER.length - 1], prim = SER[0];
-  document.getElementById("nota-serie").textContent =
-    "Población efectivamente censada por año censal (INE). De " + PW.fmt(prim.poblacion) + " en " + prim.ano +
-    " a " + PW.fmt(ult.poblacion) + " en " + ult.ano +
-    (ult.var_pct != null ? " (variación intercensal " + ult.var_pct + "%, crecimiento anual " + ult.crec_anual + "%)." : ".");
-}
+selAno.addEventListener("input", aplicar);
+selR.addEventListener("input", () => { poblarComunas(); aplicar(); });
+selC.addEventListener("input", aplicar);
+selInd.addEventListener("input", aplicar);
+selInd2.addEventListener("input", aplicar);
+document.getElementById("f-limpiar").addEventListener("click", () => {
+  selAno.value = "2024"; selR.value = ""; poblarComunas(); selC.value = "";
+  selInd.value = "indice_envejecimiento"; selInd2.value = "";
+  aplicar();
+});
+aplicar();
 </script>
 </body>
 </html>
