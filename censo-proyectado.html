@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!--
+  BORRADOR para "Publicar pagina web 2.0".
+  Copiar a: C:\ClaudeC\Pagina Web\web\censo-proyectado.html
+  Requiere en data/censo.js (PW_DATA.censo) los bloques: serie_nacional CON `tipo`,
+  `proyeccion` y `proy_facts` (ver ESPEC_PUBLICAR_CENSO.md, parte A). Si faltan, la pagina
+  muestra un aviso y dibuja igual la serie. El token ?v=... lo actualiza bump_token.py.
+  No lleva Leaflet (esta pagina no tiene mapa).
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0C4Z3N1KZJ');
+</script>
+<!-- End Google tag (gtag.js) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Censo proyectado — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260817b">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <h1>Censo proyectado</h1>
+  <p class="sub">Chile no realiza censos parciales en años intermedios. Para 2025 en adelante, la
+    referencia oficial es la <b>proyección de población del INE</b> (Estimaciones y Proyecciones,
+    base Censo 2024, publicada el 28-01-2026). La población proyectada es <b>estimada</b> —ajustada
+    por omisión censal—, distinta de la censada.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="aviso-borrador" id="aviso">Proyección ≠ censo. El detalle regional y comunal base 2024
+    lo publica el INE el 2º semestre de 2026; aquí se muestra el nivel nacional.</div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Trayectoria de la población, 1952–2070</h2>
+    <div id="g-serie"></div>
+    <div class="leyenda">
+      <span style="--c:var(--s1)">Población censada (INE, 1952–2024)</span>
+      <span style="--c:var(--s2)">Proyección INE base 2024 (2024–2070)</span>
+    </div>
+    <p class="nota">En 2024 conviven el conteo censal (18.480.432) y la población estimada
+      (19.871.764): la diferencia es la <b>omisión censal (7,0%)</b>. El 2025 es interpolación entre
+      anclas oficiales (no es cifra oficial del INE).</p>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Reconciliación 2024: censo vs proyección</h2>
+      <div id="recon"></div>
+      <p class="nota">El censo cuenta a las personas efectivamente enumeradas; la proyección estima la
+        población total ajustando por quienes no fueron censados y por la migración.</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Hitos de la proyección</h2>
+      <div id="tabla"></div>
+    </div>
+  </div>
+</main>
+
+<script src="data/censo.js"></script>
+<script src="assets/comun.js?v=260817b"></script>
+<script>
+PW.montarNav("censo-proyectado.html");
+const D = (window.PW_DATA && window.PW_DATA.censo) || {};
+document.getElementById("nota").textContent =
+  "Fuente: " + (D.fuente || "Censo 2024 (INE)") + ". Proyección: INE, Estimaciones y Proyecciones "
+  + "de Población base Censo 2024.";
+
+const F = D.proy_facts || null;
+const fmt = (v) => PW.fmt(Math.round(v));
+
+// ---- KPIs ----
+if (F) {
+  document.getElementById("kpis").innerHTML = [
+    [fmt(F.pob_2026), "población proyectada 2026", ""],
+    [fmt(F.peak_pob), "máximo poblacional", "año " + F.peak_anio],
+    [fmt(F.pob_2070), "población hacia 2070", "inicia descenso en 2036"],
+    [F.tgf_2026 + " h/mujer", "fecundidad 2026 (TGF)", "1,06 en 2024"],
+    [F.omision + " %", "omisión censal 2024", ""],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+} else {
+  document.getElementById("aviso").innerHTML =
+    "Faltan los datos de proyección en <code>data/censo.js</code> "
+    + "(<code>proy_facts</code> / <code>proyeccion</code>). Agregar el bloque en "
+    + "<code>generar_cruces.py::m_censo_nacional()</code> (ver ESPEC parte A) y regenerar.";
+}
+
+// ---- Trayectoria (censo + proyección) ----
+const S = D.serie_nacional || [];
+if (S.length) {
+  const esCenso = x => x.tipo ? x.tipo === "censado" : (x.ano <= 2024 && x.poblacion < 19e6);
+  const anios = [...new Set(S.map(x => x.ano))].sort((a, b) => a - b);
+  const val = pred => anios.map(a => { const e = S.find(x => x.ano === a && pred(x)); return e ? e.poblacion : null; });
+  PW.lineas("g-serie", {
+    alto: 320,
+    labels: anios.map(String),
+    series: [
+      { nombre: "Censado", valores: val(esCenso), color: PW.color("--s1") },
+      { nombre: "Proyectado", valores: val(x => !esCenso(x)), color: PW.color("--s2") },
+    ],
+    fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
+  });
+}
+
+// ---- Reconciliación 2024 ----
+(function () {
+  const cN = F ? F.censado_2024 : (S.find(x => x.ano === 2024 && (x.tipo ? x.tipo === "censado" : x.poblacion < 19e6)) || {}).poblacion;
+  const pN = F ? F.proyectado_2024 : (S.find(x => x.ano === 2024 && (x.tipo ? x.tipo !== "censado" : x.poblacion >= 19e6)) || {}).poblacion;
+  if (cN == null || pN == null) return;
+  const gap = pN - cN, om = F ? F.omision : (100 * gap / pN).toFixed(1);
+  document.getElementById("recon").innerHTML =
+    `<div style="display:grid;gap:10px">
+      <div style="display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center">
+        <span style="color:var(--ink-2)">Censado (conteo)</span>
+        <span style="height:18px;border-radius:5px;background:var(--s1);width:${(cN / pN * 100).toFixed(1)}%"></span>
+        <b style="font-variant-numeric:tabular-nums">${fmt(cN)}</b></div>
+      <div style="display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center">
+        <span style="color:var(--ink-2)">Proyectado (estimado)</span>
+        <span style="height:18px;border-radius:5px;background:var(--s2);width:100%"></span>
+        <b style="font-variant-numeric:tabular-nums">${fmt(pN)}</b></div>
+     </div>
+     <div style="margin-top:12px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+       <span style="font-size:22px;font-weight:800;font-variant-numeric:tabular-nums">+${fmt(gap)}</span>
+       <span class="pill" style="background:var(--warning);color:#241a00;border-color:var(--warning)">omisión ${om}%</span>
+       <span style="color:var(--ink-3);font-size:12.5px">personas estimadas no censadas en 2024</span>
+     </div>`;
+})();
+
+// ---- Hitos de la proyección ----
+(function () {
+  const PR = D.proyeccion || [];
+  if (!PR.length) { document.getElementById("tabla").innerHTML =
+    `<p class="nota">Agregar el bloque <code>proyeccion</code> a data/censo.js (ESPEC parte A).</p>`; return; }
+  const tipoTxt = t => t === "proyectado_interpolado" ? "interpolado" : "proyectado";
+  const filas = PR.map(r => `<tr><td>${r.ano}</td><td class="num">${fmt(r.poblacion)}</td>
+    <td><span class="pill">${tipoTxt(r.tipo)}</span></td>
+    <td style="color:var(--ink-3);font-size:12px">${r.nota || ""}</td></tr>`).join("");
+  document.getElementById("tabla").innerHTML =
+    `<div class="scroll-x"><table class="pw"><thead><tr><th>Año</th><th class="num">Población</th>
+     <th>Tipo</th><th>Nota</th></tr></thead><tbody>${filas}</tbody></table></div>`;
+})();
+</script>
+</body>
+</html>

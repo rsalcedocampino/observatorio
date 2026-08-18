@@ -78,6 +78,7 @@
     ]],
     ["Censo Nacional", [
       ["censo.html", "Censo Nacional"],
+      ["censo-proyectado.html", "Censo proyectado"],
     ]],
     ["Normativa", [
       ["normativa.html", "Metas y marco legal"],
@@ -152,6 +153,7 @@
   ICONOS["fichacober.html"] = IC('<path d="M12 3l8 3v6c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>');
   ICONOS["infraestructura.html"] = IC('<rect x="4" y="20" width="4" height="1.5"/><rect x="10" y="16" width="4" height="5.5"/><rect x="16" y="10" width="4" height="11.5"/><path d="M4 20V9l3-2 3 2M7 7V4"/>');
   ICONOS["censo.html"] = IC('<circle cx="9" cy="7" r="3"/><path d="M3.5 21v-1.5a5.5 5.5 0 0 1 11 0V21"/><path d="M16 4.2a3 3 0 0 1 0 5.6"/><path d="M18 14.2a5 5 0 0 1 2.5 4.3V21"/>');
+  ICONOS["censo-proyectado.html"] = ICONOS["censo.html"];
   ICONOS["cargadores-cortes.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/><path d="M3 3l18 18"/>');
   ICONOS["mapa-carga.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
