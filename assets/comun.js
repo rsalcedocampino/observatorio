@@ -172,8 +172,14 @@
     const sec = document.createElement("section");
     sec.className = "colaboradores pw";
     sec.id = "colaboradores";
+    // [CACHE-BUSTER] los logos son assets sin ?v=; si se agrega/cambia uno, un navegador que cacheó el
+    // 404 previo (o la versión vieja) lo sigue mostrando ROTO. Reusamos el token de comun.js en la URL
+    // del <img> para forzar una relectura fresca cuando cambia el token.
+    const _cj = document.querySelector('script[src*="comun.js"]');
+    const _ver = (_cj && (_cj.src.match(/[?&]v=([^&]+)/) || [])[1]) || "";
+    const _q = _ver ? "?v=" + _ver : "";
     const chips = lista.map(c => {
-      const img = `<img src="${esc(c.logo)}" alt="${esc(c.nombre)}" loading="lazy">`;
+      const img = `<img src="${esc(c.logo)}${_q}" alt="${esc(c.nombre)}" loading="lazy">`;
       return c.url
         ? `<a class="colab-logo" href="${esc(c.url)}" target="_blank" rel="noopener" title="${esc(c.nombre)}">${img}</a>`
         : `<span class="colab-logo" title="${esc(c.nombre)}">${img}</span>`;
