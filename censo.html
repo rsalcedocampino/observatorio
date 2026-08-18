@@ -121,7 +121,9 @@ const comByCut = Object.fromEntries(D.comunas.map(c => [c.cut, c]));
 const cutByComuna = Object.fromEntries(D.comunas.map(c => [c.comuna, c.cut]));
 const regByName = Object.fromEntries(D.regiones.map(r => [r.region, r]));
 const VAR = D.variacion || {};
-const serieByAno = Object.fromEntries((D.serie_nacional || []).filter(x => x.tipo === "censado").map(x => [String(x.ano), x.poblacion]));
+const serieCensada = (D.serie_nacional || []).filter(x => x.tipo === "censado");
+const serieByAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x.poblacion]));
+const serieRowAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x]));  // fila completa (var_pct, crec_anual)
 
 // indicadores del mapa: 2 especiales que dependen del AÑO (poblacion / variacion) + los del Censo 2024
 const ESPECIALES = {
@@ -156,6 +158,19 @@ function poblacionTerritorio(ano, reg, com) {
     return null;
   }
   return serieByAno[ano] != null ? serieByAno[ano] : null;
+}
+function varTerritorio(reg, com) {  // variacion de poblacion 2017 -> 2024 (%) del territorio
+  if (com) { const v = (VAR[cutByComuna[com]] || {}).var; return v != null ? v : null; }
+  if (reg) {
+    let s17 = 0, s24 = 0, any = false;
+    D.comunas.filter(c => c.region === reg).forEach(c => {
+      const v = VAR[c.cut];
+      if (v && v.pob_2017 != null && v.pob_2024 != null) { s17 += v.pob_2017; s24 += v.pob_2024; any = true; }
+    });
+    return (any && s17 > 0) ? Math.round((s24 / s17 - 1) * 1000) / 10 : null;
+  }
+  const r = serieRowAno["2024"];
+  return r && r.var_pct != null ? r.var_pct : null;
 }
 function edadItems(reg, com) {
   const row = com ? comByCut[cutByComuna[com]] : reg ? regByName[reg] : null;
@@ -263,33 +278,65 @@ function aplicar() {
   const row = com ? comByCut[cutByComuna[com]] : reg ? regByName[reg] : null;
 
   document.getElementById("ctx").innerHTML =
-    "Mostrando <b>" + PW.esc(terr) + "</b> · población del <b>Censo " + ano + "</b>. " +
-    "Los indicadores detallados (edad, escolaridad, envejecimiento…) son del <b>Censo 2024</b>; " +
-    "el filtro de Año cambia la población.";
+    ano === "2024"
+      ? "Mostrando <b>" + PW.esc(terr) + "</b> · <b>Censo 2024</b> (población + indicadores detallados)."
+      : ano === "2017"
+      ? "Mostrando <b>" + PW.esc(terr) + "</b> · <b>Censo 2017</b>: población y variación 2017→2024 por " +
+        "región/comuna. Los indicadores detallados (edad, escolaridad…) solo se midieron con este desglose en el Censo 2024."
+      : "Mostrando <b>Censo 2002</b>: solo el total nacional es homologable (los códigos comunales de 2002 " +
+        "no calzan con el CUT actual) — el mapa y el top comunal quedan sin dato para este año.";
 
-  // KPIs: poblacion por AÑO + territorio; el resto por territorio (Censo 2024)
+  // KPIs POR AÑO: cada año muestra lo que ese censo tiene (nunca se inventa)
   const pob = poblacionTerritorio(ano, reg, com);
   const kpis = [];
-  if (pob != null) kpis.push([PW.fmt(pob), "habitantes", "Censo " + ano + " · " + terr]);
-  else kpis.push([PW.fmt(serieByAno["2024"]), "habitantes (país)", "Censo 2002: solo total nacional"]);
-  if (row) {
-    kpis.push([PW.fmt(row.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]);
-    kpis.push([PW.fmt(row.escolaridad_prom_18mas, 1) + " años", "escolaridad (18+)", "Censo 2024"]);
-    kpis.push([PW.fmt(row.pct_65_mas, 1) + "%", "65 años o más", "Censo 2024"]);
-    kpis.push([PW.fmt(row.indice_envejecimiento, 0), "índice de envejecimiento", "Censo 2024"]);
-  } else {
-    kpis.push([PW.fmt(D.nacional.hogares), "hogares", "Censo 2024"]);
-    kpis.push([PW.fmt(D.nacional.viviendas), "viviendas ocupadas", "Censo 2024"]);
-    kpis.push([PW.fmt(D.nacional.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]);
-    kpis.push([PW.fmt(D.nacional.escolaridad, 1) + " años", "escolaridad (18+)", "Censo 2024"]);
+  if (ano === "2024") {
+    kpis.push([PW.fmt(pob), "habitantes", "Censo 2024 · " + terr]);
+    if (row) {
+      kpis.push([PW.fmt(row.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]);
+      kpis.push([PW.fmt(row.escolaridad_prom_18mas, 1) + " años", "escolaridad (18+)", "Censo 2024"]);
+      kpis.push([PW.fmt(row.pct_65_mas, 1) + "%", "65 años o más", "Censo 2024"]);
+      kpis.push([PW.fmt(row.indice_envejecimiento, 0), "índice de envejecimiento", "Censo 2024"]);
+    } else {
+      kpis.push([PW.fmt(D.nacional.hogares), "hogares", "Censo 2024"]);
+      kpis.push([PW.fmt(D.nacional.viviendas), "viviendas ocupadas", "Censo 2024"]);
+      kpis.push([PW.fmt(D.nacional.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]);
+      kpis.push([PW.fmt(D.nacional.escolaridad, 1) + " años", "escolaridad (18+)", "Censo 2024"]);
+    }
+  } else if (ano === "2017") {
+    kpis.push([pob != null ? PW.fmt(pob) : "—", "habitantes", "Censo 2017 · " + terr]);
+    const v = varTerritorio(reg, com);
+    if (v != null) kpis.push([(v > 0 ? "+" : "") + PW.fmt(v, 1) + "%", "variación 2017 → 2024", terr]);
+    if ((reg || com) && pob != null && serieByAno["2017"])
+      kpis.push([PW.fmt(100 * pob / serieByAno["2017"], 1) + "%", "del país en 2017", "participación"]);
+    const r17 = serieRowAno["2017"];
+    if (r17 && r17.var_pct != null)
+      kpis.push([(r17.var_pct > 0 ? "+" : "") + PW.fmt(r17.var_pct, 1) + "%", "variación 2002 → 2017 (país)",
+                 r17.crec_anual != null ? "crecimiento anual " + PW.fmt(r17.crec_anual, 1) + "%" : ""]);
+    kpis.push([PW.fmt(poblacionTerritorio("2024", reg, com)), "habitantes en 2024", "para comparar · " + terr]);
+  } else {  // 2002
+    const r02 = serieRowAno["2002"] || {};
+    kpis.push([PW.fmt(serieByAno["2002"]), "habitantes (país)", "Censo 2002" + ((reg || com) ? " · sin dato comunal homologable" : "")]);
+    if (r02.var_pct != null)
+      kpis.push([(r02.var_pct > 0 ? "+" : "") + PW.fmt(r02.var_pct, 1) + "%", "variación 1992 → 2002 (país)",
+                 r02.crec_anual != null ? "crecimiento anual " + PW.fmt(r02.crec_anual, 1) + "%" : ""]);
+    kpis.push([PW.fmt(serieByAno["2017"]), "habitantes en 2017", "país"]);
+    kpis.push([PW.fmt(serieByAno["2024"]), "habitantes en 2024", "país"]);
   }
   document.getElementById("kpis").innerHTML = kpis.map(d =>
     `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
-  // Edad (territorial)
-  PW.barras("g-edad", { items: edadItems(reg, com), fmtV: v => PW.fmt(v, 1) + "%" });
-  document.getElementById("nota-edad").textContent =
-    "Distribución de la población por tramo de edad — " + (row ? terr : "país") + " (Censo 2024).";
+  // Edad: el desglose por tramo solo existe homologado para el Censo 2024
+  if (ano === "2024") {
+    PW.barras("g-edad", { items: edadItems(reg, com), fmtV: v => PW.fmt(v, 1) + "%" });
+    document.getElementById("nota-edad").textContent =
+      "Distribución de la población por tramo de edad — " + (row ? terr : "país") + " (Censo 2024).";
+  } else {
+    document.getElementById("g-edad").innerHTML =
+      '<p class="nota">El desglose de edad por tramo está homologado en el sitio solo para el <b>Censo 2024</b>. ' +
+      'Elige "Censo 2024" en el filtro de Año para verlo.</p>';
+    document.getElementById("nota-edad").textContent =
+      "El Censo " + ano + " no está integrado con este desglose (dato homologado disponible: Censo 2024).";
+  }
 
   // Evolucion nacional: nota con el año elegido
   const pn = serieByAno[ano];
@@ -305,11 +352,11 @@ function aplicar() {
 
   // Top-20 (region de contexto o todas) + tabla de comunas (detalle: filtra por comuna si hay)
   const baseReg = D.comunas.filter(c => !scopeReg || c.region === scopeReg);
-  PW.barras("g-top", {
-    items: baseReg.map(c => ({ nombre: c.comuna, valor: valorInd(c, mk, ano), extra: c.region }))
-      .filter(x => x.valor != null).sort((a, b) => b.valor - a.valor).slice(0, 20),
-    fmtV: v => fmtInd(m, v),
-  });
+  const topItems = baseReg.map(c => ({ nombre: c.comuna, valor: valorInd(c, mk, ano), extra: c.region }))
+    .filter(x => x.valor != null).sort((a, b) => b.valor - a.valor).slice(0, 20);
+  if (topItems.length) PW.barras("g-top", { items: topItems, fmtV: v => fmtInd(m, v) });
+  else document.getElementById("g-top").innerHTML =
+    '<p class="nota">Sin dato comunal para el Censo ' + ano + ' con este indicador.</p>';
   const filasTabla = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
   if (tab) tab.actualizar(filasTabla);
   else tab = PW.tabla("t-comunas",
@@ -337,7 +384,11 @@ function aplicar() {
   }
 }
 
-selAno.addEventListener("input", aplicar);
+selAno.addEventListener("input", () => {
+  // al salir de 2024 con un indicador que solo existe en 2024, el mapa pasa a "Población (del año)"
+  if (selAno.value !== "2024" && !ESPECIALES[selInd.value]) selInd.value = "__pob";
+  aplicar();
+});
 selR.addEventListener("input", () => { poblarComunas(); aplicar(); });
 selC.addEventListener("input", aplicar);
 selInd.addEventListener("input", aplicar);
