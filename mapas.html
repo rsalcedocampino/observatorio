@@ -381,6 +381,18 @@ function txtRegiones(key) {
   const rs = regionesCon(key);
   return rs.length >= 16 ? "las 16 regiones" : rs.join(", ");
 }
+// comunas con dato para una capa (opcionalmente dentro de una region), para guiar la eleccion
+function comunasCon(key, rcut) {
+  return Object.values(POSTES_IDX)
+    .filter(o => (o[key] || 0) > 0 && (!rcut || o.rcut === rcut))
+    .map(o => o.comuna).sort();
+}
+function txtComunas(key, rcut, cap) {
+  const cs = comunasCon(key, rcut); cap = cap || 12;
+  if (!cs.length) return null;
+  const lista = cs.slice(0, cap).join(", ");
+  return cs.length > cap ? lista + "… y " + (cs.length - cap) + " más (" + cs.length + " en total)" : lista;
+}
 
 function postesHint() {
   const t = totalPostes();
@@ -399,6 +411,10 @@ function tramosHint(tipo) {
   const scope = cutsTramosScope(tipo);
   if (!scope.length) {
     if (filtroTerr.com) return " Red " + T + ": sin red en esta comuna.";
+    if (filtroTerr.rcut) {
+      const cs = txtComunas(tipo, filtroTerr.rcut);
+      if (cs) return " Red " + T + ": comunas con dato en esta región: " + cs + ".";
+    }
     return " Red " + T + ": elige una comuna" + (TRAMOS[tipo].region ? " o región" : "") +
       " para dibujarla (con dato en " + txtRegiones(tipo) + ").";
   }
@@ -444,12 +460,26 @@ function actualizarAvisoTramos() {
   const av = document.getElementById("aviso-tramos");
   if (!av) return;
   const faltan = [];
-  if (on("postes") && !cutsPostesScope().length)
-    faltan.push("Postes: elige una región o comuna — con dato en: " + txtRegiones("n"));
-  if (on("mt") && !cutsTramosScope("mt").length)
-    faltan.push("Red MT: elige una región o comuna — con dato en " + txtRegiones("mt"));
-  if (on("bt") && !cutsTramosScope("bt").length)
-    faltan.push("Red BT: elige una comuna — con dato en " + txtRegiones("bt"));
+  const rcut = filtroTerr.rcut || null;
+  if (on("postes") && !cutsPostesScope().length) {
+    const cs = rcut ? txtComunas("n", rcut) : null;
+    faltan.push(cs
+      ? "Postes: comunas con dato en esta región: " + cs
+      : "Postes: elige una región o comuna — con dato en: " + txtRegiones("n"));
+  }
+  if (on("mt") && !cutsTramosScope("mt").length) {
+    const cs = rcut ? txtComunas("mt", rcut) : null;
+    faltan.push(cs
+      ? "Red MT: comunas con dato en esta región: " + cs
+      : "Red MT: elige una región o comuna — con dato en " + txtRegiones("mt") +
+        " (" + PW.fmt(comunasCon("mt").length) + " comunas)");
+  }
+  if (on("bt") && !cutsTramosScope("bt").length) {
+    faltan.push(rcut
+      ? "Red BT: elige una comuna — con dato en esta región: " + (txtComunas("bt", rcut) || "ninguna")
+      : "Red BT: elige una comuna — con dato en " + PW.fmt(comunasCon("bt").length) +
+        " comunas de " + txtRegiones("bt") + "; elige una región para ver cuáles");
+  }
   if (faltan.length) {
     av.textContent = "La red de distribución se dibuja por territorio (es muy densa para todo Chile). " + faltan.join(" · ") + ".";
     av.style.display = "";
