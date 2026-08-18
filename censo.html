@@ -87,6 +87,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="g-top"></div>
   </div>
 
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Crecimiento de población 2017 → 2024</h2>
+    <div id="crec-wrap"><div id="mapa-crec"></div></div>
+    <div id="ley-crec" class="leyenda"></div>
+    <p class="nota">Variación de la población censada por comuna entre el Censo 2017 y el Censo 2024.
+    <b style="color:#b91c1c">Rojo = disminución</b>, <b style="color:#15803d">verde = aumento</b>;
+    gris = sin comparación 2017. Respeta el filtro de <b>Región</b>. Pasa el mouse por una comuna
+    para ver su población en ambos censos.</p>
+    <div class="fila2">
+      <div><h3 style="margin:10px 0 4px">Más crecen</h3><div id="g-crecen"></div></div>
+      <div><h3 style="margin:10px 0 4px">Más decrecen</h3><div id="g-decrecen"></div></div>
+    </div>
+  </div>
+
   <div class="tarjeta" id="card-cruce" style="display:none">
     <h2 style="margin-top:0">Cruce de indicadores por comuna</h2>
     <div id="g-cruce"></div>
@@ -382,6 +396,69 @@ function aplicar() {
   } else {
     card.style.display = "none";
   }
+
+  // Crecimiento 2017→2024 (respeta el filtro de region; resalta la comuna elegida)
+  pintarCrecimiento(scopeReg, resaltar);
+}
+
+// [CRECIMIENTO 2017→2024] choropleth DIVERGENTE page-local (PW.choropleth es secuencial):
+// rojo = disminución, verde = aumento, gris = sin comparación 2017. Cortes fijos alineados a la
+// distribución real (p10 ≈ -4,4 / mediana ≈ 4,8 / p90 ≈ 16). Nunca se inventa: sin pob_2017 => gris.
+function pintarCrecimiento(scopeReg, resaltar) {
+  const geo = window.PW_DATA.geo_comunas;
+  const wrap = document.getElementById("crec-wrap");
+  if (!geo || typeof L === "undefined") { wrap.innerHTML = '<p class="nota">Mapa no disponible (falta la cartografía).</p>'; return; }
+  wrap.innerHTML = '<div id="mapa-crec"></div>';
+  const el = document.getElementById("mapa-crec");
+  el.classList.add("pw-mapa"); el.style.height = "480px";
+  const raiz = document.documentElement;
+  const oscuro = raiz.dataset.theme === "dark" ||
+    (raiz.dataset.theme !== "light" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const m = L.map(el, { zoomSnap: 0.5 }).setView([-35.5, -71.3], 4.5);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/" + (oscuro ? "dark_all" : "light_all") + "/{z}/{x}/{y}{r}.png",
+    { attribution: "&copy; OSM &copy; CARTO", maxZoom: 19 }).addTo(m);
+  const CLS = [
+    ["disminuye más de 5%", "#b91c1c", v => v < -5],
+    ["disminuye hasta 5%", "#f87171", v => v < 0],
+    ["crece hasta 5%", "#86efac", v => v < 5],
+    ["crece 5 a 15%", "#22c55e", v => v < 15],
+    ["crece más de 15%", "#15803d", () => true],
+  ];
+  const SIN = oscuro ? "#2c2c2a" : "#e8e7e2";
+  const colorDe = v => { if (v == null) return SIN; for (const [, c, f] of CLS) if (f(v)) return c; return SIN; };
+  const borde = oscuro ? "#0d0d0d" : "#ffffff";
+  L.geoJSON(geo, {
+    style: f => ({ fillColor: colorDe((VAR[f.properties.cut] || {}).var ?? null), fillOpacity: 0.8, color: borde, weight: 0.6 }),
+    onEachFeature: (f, ly) => {
+      const v = VAR[f.properties.cut] || {};
+      const txt = v.var != null
+        ? PW.fmt(v.pob_2017) + " → " + PW.fmt(v.pob_2024) + " · " + (v.var > 0 ? "+" : "") + PW.fmt(v.var, 1) + "%"
+        : "sin comparación 2017";
+      ly.bindTooltip(f.properties.comuna + ": " + txt, { sticky: true });
+      ly.on("mouseover", () => { ly.setStyle({ weight: 2, color: PW.color("--ink-1") }); ly.bringToFront(); });
+      ly.on("mouseout", () => ly.setStyle({ weight: 0.6, color: borde }));
+    },
+  }).addTo(m);
+  if (resaltar) {
+    const ft = geo.features.filter(f => f.properties.cut === resaltar);
+    if (ft.length) L.geoJSON({ type: "FeatureCollection", features: ft },
+      { style: { color: "#e11d48", weight: 3, opacity: 1, fill: false } }).addTo(m);
+  }
+  if (scopeReg) {
+    const b = PW.boundsComunas(D.comunas.filter(c => c.region === scopeReg).map(c => c.cut));
+    if (b) m.fitBounds(b.pad(0.05), { animate: false, maxZoom: 11 });
+  }
+  PW.leyendaMapa("ley-crec", CLS.map(([t, c]) => [t, c]).concat([["sin comparación 2017", SIN]]));
+  // rankings dentro del ambito (region de contexto o pais)
+  const filas = D.comunas.filter(c => !scopeReg || c.region === scopeReg)
+    .map(c => ({ nombre: c.comuna, v: (VAR[c.cut] || {}).var, extra: c.region })).filter(x => x.v != null);
+  const arriba = filas.slice().sort((a, b) => b.v - a.v).slice(0, 10);
+  const abajo = filas.slice().sort((a, b) => a.v - b.v).filter(x => x.v < 0).slice(0, 10);
+  PW.barras("g-crecen", { items: arriba.map(x => ({ nombre: x.nombre, valor: x.v, extra: x.extra })),
+    fmtV: v => "+" + PW.fmt(v, 1) + "%", color: "#15803d" });
+  if (abajo.length) PW.barras("g-decrecen", { items: abajo.map(x => ({ nombre: x.nombre, valor: Math.abs(x.v), extra: x.extra })),
+    fmtV: v => "-" + PW.fmt(v, 1) + "%", color: "#b91c1c" });
+  else document.getElementById("g-decrecen").innerHTML = '<p class="nota">Ninguna comuna decrece en este ámbito.</p>';
 }
 
 selAno.addEventListener("input", () => {
