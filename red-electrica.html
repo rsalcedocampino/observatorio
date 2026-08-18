@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -55,6 +55,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota" id="cont-sub"></p>
   </div>
 
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Transmisión por región</h2>
+    <p class="nota">Líneas de transmisión que tocan cada región, por rango de tensión (fuente:
+    Coordinador 2019 reconciliado con IDE Energía). Una línea que cruza regiones cuenta en cada una,
+    por eso la suma supera el total nacional.</p>
+    <div id="g-transmision-region"></div>
+    <div id="t-transmision-region" style="margin-top:14px"></div>
+    <p class="nota" id="cont-transmision-region"></p>
+  </div>
+
   <div class="fila2">
     <div class="tarjeta">
       <h2 style="margin-top:0">Conexión de la red de carga por región</h2>
@@ -83,6 +93,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/c_redelec.js"></script>
 <script src="data/geo_comunas.js"></script>
 <script src="data/geo_lineas.js"></script>
+<script src="data/c_transmision_region.js"></script>
 <script src="assets/comun.js?v=260817a"></script>
 <script>
 PW.montarNav("red-electrica.html");
@@ -257,6 +268,25 @@ PW.tabla("t-potencial", [
   { k: "csp", titulo: "CSP (MW)", num: true, fmt: v => PW.fmt(v) },
   { k: "total", titulo: "Total (MW)", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
 ], D.potencial, { orden: "total", max: 400 });
+
+// Transmisión por región (barras + tabla, por rango de tension). Dato: c_transmision_region.js
+const TR = window.PW_DATA.c_transmision_region || { regiones: [], total_lineas: 0, generado: "" };
+if (TR.regiones.length) {
+  PW.barras("g-transmision-region", {
+    items: TR.regiones.slice().sort((a, b) => b.lineas - a.lineas).map(r => ({ nombre: r.region, valor: r.lineas })),
+    color: PW.color("--s2"),
+  });
+  PW.tabla("t-transmision-region", [
+    { k: "region", titulo: "Región" },
+    { k: "lineas", titulo: "Líneas", num: true },
+    { k: "a", titulo: "≥200 kV", num: true },
+    { k: "m", titulo: "66–154 kV", num: true },
+    { k: "b", titulo: "&lt;66 kV", num: true },
+  ], TR.regiones, { orden: "lineas" });
+  document.getElementById("cont-transmision-region").textContent =
+    PW.fmt(TR.total_lineas) + " líneas de transmisión distintas en el país (" + TR.generado +
+    "). Una línea que cruza regiones se cuenta en cada una.";
+}
 </script>
 </body>
 </html>
