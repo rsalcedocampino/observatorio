@@ -1119,9 +1119,18 @@
     // [FOCO] auto-zoom al territorio filtrado (region/comuna): cfg.foco = lista de cuts de comuna.
     // animate:false: el fit corre sincronicamente al crear el mapa (antes de asentar el layout);
     // con animacion la vista a veces se descarta por una carrera con el setView inicial.
+    // cfg.focoPad (default 0.15) da un zoom mas ajustado; cfg.focoMaxZoom evita sobre-zoom en comunas chicas.
     if (cfg.foco && cfg.foco.length) {
       const b = boundsComunas(cfg.foco);
-      if (b) m.fitBounds(b.pad(0.15), { animate: false });
+      if (b) m.fitBounds(b.pad(cfg.focoPad != null ? cfg.focoPad : 0.15),
+                         { animate: false, maxZoom: cfg.focoMaxZoom || 12 });
+    }
+    // [RESALTAR] borde rojo sobre la(s) comuna(s) seleccionada(s). cfg.resaltar = cut o [cut].
+    if (cfg.resaltar) {
+      const cuts = Array.isArray(cfg.resaltar) ? cfg.resaltar : [cfg.resaltar];
+      const feats = geo.features.filter(f => cuts.indexOf(f.properties.cut) >= 0);
+      if (feats.length) L.geoJSON({ type: "FeatureCollection", features: feats },
+        { style: { color: "#e11d48", weight: 3, opacity: 1, fill: false } }).addTo(m).bringToFront();
     }
     return m;
   }

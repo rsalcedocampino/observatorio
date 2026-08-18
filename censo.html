@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Censo Nacional 2024 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260817b">
+<link rel="stylesheet" href="assets/estilo.css?v=260818a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 </head>
@@ -61,15 +61,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2 style="margin-top:0">Mapa comunal por indicador</h2>
     <div class="filtros">
       <label>Indicador <select id="f-ind"></select></label>
+      <label>Cruzar con <select id="f-ind2"><option value="">— (ninguno)</option></select></label>
       <label>Región <select id="f-region"><option value="">Todas</option></select></label>
       <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
     </div>
     <div id="mapa-wrap"><div id="mapa"></div></div>
     <div id="ley"></div>
     <p class="nota">Colores por quintiles del indicador elegido. Pasa el mouse por una comuna para ver
-    su valor.</p>
+    su valor. Al elegir una <b>región</b> el mapa hace zoom; al elegir una <b>comuna</b> se resalta en
+    <b style="color:#e11d48">rojo</b>.</p>
     <h3 style="margin:14px 0 4px">Top 20 comunas por el indicador elegido</h3>
     <div id="g-top"></div>
+  </div>
+
+  <div class="tarjeta" id="card-cruce" style="display:none">
+    <h2 style="margin-top:0">Cruce de indicadores por comuna</h2>
+    <div id="g-cruce"></div>
+    <p class="nota" id="nota-cruce"></p>
   </div>
 
   <div class="tarjeta">
@@ -87,7 +95,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="data/censo.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260817b"></script>
+<script src="assets/comun.js?v=260818a"></script>
 <script>
 PW.montarNav("censo.html");
 const D = window.PW_DATA.censo;
@@ -120,6 +128,9 @@ D.indicadores.forEach(i => {
   (ogActual || selInd).appendChild(o);
 });
 selInd.value = "indice_envejecimiento";
+// 2o selector para el cruce: mismas opciones (grupos incluidos) + "— (ninguno)" por defecto
+const selInd2 = document.getElementById("f-ind2");
+selInd2.innerHTML = '<option value="">— (ninguno)</option>' + selInd.innerHTML;
 
 const selR = document.getElementById("f-region");
 const selC = document.getElementById("f-comuna");
@@ -144,20 +155,53 @@ PW.tabla("t-regiones", colsCon([{ k: "region", titulo: "Región" }]), D.regiones
   { orden: "poblacion", buscador: false });
 
 let tab = null;
-function pintarMapa(i, foco) {
+function pintarMapa(i, foco, resaltar) {
   const wrap = document.getElementById("mapa-wrap");
   wrap.innerHTML = '<div id="mapa"></div>';
   PW.choropleth("mapa", {
     valores: Object.fromEntries(D.comunas.map(c => [c.cut, c[i.k]])),
-    fmt: v => fmtInd(i, v), alto: 520, foco: foco,
+    fmt: v => fmtInd(i, v), alto: 520,
+    foco: foco, focoPad: foco ? 0.05 : 0.15, focoMaxZoom: 11,  // [#2] zoom mas ajustado por region/comuna
+    resaltar: resaltar,                                        // [#3] borde rojo en la comuna elegida
   });
+}
+
+// [#1 CRUCE] scatter page-local: comunas por (indicador A, B) + correlacion de Pearson. SVG theme-aware.
+function scatterCruce(cont, cfg) {
+  const el = document.getElementById(cont);
+  const pts = cfg.puntos.filter(p => p.x != null && p.y != null && !Number.isNaN(p.x) && !Number.isNaN(p.y));
+  if (pts.length < 3) { el.innerHTML = '<p class="nota">Se necesitan al menos 3 comunas con dato en ambos indicadores.</p>'; return null; }
+  const W = 720, H = 380, mL = 60, mR = 14, mT = 12, mB = 46;
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+  const xmin = Math.min(...xs), xmax = Math.max(...xs), ymin = Math.min(...ys), ymax = Math.max(...ys);
+  const px = v => mL + (xmax === xmin ? 0.5 : (v - xmin) / (xmax - xmin)) * (W - mL - mR);
+  const py = v => H - mB - (ymax === ymin ? 0.5 : (v - ymin) / (ymax - ymin)) * (H - mT - mB);
+  const n = pts.length, mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;
+  let sxy = 0, sxx = 0, syy = 0;
+  pts.forEach(p => { const dx = p.x - mx, dy = p.y - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; });
+  const r = (sxx > 0 && syy > 0) ? sxy / Math.sqrt(sxx * syy) : null;
+  const E = PW.esc, ax = "var(--border)", tx = "var(--ink-3)", dot = PW.color("--s2");
+  const dots = pts.map(p => `<circle cx="${px(p.x).toFixed(1)}" cy="${py(p.y).toFixed(1)}" r="3.6" fill="${dot}" fill-opacity="0.55"><title>${E(p.nombre)}: ${E(cfg.fmtX(p.x))} · ${E(cfg.fmtY(p.y))}</title></circle>`).join("");
+  el.innerHTML = `<div class="scroll-x"><svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;font:12px system-ui,sans-serif">
+    <line x1="${mL}" y1="${H - mB}" x2="${W - mR}" y2="${H - mB}" stroke="${ax}"/>
+    <line x1="${mL}" y1="${mT}" x2="${mL}" y2="${H - mB}" stroke="${ax}"/>
+    <text x="${mL}" y="${H - mB + 16}" fill="${tx}">${E(cfg.fmtX(xmin))}</text>
+    <text x="${W - mR}" y="${H - mB + 16}" fill="${tx}" text-anchor="end">${E(cfg.fmtX(xmax))}</text>
+    <text x="${mL - 6}" y="${H - mB}" fill="${tx}" text-anchor="end">${E(cfg.fmtY(ymin))}</text>
+    <text x="${mL - 6}" y="${mT + 10}" fill="${tx}" text-anchor="end">${E(cfg.fmtY(ymax))}</text>
+    <text x="${(mL + W - mR) / 2}" y="${H - 6}" fill="${tx}" text-anchor="middle">${E(cfg.xlab)}</text>
+    <text transform="translate(15,${(mT + H - mB) / 2}) rotate(-90)" fill="${tx}" text-anchor="middle">${E(cfg.ylab)}</text>
+    ${dots}
+  </svg></div>`;
+  return r;
 }
 function refrescar() {
   const i = indActual();
   const reg = selR.value, com = selC.value;
   const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
   const foco = (reg || com) ? filas.map(c => c.cut) : null;
-  pintarMapa(i, foco);
+  const resaltar = com ? (D.comunas.find(c => c.comuna === com) || {}).cut : null;  // [#3] comuna a resaltar
+  pintarMapa(i, foco, resaltar);
   PW.barras("g-top", {
     items: filas.filter(c => c[i.k] != null).sort((a, b) => b[i.k] - a[i.k]).slice(0, 20)
       .map(c => ({ nombre: c.comuna, valor: c[i.k], extra: c.region })),
@@ -167,8 +211,29 @@ function refrescar() {
   else tab = PW.tabla("t-comunas",
     colsCon([{ k: "comuna", titulo: "Comuna" }, { k: "region", titulo: "Región" }]),
     filas, { orden: "poblacion", max: 400 });
+
+  // [#1] cruce: scatter del indicador A (mapa) vs B (2o selector), sobre las comunas filtradas
+  const k2 = selInd2.value, card = document.getElementById("card-cruce");
+  if (k2 && k2 !== i.k) {
+    const i2 = D.indicadores.find(x => x.k === k2);
+    const pts = filas.filter(c => c[i.k] != null && c[i2.k] != null)
+      .map(c => ({ x: c[i.k], y: c[i2.k], nombre: c.comuna }));
+    const r = scatterCruce("g-cruce", { puntos: pts, xlab: i.label, ylab: i2.label,
+      fmtX: v => fmtInd(i, v), fmtY: v => fmtInd(i2, v) });
+    const ar = r == null ? 0 : Math.abs(r);
+    const fuerza = r == null ? "" : (ar >= 0.7 ? " (correlación fuerte)" : ar >= 0.4 ? " (moderada)" :
+      ar >= 0.2 ? " (débil)" : " (casi nula)");
+    document.getElementById("nota-cruce").textContent =
+      pts.length + " comunas" + (reg ? " de " + reg : "") + ". Pearson r = " +
+      (r == null ? "—" : PW.fmt(r, 2)) + fuerza + ". Cada punto es una comuna: eje X = " + i.label +
+      ", eje Y = " + i2.label + ". Pasa el mouse por un punto para ver la comuna.";
+    card.style.display = "";
+  } else {
+    card.style.display = "none";
+  }
 }
 selInd.addEventListener("input", refrescar);
+selInd2.addEventListener("input", refrescar);
 selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
 selC.addEventListener("input", refrescar);
 refrescar();
