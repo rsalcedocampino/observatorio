@@ -55,6 +55,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="tarjeta">
       <h2 style="margin-top:0">Mapa de puntos duales</h2>
       <div id="mapa-duales"></div>
+      <div id="ley-duales" class="leyenda" style="margin:6px 0 0"></div>
     </div>
   </div>
 
@@ -99,6 +100,7 @@ PW.mapa("mapa-duales", {
   }],
   centro: [-33.6, -70.8], zoom: 6, alto: 420,
 });
+PW.leyendaMapa("ley-duales", [["Bencinera con cargador público a 100 m o menos", PW.color("--s2")]]);
 
 PW.tabla("t-pares", [
   { k: "marca", titulo: "Marca" },
