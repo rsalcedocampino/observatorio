@@ -108,12 +108,16 @@ function filtroCGE() {
   return { rcut: filtroTerr.rcut || null, cut: (cut && POSTES_IDX[cut]) ? cut : null };
 }
 // capas por comuna/region con carga DIFERIDA (helper homologado: PW.capaComunaOnDemand en comun.js)
-const capaPostes = PW.capaComunaOnDemand({ dir: "postes", indice: POSTES_IDX, campo: "pts", contarKey: "n", region: true, cap: 15000, alRefrescar: () => render(false) });
+// [FIX 404] el indice trae las 346 comunas (se amplio con el dato SEC), pero los archivos on-demand
+// solo existen donde el conteo es >0 (postes: ~90 CGE; mt/bt: 328/326). Cada capa usa un indice
+// FILTRADO por su conteo real: el scope queda vacio donde no hay dato (aviso correcto, 0 fetch 404).
+const idxCon = key => Object.fromEntries(Object.entries(POSTES_IDX).filter(([, o]) => (o[key] || 0) > 0));
+const capaPostes = PW.capaComunaOnDemand({ dir: "postes", indice: idxCon("n"), campo: "pts", contarKey: "n", region: true, cap: 15000, alRefrescar: () => render(false) });
 const TRAMOS = {
   mt: { color: "#7c3aed", nombre: "media tensión", region: true,
-        capa: PW.capaComunaOnDemand({ dir: "tramos_mt", indice: POSTES_IDX, campo: "segs", contarKey: "mt", region: true,  cap: 45000, alRefrescar: () => render(false) }) },
+        capa: PW.capaComunaOnDemand({ dir: "tramos_mt", indice: idxCon("mt"), campo: "segs", contarKey: "mt", region: true,  cap: 45000, alRefrescar: () => render(false) }) },
   bt: { color: "#ec4899", nombre: "baja tensión",   region: false,
-        capa: PW.capaComunaOnDemand({ dir: "tramos_bt", indice: POSTES_IDX, campo: "segs", contarKey: "bt", region: false, cap: 45000, alRefrescar: () => render(false) }) },
+        capa: PW.capaComunaOnDemand({ dir: "tramos_bt", indice: idxCon("bt"), campo: "segs", contarKey: "bt", region: false, cap: 45000, alRefrescar: () => render(false) }) },
 };
 // wrappers delgados (conservan las firmas que usan render/pintarPanel/hints)
 function cutsPostesScope() { return capaPostes.scope(filtroCGE()); }
