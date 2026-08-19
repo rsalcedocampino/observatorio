@@ -224,21 +224,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- 5. RANKING NACIONAL (colapsado) -->
   <details class="tarjeta seccion" id="ranking-nacional">
     <summary>Ranking nacional de las 16 regiones (brecha de carga al 2035)</summary>
-    <details class="metodo-card" id="metodo" style="margin:10px 0">
-      <summary>Cómo se calcula lo que le falta a cada región y comuna</summary>
-      <ol>
-        <li><b>Parque enchufable proyectado a 2035 (nacional).</b> Se parte del parque al <span id="m-anio"></span> (INE, permisos de circulación) más las ventas enchufables registradas desde 2025. Las ventas futuras se proyectan tomando el nivel de los <b>últimos 12 meses</b> y sumándole cada año el crecimiento observado (pendiente de los <b>últimos 24 meses</b>); se acumulan año a año hasta 2035. Es una estimación conservadora hacia arriba: no descuenta bajas del parque.</li>
-        <li><b>Reparto por región y por comuna.</b> El total nacional 2035 se reparte según la participación <b>actual</b> de cada territorio:
-          <br><code>parque_2035(territorio) = parque_2035(nacional) × parque_EV_hoy(territorio) ÷ parque_EV_hoy(nacional)</code>.
-          <br>Supuesto: la distribución territorial del parque no cambia. El parque nacional cuadra exacto con la suma de las 16 regiones y de las 346 comunas (mismo universo INE).</li>
-        <li><b>Cargadores necesarios y lo que falta.</b>
-          <br><code>necesarios_2035 = parque_2035 ÷ ratio</code>, con <b>ratio</b> = EV por cargador (objetivo de servicio, editable abajo; por defecto 20).
-          <br><code>faltan = máx(0, necesarios_2035 − cargadores_hoy)</code>.
-          <br><code>ritmo_requerido/año = faltan ÷ años restantes hasta 2035</code>, comparado con el ritmo real (cargadores públicos nuevos de los últimos 12 meses, SEC).</li>
-        <li><b>Demanda eléctrica adicional (2035).</b> <code>demanda_2035 (GWh) = parque_2035 × <span id="m-km"></span> km/año ÷ <span id="m-rend"></span> km/kWh</code>.</li>
-      </ol>
-      <p class="nota" style="margin:6px 0 0"><b>Fuentes.</b> Parque EV: INE (permisos <span id="m-anio2"></span>) por comuna, homologado a CUT/INE (16 regiones, 346 comunas). Red de carga: red viva de Cargadores y Conectores (cada 30 min), por CUT. Ritmo: SEC EcoCarga. Energía: Coordinador + ACERA + SEC. Población: Censo 2024. Cada cifra cruza por CUT, no por texto.</p>
-    </details>
     <div class="filtros">
       <label>Región <select id="filtro-reg-tabla"><option value="">Todas</option></select></label>
       <label>EV por cargador (objetivo de servicio) <input type="number" id="ratio-ev" value="20" min="5" step="5"></label>
@@ -1358,14 +1343,7 @@ document.getElementById("reco").addEventListener("click", e => {
   inp.addEventListener("input", () => { if (MAP[inp.value]) resolver(); });
 })();
 
-// ===================== valores metodologia + init =====================
-(function metodoValores() {
-  const DEM = window.PW_DATA.c_demanda;
-  const set = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
-  set("m-anio", D.anio_parque || ""); set("m-anio2", D.anio_parque || "");
-  if (DEM) { set("m-km", PW.fmt(DEM.supuestos.km_anuales)); set("m-rend", DEM.supuestos.rendimiento_km_kwh); }
-})();
-
+// ===================== init =====================
 refrescarTodo();
 </script>
 </body>
