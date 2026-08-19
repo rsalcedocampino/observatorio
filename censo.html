@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Censo Nacional — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260818a">
+<link rel="stylesheet" href="assets/estilo.css?v=260818b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 </head>
@@ -122,7 +122,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="data/censo.js"></script>
 <script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260818a"></script>
+<script src="assets/comun.js?v=260818b"></script>
 <script>
 PW.montarNav("censo.html");
 const D = window.PW_DATA.censo;
@@ -415,8 +415,9 @@ function pintarCrecimiento(scopeReg, resaltar) {
   const oscuro = raiz.dataset.theme === "dark" ||
     (raiz.dataset.theme !== "light" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
   const m = L.map(el, { zoomSnap: 0.5 }).setView([-35.5, -71.3], 4.5);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/" + (oscuro ? "dark_all" : "light_all") + "/{z}/{x}/{y}{r}.png",
-    { attribution: "&copy; OSM &copy; CARTO", maxZoom: 19 }).addTo(m);
+  // base "Calles" (OSM), homologada con el resto de los mapas del sitio (default 2026-08-18)
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    { attribution: "&copy; OpenStreetMap", maxZoom: 19 }).addTo(m);
   const CLS = [
     ["disminuye más de 5%", "#b91c1c", v => v < -5],
     ["disminuye hasta 5%", "#f87171", v => v < 0],
