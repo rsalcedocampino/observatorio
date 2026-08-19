@@ -48,13 +48,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
   <h1>Mapas Interactivos con Capas</h1>
-  <p class="sub">Un solo mapa para cruzar las capas del sistema eléctrico y de
-  electromovilidad: la <b>red de carga</b>, la <b>transmisión</b> que la alimenta (separada por
-  rango de tensión), la <b>generación renovable</b> y el <b>almacenamiento</b> que la respaldan,
-  los <b>postes</b> y la <b>red de distribución</b> media/baja tensión (CGE, bajo demanda por su volumen: elige una <b>región</b> para ver la MT o una <b>comuna</b> para la BT) y el <b>Censo</b> como
-  telón de fondo territorial. Parta de un <b>cruce sugerido</b> o encienda y apague capas a mano
-  para encontrar relaciones sobre el territorio: cargadores lejos de una subestación, plantas
-  solares junto a baterías, comunas con poca electrificación y sin red cercana.</p>
+  <p class="sub">Un solo mapa para cruzar la <b>red de carga</b>, <b>transmisión</b>,
+  <b>generación renovable</b>, <b>almacenamiento</b>, <b>distribución eléctrica</b> y datos del
+  <b>Censo</b>. Explora <b>cruces sugeridos</b> o activa las capas para identificar oportunidades
+  y brechas en cada territorio.</p>
 
   <div class="tarjeta">
     <div id="kpis-mapa" class="kpis"></div>
@@ -70,6 +67,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <span style="font-weight:600">Transmisión:</span><span id="ley-transmision"></span>
     </div>
     <p class="nota" id="ley-encoding"></p>
+    <p class="nota">Los puntos del mapa pueden estar corridos por tipo de capa.</p>
     <p class="nota">Consejo: cada capa mantiene su estado al filtrar o cambiar el telón de
     fondo; el mapa conserva el zoom cuando activa o apaga capas. Use "Ver todo" para encuadrar
     y "Mi ubicación" para centrarse y ver el punto más cercano.</p>
@@ -156,14 +154,12 @@ function asegurarCuts() {
 
 // indicador del telon de fondo comunal: Censo (fuente CEN) o Distribucion SEC (fuente DIST)
 const IND = {
-  pct_solar: ["Censo: % viviendas con generación solar", v => PW.fmt(v, 1) + "%"],
-  pct_red:   ["Censo: % viviendas conectadas a la red", v => PW.fmt(v, 1) + "%"],
-  viviendas: ["Censo: viviendas por comuna", v => PW.fmt(v)],
   km_bt:     ["Distribución: km de red BT (SEC)", v => PW.fmt(v, 0) + " km"],
   km_mt:     ["Distribución: km de red MT (SEC)", v => PW.fmt(v, 0) + " km"],
 };
-// que dataset alimenta cada indicador del telon: "cen" (Censo) o "dist" (Distribucion SEC)
-const FUENTE_IND = { pct_solar: "cen", pct_red: "cen", viviendas: "cen", km_bt: "dist", km_mt: "dist" };
+// que dataset alimenta cada indicador del telon (hoy solo Distribucion SEC; el detalle del Censo
+// vive en censo.html — las opciones Censo del telon se retiraron a pedido del usuario 2026-08-18)
+const FUENTE_IND = { km_bt: "dist", km_mt: "dist" };
 
 // capas: estado on/off persistente entre re-render
 // colores bien diferenciados: azul reservado para el fondo Censo (paleta SEQ azul),
@@ -191,13 +187,9 @@ const PRESETS = [
     desc: "Los cargadores sobre la transmisión que los alimenta: quién está lejos de la red." },
   { t: "Generación + almacenamiento", on: ["solar", "bess"],
     desc: "Dónde se genera energía solar y dónde se guarda en baterías." },
-  { t: "Cobertura vs Censo", on: ["carga"], ind: "pct_red",
-    desc: "La red de carga sobre la electrificación de los hogares por comuna." },
-  { t: "Solar vs potencial del hogar", on: ["solar"], ind: "pct_solar",
-    desc: "Plantas solares sobre el porcentaje de viviendas con generación solar propia." },
   { t: "Red de distribución (SEC)", on: [], ind: "km_bt",
     desc: "Kilómetros de red de baja tensión (BT) por comuna, del GIS de la SEC (todas las distribuidoras de Chile, 346 comunas)." },
-  { t: "Ver todo", on: ["carga", "sub", "lin_a", "lin_m", "lin_b", "solar", "bess"], ind: "pct_red" },
+  { t: "Ver todo", on: ["carga", "sub", "lin_a", "lin_m", "lin_b", "solar", "bess"], ind: "km_bt" },
   { t: "Limpiar", on: [], ind: "" },
 ];
 
@@ -539,11 +531,6 @@ PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; render(t
   `<label>Telón de fondo por comuna
      <select id="f-ind">
        <option value="" selected>— (apagado)</option>
-       <optgroup label="Censo 2024">
-         <option value="pct_solar">% viviendas con generación solar</option>
-         <option value="pct_red">% viviendas conectadas a la red</option>
-         <option value="viviendas">Viviendas por comuna</option>
-       </optgroup>
        <optgroup label="Distribución eléctrica (SEC)">
          <option value="km_bt">km de red BT (baja tensión)</option>
          <option value="km_mt">km de red MT (media tensión)</option>
