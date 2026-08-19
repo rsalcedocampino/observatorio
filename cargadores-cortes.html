@@ -126,25 +126,32 @@ const DIST_CUT = {};                                   // corte activo confirmad
 DIST.forEach(c => { if (c.cut) DIST_CUT[String(c.cut).padStart(5, "0")] = c; });
 const VIVO_CUT = {};                                   // vivo por comuna (afectados+totales+pct) si la SEC lo expone
 ((V && V.por_comuna) || []).forEach(c => { if (c.cut) VIVO_CUT[String(c.cut).padStart(5, "0")] = c; });
+// regiones donde la SEC SI detalla comunas: ahi, una comuna AUSENTE del detalle = sin corte (CON LUZ);
+// si la region no trae detalle comunal, el estado de la comuna es desconocido (no se inventa).
+const REG_DETALLE = {};
+Object.keys(VIVO_CUT).forEach(c => { REG_DETALLE[c.slice(0, 2)] = true; });
 function tipComuna(cut, comuna, _valReg) {
   cut = String(cut).padStart(5, "0");
   const rc = cut.slice(0, 2);
   const vc = VIVO_CUT[cut], dc = DIST_CUT[cut], h = HIST12[cut];
   const L = [`<b>${PW.esc(comuna)}</b>`];
-  // 1) Cortes activos ahora (y % real de la comuna solo si la fuente lo trae)
+  // 1) VEREDICTO explicito de la comuna (alineado con el color del mapa: azul=sin luz / amarillo=con luz)
   if (vc && (vc.clientes || 0) > 0) {
     const pctTxt = vc.pct == null ? null
       : (vc.pct >= 0.05 ? PW.fmt(vc.pct, 1) : (vc.pct > 0 ? "<0,1" : "0"));
-    L.push(`Sin luz ahora: <b style="color:var(--critical)">${PW.fmt(vc.clientes)}</b>` +
-           (pctTxt != null ? ` · <b>${pctTxt}%</b> de la comuna` : ""));
+    L.push(`<b style="color:var(--critical)">SIN LUZ</b> · <b>${PW.fmt(vc.clientes)}</b> clientes sin suministro` +
+           (pctTxt != null ? ` (<b>${pctTxt}%</b> de la comuna)` : ""));
   } else if (dc && (dc.clientes || 0) > 0) {
-    L.push(`Corte activo: <b style="color:var(--critical)">${PW.fmt(dc.clientes)}</b> clientes` +
+    L.push(`<b style="color:var(--critical)">SIN LUZ</b> · corte activo: <b>${PW.fmt(dc.clientes)}</b> clientes` +
            (dc.outages ? ` · ${PW.fmt(dc.outages)} falla${dc.outages === 1 ? "" : "s"}` : "") +
            (dc.empresa ? ` (${PW.esc(dc.empresa)})` : ""));
+  } else if (regCli[rc] && REG_DETALLE[rc]) {
+    L.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado en esta comuna`);
+    L.push(`<span style="opacity:.75">Su región registra ${PW.fmt(regCli[rc])} clientes sin luz en otras comunas</span>`);
   } else if (regCli[rc]) {
-    L.push(`Región con ${PW.fmt(regCli[rc])} sin luz ahora <span style="opacity:.7">(la SEC no detalla por comuna)</span>`);
+    L.push(`<b style="color:var(--warning)">SIN DETALLE COMUNAL</b> · la SEC reporta ${PW.fmt(regCli[rc])} sin luz en la región, sin desglosar comunas (podría incluir esta)`);
   } else {
-    L.push(`<span style="color:var(--good)">Sin corte reportado ahora</span>`);
+    L.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado ahora`);
   }
   // 2) Historico: cortes en los ultimos 12 meses
   if (h && h.ev12 != null) {
