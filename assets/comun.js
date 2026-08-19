@@ -765,6 +765,19 @@
     return b && b.isValid() ? b : null;
   }
 
+  // [FOCO CHILE] TODOS los mapas quedan acotados a Chile (pedido del usuario 2026-08-18):
+  // el zoom minimo = "todo Chile" (no se puede alejar mas alla del pais) y el paneo no sale
+  // del territorio (maxBounds con viscosidad 1). Mismo patron que el mapa de cortes (103).
+  const BOUNDS_CHILE = [[-56.0, -76.2], [-17.4, -66.2]];
+  function acotarAChile(m) {
+    const b = L.latLngBounds(BOUNDS_CHILE);
+    m.setMaxBounds(b.pad(0.12));
+    m.options.maxBoundsViscosity = 1.0;
+    let z = m.getBoundsZoom(b);
+    if (!isFinite(z) || z < 2) z = 3.5;  // contenedor oculto/sin medida -> fallback seguro
+    m.setMinZoom(z);
+  }
+
   // [NOTA PRECISION] aviso estandar bajo cada mapa del sitio (pedido del usuario 2026-08-18).
   // UNA vez por pagina (guard por clase) e idempotente entre re-renders al filtrar.
   function notaPrecisionMapa(el) {
@@ -789,6 +802,7 @@
     const centro = cfg.centro || [-33.45, -70.66];
     const zoom = cfg.zoom || 5;
     const m = L.map(el, { preferCanvas: true, zoomSnap: 0.5 }).setView(centro, zoom);
+    acotarAChile(m);
 
     // [BASE] capas base homologadas (Mapa/Satélite/Relieve/Calles) + escala
     const raiz = document.documentElement;
@@ -1074,6 +1088,7 @@
     el.classList.add("pw-mapa");
     el.style.height = (cfg.alto || 520) + "px";
     const m = L.map(el, { zoomSnap: 0.5 }).setView([-38, -72], 4.5);
+    acotarAChile(m);
     const raiz = document.documentElement;
     const oscuro = raiz.dataset.theme === "dark" ||
       (raiz.dataset.theme !== "light" && window.matchMedia &&
@@ -1309,6 +1324,6 @@
     return el;
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores };
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile };
 })();
 
