@@ -767,6 +767,17 @@
     return b && b.isValid() ? b : null;
   }
 
+  // [NOTA PRECISION] aviso estandar bajo cada mapa del sitio (pedido del usuario 2026-08-18).
+  // UNA vez por pagina (guard por clase) e idempotente entre re-renders al filtrar.
+  function notaPrecisionMapa(el) {
+    const main = el.closest("main") || document.body;
+    if (main.querySelector(".pw-nota-precision")) return;
+    const p = document.createElement("p");
+    p.className = "nota pw-nota-precision";
+    p.textContent = "Los puntos del mapa pueden estar corridos por tipo de capa y año de actualización.";
+    el.insertAdjacentElement("afterend", p);
+  }
+
   function mapa(cont, cfg) {
     const el = typeof cont === "string" ? document.getElementById(cont) : cont;
     if (typeof L === "undefined") {
@@ -963,6 +974,7 @@
         "box-shadow:0 2px 12px rgba(0,0,0,.18)";
       el.appendChild(av);
     }
+    notaPrecisionMapa(el);
     return m;
   }
 
@@ -1122,6 +1134,7 @@
       ley.appendChild(sp);
     });
     el.insertAdjacentElement("afterend", ley);
+    notaPrecisionMapa(ley);
     // [FOCO] auto-zoom al territorio filtrado (region/comuna): cfg.foco = lista de cuts de comuna.
     // animate:false: el fit corre sincronicamente al crear el mapa (antes de asentar el layout);
     // con animacion la vista a veces se descarta por una carrera con el setView inicial.
