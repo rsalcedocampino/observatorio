@@ -45,7 +45,10 @@
       ["permisos.html", "Parque de vehículos"],
     ]],
     ["TCO/Costos", [
-      ["tco.html", "Costo total (TCO)"],
+      ["tco.html#comparador", "Comparar EV vs combustión"],
+      ["tco.html#mi-vehiculo", "Desde mi vehículo"],
+      ["tco.html#recomendar", "Recomiéndame un EV"],
+      ["tco.html#solar", "Simulador solar"],
     ]],
     ["Importaciones", [
       ["radar.html", "Vehículos"],
@@ -195,9 +198,14 @@
     h.className = "pw";
     let nav = `<a href="index.html" class="${activa === "index.html" ? "activo" : ""}">Inicio</a>`;
     GRUPOS.forEach(([grupo, items]) => {
-      const contiene = items.some(([f]) => f === activa);
-      const sub = items.map(([f, t]) =>
-        `<a href="${f}" class="${f === activa ? "activo" : ""}">${t}</a>`).join("");
+      // los items pueden traer ancla ("tco.html#solar"): el archivo base decide la pagina activa
+      // y el ancla decide cual item del submenu se marca (pestañas dentro de una misma pagina)
+      const contiene = items.some(([f]) => f.split("#")[0] === activa);
+      const sub = items.map(([f, t]) => {
+        const [fb, fh] = f.split("#");
+        const on = fb === activa && (!fh || "#" + fh === location.hash);
+        return `<a href="${f}" class="${on ? "activo" : ""}">${t}</a>`;
+      }).join("");
       nav += `<div class="nav-grupo"><a class="${contiene ? "activo" : ""}" tabindex="0">${grupo}</a><div class="submenu">${sub}</div></div>`;
     });
     h.innerHTML = `<a href="index.html" class="marca"><img src="assets/logo-icon.png" alt="" width="28" height="28"><span>Energías Futuro</span></a><nav>${nav}</nav>`;
