@@ -30,6 +30,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="stylesheet" href="assets/estilo.css?v=260818e">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<style>
+  /* [SECCIONES PLEGABLES] tarjetas minimizadas por defecto (crecimiento / resumen region / comunas) */
+  details.tarjeta > summary { cursor: pointer; font-weight: 700; font-size: 17px; list-style: none; }
+  details.tarjeta > summary::-webkit-details-marker { display: none; }
+  details.tarjeta > summary::before { content: "\25B8"; margin-right: 8px; color: var(--s1); }
+  details.tarjeta[open] > summary::before { content: "\25BE"; }
+</style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -83,8 +90,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="g-top"></div>
   </div>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Crecimiento de población 2017 → 2024</h2>
+  <details class="tarjeta" id="card-crec">
+    <summary>Crecimiento de población 2017 → 2024</summary>
     <div id="crec-wrap"><div id="mapa-crec"></div></div>
     <div id="ley-crec" class="leyenda"></div>
     <p class="nota">Variación de la población censada por comuna entre el Censo 2017 y el Censo 2024.
@@ -95,7 +102,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div><h3 style="margin:10px 0 4px">Más crecen</h3><div id="g-crecen"></div></div>
       <div><h3 style="margin:10px 0 4px">Más decrecen</h3><div id="g-decrecen"></div></div>
     </div>
-  </div>
+  </details>
 
   <div class="tarjeta" id="card-cruce" style="display:none">
     <h2 style="margin-top:0">Cruce de indicadores por comuna</h2>
@@ -103,15 +110,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota" id="nota-cruce"></p>
   </div>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Resumen por región</h2>
-    <div class="scroll-x"><table class="pw" id="t-regiones"></table></div>
-  </div>
+  <details class="tarjeta">
+    <summary>Resumen por región</summary>
+    <div class="scroll-x" style="margin-top:10px"><table class="pw" id="t-regiones"></table></div>
+  </details>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Todas las comunas</h2>
-    <div id="t-comunas"></div>
-  </div>
+  <details class="tarjeta">
+    <summary>Todas las comunas</summary>
+    <div id="t-comunas" style="margin-top:10px"></div>
+  </details>
 
   <p class="fuente" id="fuente"></p>
 </main>
@@ -123,7 +130,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 PW.montarNav("censo.html");
 const D = window.PW_DATA.censo;
 
-document.getElementById("nota").textContent = "Fuente: " + D.fuente + ". Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Generado " + D.generado + ".";
 document.getElementById("fuente").textContent = D.nota;
 
 // ---------- indices + helpers ----------
@@ -366,7 +373,14 @@ function aplicar() {
 
   // [#1] cruce: scatter A (mapa) vs B (2o selector), sobre la region de contexto (o todas)
   const k2 = selInd2.value, card = document.getElementById("card-cruce");
-  if (k2 && k2 !== mk) {
+  if (k2 && k2 === mk) {
+    // mismo indicador en el mapa y en "Cruzar con": avisar en vez de ocultar en silencio
+    card.style.display = "";
+    document.getElementById("g-cruce").innerHTML = "";
+    document.getElementById("nota-cruce").textContent =
+      "Elegiste el mismo indicador en el mapa y en \"Cruzar con\" (" + m.label + "). " +
+      "Elige un indicador distinto para ver el cruce entre ambos.";
+  } else if (k2) {
     const m2 = indMeta(k2);
     const pts = baseReg.map(c => ({ x: valorInd(c, mk, ano), y: valorInd(c, k2, ano), nombre: c.comuna }))
       .filter(p => p.x != null && p.y != null);
@@ -385,9 +399,16 @@ function aplicar() {
   }
 
   // Crecimiento 2017→2024 (respeta el filtro de region; resalta la comuna elegida)
-  pintarCrecimiento(scopeReg, resaltar);
+  // crecimiento: la tarjeta esta plegada por defecto -> solo se dibuja cuando esta abierta
+  // (Leaflet no puede medir un contenedor oculto); al abrirla, el toggle re-dibuja con estos args
+  crecArgs = [scopeReg, resaltar];
+  if (document.getElementById("card-crec").open) pintarCrecimiento(scopeReg, resaltar);
   sincronizarFiltrosMapa();
 }
+let crecArgs = [null, null];
+document.getElementById("card-crec").addEventListener("toggle", e => {
+  if (e.target.open) pintarCrecimiento(crecArgs[0], crecArgs[1]);
+});
 
 // [FILTRO EN EL MAPA] Region/Comuna tambien en la tarjeta del Mapa comunal (pedido 2026-08-18).
 // Son PROXIES del filtro global: cambiar cualquiera de los dos actualiza el mismo estado (toda la
