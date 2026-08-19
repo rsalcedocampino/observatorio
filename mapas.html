@@ -179,6 +179,7 @@ const CAPAS = [
   { k: "postes", nombre: "Postes de distribución", color: "--ink-2", on: false, g: "Distribución (CGE)" },
   { k: "mt",     nombre: "Red MT (media tensión)",  color: "#7c3aed",    on: false, g: "Distribución (CGE)" },
   { k: "bt",     nombre: "Red BT (baja tensión)",   color: "#ec4899",    on: false, g: "Distribución (CGE)" },
+  { k: "concesion", nombre: "Área de concesión (SEC)", color: "--s1",    on: false, g: "Distribución (CGE)" },
 ];
 // El telon comunal (Censo/SEC) ya no es un chip: se enciende/apaga con el selector
 // "Telon de fondo por comuna" (opcion "— (apagado)" = off).
@@ -241,6 +242,23 @@ function popupPlanta(p) {
     (p.mwh ? `<div class="pop-linea"><span>Capacidad</span><div>${PW.fmt(p.mwh, 1)} MWh</div></div>` : "") +
     (p.tec ? `<div class="pop-linea"><span>Tecnología</span><div>${p.tec}</div></div>` : "") +
     (p.est ? `<div class="pop-linea"><span>Estado</span><div>${PW.estadoProyecto(p.est)}</div></div>` : "") + `</div>`;
+}
+
+// [CONCESION] area de concesion por distribuidora (SEC capa 0). Color estable por empresa (hash->HSL);
+// carga DIFERIDA (~1 MB) la primera vez que se enciende el chip.
+function colorConcesion(emp) {
+  let h = 0; const s = emp || "";
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360;
+  return `hsl(${h}, 60%, 50%)`;
+}
+let concesionCargando = false;
+function asegurarConcesiones() {
+  if (!on("concesion") || window.PW_DATA.geo_concesiones || concesionCargando) return;
+  concesionCargando = true;
+  const sc = document.createElement("script");
+  sc.src = "data/geo_concesiones.js";
+  sc.onload = () => { concesionCargando = false; render(false); };
+  document.head.appendChild(sc);
 }
 
 // re-render del mapa. fit=true encuadra a lo filtrado; si no, conserva el zoom/paneo actual.
@@ -314,6 +332,14 @@ function render(fit) {
     });
   });
 
+  // Area de concesion por distribuidora (SEC capa 0): poligonos coloreados por empresa (relleno tenue)
+  if (on("concesion") && window.PW_DATA.geo_concesiones) lineas.push({
+    nombre: "Área de concesión", visible: true, geojson: window.PW_DATA.geo_concesiones,
+    color: p => ({ color: colorConcesion(p.empresa), weight: 1, opacity: 0.55,
+                   fillColor: colorConcesion(p.empresa), fillOpacity: 0.16 }),
+    tip: p => "Concesión: " + (p.empresa || "") + (p.grupo && p.grupo !== p.empresa ? " · " + p.grupo : ""),
+  });
+
   // el telon comunal se enciende ELIGIENDO un indicador en el selector ("" = apagado);
   // la fuente depende del indicador: Censo (CEN) o Distribucion SEC (DIST)
   const filas = FUENTE_IND[ind] === "dist" ? (DIST.comunas || []) : (CEN.comunas || []);
@@ -372,6 +398,7 @@ function pintarPanel() {
     render(false);
     if (c.k === "postes") sincronizarPostes();
     if (c.k === "mt" || c.k === "bt") sincronizarTramos(c.k);
+    if (c.k === "concesion") asegurarConcesiones();
   }));
 }
 
@@ -419,8 +446,11 @@ function tramosHint(tipo) {
       const cs = txtComunas(tipo, filtroTerr.rcut);
       if (cs) return " Red " + T + ": comunas con dato en esta región: " + cs + ".";
     }
-    return " Red " + T + ": elige una comuna" + (TRAMOS[tipo].region ? " o región" : "") +
-      " para dibujarla (con dato en " + txtRegiones(tipo) + ").";
+    if (TRAMOS[tipo].region)
+      return " Red " + T + ": elige una región o comuna para dibujarla (con dato en " + txtRegiones(tipo) +
+        ", " + PW.fmt(comunasCon(tipo).length) + " comunas).";
+    return " Red " + T + ": elige una comuna para dibujarla — con dato en " + PW.fmt(comunasCon(tipo).length) +
+      " comunas de " + txtRegiones(tipo) + "; elige una región para ver cuáles.";
   }
   const segs = tramosSegs(tipo);
   if (!segs) return " Red " + T + ": cargando…";
