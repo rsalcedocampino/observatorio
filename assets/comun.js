@@ -641,6 +641,10 @@
   //   Relieve   OpenTopoMap (curvas de nivel; util para red electrica y potencial)
   //   Calles    OpenStreetMap estandar (detalle urbano a color)
   // Tocar aqui cambia las capas base de mapa() y choropleth() a la vez.
+  // [BASE ELEGIDA] base cartografica por defecto del sitio: "Calles" (OSM). La eleccion del usuario
+  // PERSISTE entre re-renders (las paginas recrean el mapa al filtrar; sin esto, el selector de base
+  // se reseteaba con cada filtro). Cada mapa nuevo arranca en la ultima base elegida en la pagina.
+  let baseElegida = "Calles";
   function basesMapa(oscuro) {
     const bases = {};
     bases["Mapa"] = L.tileLayer(
@@ -783,7 +787,8 @@
       (raiz.dataset.theme !== "light" && window.matchMedia &&
        window.matchMedia("(prefers-color-scheme: dark)").matches);
     const bases = basesMapa(oscuro);
-    bases["Mapa"].addTo(m);
+    (bases[baseElegida] || bases["Calles"] || bases["Mapa"]).addTo(m);
+    m.on("baselayerchange", e => { baseElegida = e.name; });
     L.control.scale({ imperial: false, position: "bottomleft" }).addTo(m);
 
     // pane para el coropletico de fondo (debajo de todo lo demas)
@@ -1064,7 +1069,8 @@
       (raiz.dataset.theme !== "light" && window.matchMedia &&
        window.matchMedia("(prefers-color-scheme: dark)").matches);
     const bases = basesMapa(oscuro);
-    bases["Mapa"].addTo(m);
+    (bases[baseElegida] || bases["Calles"] || bases["Mapa"]).addTo(m);
+    m.on("baselayerchange", e => { baseElegida = e.name; });
     L.control.scale({ imperial: false, position: "bottomleft" }).addTo(m);
     L.control.layers(bases, null, { collapsed: true }).addTo(m);
 
