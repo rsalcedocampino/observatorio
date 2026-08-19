@@ -106,6 +106,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta" id="card-cruce" style="display:none">
     <h2 style="margin-top:0">Cruce de indicadores por comuna</h2>
+    <p class="nota" id="exp-cruce"></p>
     <div id="g-cruce"></div>
     <p class="nota" id="nota-cruce"></p>
   </div>
@@ -377,6 +378,7 @@ function aplicar() {
     // mismo indicador en el mapa y en "Cruzar con": avisar en vez de ocultar en silencio
     card.style.display = "";
     document.getElementById("g-cruce").innerHTML = "";
+    document.getElementById("exp-cruce").innerHTML = "";
     document.getElementById("nota-cruce").textContent =
       "Elegiste el mismo indicador en el mapa y en \"Cruzar con\" (" + m.label + "). " +
       "Elige un indicador distinto para ver el cruce entre ambos.";
@@ -389,6 +391,26 @@ function aplicar() {
     const ar = r == null ? 0 : Math.abs(r);
     const fuerza = r == null ? "" : (ar >= 0.7 ? " (correlación fuerte)" : ar >= 0.4 ? " (moderada)" :
       ar >= 0.2 ? " (débil)" : " (casi nula)");
+    // [EXPLICACION] lectura automatica del cruce elegido, en lenguaje simple
+    const E = PW.esc;
+    let lectura;
+    if (r == null || ar < 0.05) {
+      lectura = "no se observa relación entre ambos: saber el nivel de <b>" + E(m.label) +
+        "</b> de una comuna no dice nada sobre su <b>" + E(m2.label) + "</b>.";
+    } else {
+      lectura = (r > 0
+        ? "las comunas con más <b>" + E(m.label) + "</b> tienden también a tener más <b>" + E(m2.label) + "</b>"
+        : "las comunas con más <b>" + E(m.label) + "</b> tienden a tener menos <b>" + E(m2.label) + "</b>") +
+        (ar >= 0.7 ? " — relación fuerte y consistente."
+         : ar >= 0.4 ? " — relación moderada (con excepciones)."
+         : " — relación débil: la tendencia existe, pero hay muchas excepciones.");
+    }
+    document.getElementById("exp-cruce").innerHTML =
+      "<b>Qué estás viendo:</b> cada punto es una comuna" + (scopeReg ? " de " + E(scopeReg) : " de Chile") +
+      "; su posición horizontal es su <b>" + E(m.label) + "</b> y la vertical su <b>" + E(m2.label) + "</b>. " +
+      "Si los puntos suben en diagonal, ambos indicadores crecen juntos; si bajan, se mueven al revés. " +
+      "<b>Lectura de este cruce:</b> " + lectura +
+      " <span style='opacity:.75'>Ojo: es una asociación entre comunas, no una relación causa-efecto.</span>";
     document.getElementById("nota-cruce").textContent =
       pts.length + " comunas" + (scopeReg ? " de " + scopeReg : "") + ". Pearson r = " +
       (r == null ? "—" : PW.fmt(r, 2)) + fuerza + ". Eje X = " + m.label + ", eje Y = " + m2.label +
