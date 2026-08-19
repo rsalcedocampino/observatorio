@@ -291,7 +291,8 @@ function renderMapaCortes(fit) {
     let cuts = [];
     if (filtroTerr.com && CUT_COMUNA[_norm(filtroTerr.com)]) cuts = [CUT_COMUNA[_norm(filtroTerr.com)]];
     else if (filtroTerr.rcut) cuts = (GEO && GEO.features ? GEO.features : [])
-      .map(f => f.properties.cut).filter(c => c.slice(0, 2) === filtroTerr.rcut);
+      .map(f => f.properties.cut).filter(c => c.slice(0, 2) === filtroTerr.rcut)
+      .filter(c => c !== "05104" && c !== "05201");  // islas del Pacifico no estiran el encuadre regional
     const b = cuts.length ? PW.boundsComunas(cuts) : null;
     if (b) mapaCortes.fitBounds(b.pad(filtroTerr.com ? 0.15 : 0.05), { animate: false, maxZoom: filtroTerr.com ? 12 : 11 });
     else mapaCortes.fitBounds(CHILE, { animate: false });
@@ -339,9 +340,13 @@ const NOMBRE_REG = {};
 const CUT_COMUNA = {};
 (GEO && GEO.features ? GEO.features : []).forEach(f => { CUT_COMUNA[_norm(f.properties.comuna)] = String(f.properties.cut).padStart(5, "0"); });
 let filtroTerr = {};
+// nombres de comuna en Title Case (geo_comunas viene en MAYUSCULAS)
+const _title = s => (s || "").toLowerCase()
+  .replace(/(^|[\s'’(])(\p{L})/gu, (m, a, b) => a + b.toUpperCase())
+  .replace(/ (De|Del|La|Las|Los|Y) /g, m => m.toLowerCase());
 const territorioCortes = (GEO && GEO.features ? GEO.features : []).map(f => {
   const cut = String(f.properties.cut).padStart(5, "0");
-  return { rcut: cut.slice(0, 2), reg: NOMBRE_REG[cut.slice(0, 2)] || ("Región " + cut.slice(0, 2)), com: f.properties.comuna };
+  return { rcut: cut.slice(0, 2), reg: NOMBRE_REG[cut.slice(0, 2)] || ("Región " + cut.slice(0, 2)), com: _title(f.properties.comuna) };
 });
 PW.filtrosTerritorio("filtros-cortes", territorioCortes, f => { filtroTerr = f; renderMapaCortes(true); });
 

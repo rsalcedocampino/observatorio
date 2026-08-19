@@ -361,7 +361,9 @@ function render(fit) {
     if (cutSel) b = PW.boundsComunas([cutSel]);
     else if (filtroTerr.rcut) {
       const geo = window.PW_DATA.geo_comunas;
-      const cuts = geo ? geo.features.map(f => f.properties.cut).filter(c => c.slice(0, 2) === filtroTerr.rcut) : [];
+      const cuts = geo ? geo.features.map(f => f.properties.cut)
+        .filter(c => c.slice(0, 2) === filtroTerr.rcut)
+        .filter(c => c !== "05104" && c !== "05201") : [];  // islas del Pacifico no estiran el encuadre
       if (cuts.length) b = PW.boundsComunas(cuts);
     }
     if (!b) {  // fallback (comuna sin poligono): encuadrar a los puntos visibles, como antes
