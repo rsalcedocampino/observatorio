@@ -311,16 +311,18 @@ function selVeh(pool, mkS, mdS, yrS, cb, auto) {
     yrS.innerHTML = `<option value="">— año —</option>` + opts(yrs);
     mkS.value = sel.mk; mdS.value = sel.md; yrS.value = sel.yr;
   }
-  function emite() {
+  function emite(autoOK) {
     let v = null;
     if (sel.mk && sel.md && sel.yr) v = buscar(pool, sel.mk, sel.md, sel.yr);
-    else {
-      const q = sub("");  // filtrado por los tres facetas
+    else if (autoOK) {
+      // completa solo tras una SELECCIÓN del usuario (nunca tras limpiar una faceta,
+      // para no re-llenar al instante lo que el usuario acaba de vaciar)
+      const q = sub("");  // filtrado por las tres facetas
       if (q.length === 1) { v = q[0]; sel.mk = v.mk; sel.md = v.md; sel.yr = String(v.yr); pinta(); }
     }
     cb(v);
   }
-  const on = f => () => { sel[f] = (f === "mk" ? mkS : f === "md" ? mdS : yrS).value; pinta(); emite(); };
+  const on = f => () => { const val = (f === "mk" ? mkS : f === "md" ? mdS : yrS).value; sel[f] = val; pinta(); emite(val !== ""); };
   mkS.onchange = on("mk"); mdS.onchange = on("md"); yrS.onchange = on("yr");
   pinta();
   if (auto) {
@@ -331,7 +333,7 @@ function selVeh(pool, mkS, mdS, yrS, cb, auto) {
       sel.md = mds[0] || "";
       const yrs = [...new Set(pool.filter(v => v.mk === sel.mk && v.md === sel.md).map(v => v.yr))].sort((a, b) => b - a);
       sel.yr = yrs.length ? String(yrs[0]) : "";
-      pinta(); emite();
+      pinta(); emite(true);
     }
   }
 }
