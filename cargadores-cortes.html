@@ -76,10 +76,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="g-dist-grupo"></div>
     <h3 style="margin:14px 0 6px;font-size:14px">Comunas con más clientes afectados (top 20)</h3>
     <div class="scroll-x"><table class="pw" id="t-dist-comuna"></table></div>
-    <p class="nota" id="dist-caveats" style="margin-top:12px"></p>
   </div>
-
-  <p class="fuente" id="fuente"></p>
 </main>
 
 <script src="data/cortes.js"></script>
@@ -91,9 +88,7 @@ PW.montarNav("cargadores-cortes.html");
 const D = window.PW_DATA.cortes;
 const V = D.vivo, K = D.kpis;
 
-document.getElementById("nota").textContent =
-  "Fuente: " + D.fuente + ". Foto en vivo SEC: " + D.hora_sec + ". Generado " + D.generado + ".";
-document.getElementById("fuente").textContent = D.nota;
+document.getElementById("nota").textContent = "Fuente: SEC - Actualizado al " + D.generado + ".";
 
 // ===== Mapa en vivo: choropleth de cortes por region + red de carga =====
 const MAPA = window.PW_DATA.mapa || {};
@@ -275,7 +270,8 @@ function renderMapaCortes() {
   const prev = mapaCortes ? { c: mapaCortes.getCenter(), z: mapaCortes.getZoom() } : null;
   if (mapaCortes) { mapaCortes.remove(); mapaCortes = null; }
   mapaCortes = PW.mapa("mapa-cortes", {
-    capas, comunas, sinSelector: true, sinCluster: true, alto: 560,
+    // cluster por zoom en los cargadores (912 pts >= umbral 250): agrupados de lejos, sueltos al acercar
+    capas, comunas, sinSelector: true, alto: 560,
     centro: prev ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3],
     zoom: prev ? prev.z : 5,
   });
@@ -353,16 +349,6 @@ if (DI && (DI.por_grupo || []).length) {
     { k: "clientes", titulo: "Clientes", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
     { k: "outages", titulo: "Fallas", num: true, fmt: v => PW.fmt(v) },
   ], DI.por_comuna || [], { orden: "clientes", buscador: false });
-  document.getElementById("dist-caveats").innerHTML =
-    "<b>Cómo se arma:</b> la SEC entrega el corte por comuna <b>sin empresa</b>; esta atribución se " +
-    "construye con los feeds de fallas de las propias distribuidoras. " +
-    "<b>Cobertura parcial:</b> SAESA, CGE, Edelmag y Enel; falta Chilquinta (su feed responde 403) y las " +
-    "cooperativas/menores — lo no cubierto queda sin empresa. " +
-    "<b>Solo en vivo:</b> los feeds no tienen histórico, así que el registro SEC 2017–hoy del análisis " +
-    "histórico sigue sin empresa (la atribución se acumula hacia adelante). " +
-    "<b>No cuadra con el total SEC:</b> son fuentes y horas de captura distintas (feed por empresa vs. SEC " +
-    "agregado por comuna); no es una reconciliación del total nacional. Las fallas hipotéticas de SAESA " +
-    "(predicciones) están excluidas de los conteos.";
 }
 </script>
 </body>
