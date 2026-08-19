@@ -348,8 +348,21 @@ function render(fit) {
     zoom: prev && !fit ? prev.z : 5,
   });
   if (mapa && fit && (filtroTerr.rcut || filtroTerr.com)) {
-    const pp = capas.filter(ca => ca.visible).flatMap(ca => ca.puntos).filter(p => p.lat != null);
-    if (pp.length) mapa.fitBounds(L.latLngBounds(pp.map(p => [p.lat, p.lon])).pad(0.2), { animate: false });
+    // [ZOOM AL TERRITORIO] encuadrar SIEMPRE la region/comuna elegida usando sus poligonos
+    // (geo_comunas), tengan o no capas activas. maxZoom evita sobre-zoom en comunas chicas.
+    let b = null;
+    const cutSel = filtroTerr.com ? cutDeComuna[norm(filtroTerr.com)] : null;
+    if (cutSel) b = PW.boundsComunas([cutSel]);
+    else if (filtroTerr.rcut) {
+      const geo = window.PW_DATA.geo_comunas;
+      const cuts = geo ? geo.features.map(f => f.properties.cut).filter(c => c.slice(0, 2) === filtroTerr.rcut) : [];
+      if (cuts.length) b = PW.boundsComunas(cuts);
+    }
+    if (!b) {  // fallback (comuna sin poligono): encuadrar a los puntos visibles, como antes
+      const pp = capas.filter(ca => ca.visible).flatMap(ca => ca.puntos).filter(p => p.lat != null);
+      if (pp.length) b = L.latLngBounds(pp.map(p => [p.lat, p.lon]));
+    }
+    if (b) mapa.fitBounds(b.pad(filtroTerr.com ? 0.15 : 0.05), { animate: false, maxZoom: filtroTerr.com ? 12 : 11 });
   }
 
   pintarKpis(); pintarPanel(); pintarContador(ind);
