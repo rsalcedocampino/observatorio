@@ -88,7 +88,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <label>Seguro/año <input type="number" id="ev-sg" min="0" step="10000"></label>
         <label>Mantención/año <input type="number" id="ev-ma" min="0" step="10000"></label>
         <label>Permiso/año <input type="number" id="ev-pm" min="0" step="10000"></label>
-        <label>Residual % <input type="number" id="ev-res" min="0" max="100" step="0.1"></label>
         <label>km/kWh <input type="number" id="ev-cons" min="0.1" step="0.1"></label>
         <button type="button" class="btn-mini" id="ev-reset">Restablecer</button>
       </div>
@@ -99,7 +98,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <label>Seguro/año <input type="number" id="ice-sg" min="0" step="10000"></label>
         <label>Mantención/año <input type="number" id="ice-ma" min="0" step="10000"></label>
         <label>Permiso/año <input type="number" id="ice-pm" min="0" step="10000"></label>
-        <label>Residual % <input type="number" id="ice-res" min="0" max="100" step="0.1"></label>
         <label>km/L <input type="number" id="ice-cons" min="0.1" step="0.1"></label>
         <button type="button" class="btn-mini" id="ice-reset">Restablecer</button>
       </div>
@@ -108,7 +106,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="veredicto" id="v-comp"></p>
     <div class="fila2">
       <div class="tarjeta"><h2 style="margin-top:0">Costo acumulado por año</h2><div id="g-acum"></div>
-        <p class="nota">Costo de tener el vehículo (compra menos reventa, más energía, mantención, seguro y permiso) acumulado. El cruce marca el año en que el eléctrico se vuelve más barato.</p></div>
+        <p class="nota">Costo de USO del vehículo acumulado (energía, mantención, seguro y permiso) — sin
+        considerar el precio de compra ni la depreciación. El cruce marca desde cuándo el eléctrico
+        acumula menos costo de uso.</p></div>
       <div class="tarjeta"><h2 style="margin-top:0">Desglose del TCO eléctrico</h2><div id="g-desglose"></div>
         <p class="nota">Cómo se reparte el costo total del eléctrico a los años elegidos. La comparación por partida contra el combustión está en la tabla de abajo.</p></div>
     </div>
@@ -224,13 +224,6 @@ function costoEnergiaAnio(v, E, P) {
   if (v.tp === "PHEV") return P.uf * elec + (1 - P.uf) * comb;
   return comb;
 }
-function residualPct(v) { if (v._res != null) return v._res; const r = (v.rs && v.rs > 0) ? v.rs : (v.rp || 0); return r > 0 ? r : 40; }
-function valorResidual(v, N) {
-  if (!v.pr) return 0;
-  const p = residualPct(v) / 100;
-  if (N === 5) return v.pr * p;   // directo: respeta el residual (incl. un 0 editado a mano)
-  return Math.max(v.pr * Math.pow(Math.pow(p, 1 / 5), N), v.pr * 0.05);   // piso solo en la extrapolacion geometrica a N largo
-}
 function permisoTotal(v, P) {
   if (v.p5 > 0) return v.p5 / 5 * P.ny;   // p5 = suma real a 5 años (ya incorpora el beneficio Ley 21.505); tarifa anual = p5/5, consistente para todo N
   const f = v.b21 ? P.pev : P.pice;
@@ -243,26 +236,26 @@ function co2kgAnio(v, P) {
   if (v.tp === "PHEV") return P.uf * elec + (1 - P.uf) * comb;   // coherente con el split energético
   return comb;
 }
+// [SIN DEPRECIACION] a pedido del usuario (2026-08-19), el TCO NO considera la depreciacion
+// (precio de compra menos valor residual) ni el capex: es el costo de USO acumulado
+// (energia + mantencion + seguro + permiso + impuesto verde). Aplica a las 4 pestañas.
 function tco(v, E, P) {
   const eA = costoEnergiaAnio(v, E, P);
-  const capex = (v.pr || 0) + (esEV(v) ? P.wb : 0);
   const c = {
-    dep: capex - valorResidual(v, P.ny),
     energia: eA * P.ny,
     mant: (v.ma || 0) * P.ny,
     seguro: (v.sg || 0) * P.ny,
     permiso: permisoTotal(v, P),
     ivpv: (v.iv || 0) * P.utm,
   };
-  const total = c.dep + c.energia + c.mant + c.seguro + c.permiso + c.ivpv;
+  const total = c.energia + c.mant + c.seguro + c.permiso + c.ivpv;
   return { total, mensual: total / (P.ny * 12), porKm: total / (kmAnio(P) * P.ny), c, energiaAnio: eA };
 }
 function curvaAcum(v, E, P) {
   const opex = costoEnergiaAnio(v, E, P) + (v.ma || 0) + (v.sg || 0) + permisoTotal(v, P) / P.ny;
-  const capex = (v.pr || 0) + (esEV(v) ? P.wb : 0);
   const iv = (v.iv || 0) * P.utm;
   const arr = [];
-  for (let t = 0; t <= P.ny; t++) arr.push(capex - valorResidual(v, t) + opex * t + iv);
+  for (let t = 0; t <= P.ny; t++) arr.push(opex * t + iv);
   return arr;
 }
 function breakeven(evC, iceC) { for (let t = 0; t < evC.length; t++) if (evC[t] <= iceC[t]) return t; return null; }
@@ -346,7 +339,6 @@ BUILD["comparador"] = function () {
     g(px + "-sg").value = v.sg || 0;
     g(px + "-ma").value = v.ma || 0;
     g(px + "-pm").value = permAnualDe(v);
-    g(px + "-res").value = residualPct(v);
     g(px + "-cons").value = esEv ? (v.ke || "") : (v.kl || "");
   };
   // Vehículo "efectivo": clona el seleccionado y aplica los valores que el usuario editó a mano.
@@ -358,7 +350,6 @@ BUILD["comparador"] = function () {
     e.ma = Math.max(0, numIn(px + "-ma", v.ma));
     const pa = Math.max(0, numIn(px + "-pm", permAnualDe(v)));
     e.p5 = pa * 5; e.p1 = pa;                 // edición directa del permiso/año -> permisoTotal = pa*ny
-    e._res = Math.max(0, Math.min(100, numIn(px + "-res", residualPct(v))));  // residual explícito, respeta un 0
     const cons = Math.max(0.1, numIn(px + "-cons", esEv ? v.ke : v.kl));
     if (esEv) e.ke = cons; else e.kl = cons;
     return e;
@@ -403,7 +394,7 @@ BUILD["comparador"] = function () {
       alto: 250, fmtY: PW.clp, fmtV: PW.clp,
       lineaX: be != null ? { i: be, texto: "equilibrio" } : null,
     });
-    const part = [["Depreciación", "dep"], ["Energía", "energia"], ["Mantención", "mant"],
+    const part = [["Energía", "energia"], ["Mantención", "mant"],
                   ["Seguro", "seguro"], ["Permiso", "permiso"], ["Imp. verde", "ivpv"]];
     PW.columnas("g-desglose", {
       labels: part.map(p => p[0]),
@@ -430,7 +421,7 @@ BUILD["comparador"] = function () {
   const _ices = POOL_ICE.filter(v => v.tp === "ICE" && !v.ds && (!evDef || v.mk !== evDef.mk)).sort((a, b) => a.pr - b.pr);
   const iceDef = _ices[Math.floor(_ices.length / 2)] || POOL_ICE[0];
   if (iceDef) fijar(g("ice-mk"), g("ice-md"), g("ice-yr"), iceDef);
-  const AJUSTES = ["ev-pr", "ev-sg", "ev-ma", "ev-pm", "ev-res", "ev-cons", "ice-pr", "ice-sg", "ice-ma", "ice-pm", "ice-res", "ice-cons"];
+  const AJUSTES = ["ev-pr", "ev-sg", "ev-ma", "ev-pm", "ev-cons", "ice-pr", "ice-sg", "ice-ma", "ice-pm", "ice-cons"];
   ["c-km", "c-ny", "c-kwh", "c-litro"].concat(AJUSTES).forEach(id => g(id).addEventListener("input", render));
   g("ev-reset").addEventListener("click", () => { prefill("ev", ev, true); render(); });
   g("ice-reset").addEventListener("click", () => { prefill("ice", ice, false); render(); });
