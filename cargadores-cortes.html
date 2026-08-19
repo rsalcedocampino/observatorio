@@ -51,6 +51,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa en vivo: cargadores y cortes</h2>
     <p class="nota" id="nota-mapa"></p>
+    <div id="filtros-cortes" class="filtros"></div>
     <div id="panel-capas-cortes" class="capas-panel"></div>
     <div id="mapa-cortes"></div>
     <div id="leyenda-wrap" style="display:none; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px">
@@ -251,10 +252,17 @@ function popupCargaCorte(p) {
   return PW.popupEstacion(p) +
     (afx ? `<div class="pop-detalle" style="color:var(--critical);font-weight:600">Corte activo en ${PW.esc(p.com)}: posiblemente sin servicio.</div>` : "");
 }
-function renderMapaCortes() {
+// [FILTRO TERRITORIAL] los selectores Region/Comuna filtran los cargadores del mapa y hacen zoom
+// al territorio (patron 161: poligonos via PW.boundsComunas; limpiar vuelve a Chile).
+function enTerr(p) {
+  if (filtroTerr.com) return _norm(p.com) === _norm(filtroTerr.com);
+  if (filtroTerr.rcut) { const c = CUT_COMUNA[_norm(p.com)]; return !!c && c.slice(0, 2) === filtroTerr.rcut; }
+  return true;
+}
+function renderMapaCortes(fit) {
   const capas = onCap("carga") ? [{
     nombre: "Cargadores", visible: true, color: PW.color("--s3"),
-    puntos: (MAPA.carga || []).map(p => {
+    puntos: (MAPA.carga || []).filter(enTerr).map(p => {
       const afx = afectadas.has(_norm(p.com));
       return {
         lat: p.lat, lon: p.lon, r: 5,
@@ -278,6 +286,16 @@ function renderMapaCortes() {
   // [FOCO CHILE] encuadre inicial a Chile + no paear fuera + zoom mínimo = Chile completo.
   const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]);
   if (!prev) mapaCortes.fitBounds(CHILE, { animate: false });
+  // [ZOOM AL TERRITORIO] al cambiar el filtro: encuadrar la region/comuna elegida; limpiar => Chile
+  if (fit) {
+    let cuts = [];
+    if (filtroTerr.com && CUT_COMUNA[_norm(filtroTerr.com)]) cuts = [CUT_COMUNA[_norm(filtroTerr.com)]];
+    else if (filtroTerr.rcut) cuts = (GEO && GEO.features ? GEO.features : [])
+      .map(f => f.properties.cut).filter(c => c.slice(0, 2) === filtroTerr.rcut);
+    const b = cuts.length ? PW.boundsComunas(cuts) : null;
+    if (b) mapaCortes.fitBounds(b.pad(filtroTerr.com ? 0.15 : 0.05), { animate: false, maxZoom: filtroTerr.com ? 12 : 11 });
+    else mapaCortes.fitBounds(CHILE, { animate: false });
+  }
   mapaCortes.setMaxBounds(CHILE.pad(0.12));
   mapaCortes.options.maxBoundsViscosity = 1.0;
   mapaCortes.setMinZoom(mapaCortes.getBoundsZoom(CHILE));   // no se puede alejar más allá de "todo Chile"
@@ -314,6 +332,19 @@ function pintarToggleCortes() {
     renderMapaCortes(); pintarToggleCortes();
   }));
 }
+// [FILTROS] Region y Comuna (pedido del usuario 2026-08-18): pueblan desde geo_comunas (346) con
+// nombres de region del vivo SEC; al cambiar, se filtran los cargadores y se hace zoom al territorio.
+const NOMBRE_REG = {};
+(V.por_region || []).forEach(r => { if (r.rcut) NOMBRE_REG[String(r.rcut).padStart(2, "0")] = r.region || ("Región " + r.rcut); });
+const CUT_COMUNA = {};
+(GEO && GEO.features ? GEO.features : []).forEach(f => { CUT_COMUNA[_norm(f.properties.comuna)] = String(f.properties.cut).padStart(5, "0"); });
+let filtroTerr = {};
+const territorioCortes = (GEO && GEO.features ? GEO.features : []).map(f => {
+  const cut = String(f.properties.cut).padStart(5, "0");
+  return { rcut: cut.slice(0, 2), reg: NOMBRE_REG[cut.slice(0, 2)] || ("Región " + cut.slice(0, 2)), com: f.properties.comuna };
+});
+PW.filtrosTerritorio("filtros-cortes", territorioCortes, f => { filtroTerr = f; renderMapaCortes(true); });
+
 pintarToggleCortes();
 renderMapaCortes();
 
