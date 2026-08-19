@@ -32,7 +32,6 @@
     ["Reporte Regional", [
       ["reporte-regional.html", "Reporte Regional"],
       ["vulnerabilidad.html", "Vulnerabilidad energética"],
-      ["valor-parque.html", "Valor del parque"],
       ["censo-electricidad.html", "Electricidad en las viviendas"],
     ]],
     ["Mercado", [
@@ -125,7 +124,6 @@
   // paginas de cruces: reutilizan iconos afines
   ICONOS["rotacion.html"] = ICONOS["radar.html"];
   ICONOS["elasticidad.html"] = ICONOS["costo.html"];
-  ICONOS["valor-parque.html"] = ICONOS["vehiculo.html"];
   ICONOS["buses.html"] = ICONOS["vehiculo.html"];
   ICONOS["inversion.html"] = IC('<path d="M3 17l5-5 3 3 4-4.5"/><path d="M15 10.5h4v4"/><path d="M3 21h18"/>');
   ICONOS["generacion.html"] = IC('<path d="M12 2v6M12 8l-4 6h8l-4 6"/><path d="M5 5l1.5 1.5M19 5l-1.5 1.5"/>');
