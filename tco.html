@@ -43,6 +43,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 .ajustes .filtros { margin: 6px 0 4px; }
 .btn-mini { padding: 5px 12px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 12.5px; border: 1px solid var(--border); background: var(--surface-1); color: var(--ink-1); }
 .btn-mini:hover { border-color: var(--s1); }
+/* campos de dinero con puntos de miles: type=text, pero angostos como los numericos */
+.filtros input.miles { min-width: 0; width: 120px; }
 </style>
 </head>
 <body>
@@ -77,27 +79,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <label>año <select id="ice-yr"></select></label>
     </div>
     <div class="filtros">
-      <label>km/año <input type="number" id="c-km" value="18000" min="1000" step="1000"></label>
+      <label>km/año <input type="number" id="c-km" value="20000" min="1000" step="1000"></label>
       <label>Años <input type="number" id="c-ny" value="5" min="1" max="15"></label>
-      <label>$/kWh <input type="number" id="c-kwh" value="150" min="1"></label>
-      <label>$/L <input type="number" id="c-litro" value="1539" min="1"></label>
+      <label>$/kWh <input type="number" id="c-kwh" value="180" min="1"></label>
+      <label>$/L <input type="text" inputmode="numeric" class="miles" id="c-litro" value="1.539"></label>
     </div>
     <details class="ajustes"><summary>Ajustar valores del eléctrico (precio, seguro, mantención...)</summary>
       <div class="filtros">
-        <label>Precio <input type="number" id="ev-pr" min="0" step="100000"></label>
-        <label>Seguro/año <input type="number" id="ev-sg" min="0" step="10000"></label>
-        <label>Mantención/año <input type="number" id="ev-ma" min="0" step="10000"></label>
-        <label>Permiso/año <input type="number" id="ev-pm" min="0" step="10000"></label>
+        <label>Precio <input type="text" inputmode="numeric" class="miles" id="ev-pr"></label>
+        <label>Seguro/año <input type="text" inputmode="numeric" class="miles" id="ev-sg"></label>
+        <label>Mantención/año <input type="text" inputmode="numeric" class="miles" id="ev-ma"></label>
+        <label>Permiso/año <input type="text" inputmode="numeric" class="miles" id="ev-pm"></label>
         <label>km/kWh <input type="number" id="ev-cons" min="0.1" step="0.1"></label>
         <button type="button" class="btn-mini" id="ev-reset">Restablecer</button>
       </div>
     </details>
     <details class="ajustes"><summary>Ajustar valores del combustión (precio, seguro, mantención...)</summary>
       <div class="filtros">
-        <label>Precio <input type="number" id="ice-pr" min="0" step="100000"></label>
-        <label>Seguro/año <input type="number" id="ice-sg" min="0" step="10000"></label>
-        <label>Mantención/año <input type="number" id="ice-ma" min="0" step="10000"></label>
-        <label>Permiso/año <input type="number" id="ice-pm" min="0" step="10000"></label>
+        <label>Precio <input type="text" inputmode="numeric" class="miles" id="ice-pr"></label>
+        <label>Seguro/año <input type="text" inputmode="numeric" class="miles" id="ice-sg"></label>
+        <label>Mantención/año <input type="text" inputmode="numeric" class="miles" id="ice-ma"></label>
+        <label>Permiso/año <input type="text" inputmode="numeric" class="miles" id="ice-pm"></label>
         <label>km/L <input type="number" id="ice-cons" min="0.1" step="0.1"></label>
         <button type="button" class="btn-mini" id="ice-reset">Restablecer</button>
       </div>
@@ -123,10 +125,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <label>Mi auto — marca <select id="mv-mk"></select></label>
       <label>modelo <select id="mv-md"></select></label>
       <label>año <select id="mv-yr"></select></label>
-      <label>km/año <input type="number" id="mv-km" value="18000" min="1000" step="1000"></label>
-      <label>$/kWh <input type="number" id="mv-kwh" value="150" min="1"></label>
+      <label>km/año <input type="number" id="mv-km" value="20000" min="1000" step="1000"></label>
+      <label>$/kWh <input type="number" id="mv-kwh" value="180" min="1"></label>
       <label>Años <input type="number" id="mv-ny" value="5" min="1" max="15"></label>
-      <label>Presupuesto máx (opcional) <input type="number" id="mv-pmax" placeholder="sin límite" min="0" step="1000000"></label>
+      <label>Presupuesto máx (opcional) <input type="text" inputmode="numeric" class="miles" id="mv-pmax" placeholder="sin límite"></label>
     </div>
     <div class="kpis" id="k-mv"></div>
     <div class="fila2">
@@ -145,8 +147,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota">Dinos tu presupuesto y cómo usas el auto y te ordenamos los eléctricos por un
     puntaje que combina costo total de propiedad, autonomía y ajuste a tu uso (mayor = mejor).</p>
     <div class="filtros">
-      <label>Presupuesto máx <input type="number" id="rc-pmax" value="40000000" min="0" step="1000000"></label>
-      <label>km/año <input type="number" id="rc-km" value="18000" min="1000" step="1000"></label>
+      <label>Presupuesto máx <input type="text" inputmode="numeric" class="miles" id="rc-pmax" value="40.000.000"></label>
+      <label>km/año <input type="number" id="rc-km" value="20000" min="1000" step="1000"></label>
       <label>Uso principal
         <select id="rc-uso">
           <option value="mixto">Mixto</option>
@@ -154,7 +156,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <option value="carretera">Carretera</option>
         </select></label>
       <label>Carrocería <select id="rc-cb"></select></label>
-      <label>$/kWh <input type="number" id="rc-kwh" value="150" min="1"></label>
+      <label>$/kWh <input type="number" id="rc-kwh" value="180" min="1"></label>
       <label>Años <input type="number" id="rc-ny" value="5" min="1" max="15"></label>
       <label>Año del modelo <select id="rc-anio"></select></label>
     </div>
@@ -180,10 +182,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <option value="5.2" selected>Centro (HSP 5,2)</option>
           <option value="3.8">Sur (HSP 3,8)</option>
         </select></label>
-      <label>km/año <input type="number" id="so-km" value="18000" min="1000" step="1000"></label>
+      <label>km/año <input type="number" id="so-km" value="20000" min="1000" step="1000"></label>
       <label>Paneles a instalar <input type="number" id="so-np" value="6" min="1" max="40"></label>
-      <label>Costo por panel instalado <input type="number" id="so-cp" value="320000" min="0" step="10000"></label>
-      <label>$/kWh red <input type="number" id="so-kwh" value="150" min="1"></label>
+      <label>Costo por panel instalado <input type="text" inputmode="numeric" class="miles" id="so-cp" value="320.000"></label>
+      <label>$/kWh red <input type="number" id="so-kwh" value="180" min="1"></label>
     </div>
     <div class="kpis" id="k-so"></div>
     <div class="fila2">
@@ -203,7 +205,18 @@ PW.montarNav("tco.html");
 let D = PW_DATA.c_tco;
 let V = D.v, P0 = D.p, E0 = D.e;
 const g = id => document.getElementById(id);
-const numIn = (id, def) => { const el = g(id); if (!el) return def; const x = parseFloat(el.value); return isFinite(x) ? x : def; };
+// [MILES] los campos de dinero (clase "miles") son type=text y muestran puntos de miles;
+// numIn les quita los puntos antes de parsear (los campos con decimales, p.ej. km/kWh, NO llevan la clase).
+const numIn = (id, def) => { const el = g(id); if (!el) return def;
+  const x = parseFloat(el.classList.contains("miles") ? el.value.replace(/\./g, "") : el.value);
+  return isFinite(x) ? x : def; };
+const fmtMiles = n => (isFinite(n) ? Math.round(n).toLocaleString("es-CL") : "");
+document.querySelectorAll("input.miles").forEach(el => {
+  el.addEventListener("input", () => {
+    const d = el.value.replace(/\D/g, "");
+    el.value = d ? fmtMiles(+d) : "";
+  });
+});
 g("nota").textContent = "Generado " + D.generado + ". " + (D.nota || "");
 
 // -------- pools --------
@@ -277,16 +290,49 @@ function anios(pool, mk, md) { return [...new Set(pool.filter(x => x.mk === mk &
 function buscar(pool, mk, md, yr) { return pool.find(x => x.mk === mk && x.md === md && x.yr === +yr) || null; }
 function kpi(v, l, d, cls) { return `<div class="kpi"><div class="v ${cls || ""}">${PW.esc(v)}</div><div class="l">${PW.esc(l)}</div>${d ? `<div class="d">${PW.esc(d)}</div>` : ""}</div>`; }
 
+// [PICKER FACETADO] (pedido 2026-08-19) marca/modelo/año INTERACTÚAN entre sí y se puede partir
+// por CUALQUIERA (incluido el año primero): cada selector muestra solo las opciones compatibles
+// con lo ya elegido en los otros dos; si la combinación deja un único vehículo, se completa solo.
 function selVeh(pool, mkS, mdS, yrS, cb, auto) {
-  mkS.innerHTML = `<option value="">— marca —</option>` + opts(marcas(pool));
-  const onMk = () => { const mk = mkS.value; mdS.innerHTML = mk ? (`<option value="">— modelo —</option>` + opts(modelos(pool, mk))) : ""; onMd(); };
-  const onMd = () => { const mk = mkS.value, md = mdS.value; yrS.innerHTML = (mk && md) ? opts(anios(pool, mk, md)) : ""; onYr(); };
-  const onYr = () => cb(buscar(pool, mkS.value, mdS.value, yrS.value));
-  mkS.onchange = onMk; mdS.onchange = onMd; yrS.onchange = onYr;
-  onMk();
-  if (auto && mkS.options.length > 1) {
-    mkS.selectedIndex = 1; onMk();
-    if (mdS.options.length > 1) { mdS.selectedIndex = 1; onMd(); }
+  const sel = { mk: "", md: "", yr: "" };
+  const sub = f => pool.filter(v =>
+    (f === "mk" || !sel.mk || v.mk === sel.mk) &&
+    (f === "md" || !sel.md || v.md === sel.md) &&
+    (f === "yr" || !sel.yr || v.yr === +sel.yr));
+  function pinta() {
+    const mks = [...new Set(sub("mk").map(v => v.mk))].sort((a, b) => a.localeCompare(b, "es"));
+    const mds = [...new Set(sub("md").map(v => v.md))].sort((a, b) => a.localeCompare(b, "es"));
+    const yrs = [...new Set(sub("yr").map(v => v.yr))].sort((a, b) => b - a);
+    if (sel.mk && mks.indexOf(sel.mk) < 0) sel.mk = "";
+    if (sel.md && mds.indexOf(sel.md) < 0) sel.md = "";
+    if (sel.yr && yrs.indexOf(+sel.yr) < 0) sel.yr = "";
+    mkS.innerHTML = `<option value="">— marca —</option>` + opts(mks);
+    mdS.innerHTML = `<option value="">— modelo —</option>` + opts(mds);
+    yrS.innerHTML = `<option value="">— año —</option>` + opts(yrs);
+    mkS.value = sel.mk; mdS.value = sel.md; yrS.value = sel.yr;
+  }
+  function emite() {
+    let v = null;
+    if (sel.mk && sel.md && sel.yr) v = buscar(pool, sel.mk, sel.md, sel.yr);
+    else {
+      const q = sub("");  // filtrado por los tres facetas
+      if (q.length === 1) { v = q[0]; sel.mk = v.mk; sel.md = v.md; sel.yr = String(v.yr); pinta(); }
+    }
+    cb(v);
+  }
+  const on = f => () => { sel[f] = (f === "mk" ? mkS : f === "md" ? mdS : yrS).value; pinta(); emite(); };
+  mkS.onchange = on("mk"); mdS.onchange = on("md"); yrS.onchange = on("yr");
+  pinta();
+  if (auto) {
+    const mks = [...new Set(pool.map(v => v.mk))].sort((a, b) => a.localeCompare(b, "es"));
+    if (mks.length) {
+      sel.mk = mks[0];
+      const mds = [...new Set(pool.filter(v => v.mk === sel.mk).map(v => v.md))].sort((a, b) => a.localeCompare(b, "es"));
+      sel.md = mds[0] || "";
+      const yrs = [...new Set(pool.filter(v => v.mk === sel.mk && v.md === sel.md).map(v => v.yr))].sort((a, b) => b - a);
+      sel.yr = yrs.length ? String(yrs[0]) : "";
+      pinta(); emite();
+    }
   }
 }
 
@@ -335,10 +381,10 @@ BUILD["comparador"] = function () {
   const permAnualDe = v => Math.round(v.p5 > 0 ? v.p5 / 5 : (v.b21 ? P0.pev : P0.pice) * (v.p1 || 0));
   const prefill = (px, v, esEv) => {
     if (!v) return;
-    g(px + "-pr").value = v.pr || 0;
-    g(px + "-sg").value = v.sg || 0;
-    g(px + "-ma").value = v.ma || 0;
-    g(px + "-pm").value = permAnualDe(v);
+    g(px + "-pr").value = fmtMiles(v.pr || 0);
+    g(px + "-sg").value = fmtMiles(v.sg || 0);
+    g(px + "-ma").value = fmtMiles(v.ma || 0);
+    g(px + "-pm").value = fmtMiles(permAnualDe(v));
     g(px + "-cons").value = esEv ? (v.ke || "") : (v.kl || "");
   };
   // Vehículo "efectivo": clona el seleccionado y aplica los valores que el usuario editó a mano.
