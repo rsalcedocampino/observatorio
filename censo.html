@@ -65,17 +65,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota" id="nota-edad">Distribución de la población por tramo de edad (Censo 2024).</p>
   </div>
 
-  <div class="tarjeta" id="card-serie" style="display:none">
-    <h2 style="margin-top:0">Evolución de la población (1952-2024)</h2>
-    <div id="g-serie"></div>
-    <p class="nota" id="nota-serie"></p>
-  </div>
-
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa comunal por indicador</h2>
     <div class="filtros">
       <label>Indicador <select id="f-ind"></select></label>
       <label>Cruzar con <select id="f-ind2"><option value="">— (ninguno)</option></select></label>
+      <label>Región <select id="f-region-mapa"></select></label>
+      <label>Comuna <select id="f-comuna-mapa" disabled></select></label>
     </div>
     <div id="mapa-wrap"><div id="mapa"></div></div>
     <div id="ley"></div>
@@ -212,36 +208,33 @@ function poblarComunas() {
   if (reg && coms.indexOf(prev) >= 0) selC.value = prev;  // conserva la comuna si sigue en la region
   selC.disabled = !reg;
 }
-// poblar indicador: especiales de poblacion primero, luego los grupos del Censo 2024; clonar al 2o selector
+// poblar indicador: SOLO los grupos Vivienda / Energia en el hogar / Movilidad (pedido del usuario
+// 2026-08-18) + los especiales "Poblacion por año" (solo en Indicador: los usa el filtro de Año).
+let IND_DEFAULT = "__pob";
 (function () {
-  const ogP = document.createElement("optgroup"); ogP.label = "Población";
+  const ogP = document.createElement("optgroup"); ogP.label = "Población (por año)";
   ogP.appendChild(new Option(ESPECIALES.__pob.label, "__pob"));
   ogP.appendChild(new Option(ESPECIALES.__var.label, "__var"));
   selInd.appendChild(ogP);
+  const GRUPOS_IND = ["Vivienda", "Energía en el hogar", "Movilidad"];
   let og = null, gn = null;
-  D.indicadores.forEach(i => {
-    const g = i.grupo || "Otros";
-    if (g !== gn) { og = document.createElement("optgroup"); og.label = g; selInd.appendChild(og); gn = g; }
+  D.indicadores.filter(i => GRUPOS_IND.indexOf(i.grupo) >= 0).forEach(i => {
+    if (i.grupo !== gn) { og = document.createElement("optgroup"); og.label = i.grupo; selInd.appendChild(og); gn = i.grupo; }
     og.appendChild(new Option(i.label, i.k));
   });
-  selInd.value = "indice_envejecimiento";
-  selInd2.innerHTML = '<option value="">— (ninguno)</option>' + selInd.innerHTML;
+  const primero = D.indicadores.find(i => GRUPOS_IND.indexOf(i.grupo) >= 0);
+  if (primero) IND_DEFAULT = primero.k;
+  selInd.value = IND_DEFAULT;
+  // "Cruzar con": estrictamente los 3 grupos (sin los especiales de poblacion)
+  selInd2.innerHTML = '<option value="">— (ninguno)</option>' +
+    Array.from(selInd.querySelectorAll("optgroup")).slice(1).map(g => g.outerHTML).join("");
 })();
 
 function colsCon(base) {
   return base.concat(D.indicadores.map(i => ({ k: i.k, titulo: i.label, num: true, fmt: v => fmtInd(i, v) })));
 }
-// tabla region + evolucion nacional: fijas (no dependen de los filtros)
+// tabla region: fija (no depende de los filtros)
 PW.tabla("t-regiones", colsCon([{ k: "region", titulo: "Región" }]), D.regiones, { orden: "poblacion", buscador: false });
-const SERC = (D.serie_nacional || []).filter(x => x.tipo === "censado");
-if (SERC.length > 1) {
-  document.getElementById("card-serie").style.display = "";
-  PW.lineas("g-serie", {
-    labels: SERC.map(x => String(x.ano)),
-    series: [{ nombre: "Población censada", valores: SERC.map(x => x.poblacion) }],
-    fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
-  });
-}
 
 let tab = null;
 function pintarMapa(mk, ano, foco, resaltar) {
@@ -352,12 +345,6 @@ function aplicar() {
       "El Censo " + ano + " no está integrado con este desglose (dato homologado disponible: Censo 2024).";
   }
 
-  // Evolucion nacional: nota con el año elegido
-  const pn = serieByAno[ano];
-  document.getElementById("nota-serie").textContent =
-    "Población censada por año censal (INE), 1952-2024. Año elegido: Censo " + ano +
-    (pn != null ? " = " + PW.fmt(pn) + " habitantes (país)." : ".");
-
   // Mapa: comuna => contexto de su region (no colapsa a 1 resultado) + resaltado rojo; region => zoom; nada => Chile
   const scopeReg = com ? (comByCut[cutByComuna[com]] || {}).region : reg;
   const foco = scopeReg ? D.comunas.filter(c => c.region === scopeReg).map(c => c.cut) : null;
@@ -399,7 +386,24 @@ function aplicar() {
 
   // Crecimiento 2017→2024 (respeta el filtro de region; resalta la comuna elegida)
   pintarCrecimiento(scopeReg, resaltar);
+  sincronizarFiltrosMapa();
 }
+
+// [FILTRO EN EL MAPA] Region/Comuna tambien en la tarjeta del Mapa comunal (pedido 2026-08-18).
+// Son PROXIES del filtro global: cambiar cualquiera de los dos actualiza el mismo estado (toda la
+// pagina reacciona), y aplicar() los mantiene espejados.
+const selRM = document.getElementById("f-region-mapa");
+const selCM = document.getElementById("f-comuna-mapa");
+selRM.innerHTML = selR.innerHTML;
+function sincronizarFiltrosMapa() {
+  if (!selRM) return;
+  selRM.value = selR.value;
+  selCM.innerHTML = selC.innerHTML;
+  selCM.value = selC.value;
+  selCM.disabled = selC.disabled;
+}
+selRM.addEventListener("input", () => { selR.value = selRM.value; selR.dispatchEvent(new Event("input", { bubbles: true })); });
+selCM.addEventListener("input", () => { selC.value = selCM.value; selC.dispatchEvent(new Event("input", { bubbles: true })); });
 
 // [CRECIMIENTO 2017→2024] choropleth DIVERGENTE page-local (PW.choropleth es secuencial):
 // rojo = disminución, verde = aumento, gris = sin comparación 2017. Cortes fijos alineados a la
@@ -474,7 +478,7 @@ selInd.addEventListener("input", aplicar);
 selInd2.addEventListener("input", aplicar);
 document.getElementById("f-limpiar").addEventListener("click", () => {
   selAno.value = "2024"; selR.value = ""; poblarComunas(); selC.value = "";
-  selInd.value = "indice_envejecimiento"; selInd2.value = "";
+  selInd.value = IND_DEFAULT; selInd2.value = "";
   aplicar();
 });
 aplicar();
