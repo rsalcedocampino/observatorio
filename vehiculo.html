@@ -62,7 +62,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("vehiculo.html");
 const D = PW_DATA.vehiculo;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const selT = document.getElementById("f-tipo");
 [...new Set(D.modelos.map(m => m.tipo).filter(Boolean))].sort().forEach(t => {

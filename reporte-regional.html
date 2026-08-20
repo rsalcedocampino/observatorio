@@ -262,7 +262,7 @@ PW.montarNav("reporte-regional.html");
 const D = PW_DATA.tracker;
 const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase();
 const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
 
 // lookups upfront (sitios ya cargado)
 const COM_BY_CUT = {};
@@ -1003,7 +1003,7 @@ function llenarFrescura(ctx) {
   const horaSec = cortes.hora_sec || (cortes.distribuidoras && cortes.distribuidoras.capturado) || "";
   const partes = ["Parque " + (D.anio_parque || "") + " (INE)", "Censo 2024",
     "red de carga y cortes ~2h" + (horaSec ? " (SEC " + horaSec + ")" : "")];
-  el.innerHTML = "Vigencia de los datos: " + partes.map(p => PW.esc(p)).join(" · ") + ". Generado " + PW.esc(D.generado || "") + ".";
+  el.innerHTML = "Vigencia de los datos: " + partes.map(p => PW.esc(p)).join(" · ") + ".";
 }
 
 // ===================== metas oficiales de carga (delta al territorio) =====================

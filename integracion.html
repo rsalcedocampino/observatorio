@@ -84,7 +84,7 @@ document.getElementById("kpis").innerHTML = [
   [PW.fmt(D.totales.mw ? Math.round(D.totales.mw) : 0), "MW en la base", "sumados en generación"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
-document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
 PW.leyendaMapa("ley", COLS.map(c => [c.t + " (" + c.u + ")", C(c.col)]));
 
 // mezcla el color de la columna con el fondo segun la magnitud (0..1)

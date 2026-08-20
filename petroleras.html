@@ -83,7 +83,7 @@ document.getElementById("kpis").innerHTML = [
   [PW.fmt(T.bencineras), "bencineras", "de las petroleras catalogadas"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
-document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
 PW.leyendaMapa("ley", [["Bencineras con carga en el sitio", C("--s3")], ["Bencineras sin carga", C("--s2")]]);
 
 function comp(g) {

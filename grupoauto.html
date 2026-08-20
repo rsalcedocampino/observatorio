@@ -83,7 +83,7 @@ document.getElementById("kpis").innerHTML = [
   [PW.fmt(multimarca.length), "grupos multimarca", "2 o más marcas bajo un dueño"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
-document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
 
 function barra(g) {
   const w = Math.min(100, g.pct / maxp * 100);

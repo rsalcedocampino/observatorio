@@ -98,7 +98,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("red-electrica.html");
 const D = PW_DATA.c_redelec;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const K = D.kpis;
 document.getElementById("kpis").innerHTML = [

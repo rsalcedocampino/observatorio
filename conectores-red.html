@@ -69,7 +69,7 @@ PW.montarNav("conectores-red.html");
 const D = PW_DATA.c_conectred;
 document.getElementById("nota").textContent =
   "Ventana " + D.ventana + ". Cobertura del match marca/modelo: " + D.cobertura_pct +
-  "% de las unidades BEV/PHEV importadas. Generado " + D.generado + ". " + D.nota;
+  "% de las unidades BEV/PHEV importadas. Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 PW.barras("g-flota", {
   items: D.flota_dc.filter(f => f.tipo !== "no-aplica").map(f => ({ nombre: f.tipo, valor: f.unidades })),

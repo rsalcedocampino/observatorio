@@ -93,7 +93,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("censo-electricidad.html");
 const D = PW_DATA.c_censoelec;
-document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
 
 // Filtros region/comuna. Censo 2024 es FOTO UNICA -> no hay filtro de año.
 const selR = document.getElementById("f-region");

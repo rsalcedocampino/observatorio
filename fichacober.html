@@ -81,7 +81,7 @@ document.getElementById("kpis").innerHTML = [
   [PW.fmt(D.fichas_totales), "fichas en la biblioteca", "incluye modelos no vendidos aquí"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
-document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
 PW.leyendaMapa("ley", [["Con ficha de rescate", C("--good")], ["Sin ficha (brecha)", C("--critical")]]);
 
 function barra(u, ficha) {

@@ -126,7 +126,7 @@ const colsTipo = [
 ];
 PW.tabla("t-tipo", colsTipo, D.tipos, { orden: "cantidad", asc: false, buscador: false });
 
-g("fuente").textContent = "Generado " + D.generado + " · Fuente: INE, Parque de vehículos en circulación (permisos municipales). " + D.nota;
+g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + " · Fuente: INE, Parque de vehículos en circulación (permisos municipales). " + D.nota;
 </script>
 </body>
 </html>

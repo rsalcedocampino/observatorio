@@ -75,7 +75,7 @@ if (!D.disponible) {
   document.getElementById("nota").textContent = "Sin historico de estados disponible todavia.";
 } else {
   document.getElementById("nota").textContent =
-    "Basado en " + D.dias_observados + " dias de observacion. " + D.nota + " Generado " + D.generado + ".";
+    "Basado en " + D.dias_observados + " dias de observacion. " + D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + ".";
 
   const horas = [...Array(24).keys()];
   const nac = horas.map(h => {

@@ -114,7 +114,7 @@ function refrescar() {
 }
 ["busca", "f-reg", "f-marca", "f-grupo"].forEach(id => g(id).addEventListener("input", refrescar));
 refrescar();
-g("fuente").textContent = "Generado " + D.generado + " (precios al " + (T.fecha || "s/f") + "). " + D.nota;
+g("fuente").textContent = "Precios actualizados al " + (T.fecha || "s/f") + ". " + D.nota;
 </script>
 </body>
 </html>

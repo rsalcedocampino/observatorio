@@ -112,7 +112,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("seguros.html");
 const D = PW_DATA.c_seguros;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const conEV = D.aseguradoras.filter(a => a.oferta_ev).length;
 const matEV = D.matriz.filter(m => D.coberturas_ev[m.cobertura]);

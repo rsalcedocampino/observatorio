@@ -134,7 +134,7 @@ function refrescar() {
 }
 ["busca", "f-cat", "f-ori", "f-amb", "f-est", "f-ver"].forEach(id => g(id).addEventListener("input", refrescar));
 refrescar();
-g("fuente").textContent = "Generado " + D.generado + ". " + D.nota;
+g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 </script>
 </body>
 </html>

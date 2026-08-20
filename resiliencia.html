@@ -57,7 +57,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("resiliencia.html");
 const D = PW_DATA.c_resiliencia;
-document.getElementById("nota").textContent = "Ventana desde " + D.desde + ". Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Ventana desde " + D.desde + ". Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 document.getElementById("kpis").innerHTML = [
   [D.eventos_analizados, "cortes analizados", "peak 1.000+ clientes, en comunas con cargadores"],

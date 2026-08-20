@@ -67,7 +67,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 PW.montarNav("rescate.html");
 const D = PW_DATA.rescate;
 const VEH = D.vehiculos;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
 function g(id) { return document.getElementById(id); }

@@ -64,7 +64,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("elasticidad.html");
 const D = PW_DATA.c_elasticidad;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const n = D.capturas_p93.length;
 document.getElementById("kpis").innerHTML = [

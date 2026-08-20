@@ -88,7 +88,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 PW.montarNav("sitios.html");
 const D = PW_DATA.sitios;
 document.getElementById("nota").textContent =
-  "Parque vehicular " + D.anio_parque + " (INE, permisos de circulacion). Generado " + D.generado + ". " + D.nota;
+  "Parque vehicular " + D.anio_parque + " (INE, permisos de circulacion). Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const selR = document.getElementById("f-region");
 [...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {

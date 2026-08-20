@@ -63,7 +63,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("rotacion.html");
 const D = PW_DATA.c_rotacion;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const sel = document.getElementById("f-marca");
 D.marcas.forEach(m => { const o = document.createElement("option"); o.value = m.marca; o.textContent = m.marca; sel.appendChild(o); });

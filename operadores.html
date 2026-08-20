@@ -145,7 +145,7 @@ PW.montarNav("operadores.html");
 const D = PW_DATA.operadores;
 document.getElementById("nota").textContent =
   "Ventana observada (UTC): " + (D.rango_historico_utc ? D.rango_historico_utc.join(" a ") : "sin historico") +
-  ". Generado " + D.generado + ".";
+  ". Actualizado " + (D.generado || "").slice(0, 10) + ".";
 
 const cols = [
   { k: "operador", titulo: "Operador" },

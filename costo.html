@@ -165,7 +165,7 @@ PW.montarNav("costo.html");
   pintar();
 })();
 const D = PW_DATA.costo;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 const dl = document.getElementById("lista-comunas");
 D.comunas.forEach(c => { const o = document.createElement("option"); o.value = c.comuna; dl.appendChild(o); });
 
