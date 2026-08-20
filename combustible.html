@@ -38,7 +38,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Precio de combustible</h1>
   <p class="sub">Los precios de bencina, diésel y kerosene por <b>estación de servicio</b> en Chile
   (CNE, Bencina en Línea). Una fila por estación con el precio de cada combustible; ordena la tabla
-  por la columna que quieras y filtra por región o marca para encontrar dónde está más barato.
+  por la columna que quieras y filtra por región, marca comercial o grupo dueño para encontrar
+  dónde está más barato.
   <span class="pill">CNE</span></p>
 
   <div class="kpis" id="kpis"></div>
@@ -50,6 +51,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </label>
     <label>Región <select id="f-reg"><option value="">Todas</option></select></label>
     <label>Marca <select id="f-marca"><option value="">Todas</option></select></label>
+    <label>Grupo/Dueño <select id="f-grupo"><option value="">Todos</option></select></label>
     <span class="pill" id="contador"></span>
   </div>
 
@@ -82,11 +84,13 @@ function llenar(id, valores, etiqueta) {
   g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join("");
 }
 llenar("f-reg", EST.map(x => x.region), "Todas");
-llenar("f-marca", EST.map(x => x.marca), "Todas");
+llenar("f-marca", EST.map(x => x.marca).filter(v => v && v !== "—"), "Todas");
+llenar("f-grupo", EST.map(x => x.grupo).filter(v => v && v !== "—"), "Todos");
 
 const cols = [
   { k: "estacion", titulo: "Estación", fmt: v => `<b>${v}</b>` },
-  { k: "marca", titulo: "Marca", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
+  { k: "marca", titulo: "Marca", fmt: v => (v && v !== "—") ? `<span class="pill">${v}</span>` : "—" },
+  { k: "grupo", titulo: "Grupo/Dueño", fmt: v => (v && v !== "—") ? PW.esc(v) : "—" },
   { k: "comuna", titulo: "Comuna" },
   { k: "region", titulo: "Región" },
   { k: "p93", titulo: "93", fmt: pesos },
@@ -98,16 +102,17 @@ const cols = [
 let tab = null;
 function refrescar() {
   const q = norm(g("busca").value.trim());
-  const reg = g("f-reg").value, mk = g("f-marca").value;
+  const reg = g("f-reg").value, mk = g("f-marca").value, gr = g("f-grupo").value;
   const filas = EST.filter(x =>
     (!reg || x.region === reg) &&
     (!mk || x.marca === mk) &&
+    (!gr || x.grupo === gr) &&
     (!q || norm(x.estacion + " " + x.comuna).includes(q)));
   g("contador").textContent = filas.length + " estaciones";
   if (tab) tab.actualizar(filas);
   else tab = PW.tabla("t-comb", cols, filas, { orden: "p93", asc: true, max: 300, buscador: false });
 }
-["busca", "f-reg", "f-marca"].forEach(id => g(id).addEventListener("input", refrescar));
+["busca", "f-reg", "f-marca", "f-grupo"].forEach(id => g(id).addEventListener("input", refrescar));
 refrescar();
 g("fuente").textContent = "Generado " + D.generado + " (precios al " + (T.fecha || "s/f") + "). " + D.nota;
 </script>
