@@ -84,9 +84,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <label>$/kWh <input type="number" id="c-kwh" value="180" min="1"></label>
       <label>$/L <input type="text" inputmode="numeric" class="miles" id="c-litro" value="1.539"></label>
     </div>
-    <details class="ajustes"><summary>Ajustar valores del eléctrico (precio, seguro, mantención...)</summary>
+    <details class="ajustes"><summary>Ajustar valores del eléctrico (seguro, mantención, permiso...)</summary>
       <div class="filtros">
-        <label>Precio <input type="text" inputmode="numeric" class="miles" id="ev-pr"></label>
         <label>Seguro/año <input type="text" inputmode="numeric" class="miles" id="ev-sg"></label>
         <label>Mantención/año <input type="text" inputmode="numeric" class="miles" id="ev-ma"></label>
         <label>Permiso/año <input type="text" inputmode="numeric" class="miles" id="ev-pm"></label>
@@ -94,9 +93,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button type="button" class="btn-mini" id="ev-reset">Restablecer</button>
       </div>
     </details>
-    <details class="ajustes"><summary>Ajustar valores del combustión (precio, seguro, mantención...)</summary>
+    <details class="ajustes"><summary>Ajustar valores del combustión (seguro, mantención, permiso...)</summary>
       <div class="filtros">
-        <label>Precio <input type="text" inputmode="numeric" class="miles" id="ice-pr"></label>
         <label>Seguro/año <input type="text" inputmode="numeric" class="miles" id="ice-sg"></label>
         <label>Mantención/año <input type="text" inputmode="numeric" class="miles" id="ice-ma"></label>
         <label>Permiso/año <input type="text" inputmode="numeric" class="miles" id="ice-pm"></label>
@@ -127,6 +125,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <label>año <select id="mv-yr"></select></label>
       <label>km/año <input type="number" id="mv-km" value="20000" min="1000" step="1000"></label>
       <label>$/kWh <input type="number" id="mv-kwh" value="180" min="1"></label>
+      <label>$/L <input type="text" inputmode="numeric" class="miles" id="mv-litro" value="1.539"></label>
       <label>Años <input type="number" id="mv-ny" value="5" min="1" max="15"></label>
       <label>Presupuesto máx (opcional) <input type="text" inputmode="numeric" class="miles" id="mv-pmax" placeholder="sin límite"></label>
     </div>
@@ -226,14 +225,13 @@ let POOL_EV = V.filter(_esPoolEv);
 let POOL_ICE = V.filter(_esPoolIce);
 
 // -------- motor de cálculo TCO --------
-const esEV = v => v.tp === "BEV" || v.tp === "PHEV" || v.tp === "FCEV";
 const kmAnio = P => P.kmm * 12;
 function energiaKwhAnio(v, P) { return v.ke > 0 ? (kmAnio(P) / v.ke) * (1 + P.pc / 100) : 0; }
 function litrosAnio(v, P) { return v.kl > 0 ? kmAnio(P) / v.kl : 0; }
 function costoEnergiaAnio(v, E, P) {
   const elec = energiaKwhAnio(v, P) * E.e_rm;
   const comb = litrosAnio(v, P) * (v.ds ? E.die : (E[P.oct] || E.b93));
-  if (v.tp === "BEV" || v.tp === "FCEV") return elec;
+  if (v.tp === "BEV") return elec;
   if (v.tp === "PHEV") return P.uf * elec + (1 - P.uf) * comb;
   return comb;
 }
@@ -245,7 +243,7 @@ function permisoTotal(v, P) {
 function co2kgAnio(v, P) {
   const elec = energiaKwhAnio(v, P) * (P.fred / 1000);
   const comb = (v.co || 0) * kmAnio(P) / 1000;
-  if (v.tp === "BEV" || v.tp === "FCEV") return elec;
+  if (v.tp === "BEV") return elec;
   if (v.tp === "PHEV") return P.uf * elec + (1 - P.uf) * comb;   // coherente con el split energético
   return comb;
 }
@@ -383,7 +381,6 @@ BUILD["comparador"] = function () {
   const permAnualDe = v => Math.round(v.p5 > 0 ? v.p5 / 5 : (v.b21 ? P0.pev : P0.pice) * (v.p1 || 0));
   const prefill = (px, v, esEv) => {
     if (!v) return;
-    g(px + "-pr").value = fmtMiles(v.pr || 0);
     g(px + "-sg").value = fmtMiles(v.sg || 0);
     g(px + "-ma").value = fmtMiles(v.ma || 0);
     g(px + "-pm").value = fmtMiles(permAnualDe(v));
@@ -393,7 +390,6 @@ BUILD["comparador"] = function () {
   const efectivo = (v, px, esEv) => {
     if (!v) return v;
     const e = Object.assign({}, v);
-    e.pr = Math.max(0, numIn(px + "-pr", v.pr));
     e.sg = Math.max(0, numIn(px + "-sg", v.sg));
     e.ma = Math.max(0, numIn(px + "-ma", v.ma));
     const pa = Math.max(0, numIn(px + "-pm", permAnualDe(v)));
@@ -433,8 +429,9 @@ BUILD["comparador"] = function () {
         (eEv.nm ? "norma " + PW.esc(eEv.nm) + " &middot; " : "") +
         (eEv.eu ? "<a href=\"" + PW.esc(eEv.eu) + "\" target=\"_blank\" rel=\"noopener\">etiqueta de eficiencia oficial</a>" : "") +
         "</span>" : "") +
-      ((eEv.pcf || eIce.pcf) ? "<br><span class=\"nota\">Confianza del precio &mdash; eléctrico: " +
-        confLabel(eEv) + " &middot; combustión: " + confLabel(eIce) + "</span>" : "");
+      ((eEv.pr || eIce.pr) ? "<br><span class=\"nota\">Precio de lista &mdash; eléctrico: " +
+        PW.clp(eEv.pr || 0) + " (confianza " + confLabel(eEv) + ") &middot; combustión: " +
+        PW.clp(eIce.pr || 0) + " (confianza " + confLabel(eIce) + ")</span>" : "");
     PW.lineas("g-acum", {
       labels: evC.map((_, i) => String(i)),
       series: [{ nombre: "Eléctrico", valores: evC, color: PW.color("--s1") },
@@ -469,7 +466,7 @@ BUILD["comparador"] = function () {
   const _ices = POOL_ICE.filter(v => v.tp === "ICE" && !v.ds && (!evDef || v.mk !== evDef.mk)).sort((a, b) => a.pr - b.pr);
   const iceDef = _ices[Math.floor(_ices.length / 2)] || POOL_ICE[0];
   if (iceDef) fijar(g("ice-mk"), g("ice-md"), g("ice-yr"), iceDef);
-  const AJUSTES = ["ev-pr", "ev-sg", "ev-ma", "ev-pm", "ev-cons", "ice-pr", "ice-sg", "ice-ma", "ice-pm", "ice-cons"];
+  const AJUSTES = ["ev-sg", "ev-ma", "ev-pm", "ev-cons", "ice-sg", "ice-ma", "ice-pm", "ice-cons"];
   ["c-km", "c-ny", "c-kwh", "c-litro"].concat(AJUSTES).forEach(id => g(id).addEventListener("input", render));
   g("ev-reset").addEventListener("click", () => { prefill("ev", ev, true); render(); });
   g("ice-reset").addEventListener("click", () => { prefill("ice", ice, false); render(); });
@@ -484,8 +481,8 @@ BUILD["mi-vehiculo"] = function () {
     const P = Object.assign({}, P0);
     P.kmm = Math.max(100, numIn("mv-km", P0.kmm * 12)) / 12;
     P.ny = Math.max(1, Math.round(numIn("mv-ny", P0.ny)));
-    const pk = numIn("mv-kwh", E0.e_rm);
-    const E = Object.assign({}, E0, { e_rm: pk, e_norte: pk, e_sur: pk });
+    const pk = numIn("mv-kwh", E0.e_rm), pl = Math.max(0, numIn("mv-litro", E0.b93));
+    const E = Object.assign({}, E0, { e_rm: pk, e_norte: pk, e_sur: pk, b93: pl, b95: pl, b97: pl, die: pl });
     const pmax = numIn("mv-pmax", 0);
     if (!mio) { g("k-mv").innerHTML = ""; g("g-mv").innerHTML = ""; if (tMv) tMv.actualizar([]); return; }
     const tMio = tco(mio, E, P);
@@ -518,7 +515,7 @@ BUILD["mi-vehiculo"] = function () {
     if (tMv) tMv.actualizar(cand); else tMv = PW.tabla("t-mv", cols, cand, { orden: "ahorro", max: 60 });
   };
   selVeh(POOL_ICE, g("mv-mk"), g("mv-md"), g("mv-yr"), v => { mio = v; render(); }, true);
-  ["mv-km", "mv-kwh", "mv-ny", "mv-pmax"].forEach(id => g(id).addEventListener("input", render));
+  ["mv-km", "mv-kwh", "mv-litro", "mv-ny", "mv-pmax"].forEach(id => g(id).addEventListener("input", render));
   DRAW["mi-vehiculo"] = render;
   render();
 };
