@@ -39,6 +39,7 @@
       ["vehiculo.html", "Vehículo 360"],
       ["rotacion.html", "Rotación de inventario"],
       ["elasticidad.html", "Elasticidad bencina-EV"],
+      ["combustible.html", "Precio de combustible"],
       ["buses.html", "Buses eléctricos"],
       ["grupoauto.html", "Grupo automotriz 360"],
       ["inversion.html", "Inversión verde"],
@@ -66,7 +67,6 @@
       ["resiliencia.html", "Resiliencia ante cortes"],
       ["concentracion.html", "Concentración del mercado"],
       ["petroleras.html", "Transición de las petroleras"],
-      ["combustible.html", "Precio de combustible"],
     ]],
     ["Energía", [
       ["riesgo.html", "Cortes de energía"],
