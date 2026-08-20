@@ -51,8 +51,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa comunal del índice</h2>
-    <p class="nota">Las 346 comunas coloreadas por su índice de vulnerabilidad (quintiles;
-    más oscuro = más vulnerable). Cartografía oficial del Censo 2024.</p>
+    <p class="nota">Las 346 comunas coloreadas por su <b>índice de vulnerabilidad energética
+    (0-100)</b>; quintiles, más oscuro = más vulnerable. Pasa el cursor por una comuna para ver su
+    índice, o haz clic para el detalle completo: los tres pilares (cortes, precio, social), los
+    cortes 2017-2026 per cápita, el precio de la bencina y las variables sociales del Censo 2024.
+    Cartografía oficial del Censo 2024.</p>
     <div id="mapa-indice"></div>
   </div>
 
@@ -79,6 +82,41 @@ const D = PW_DATA.c_vulnerab;
 // Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
 // region) y hace foco/zoom a la seleccion (comuna: zoom a la comuna dentro de su region).
 let MAPA = null;
+
+// [FICHA] El mapa (choropleth) por defecto solo muestra "comuna: numero" al pasar el mouse,
+// sin decir QUE es ese numero. Aca se enriquece page-local: tooltip etiquetado + popup al clic
+// con el detalle completo. byCut = indice rapido cut -> registro de la comuna.
+const byCut = Object.fromEntries(D.comunas.map(c => [c.cut, c]));
+const nivelIx = ix => ix >= 80 ? "muy alta" : ix >= 60 ? "alta" : ix >= 40 ? "media" : ix >= 20 ? "baja" : "muy baja";
+function fichaHTML(c) {
+  const rg = c.p93_origen === "regional" ? " (promedio regional)" : "";
+  return `<b>${PW.esc(c.comuna)}</b> &middot; ${PW.esc(c.region)}<br>` +
+    `<b>Índice de vulnerabilidad energética: ${PW.fmt(c.indice, 1)} / 100</b> &mdash; ${nivelIx(c.indice)}<br>` +
+    `<small>Compuesto por percentiles: cortes 40% &middot; precio 25% &middot; social 35%. Mayor = más vulnerable.</small>` +
+    `<hr style="margin:6px 0;border:0;border-top:1px solid var(--line,#ddd)">` +
+    `Pilares (percentil 0-100): cortes <b>${PW.fmt(c.pilar_cortes, 0)}</b> &middot; precio <b>${PW.fmt(c.pilar_precio, 0)}</b> &middot; social <b>${PW.fmt(c.pilar_social, 0)}</b><br>` +
+    `Cortes 2017-2026: ${PW.fmt(c.ch_pc, 1)} cliente-horas por habitante<br>` +
+    `Bencina 93: ${c.p93 != null ? PW.clp(c.p93) : "—"}${rg}<br>` +
+    `Sin electricidad: ${PW.fmt(c.sin_elec, 1)}% &middot; Hacinamiento: ${PW.fmt(c.hacina, 1)}%<br>` +
+    `Escolaridad: ${PW.fmt(c.escolaridad, 1)} años &middot; 60+ años: ${PW.fmt(c.envejec, 1)}%<br>` +
+    `Población (Censo 2024): ${PW.fmt(c.poblacion)} hab`;
+}
+// Re-liga los tooltips/popups de las comunas del choropleth con la ficha rica.
+function enriquecerMapa() {
+  if (!MAPA) return;
+  MAPA.eachLayer(grp => {
+    if (typeof grp.eachLayer !== "function") return;   // salta capas base (tiles)
+    grp.eachLayer(l => {
+      const cut = l.feature && l.feature.properties && l.feature.properties.cut;
+      const c = cut && byCut[cut];
+      if (!c) return;
+      l.unbindTooltip();
+      l.bindTooltip(`<b>${PW.esc(c.comuna)}</b> &mdash; índice <b>${PW.fmt(c.indice, 1)}</b>/100 (${nivelIx(c.indice)})`, { sticky: true });
+      l.bindPopup(fichaHTML(c), { maxWidth: 340 });
+    });
+  });
+}
+
 function pintarMapa(reg, com, filas) {
   if (MAPA) { MAPA.remove(); MAPA = null; }
   const ley = document.querySelector("#mapa-indice + .leyenda"); if (ley) ley.remove();
@@ -89,6 +127,7 @@ function pintarMapa(reg, com, filas) {
     fmt: v => v == null ? "sin dato" : PW.fmt(v, 1),
     alto: 560, foco,
   });
+  enriquecerMapa();
 }
 document.getElementById("nota").textContent = "Generado " + D.generado + ".";
 
