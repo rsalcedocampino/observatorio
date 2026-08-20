@@ -131,7 +131,7 @@ document.getElementById("kpis").innerHTML = [
    (ct.operador || 0) + " operadores de carga · " + (ct.importador || 0) + " importadores"],
 ].map(d => '<div class="kpi"><div class="v">' + d[0] + '</div><div class="l">' + d[1] +
   '</div><div class="d">' + d[2] + "</div></div>").join("");
-document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
 
 // --- explicador de Origen
 document.getElementById("origen-explica").innerHTML = M.origenes.map(o =>
@@ -194,7 +194,7 @@ document.getElementById("btn-csv").addEventListener("click", () => {
 document.getElementById("fuente").textContent =
   "Fuente: " + M.fuente + " — " + M.titulo_oficial + ". Base legal: " + M.base_legal +
   ". El listado es referencial y no exime de la obligación a empresas que consuman 50 o más " +
-  "teracalorías al año. Datos preparados por el proyecto Documentos de Gobierno. Generado " + D.generado + ".";
+  "teracalorías al año. Datos preparados por el proyecto Documentos de Gobierno. Actualizado " + (D.generado || "").slice(0, 10) + ".";
 </script>
 </body>
 </html>

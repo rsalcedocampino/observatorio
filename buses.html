@@ -75,7 +75,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("buses.html");
 const D = PW_DATA.c_buses;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const desde = D.meses.findIndex(m => m >= "2019-01");
 const cats = Object.keys(D.ventas_categoria);

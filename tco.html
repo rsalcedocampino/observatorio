@@ -216,7 +216,7 @@ document.querySelectorAll("input.miles").forEach(el => {
     el.value = d ? fmtMiles(+d) : "";
   });
 });
-g("nota").textContent = "Generado " + D.generado + ". " + (D.nota || "");
+g("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + (D.nota || "");
 
 // -------- pools --------
 const _esPoolEv = x => x.pr > 0 && ((x.tp === "BEV" && x.ke > 0) || (x.tp === "PHEV" && x.ke > 0 && x.kl > 0));

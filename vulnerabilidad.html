@@ -129,7 +129,7 @@ function pintarMapa(reg, com, filas) {
   });
   enriquecerMapa();
 }
-document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
 
 const selR = document.getElementById("f-region");
 const selC = document.getElementById("f-comuna");

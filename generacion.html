@@ -47,6 +47,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="kpis" id="kpis"></div>
   <p class="nota" id="nota"></p>
 
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Capacidad instalada en operación</h2>
+    <p class="nota">Potencia instalada del SEN (centrales en operación), por tecnología y por región.
+    Fuente: capacidad instalada de la CNE, homologada.</p>
+    <div class="fila2">
+      <div><h3 style="margin:2px 0 8px;font-size:13.5px">Por tecnología</h3><div id="g-cap-tec"></div></div>
+      <div><h3 style="margin:2px 0 8px;font-size:13.5px">Por región</h3><div id="g-cap-reg"></div></div>
+    </div>
+  </div>
+
   <div class="filtros">
     <label>Buscar
       <input type="search" id="busca" placeholder="Central o propietario...">
@@ -120,7 +130,42 @@ function refrescar() {
 }
 ["busca", "f-tec", "f-fase", "f-reg"].forEach(id => g(id).addEventListener("input", refrescar));
 refrescar();
-g("fuente").textContent = "Generado " + D.generado + ". " + D.nota;
+
+// Capacidad instalada (en operación) por tecnología y por región — desde GEN, sin dato nuevo.
+// El campo `region` viene en 2 grafías (mezcla de fuentes): se colapsa a las 16 canónicas.
+(function () {
+  const oper = GEN.filter(x => (x.fase || "").toLowerCase().indexOf("opera") >= 0);
+  function canonReg(r) {
+    const u = norm(r);
+    if (u.includes("ARICA")) return "Arica y Parinacota";
+    if (u.includes("TARAPACA")) return "Tarapacá";
+    if (u.includes("ANTOFAGASTA")) return "Antofagasta";
+    if (u.includes("ATACAMA")) return "Atacama";
+    if (u.includes("COQUIMBO")) return "Coquimbo";
+    if (u.includes("VALPARAISO")) return "Valparaíso";
+    if (u.includes("METROPOLITANA")) return "Metropolitana";
+    if (u.includes("HIGGINS") || u.includes("LIBERTADOR")) return "O'Higgins";
+    if (u.includes("MAULE")) return "Maule";
+    if (u.includes("NUBLE")) return "Ñuble";
+    if (u.includes("BIOBIO")) return "Biobío";
+    if (u.includes("ARAUCANIA")) return "La Araucanía";
+    if (u.includes("LOS RIOS")) return "Los Ríos";
+    if (u.includes("LOS LAGOS")) return "Los Lagos";
+    if (u.includes("AYSEN")) return "Aysén";
+    if (u.includes("MAGALLANES")) return "Magallanes";
+    return (r && r.trim()) ? r : "(sin región)";
+  }
+  const suma = keyFn => {
+    const m = {};
+    oper.forEach(x => { const k = keyFn(x) || "—"; m[k] = (m[k] || 0) + (x.potencia_mw || 0); });
+    return Object.entries(m).map(([nombre, valor]) => ({ nombre, valor })).sort((a, b) => b.valor - a.valor);
+  };
+  const fmtMW = v => PW.fmt(Math.round(v)) + " MW";
+  PW.barras("g-cap-tec", { items: suma(x => x.tecnologia || "—"), color: PW.color("--s6"), fmtV: fmtMW });
+  PW.barras("g-cap-reg", { items: suma(x => canonReg(x.region)), color: PW.color("--s4"), fmtV: fmtMW });
+})();
+
+g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 </script>
 </body>
 </html>

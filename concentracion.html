@@ -85,7 +85,7 @@ document.getElementById("kpis").innerHTML = [
   [PW.fmt(noCopec.length), "regiones no lidera Copec", noCopec.map(r => r.region).join(", ") || "—"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
-document.getElementById("nota").textContent = "Generado " + D.generado + ".";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
 PW.leyendaMapa("ley", [
   ["Concentrado (>2.500)", C("--critical")],
   ["Moderado (1.500-2.500)", C("--warning")],

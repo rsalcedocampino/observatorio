@@ -69,7 +69,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("duales.html");
 const D = PW_DATA.c_duales;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const totalBenc = Object.values(D.marcas).reduce((a, m) => a + m.total, 0);
 document.getElementById("kpis").innerHTML = [

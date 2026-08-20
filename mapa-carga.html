@@ -80,7 +80,7 @@ const CARGA = (MAPA.carga || []).map(p => ({
 })).filter(p => !Number.isNaN(p.lat) && !Number.isNaN(p.lon));
 
 document.getElementById("nota").textContent =
-  "Fuente: red pública de carga (OCPI + Ministerio de Energía + operadores). Generado " + (MAPA.generado || "—") + ".";
+  "Fuente: red pública de carga (OCPI + Ministerio de Energía + operadores). Actualizado " + (MAPA.generado || "—") + ".";
 
 const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`;
 const COL_DC = PW.color("--s2"), COL_AC = PW.color("--s3");

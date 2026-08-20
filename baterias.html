@@ -85,7 +85,7 @@ PW.montarNav("baterias.html");
 
 const D = PW_DATA.baterias;
 document.getElementById("nota").textContent =
-  "Ultimo mes publicado: " + D.ultimo_mes + ". Generado " + D.generado + ". " + D.nota;
+  "Ultimo mes publicado: " + D.ultimo_mes + ". " + D.nota;
 
 const desde = D.mensual.findIndex(m => m.ym >= "2019-01");
 const mensual = D.mensual.slice(desde);

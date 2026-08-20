@@ -439,7 +439,7 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
 // PARTE 2 — HISTÓRICO (riesgo.js)
 // ============================================================
 document.getElementById("nota").textContent =
-  "Generado " + D.generado + " (fuente actualizada " + (D.actualizado_fuente || "—") + "). " + D.nota;
+  "Fuente actualizada " + (D.actualizado_fuente || "—") + ". " + D.nota;
 
 // KPIs históricos nacionales (el "sin luz ahora" vive arriba, en la parte en vivo)
 const K = D.kpis || {};

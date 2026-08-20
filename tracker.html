@@ -178,7 +178,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("tracker.html");
 const D = PW_DATA.tracker;
-document.getElementById("nota").textContent = "Generado " + D.generado + ". " + D.nota;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 // Metas OFICIALES desde la biblioteca normativa (Documentos de Gobierno)
 const OF = (window.PW_DATA.c_normativa || {}).oficiales || null;
