@@ -43,7 +43,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Ventas de buses eléctricos por categoría</h2>
+    <div class="filtros">
+      <label>Año <select id="f-anio"><option value="">Todos</option></select></label>
+      <label>Mes <select id="f-mes"><option value="">Todos</option></select></label>
+      <label>Tipo de bus <select id="f-tipo"><option value="">Todos</option></select></label>
+      <span class="pill" id="cont-buses"></span>
+    </div>
+    <div id="ley-ventas" style="display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;margin:6px 0 2px"></div>
     <div id="g-ventas"></div>
+    <p class="nota">Barras acumuladas (apiladas) por mes: cada color es una categoría de servicio.
+    Filtra por año, mes o tipo de bus; pasa el mouse por un segmento para el detalle.</p>
   </div>
 
   <div class="fila2">
@@ -77,13 +86,69 @@ PW.montarNav("buses.html");
 const D = PW_DATA.c_buses;
 document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
-const desde = D.meses.findIndex(m => m >= "2019-01");
+// [VENTAS APILADAS POR MES] (pedido 2026-08-20): barras acumuladas por categoria con
+// filtros de año, mes y tipo de bus. Renderer page-local (comun.js no trae apiladas).
 const cats = Object.keys(D.ventas_categoria);
-PW.lineas("g-ventas", {
-  labels: D.meses.slice(desde),
-  series: cats.map(c => ({ nombre: c, valores: D.ventas_categoria[c].slice(desde) })),
-  fmtV: v => PW.fmt(v) + " buses", alto: 280,
-});
+const COL_CAT = {};
+["--s1", "--s2", "--s3", "--s4", "--s5", "--s6"].forEach((v, i) => { if (cats[i]) COL_CAT[cats[i]] = PW.color(v) || "#888"; });
+const NOM_MES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+                 "septiembre", "octubre", "noviembre", "diciembre"];
+const g = id => document.getElementById(id);
+[...new Set(D.meses.map(m => m.slice(0, 4)))].sort().forEach(a => g("f-anio").appendChild(new Option(a, a)));
+NOM_MES.forEach((n, i) => g("f-mes").appendChild(new Option(n, String(i + 1).padStart(2, "0"))));
+cats.forEach(c => g("f-tipo").appendChild(new Option(c, c)));
+
+function pintarVentas() {
+  const fa = g("f-anio").value, fm = g("f-mes").value, ft = g("f-tipo").value;
+  const idx = [];
+  D.meses.forEach((m, i) => {
+    if ((!fa || m.slice(0, 4) === fa) && (!fm || m.slice(5, 7) === fm)) idx.push(i);
+  });
+  const serie = ft ? [ft] : cats;
+  const tot = idx.reduce((s, i) => s + serie.reduce((t, c) => t + (D.ventas_categoria[c][i] || 0), 0), 0);
+  g("cont-buses").textContent = PW.fmt(tot) + " buses en la vista";
+  g("ley-ventas").innerHTML = serie.map(c =>
+    `<span><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${COL_CAT[c]};margin-right:5px"></i>${PW.esc(c)}</span>`).join("");
+  const el = g("g-ventas");
+  el.innerHTML = "";
+  if (!idx.length) { el.innerHTML = '<p class="nota">Sin meses para ese filtro.</p>'; return; }
+  const W = el.clientWidth || 960, H = 280, m = { t: 12, r: 10, b: 26, l: 48 };
+  const maxV = Math.max(1, ...idx.map(i => serie.reduce((t, c) => t + (D.ventas_categoria[c][i] || 0), 0)));
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "100%"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const S = (tag, at) => { const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const k in at) e.setAttribute(k, at[k]); return e; };
+  for (let i = 0; i <= 3; i++) {
+    const v = maxV * i / 3, y = m.t + (H - m.t - m.b) * (1 - i / 3);
+    svg.appendChild(S("line", { x1: m.l, x2: W - m.r, y1: y, y2: y, stroke: PW.color("--grid") || "#e5e7eb" }));
+    const t = S("text", { x: m.l - 6, y: y + 4, "text-anchor": "end", "font-size": 11, fill: PW.color("--ink-3") || "#888" });
+    t.textContent = PW.fmt(Math.round(v)); svg.appendChild(t);
+  }
+  const n = idx.length, ancho = (W - m.l - m.r) / n;
+  idx.forEach((iMes, j) => {
+    let acum = 0;
+    const totalMes = serie.reduce((t, c) => t + (D.ventas_categoria[c][iMes] || 0), 0);
+    serie.forEach(c => {
+      const v = D.ventas_categoria[c][iMes] || 0;
+      if (!v) return;
+      const h = (H - m.t - m.b) * v / maxV;
+      const y = H - m.b - (H - m.t - m.b) * (acum + v) / maxV;
+      const r = S("rect", { x: m.l + j * ancho + ancho * 0.12, y, width: Math.max(ancho * 0.76, 1), height: Math.max(h, 1), fill: COL_CAT[c] });
+      const tt = S("title", {});
+      tt.textContent = D.meses[iMes] + " · " + c + ": " + PW.fmt(v) + " buses (total del mes: " + PW.fmt(totalMes) + ")";
+      r.appendChild(tt); svg.appendChild(r);
+      acum += v;
+    });
+  });
+  const paso = Math.max(1, Math.ceil(n / 12));
+  idx.forEach((iMes, j) => {
+    if (j % paso !== 0 && j !== n - 1) return;
+    const t = S("text", { x: m.l + j * ancho + ancho / 2, y: H - 8, "text-anchor": "middle", "font-size": 10.5, fill: PW.color("--ink-3") || "#888" });
+    t.textContent = D.meses[iMes]; svg.appendChild(t);
+  });
+  el.appendChild(svg);
+}
+["f-anio", "f-mes", "f-tipo"].forEach(id => g(id).addEventListener("input", pintarVentas));
+pintarVentas();
 
 PW.barras("g-marcas-v", {
   items: D.marcas_ventas.map(m => ({ nombre: m.marca, valor: m.unidades })),
