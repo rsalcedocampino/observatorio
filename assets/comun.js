@@ -786,6 +786,52 @@
     m.setMinZoom(z);
   }
 
+  // [ZOOM AL TERRITORIO] (CAMBIOS 162): encuadra el mapa en la region (rcut) o comuna
+  // (nombre) filtrada usando los POLIGONOS de geo_comunas — tenga o no capas activas.
+  // Comuna acerca mas que region (pad .15 / maxZoom 12 vs pad .05 / maxZoom 11); las islas
+  // del Pacifico no estiran el encuadre REGIONAL; sin geo_comunas o sin filtro -> false
+  // (la pagina decide su fallback; la vista por defecto ya es Chile). Patron de mapas.html (161).
+  const _normTerr = s => String(s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").trim().toUpperCase();
+  function fitTerritorio(m, t) {
+    const geo = window.PW_DATA && window.PW_DATA.geo_comunas;
+    if (!m || !t || typeof L === "undefined" || !geo) return false;
+    let b = null, esComuna = false;
+    if (t.com) {
+      const q = _normTerr(t.com);
+      const f = (geo.features || []).find(x => _normTerr(x.properties.comuna) === q &&
+        (!t.rcut || String(x.properties.cut).slice(0, 2) === String(t.rcut)));
+      if (f) { b = boundsComunas([f.properties.cut]); esComuna = true; }
+    }
+    if (!b && t.rcut) {
+      const cuts = (geo.features || []).map(f => String(f.properties.cut))
+        .filter(c => c.slice(0, 2) === String(t.rcut))
+        .filter(c => c !== "05104" && c !== "05201");  // islas del Pacifico no estiran el encuadre
+      if (cuts.length) b = boundsComunas(cuts);
+    }
+    if (!b) return false;
+    m.fitBounds(b.pad(esComuna ? 0.15 : 0.05), { animate: false, maxZoom: esComuna ? 12 : 11 });
+    return true;
+  }
+  // ultimo filtro emitido por filtrosTerritorio() en esta pagina: mapa() lo usa para
+  // auto-encuadrar el mapa recien creado tras filtrar (cero cambios por pagina).
+  let terrActivo = null;
+
+  // geo_comunas pesa ~4 MB: las paginas livianas NO lo cargan fijo. Se trae BAJO DEMANDA
+  // (script same-origin, CSP ok) la primera vez que se filtra territorio sin el dato.
+  let geoComunasProm = null;
+  function cargarGeoComunas() {
+    if (window.PW_DATA && window.PW_DATA.geo_comunas) return Promise.resolve(true);
+    if (geoComunasProm) return geoComunasProm;
+    geoComunasProm = new Promise(ok => {
+      const s = document.createElement("script");
+      s.src = "data/geo_comunas.js";
+      s.onload = () => ok(!!(window.PW_DATA && window.PW_DATA.geo_comunas));
+      s.onerror = () => ok(false);
+      document.head.appendChild(s);
+    });
+    return geoComunasProm;
+  }
+
   // [NOTA PRECISION] aviso estandar bajo cada mapa del sitio (pedido del usuario 2026-08-18).
   // UNA vez por pagina (guard por clase) e idempotente entre re-renders al filtrar.
   function notaPrecisionMapa(el) {
@@ -994,6 +1040,17 @@
         "box-shadow:0 2px 12px rgba(0,0,0,.18)";
       el.appendChild(av);
     }
+    // [ZOOM AL TERRITORIO] (162): con filtro territorial activo (kit filtrosTerritorio),
+    // el mapa recreado tras filtrar queda encuadrado en la region/comuna elegida; al
+    // limpiar el filtro, el re-render vuelve a la vista Chile por defecto del cfg.
+    // Si geo_comunas no esta cargado, se trae on-demand y se encuadra al llegar (guard:
+    // el usuario pudo re-filtrar y este mapa ya no estar en el DOM).
+    if (terrActivo && (terrActivo.rcut || terrActivo.com)) {
+      if (window.PW_DATA && window.PW_DATA.geo_comunas) fitTerritorio(m, terrActivo);
+      else cargarGeoComunas().then(okGeo => {
+        try { if (okGeo && m.getContainer() && m.getContainer().isConnected) fitTerritorio(m, terrActivo); } catch (e) {}
+      });
+    }
     notaPrecisionMapa(el);
     return m;
   }
@@ -1076,7 +1133,7 @@
       selC.disabled = !rc;
     }
     pobComunas();
-    function emitir() { alCambiar({ rcut: selR.value || null, com: selC.value || null }); }
+    function emitir() { terrActivo = { rcut: selR.value || null, com: selC.value || null }; alCambiar(terrActivo); }
     selR.addEventListener("input", () => { pobComunas(); emitir(); });
     selC.addEventListener("input", emitir);
     return { emitir };
@@ -1332,6 +1389,6 @@
     return el;
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile };
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio };
 })();
 
