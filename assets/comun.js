@@ -29,13 +29,13 @@
       ["cargadores-cortes.html", "Cargadores Públicos y Cortes de Energía"],
       ["mapa-carga.html", "Infraestructura de Carga"],
     ]],
-    ["Reporte Regional", [
+    ["Reporte Nacional", [
+      ["tracker.html", "Meta 2035"],
       ["reporte-regional.html", "Reporte Regional"],
       ["vulnerabilidad.html", "Vulnerabilidad energética"],
       ["censo-electricidad.html", "Electricidad en las viviendas"],
     ]],
     ["Mercado", [
-      ["tracker.html", "Meta 2035"],
       ["vehiculo.html", "Vehículo 360"],
       ["rotacion.html", "Rotación de inventario"],
       ["elasticidad.html", "Elasticidad bencina-EV"],

@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Mapas Interactivos con Capas — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260820a">
+<link rel="stylesheet" href="assets/estilo.css?v=260820b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -45,6 +45,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .capa-grupo-tit { font-size: 10.5px; font-weight: 700; text-transform: uppercase;
     letter-spacing: .05em; color: var(--ink-3); }
   .capa-grupo-chips { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
+  /* [CRUCE ACTIVO] resalta el cruce sugerido cuyo combo coincide con el estado actual del mapa */
+  .preset-btn.activo { border-color: var(--s1); box-shadow: inset 0 0 0 1px var(--s1);
+    color: var(--s1); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -88,7 +91,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/geo_lineas.js"></script>
 <script src="data/geo_comunas.js"></script>
 <script src="data/postes_index.js"></script>
-<script src="assets/comun.js?v=260820a"></script>
+<script src="assets/comun.js?v=260820b"></script>
 <script>
 PW.montarNav("mapas.html");
 
@@ -373,7 +376,7 @@ function render(fit) {
     if (b) mapa.fitBounds(b.pad(filtroTerr.com ? 0.15 : 0.05), { animate: false, maxZoom: filtroTerr.com ? 12 : 11 });
   }
 
-  pintarKpis(); pintarPanel(); pintarContador(ind);
+  pintarKpis(); pintarPanel(); pintarContador(ind); marcarPresetActivo();
 }
 
 function pintarKpis() {
@@ -539,6 +542,24 @@ function aplicarPreset(p) {
   CAPAS.forEach(c => { c.on = p.on.includes(c.k); });
   if (p.ind !== undefined) document.getElementById("f-ind").value = p.ind;  // "" = telon apagado
   render(false);
+}
+
+// Resalta el cruce sugerido cuyo combo (capas encendidas + telon) coincide con el estado ACTUAL,
+// venga de un click en el preset o de encender/apagar capas a mano. Solo los presets con `desc`
+// (los cruces reales); "Ver todo"/"Limpiar" son acciones utilitarias y no se marcan.
+function indicePresetActivo() {
+  const onSet = CAPAS.filter(c => c.on).map(c => c.k).sort().join(",");
+  const ind = document.getElementById("f-ind").value;
+  return PRESETS.findIndex(p => p.desc &&
+    p.on.slice().sort().join(",") === onSet &&
+    (p.ind === undefined || p.ind === ind));
+}
+function marcarPresetActivo() {
+  const cont = document.getElementById("presets");
+  if (!cont) return;
+  const activo = indicePresetActivo();
+  cont.querySelectorAll(".preset-btn").forEach(b =>
+    b.classList.toggle("activo", +b.dataset.i === activo));
 }
 
 // territorio + selector de indicador del Censo
