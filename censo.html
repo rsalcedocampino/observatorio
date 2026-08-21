@@ -327,15 +327,12 @@ function aplicar() {
     if (r17 && r17.var_pct != null)
       kpis.push([(r17.var_pct > 0 ? "+" : "") + PW.fmt(r17.var_pct, 1) + "%", "variación 2002 → 2017 (país)",
                  r17.crec_anual != null ? "crecimiento anual " + PW.fmt(r17.crec_anual, 1) + "%" : ""]);
-    kpis.push([PW.fmt(poblacionTerritorio("2024", reg, com)), "habitantes en 2024", "para comparar · " + terr]);
-  } else {  // 2002
+  } else {  // 2002 — solo el dato de ESE censo (sin tarjetas de otros años, que confundían)
     const r02 = serieRowAno["2002"] || {};
     kpis.push([PW.fmt(serieByAno["2002"]), "habitantes (país)", "Censo 2002" + ((reg || com) ? " · sin dato comunal homologable" : "")]);
     if (r02.var_pct != null)
       kpis.push([(r02.var_pct > 0 ? "+" : "") + PW.fmt(r02.var_pct, 1) + "%", "variación 1992 → 2002 (país)",
                  r02.crec_anual != null ? "crecimiento anual " + PW.fmt(r02.crec_anual, 1) + "%" : ""]);
-    kpis.push([PW.fmt(serieByAno["2017"]), "habitantes en 2017", "país"]);
-    kpis.push([PW.fmt(serieByAno["2024"]), "habitantes en 2024", "país"]);
   }
   document.getElementById("kpis").innerHTML = kpis.map(d =>
     `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
