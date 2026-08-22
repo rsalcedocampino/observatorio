@@ -27,7 +27,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Elasticidad bencina-EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260821a">
+<link rel="stylesheet" href="assets/estilo.css?v=260821b">
+<style>
+  .tab-nav { display: flex; gap: 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc; }
+  .tab-nav button { padding: 12px 20px; background: none; border: none; cursor: pointer; font-size: 1rem; color: #666; border-bottom: 3px solid transparent; }
+  .tab-nav button.activo { color: #000; font-weight: bold; border-bottom-color: #0066cc; }
+  .tab-nav button:hover { color: #000; }
+  .tab-content { display: none; }
+  .tab-content.activo { display: block; }
+</style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -35,34 +43,77 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
-  <h1>Elasticidad bencina-electromovilidad</h1>
-  <p class="sub">¿Cuándo sube la bencina, sube la adopción de enchufables meses después? Este
-  cruce contrasta la participación de mercado enchufable con el precio real de la bencina 93.
-  Es un análisis que madura solo: el histórico propio de precios captura cada 10 días.</p>
-  <p class="nota" id="nota"></p>
+  <h1>Elasticidad y precios — Análisis de adopción EV</h1>
 
-  <div class="kpis" id="kpis"></div>
-
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Cómo se leerá este cruce</h2>
-    <p class="nota">Cuando se acumulen suficientes capturas, esta página cruzará la <b>participación
-    de ventas enchufables</b> con el <b>precio real de la bencina 93</b> (regresión con rezagos de
-    0-6 meses) para medir si las alzas de combustible empujan la adopción EV. La evolución completa de
-    la participación enchufable ya vive en <a href="tracker.html">Meta 2035</a> (no se repite aquí);
-    el precio de la bencina que se va acumulando está en la tabla de abajo.</p>
+  <div class="tab-nav">
+    <button class="tab-btn activo" data-tab="bencina">Bencina 93</button>
+    <button class="tab-btn" data-tab="tarifas">Tarifas de Electricidad</button>
   </div>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Capturas de precio bencina 93 (promedio país)</h2>
-    <div id="t-capturas"></div>
-    <p class="nota">La regresion participación~precio con rezagos 0-6 meses se activará
-    automáticamente cuando existan suficientes capturas para construir una serie mensual.</p>
+  <!-- TAB 1: Bencina 93 -->
+  <div id="tab-bencina" class="tab-content activo">
+    <p class="sub">¿Cuándo sube la bencina, sube la adopción de enchufables meses después? Este
+    cruce contrasta la participación de mercado enchufable con el precio real de la bencina 93.
+    Es un análisis que madura solo: el histórico propio de precios captura cada 10 días.</p>
+    <p class="nota" id="nota"></p>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Cómo se leerá este cruce</h2>
+      <p class="nota">Cuando se acumulen suficientes capturas, esta página cruzará la <b>participación
+      de ventas enchufables</b> con el <b>precio real de la bencina 93</b> (regresión con rezagos de
+      0-6 meses) para medir si las alzas de combustible empujan la adopción EV. La evolución completa de
+      la participación enchufable ya vive en <a href="tracker.html">Meta 2035</a> (no se repite aquí);
+      el precio de la bencina que se va acumulando está en la tabla de abajo.</p>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Capturas de precio bencina 93 (promedio país)</h2>
+      <div id="t-capturas"></div>
+      <p class="nota">La regresion participación~precio con rezagos 0-6 meses se activará
+      automáticamente cuando existan suficientes capturas para construir una serie mensual.</p>
+    </div>
+  </div>
+
+  <!-- TAB 2: Tarifas de Electricidad -->
+  <div id="tab-tarifas" class="tab-content">
+    <p class="sub">¿Sube la adopción de enchufables cuando baja la tarifa de electricidad? Este análisis
+    cruzará el precio de electricidad con la participación EV por región y segmento (domiciliario, comercial, industrial).
+    Se actualiza conforme CNE publique nuevos Decretos de Precio Nudo Promedio (PNP) semestral.</p>
+    <p class="nota" id="nota-tarifas"></p>
+
+    <div class="kpis" id="kpis-tarifas"></div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Tarifas de electricidad por región</h2>
+      <p class="nota">Precio de energía ($/kWh) y potencia ($/kW/mes) en el Sistema Nacional de Transmisión (220kV).</p>
+      <div id="t-tarifas"></div>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
+        Datos: Decreto PNP (CNE). Fuente: Subestaciones 220kV del Sistema de Transmisión Nacional.
+        Próximos datos: octubre 2026 (semestral).
+      </p>
+    </div>
   </div>
 </main>
 <script src="data/c_elasticidad.js"></script>
-<script src="assets/comun.js?v=260821a"></script>
+<script src="data/c_elasticidad_tarifas.js"></script>
+<script src="assets/comun.js?v=260821b"></script>
 <script>
+// Navegación de tabs
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", function() {
+    const tab = this.getAttribute("data-tab");
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("activo"));
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("activo"));
+    this.classList.add("activo");
+    document.getElementById("tab-" + tab).classList.add("activo");
+  });
+});
+
 PW.montarNav("elasticidad.html");
+
+// TAB 1: Bencina
 const D = PW_DATA.c_elasticidad;
 document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
@@ -79,6 +130,36 @@ PW.tabla("t-capturas", [
   { k: "captura", titulo: "Fecha de captura" },
   { k: "p93", titulo: "Bencina 93 promedio pais", num: true, fmt: v => PW.clp(v) + "/L" },
 ], D.capturas_p93, {});
+
+// TAB 2: Tarifas Electricidad
+if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas) {
+  const DT = PW_DATA.c_elasticidad_tarifas;
+  document.getElementById("nota-tarifas").textContent = "Actualizado " + (DT.generado || "").slice(0, 10) + ". " + DT.nota;
+
+  const regiones_con_datos = DT.tarifas_por_region ? Object.keys(DT.tarifas_por_region).length : 0;
+  document.getElementById("kpis-tarifas").innerHTML = [
+    [DT.tarifas && DT.tarifas.length || 0, "subestaciones en padrón", "Sistema Nacional de Transmisión"],
+    [regiones_con_datos, "regiones con tarifas", "datos APR-2026"],
+    [DT.tarifas && DT.tarifas.length ? "APR-2026" : "—", "período actual", "próximo: OCT-2026"],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  if (DT.tarifas_por_region) {
+    const filas = Object.entries(DT.tarifas_por_region).map(([region, data]) => ({
+      region: region,
+      subestaciones: data.subestaciones || 0,
+      tarifa_energia_min: data.tarifa_energia_min,
+      tarifa_energia_max: data.tarifa_energia_max,
+      tarifa_energia_promedio: data.tarifa_energia_promedio,
+    }));
+    PW.tabla("t-tarifas", [
+      { k: "region", titulo: "Región (CUT)" },
+      { k: "subestaciones", titulo: "Subestaciones", num: true },
+      { k: "tarifa_energia_promedio", titulo: "Tarifa energía promedio", num: true, fmt: v => PW.fmt(v, 1) + " $/kWh" },
+      { k: "tarifa_energia_min", titulo: "Mín", num: true, fmt: v => PW.fmt(v, 1) },
+      { k: "tarifa_energia_max", titulo: "Máx", num: true, fmt: v => PW.fmt(v, 1) },
+    ], filas, {});
+  }
+}
 </script>
 </body>
 </html>
