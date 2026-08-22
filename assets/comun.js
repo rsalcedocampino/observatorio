@@ -57,18 +57,18 @@
     ]],
     ["Carga", [
       ["operadores.html", "Operadores"],
-      ["infraestructura.html", "Infraestructura (SEC)"],
-      ["sitios.html", "Selector de sitios"],
+      ["sitios.html", "Buscar cargador"],
+      ["autonomia.html", "Brecha de cobertura"],
       ["costo.html", "Bencina vs Enchufe"],
       ["horas.html", "Mejor hora"],
       ["duales.html", "Estaciones duales"],
-      ["autonomia.html", "Brechas de autonomía"],
       ["conectores-red.html", "Conectores flota-red"],
       ["resiliencia.html", "Resiliencia ante cortes"],
       ["concentracion.html", "Concentración del mercado"],
       ["petroleras.html", "Transición de las petroleras"],
     ]],
     ["Energía", [
+      ["infraestructura.html", "Capacidad de carga instalada"],
       ["riesgo.html", "Cortes de energía"],
       ["probabilidad-cortes.html", "Probabilidad de cortes"],
       ["bess-cortes.html", "Almacenamiento (BESS)"],
@@ -874,6 +874,12 @@
     // acumula todos los puntos para "ver todo" y para "punto más cercano"
     const todosPts = [];   // {ll:[lat,lon], nombre}
     let fueraChile = 0;    // puntos descartados por caer fuera del territorio
+    // [A11Y PUNTOS] los circleMarker van en canvas (sin nodo DOM): son inalcanzables por teclado/lector.
+    //   Juntamos una lista accesible de los puntos con ficha para exponerlos por teclado (ver el bloque
+    //   [A11Y LISTA] al final). Capada para no inflar el DOM en mapas densos; a11yTotal cuenta el total.
+    const a11yPts = [];    // {label, mk, grupo, usarCluster}
+    let a11yTotal = 0;
+    const A11Y_CAP = 150;
 
     // [CONTROLES] pantalla completa · vista inicial · ver todo · mi ubicacion
     controlesMapa(m, el, { centro, zoom, puntos: todosPts });
@@ -966,6 +972,11 @@
         mk.on("mouseout", () => mk.setStyle({ radius: rBase, weight: 1, fillOpacity: 0.85 }));
         grupo.addLayer(mk);
         if (capa.visible !== false) todosPts.push({ ll: [p.lat, p.lon], nombre: tip });
+        // punto elegible para la lista accesible: visible y con algo que mostrar (ficha o nombre)
+        if (capa.visible !== false && (p.popup || tip)) {
+          a11yTotal++;
+          if (a11yPts.length < A11Y_CAP) a11yPts.push({ label: tip || capa.nombre, mk, grupo, usarCluster });
+        }
       });
       control[`${capa.nombre} (${capa.puntos.length})`] = grupo;
       if (capa.visible !== false) grupo.addTo(m);
@@ -1052,6 +1063,34 @@
       });
     }
     notaPrecisionMapa(el);
+
+    // [A11Y LISTA] alternativa accesible por teclado/lector para los puntos (que van en canvas, sin DOM):
+    //   <details> colapsado (1 solo stop de tab) y sr-only (revelado al enfocar via CSS :focus-within, sin
+    //   cambiar el aspecto para el mouse). Cada boton hace paneo + abre la ficha del punto (spiderfy si esta
+    //   agrupado). Se reconstruye en cada render (vive dentro de `el`, que se limpia con innerHTML=""). Se
+    //   corta la propagacion para no arrastrar el mapa al interactuar con la lista.
+    if (a11yPts.length) {
+      const det = L.DomUtil.create("details", "pw-mapa-lista-a11y", el);
+      L.DomEvent.disableClickPropagation(det);
+      L.DomEvent.disableScrollPropagation(det);
+      const sum = L.DomUtil.create("summary", "", det);
+      sum.textContent = "Lista de " + a11yTotal + (a11yTotal === 1 ? " punto del mapa" : " puntos del mapa");
+      const ul = L.DomUtil.create("ul", "", det);
+      a11yPts.forEach(pt => {
+        const b = L.DomUtil.create("button", "", L.DomUtil.create("li", "", ul));
+        b.type = "button";
+        b.textContent = pt.label;
+        L.DomEvent.on(b, "click", ev => {
+          L.DomEvent.stop(ev);
+          if (pt.usarCluster && pt.grupo.zoomToShowLayer) pt.grupo.zoomToShowLayer(pt.mk, () => pt.mk.openPopup());
+          else { m.setView(pt.mk.getLatLng(), Math.max(m.getZoom(), 14)); pt.mk.openPopup(); }
+        });
+      });
+      if (a11yTotal > a11yPts.length) {
+        const nota = L.DomUtil.create("li", "pw-mapa-lista-a11y-mas", ul);
+        nota.textContent = "Mostrando " + a11yPts.length + " de " + a11yTotal + ". Filtra por territorio para acotar.";
+      }
+    }
     return m;
   }
 
@@ -1176,6 +1215,10 @@
     };
     const fmt = cfg.fmt || (v => v == null ? "sin dato" : nf1.format(v));
     const bordeBase = oscuro ? "#0d0d0d" : "#ffffff";
+    // [A11Y COMUNAS] las comunas son <path> SVG pero Leaflet no las hace focusables por teclado.
+    //   Juntamos las que tienen dato para una lista accesible (ver el bloque [A11Y LISTA] al final).
+    const a11yComunas = [];   // {nombre, valor, capa}
+    let selComuna = null;     // comuna resaltada por teclado (para restaurar su borde al elegir otra)
     const capaGeo = L.geoJSON(geo, {
       style: f => ({
         fillColor: colorDe(cfg.valores[f.properties.cut]),
@@ -1188,7 +1231,9 @@
         capa.bindTooltip(`${f.properties.comuna}: ${fmt(v)}`, { sticky: true });
         // [HOVER] resaltar la comuna bajo el mouse
         capa.on("mouseover", () => { capa.setStyle({ weight: 2, color: color("--ink-1") }); capa.bringToFront(); });
-        capa.on("mouseout", () => capa.setStyle({ weight: 0.6, color: bordeBase }));
+        capa.on("mouseout", () => { if (capa !== selComuna) capa.setStyle({ weight: 0.6, color: bordeBase }); });
+        // comuna con dato: elegible para la lista accesible por teclado
+        if (v != null && !Number.isNaN(v)) a11yComunas.push({ nombre: f.properties.comuna, valor: fmt(v), capa });
       },
     }).addTo(m);
 
@@ -1228,6 +1273,34 @@
       const feats = geo.features.filter(f => cuts.indexOf(f.properties.cut) >= 0);
       if (feats.length) L.geoJSON({ type: "FeatureCollection", features: feats },
         { style: { color: "#e11d48", weight: 3, opacity: 1, fill: false } }).addTo(m).bringToFront();
+    }
+
+    // [A11Y LISTA] alternativa accesible por teclado/lector de las comunas (los <path> SVG no reciben foco).
+    //   Mismo patron sr-only/<details> que PW.mapa (reusa la clase .pw-mapa-lista-a11y). Cada boton hace
+    //   zoom + resalta la comuna y abre su valor; el nombre+valor va en la etiqueta (lo anuncia el lector).
+    //   Ordenada alfabeticamente para localizar una comuna. Se reconstruye en cada render (vive en `el`).
+    if (a11yComunas.length) {
+      a11yComunas.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+      const det = L.DomUtil.create("details", "pw-mapa-lista-a11y", el);
+      L.DomEvent.disableClickPropagation(det);
+      L.DomEvent.disableScrollPropagation(det);
+      L.DomUtil.create("summary", "", det).textContent =
+        "Lista de " + a11yComunas.length + (a11yComunas.length === 1 ? " comuna con dato" : " comunas con dato");
+      const ul = L.DomUtil.create("ul", "", det);
+      a11yComunas.forEach(c => {
+        const b = L.DomUtil.create("button", "", L.DomUtil.create("li", "", ul));
+        b.type = "button";
+        b.textContent = c.nombre + ": " + c.valor;
+        L.DomEvent.on(b, "click", ev => {
+          L.DomEvent.stop(ev);
+          if (selComuna && selComuna !== c.capa) selComuna.setStyle({ weight: 0.6, color: bordeBase });
+          selComuna = c.capa;
+          try { m.fitBounds(c.capa.getBounds(), { maxZoom: 11 }); } catch (e) {}
+          c.capa.setStyle({ weight: 3, color: color("--ink-1") });
+          c.capa.bringToFront();
+          c.capa.openTooltip();
+        });
+      });
     }
     return m;
   }

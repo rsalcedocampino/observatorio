@@ -426,6 +426,18 @@ footer.pw {
 }
 @keyframes pw-giro { to { transform: rotate(360deg); } }
 
+/* [A11Y LISTA] alternativa accesible por teclado de los puntos del mapa (los circleMarker van en canvas,
+   sin nodo DOM focusable). sr-only por defecto (no cambia el aspecto para el mouse); se revela cuando el
+   teclado la enfoca (:focus-within). Colapsada => 1 solo stop de tab hasta que el usuario la abre. */
+.pw-mapa-lista-a11y { position: absolute; left: 6px; top: 6px; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: 0; padding: 0; }
+.pw-mapa-lista-a11y:focus-within { width: auto; height: auto; max-width: min(320px, 72%); max-height: 72%; overflow: auto; clip: auto; white-space: normal; z-index: 900; background: var(--surface-1); color: var(--ink-1); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; box-shadow: 0 2px 12px rgba(0, 0, 0, .2); }
+.pw-mapa-lista-a11y summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--ink-1); }
+.pw-mapa-lista-a11y ul { list-style: none; margin: 6px 0 0; padding: 0; max-height: 40vh; overflow: auto; }
+.pw-mapa-lista-a11y button { display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: 6px; padding: 4px 6px; font-size: 12.5px; color: var(--ink-1); cursor: pointer; }
+.pw-mapa-lista-a11y button:hover { background: var(--plane); }
+.pw-mapa-lista-a11y button:focus-visible { outline: 2px solid var(--s1); outline-offset: -2px; background: var(--plane); }
+.pw-mapa-lista-a11y-mas { font-size: 12px; opacity: .8; padding: 4px 6px; }
+
 /* [CAPAS] selector de capas */
 .pw-mapa .leaflet-control-layers {
   background: var(--surface-1);
