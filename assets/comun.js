@@ -56,8 +56,7 @@
       ["baterias.html", "Baterías de litio"],
     ]],
     ["Carga", [
-      ["operadores.html", "Operadores"],
-      ["sitios.html", "Buscar cargador"],
+      ["operadores.html", "Operadores y Sitios"],
       ["autonomia.html", "Brecha de cobertura"],
       ["costo.html", "Bencina vs Enchufe"],
       ["horas.html", "Mejor hora"],
