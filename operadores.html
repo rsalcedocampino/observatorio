@@ -81,8 +81,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="g-marcas"></div>
     <p class="nota" id="nota-marcas"></p>
   </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Top 20 comunas por puntaje de oportunidad</h2>
+    <div id="g-top"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Todas las comunas</h2>
+    <div id="t-comunas"></div>
+  </div>
 </main>
 <script src="data/operadores.js"></script>
+<script src="data/sitios.js"></script>
 <script src="data/mapa.js"></script>
 <script src="assets/comun.js?v=260821b"></script>
 <script>
@@ -200,6 +211,55 @@ refrescar();
   document.getElementById("nota-marcas").textContent =
     marcas.length + " marcas homologadas. " + PW.fmt(total) + " cargadores únicos con marca identificada.";
 })();
+
+// ========== Datos de sitios (Top 20 comunas + Todas las comunas) ==========
+const DS = PW_DATA.sitios;
+const selR = document.createElement("select");
+selR.id = "f-region-sitios";
+selR.innerHTML = `<option value="">Todas</option>`;
+[...new Set(DS.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option");
+  o.value = r;
+  o.textContent = r;
+  selR.appendChild(o);
+});
+
+const colsSitios = [
+  { k: "score", titulo: "Puntaje", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Región" },
+  { k: "poblacion", titulo: "Poblacion", num: true, fmt: v => PW.fmt(v) },
+  { k: "ev_parque", titulo: "Parque electrico", num: true, fmt: v => PW.fmt(v) },
+  { k: "conectores", titulo: "Conectores", num: true, fmt: (v, f) => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
+  { k: "conectores_dc", titulo: "DC", num: true },
+  { k: "ev_por_conector", titulo: "EV por conector", num: true, fmt: v => v == null ? "sin oferta" : PW.fmt(v, 1) },
+  { k: "cliente_horas_cortes", titulo: "Cliente-horas cortes", num: true, fmt: v => PW.fmt(v) },
+  { k: "p93", titulo: "$/L 93", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
+];
+
+let tabSitios = null;
+function refrescarSitios() {
+  const reg = selR.value;
+  const pobMin = 0;
+  const soloCero = false;
+  let filas = DS.comunas.filter(c =>
+    (!reg || c.region === reg) &&
+    (c.poblacion || 0) >= pobMin &&
+    (!soloCero || c.conectores === 0));
+  filas = filas.slice().sort((a, b) => b.score - a.score);
+  PW.barras("g-top", {
+    items: filas.slice(0, 20).map(c => ({
+      nombre: c.comuna, valor: c.score,
+      extra: PW.fmt(c.ev_parque) + " EV registrados, " + c.conectores + " conectores, " +
+        PW.fmt(c.poblacion) + " hab.",
+    })),
+    fmtV: v => PW.fmt(v, 1),
+  });
+  if (tabSitios) tabSitios.actualizar(filas);
+  else tabSitios = PW.tabla("t-comunas", colsSitios, filas, { orden: "score", max: 400 });
+}
+selR.addEventListener("input", refrescarSitios);
+refrescarSitios();
 </script>
 </body>
 </html>
