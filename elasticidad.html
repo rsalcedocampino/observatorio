@@ -47,7 +47,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tab-nav">
     <button class="tab-btn activo" data-tab="bencina">Bencina 93</button>
-    <button class="tab-btn" data-tab="tarifas">Tarifas de Electricidad</button>
+    <button class="tab-btn" data-tab="tarifas">Tarifas de Electricidad (Regional)</button>
+    <button class="tab-btn" data-tab="pnp">Precios Nudo por Subestación</button>
   </div>
 
   <!-- TAB 1: Bencina 93 -->
@@ -95,10 +96,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </p>
     </div>
   </div>
+
+  <!-- TAB 3: Precios Nudo por Subestación -->
+  <div id="tab-pnp" class="tab-content">
+    <p class="sub">Precio Nudo Promedio (PNP) en subestaciones 220kV del Sistema Nacional de Transmisión.
+    Selecciona una región y distribuidor para ver tarifas de energía ($/kWh) y potencia ($/kW/mes).</p>
+    <p class="nota" id="nota-pnp"></p>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Consultar tarifa por región y distribuidor</h2>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="sel-region" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Región:</label>
+        <select id="sel-region" style="width: 100%; padding: 8px; font-size: 1rem;">
+          <option value="">-- Selecciona región --</option>
+        </select>
+      </div>
+
+      <div id="dist-container" style="display: none; margin-bottom: 1.5rem;">
+        <label for="sel-distribuidor" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Distribuidor:</label>
+        <select id="sel-distribuidor" style="width: 100%; padding: 8px; font-size: 1rem;">
+          <option value="">-- Selecciona distribuidor --</option>
+        </select>
+      </div>
+
+      <div id="tabla-pnp"></div>
+
+      <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color: #666;">
+        Datos: Decreto PNP-2026-04 (CNE). Transmisión Nacional (220kV). Próximos datos: octubre 2026.
+        Nota: estos son precios de transmisión. Para tarifa final al cliente, sumar VAD distribuidor.
+      </p>
+    </div>
+  </div>
 </main>
 <script src="data/c_elasticidad.js"></script>
 <script src="data/c_elasticidad_tarifas.js"></script>
-<script src="assets/comun.js?v=260821b"></script>
+<script src="data/c_elasticidad_tarifas_pnp.js"></script>
+<script src="assets/comun.js?v=260824a"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -159,6 +193,85 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas) {
       { k: "tarifa_energia_max", titulo: "Máx", num: true, fmt: v => PW.fmt(v, 1) },
     ], filas, {});
   }
+}
+
+// TAB 3: Precios Nudo por Subestación
+if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
+  const DPNP = PW_DATA.c_elasticidad_tarifas_pnp;
+
+  // Actualizar nota
+  document.getElementById("nota-pnp").textContent = "Actualizado " + (DPNP.generado || "").slice(0, 10) + ". " + DPNP.nota;
+
+  // Llenar dropdown regiones
+  const selRegion = document.getElementById("sel-region");
+  DPNP.regiones.forEach(r => {
+    const opt = document.createElement("option");
+    opt.value = r.cut;
+    opt.textContent = r.cut + " - " + r.nombre;
+    selRegion.appendChild(opt);
+  });
+
+  // Evento: cambio región
+  selRegion.addEventListener("change", function() {
+    const region = this.value;
+    const distContainer = document.getElementById("dist-container");
+    const selDist = document.getElementById("sel-distribuidor");
+    const tablaPnp = document.getElementById("tabla-pnp");
+
+    if (!region) {
+      distContainer.style.display = "none";
+      tablaPnp.innerHTML = "";
+      return;
+    }
+
+    // Llenar dropdown distribuidores
+    selDist.innerHTML = '<option value="">-- Selecciona distribuidor --</option>';
+    const dists = Object.keys(DPNP.subestaciones_por_region_dist[region] || {});
+    dists.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d.toUpperCase();
+      selDist.appendChild(opt);
+    });
+
+    distContainer.style.display = "block";
+    tablaPnp.innerHTML = "";
+  });
+
+  // Evento: cambio distribuidor
+  document.getElementById("sel-distribuidor").addEventListener("change", function() {
+    const region = document.getElementById("sel-region").value;
+    const dist = this.value;
+    const tablaPnp = document.getElementById("tabla-pnp");
+
+    if (!region || !dist) {
+      tablaPnp.innerHTML = "";
+      return;
+    }
+
+    // Obtener subestaciones
+    const subs = DPNP.subestaciones_por_region_dist[region][dist] || [];
+
+    if (subs.length === 0) {
+      tablaPnp.innerHTML = "<p style='color:#666;'>Sin datos para esta combinación.</p>";
+      return;
+    }
+
+    // Construir tabla
+    const filas = subs.map(s => ({
+      subestacion: s.subestacion,
+      tension: s.tension_kv + " kV",
+      energia: s.energia_kwh,
+      potencia: s.potencia_kw,
+    }));
+
+    PW.tabla("tabla-pnp", [
+      { k: "subestacion", titulo: "Subestación", num: false },
+      { k: "tension", titulo: "Tensión", num: false },
+      { k: "energia", titulo: "Energía ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
+      { k: "potencia", titulo: "Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 0) },
+    ], filas, {});
+  });
 }
 </script>
 </body>
