@@ -156,7 +156,7 @@ PW.montarNav("costo.html");
   }
 
   PW.filtrosTerritorio("filtros-mapa", M.combustible, f => { filtroTerr = f; pintar(); },
-    `<label>Combustible <select id="f-comb">` +
+    `<label>Combustible <select id="f-comb"><option value="TODOS">Todos los combustibles</option>` +
     Object.entries(NOMBRES).map(([k, v]) => `<option value="${k}">${v}</option>`).join("") +
     `</select></label>
     <label>Marca <select id="f-marca"><option value="">Todas</option>` +
