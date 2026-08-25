@@ -96,7 +96,7 @@ PW.montarNav("costo.html");
   function pintar() {
     const c = document.getElementById("f-comb").value;
     const marca = document.getElementById("f-marca").value;
-    const ref = refs[c];
+    const ref = c === "TODOS" ? (refs["93"] + refs["95"] + refs["97"] + refs["DI"] + refs["GLP"]) / 5 : refs[c];
     function colorPrecio(p) {
       if (p == null) return PW.color("--ink-3");
       if (p < ref * 0.97) return PW.color("--good");
@@ -104,12 +104,14 @@ PW.montarNav("costo.html");
       return PW.color("--s1");
     }
     const comb = M.combustible.filter(p =>
-      p["p" + c] != null &&
+      (c === "TODOS" ? ["93", "95", "97", "DI", "GLP"].some(x => p["p" + x] != null) : p["p" + c] != null) &&
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com) &&
       (!marca || p.n === marca)
-    ).map(p => ({
-      lat: p.lat, lon: p.lon, color: colorPrecio(p["p" + c]), r: 4,
+    ).map(p => {
+      const precio = c === "TODOS" ? Math.min(...["93", "95", "97", "DI", "GLP"].map(x => p["p" + x]).filter(x => x != null)) : p["p" + c];
+      return {
+        lat: p.lat, lon: p.lon, color: colorPrecio(precio), r: 4,
       popup: `<b>${p.n || "Estación"}</b>` +
         (p.dir ? `<br>${p.dir}` : "") +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
@@ -118,7 +120,8 @@ PW.montarNav("costo.html");
           .map(x => `<br>${NOMBRES[x]}: <b>$${PW.fmt(p["p" + x])}</b>`).join("") +
         (p.f ? `<br><span style="opacity:.7">Precio vigente al ${p.f}</span>` : "") +
         PW.waze(p.lat, p.lon),
-    }));
+      };
+    });
     const ev = M.ev_precio.filter(p =>
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com)
