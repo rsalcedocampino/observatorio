@@ -124,7 +124,7 @@ PW.montarNav("costo.html");
       };
     });
     const ambos = M.ev_precio.filter(p =>
-      M.combustible.some(c => Math.abs(c.lat - p.lat) < 0.0001 && Math.abs(c.lon - p.lon) < 0.0001) &&
+      M.combustible.some(c => Math.abs(c.lat - p.lat) < 0.0001 && Math.abs(c.lon - p.lon) < 0.0001 && c.n === p.n) &&
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com)
     ).map(p => ({
@@ -138,7 +138,7 @@ PW.montarNav("costo.html");
         PW.waze(p.lat, p.lon),
     }));
     const ev = M.ev_precio.filter(p =>
-      !M.combustible.some(c => Math.abs(c.lat - p.lat) < 0.0001 && Math.abs(c.lon - p.lon) < 0.0001) &&
+      !M.combustible.some(c => Math.abs(c.lat - p.lat) < 0.0001 && Math.abs(c.lon - p.lon) < 0.0001 && c.n === p.n) &&
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com)
     ).map(p => ({
