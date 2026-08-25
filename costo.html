@@ -58,8 +58,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa de precios: combustible y carga pública</h2>
-    <p class="nota">Combustible coloreado contra el promedio país del tipo elegido (verde =
-    más barato, rojo = más caro). Los puntos de carga EV muestran su $/kWh publicado.</p>
+    <p class="nota">Azul: estación de combustible. Naranja: estación de combustible que además
+    tiene carga EV (homologada por ubicación y operador). Verde: cargador público con $/kWh
+    publicado. Haz clic en un punto para ver sus precios.</p>
     <div class="filtros" id="filtros-mapa"></div>
     <div id="mapa-precios"></div>
     <div id="ley-precios"></div>
@@ -93,57 +94,64 @@ PW.montarNav("costo.html");
   let filtroTerr = { rcut: null, com: null };
   let mapaP = null;
 
+  // Homologacion combustible <-> carga EV: mismo lugar (~200 m) y la marca de la estacion
+  // aparece en el operador o en el nombre del cargador (COPEC <-> "Copec"/"Copec Voltex").
+  const normTxt = s => (s || "").toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const evConComb = new Map();
+  const combConEV = new Set();
+  M.ev_precio.forEach(p => {
+    const est = M.combustible.find(c =>
+      c.n && Math.abs(c.lat - p.lat) < 0.002 && Math.abs(c.lon - p.lon) < 0.002 &&
+      (normTxt(p.op).includes(normTxt(c.n)) || normTxt(p.n).includes(normTxt(c.n))));
+    if (est) { evConComb.set(p, est); combConEV.add(est); }
+  });
+  const nomEV = p => (p.n && !/^\d+$/.test(p.n)) ? p.n : "Cargador " + (p.op || "EV");
+  const preciosComb = e => ["93", "95", "97", "DI", "GLP"].filter(x => e["p" + x] != null)
+    .map(x => `<br>${NOMBRES[x]}: <b>$${PW.fmt(e["p" + x])}</b>`).join("");
+
   function pintar() {
     const c = document.getElementById("f-comb").value;
     const marca = document.getElementById("f-marca").value;
     const ref = c === "TODOS" ? (refs["93"] + refs["95"] + refs["97"] + refs["DI"] + refs["GLP"]) / 5 : refs[c];
-    function colorPrecio(p) {
-      if (p == null) return PW.color("--ink-3");
-      if (p < ref * 0.97) return PW.color("--good");
-      if (p > ref * 1.03) return PW.color("--critical");
-      return PW.color("--s1");
-    }
+    const etiq = c === "TODOS" ? "Todos los combustibles" : NOMBRES[c];
     const comb = M.combustible.filter(p =>
       (c === "TODOS" ? ["93", "95", "97", "DI", "GLP"].some(x => p["p" + x] != null) : p["p" + c] != null) &&
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com) &&
-      (!marca || p.n === marca)
-    ).map(p => {
-      const precio = c === "TODOS" ? Math.min(...["93", "95", "97", "DI", "GLP"].map(x => p["p" + x]).filter(x => x != null)) : p["p" + c];
-      return {
-        lat: p.lat, lon: p.lon, color: "#3b82f6", r: 5,
-      popup: `<b>${p.n || "Estación de Combustible"}</b>` +
+      (!marca || p.n === marca) &&
+      !combConEV.has(p)
+    ).map(p => ({
+      lat: p.lat, lon: p.lon, color: "#3b82f6", r: 5,
+      popup: `<b>${p.n || "Estación de combustible"}</b>` +
         (p.dir ? `<br>${p.dir}` : "") +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
         (p.at ? `<br>Atencion: ${p.at}` : "") +
-        `<br><b>Combustibles:</b>` +
-        ["93", "95", "97", "DI", "GLP"].filter(x => p["p" + x] != null)
-          .map(x => `<br>● ${NOMBRES[x]}: $${PW.fmt(p["p" + x])}`).join("") +
+        `<br><b>Combustibles:</b>` + preciosComb(p) +
         (p.f ? `<br><span style="opacity:.7;font-size:0.9em">Vigente al ${p.f}</span>` : "") +
         PW.waze(p.lat, p.lon),
-      };
-    });
-    const ambos = M.ev_precio.filter(p =>
-      M.combustible.some(c => Math.abs(c.lat - p.lat) < 0.0001 && Math.abs(c.lon - p.lon) < 0.0001 && p.op === c.op) &&
+    }));
+    const ambos = [...evConComb.entries()].filter(([p, est]) =>
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
-      (!filtroTerr.com || p.com === filtroTerr.com)
-    ).map(p => ({
-      lat: p.lat, lon: p.lon, color: "#f97316", r: 8,
-      popup: `<b>${p.n || "Estación"}</b>` +
-        (p.dir ? `<br>${p.dir}` : "") +
+      (!filtroTerr.com || p.com === filtroTerr.com) &&
+      (!marca || est.n === marca)
+    ).map(([p, est]) => ({
+      lat: p.lat, lon: p.lon, color: "#f97316", r: 7,
+      popup: `<b>${est.n} — Combustible + Carga EV</b>` +
+        ((p.dir || est.dir) ? `<br>${p.dir || est.dir}` : "") +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
-        (p.op ? `<br>Operador: ${p.op}` : "") +
-        `<br><b>🔌 Carga EV: $${PW.fmt(p.pkwh)}/kWh</b> (${p.nc} conectores)` +
+        `<br><b>Combustibles:</b>` + preciosComb(est) +
+        `<br><b>Carga EV${p.op ? " (" + p.op + ")" : ""}:</b> $${PW.fmt(p.pkwh)}/kWh (${p.nc} conectores)` +
         (p.tipos ? `<br>Conectores: ${p.tipos}` : "") +
+        (est.f ? `<br><span style="opacity:.7;font-size:0.9em">Precio combustible vigente al ${est.f}</span>` : "") +
         PW.waze(p.lat, p.lon),
     }));
     const ev = M.ev_precio.filter(p =>
-      !M.combustible.some(c => Math.abs(c.lat - p.lat) < 0.0001 && Math.abs(c.lon - p.lon) < 0.0001 && p.op === c.op) &&
+      !evConComb.has(p) &&
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com)
     ).map(p => ({
       lat: p.lat, lon: p.lon, color: "#22c55e", r: 6,
-      popup: `<b>${p.n || "Cargador EV"}</b>` +
+      popup: `<b>${nomEV(p)}</b>` +
         (p.dir ? `<br>${p.dir}` : "") +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
         (p.op ? `<br>Operador: ${p.op}` : "") +
@@ -154,24 +162,23 @@ PW.montarNav("costo.html");
     if (mapaP) { mapaP.remove(); mapaP = null; }
     mapaP = PW.mapa("mapa-precios", {
       capas: [
-        { nombre: NOMBRES[c], puntos: comb },
+        { nombre: etiq, puntos: comb },
         { nombre: "Combustible + Carga EV", puntos: ambos },
-        { nombre: "Solo Carga EV", puntos: ev },
+        { nombre: "Solo carga EV", puntos: ev },
       ],
       centro: [-35.5, -71.5], zoom: 5,
     });
-    const todos = comb.concat(ev);
+    const todos = comb.concat(ambos, ev);
     if (mapaP && todos.length && (filtroTerr.rcut || filtroTerr.com)) {
       mapaP.fitBounds(L.latLngBounds(todos.map(p => [p.lat, p.lon])).pad(0.2), { animate: false });
     }
     document.getElementById("cont-mapa").textContent =
-      comb.length + " estaciones de combustible y " + ev.length + " puntos de carga mostrados. " +
-      "Promedio pais " + NOMBRES[c] + ": $" + PW.fmt(Math.round(ref)) + ".";
+      comb.length + " estaciones de combustible, " + ambos.length + " estaciones con combustible + carga EV y " +
+      ev.length + " cargadores mostrados. Promedio pais (" + etiq.toLowerCase() + "): $" + PW.fmt(Math.round(ref)) + ".";
     PW.leyendaMapa("ley-precios", [
-      [NOMBRES[c] + " bajo el promedio pais", PW.color("--good")],
-      ["En el promedio (±3%)", PW.color("--s1")],
-      ["Sobre el promedio", PW.color("--critical")],
-      ["Carga EV ($/kWh)", PW.color("--s2")],
+      ["Estación de combustible", "#3b82f6"],
+      ["Combustible + Carga EV", "#f97316"],
+      ["Solo carga EV (con precio publicado)", "#22c55e"],
     ]);
   }
 
