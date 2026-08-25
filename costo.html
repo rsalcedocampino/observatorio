@@ -112,6 +112,10 @@ PW.montarNav("costo.html");
   function pintar() {
     const c = document.getElementById("f-comb").value;
     const marca = document.getElementById("f-marca").value;
+    const tipo = document.getElementById("f-tipo").value;
+    const verComb = tipo === "TODOS" || tipo === "COMB";
+    const verAmbos = tipo === "TODOS" || tipo === "AMBOS";
+    const verEV = tipo === "TODOS" || tipo === "EV";
     const ref = c === "TODOS" ? (refs["93"] + refs["95"] + refs["97"] + refs["DI"] + refs["GLP"]) / 5 : refs[c];
     const etiq = c === "TODOS" ? "Todos los combustibles" : NOMBRES[c];
     const comb = M.combustible.filter(p =>
@@ -160,35 +164,48 @@ PW.montarNav("costo.html");
         PW.waze(p.lat, p.lon),
     }));
     if (mapaP) { mapaP.remove(); mapaP = null; }
+    const capas = [];
+    if (verComb) capas.push({ nombre: etiq, puntos: comb });
+    if (verAmbos) capas.push({ nombre: "Combustible + Carga EV", puntos: ambos });
+    if (verEV) capas.push({ nombre: "Solo carga EV", puntos: ev });
     mapaP = PW.mapa("mapa-precios", {
-      capas: [
-        { nombre: etiq, puntos: comb },
-        { nombre: "Combustible + Carga EV", puntos: ambos },
-        { nombre: "Solo carga EV", puntos: ev },
-      ],
+      capas,
       centro: [-35.5, -71.5], zoom: 5,
+      sinSelector: true,
     });
-    const todos = comb.concat(ambos, ev);
+    // sin recuadro de capas: el tipo de estacion se elige en los filtros de arriba
+    const ctl = document.querySelector("#mapa-precios .leaflet-control-layers");
+    if (ctl) ctl.remove();
+    const todos = capas.flatMap(k => k.puntos);
     if (mapaP && todos.length && (filtroTerr.rcut || filtroTerr.com)) {
       mapaP.fitBounds(L.latLngBounds(todos.map(p => [p.lat, p.lon])).pad(0.2), { animate: false });
     }
+    const partes = [];
+    if (verComb) partes.push(comb.length + " estaciones de combustible");
+    if (verAmbos) partes.push(ambos.length + " con combustible + carga EV");
+    if (verEV) partes.push(ev.length + " solo carga EV");
     document.getElementById("cont-mapa").textContent =
-      comb.length + " estaciones de combustible, " + ambos.length + " estaciones con combustible + carga EV y " +
-      ev.length + " cargadores mostrados. Promedio pais (" + etiq.toLowerCase() + "): $" + PW.fmt(Math.round(ref)) + ".";
-    PW.leyendaMapa("ley-precios", [
-      ["Estación de combustible", "#3b82f6"],
-      ["Combustible + Carga EV", "#f97316"],
-      ["Solo carga EV (con precio publicado)", "#22c55e"],
-    ]);
+      "Mostrando: " + partes.join(" · ") + ". Promedio pais (" + etiq.toLowerCase() + "): $" + PW.fmt(Math.round(ref)) + ".";
+    const ley = [];
+    if (verComb) ley.push(["Estación de combustible", "#3b82f6"]);
+    if (verAmbos) ley.push(["Combustible + Carga EV", "#f97316"]);
+    if (verEV) ley.push(["Solo carga EV (con precio publicado)", "#22c55e"]);
+    PW.leyendaMapa("ley-precios", ley);
   }
 
   PW.filtrosTerritorio("filtros-mapa", M.combustible, f => { filtroTerr = f; pintar(); },
-    `<label>Combustible <select id="f-comb"><option value="TODOS">Todos los combustibles</option>` +
+    `<label>Tipo de estación <select id="f-tipo">
+      <option value="TODOS">Todos</option>
+      <option value="COMB">Combustible</option>
+      <option value="AMBOS">Combustible + Carga EV</option>
+      <option value="EV">Solo carga EV</option>
+    </select></label>
+    <label>Combustible <select id="f-comb"><option value="TODOS">Todos los combustibles</option>` +
     Object.entries(NOMBRES).map(([k, v]) => `<option value="${k}">${v}</option>`).join("") +
     `</select></label>
     <label>Marca <select id="f-marca"><option value="">Todas</option>` +
     marcas.map(m => `<option>${m}</option>`).join("") + `</select></label>`);
-  ["f-comb", "f-marca"].forEach(id => document.getElementById(id).addEventListener("input", pintar));
+  ["f-tipo", "f-comb", "f-marca"].forEach(id => document.getElementById(id).addEventListener("input", pintar));
   pintar();
 })();
 const D = PW_DATA.costo;
