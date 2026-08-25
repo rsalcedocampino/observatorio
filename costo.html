@@ -111,14 +111,15 @@ PW.montarNav("costo.html");
     ).map(p => {
       const precio = c === "TODOS" ? Math.min(...["93", "95", "97", "DI", "GLP"].map(x => p["p" + x]).filter(x => x != null)) : p["p" + c];
       return {
-        lat: p.lat, lon: p.lon, color: colorPrecio(precio), r: 4,
-      popup: `<b>${p.n || "Estación"}</b>` +
+        lat: p.lat, lon: p.lon, color: "#3b82f6", r: 5,
+      popup: `<b>${p.n || "Estación de Combustible"}</b>` +
         (p.dir ? `<br>${p.dir}` : "") +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
         (p.at ? `<br>Atencion: ${p.at}` : "") +
+        `<br><b>Combustibles:</b>` +
         ["93", "95", "97", "DI", "GLP"].filter(x => p["p" + x] != null)
-          .map(x => `<br>${NOMBRES[x]}: <b>$${PW.fmt(p["p" + x])}</b>`).join("") +
-        (p.f ? `<br><span style="opacity:.7">Precio vigente al ${p.f}</span>` : "") +
+          .map(x => `<br>● ${NOMBRES[x]}: $${PW.fmt(p["p" + x])}`).join("") +
+        (p.f ? `<br><span style="opacity:.7;font-size:0.9em">Vigente al ${p.f}</span>` : "") +
         PW.waze(p.lat, p.lon),
       };
     });
