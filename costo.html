@@ -85,7 +85,7 @@ PW.montarNav("costo.html");
 (function () {
   const M = PW_DATA.mapa;
   const NOMBRES = { "93": "Bencina 93", "95": "Bencina 95", "97": "Bencina 97", "DI": "Diesel", "GLP": "GLP" };
-  const marcas = [...new Set(M.combustible.map(p => p.n).filter(Boolean))].sort();
+  const marcas = [...new Set(M.combustible.map(p => p.marca_norm || p.n).filter(Boolean))].sort();
   // promedio pais por combustible (desde los propios puntos)
   const refs = {};
   Object.keys(NOMBRES).forEach(c => {
@@ -124,15 +124,16 @@ PW.montarNav("costo.html");
   todosEV.forEach(p => {
     let mejor = null;
     M.combustible.forEach(c => {
-      if (!c.n) return;
+      const marcaEst = c.marca_norm || c.n;
+      if (!marcaEst) return;
       const d = distM(p, c);
       if (d > 400) return;
-      const marcaOk = normTxt(p.op).includes(normTxt(c.n)) || normTxt(p.n).includes(normTxt(c.n)) ||
-        normTxt(c.n).includes(normTxt(p.op) || "@@");
+      const marcaOk = normTxt(p.op).includes(normTxt(marcaEst)) || normTxt(p.n).includes(normTxt(marcaEst)) ||
+        normTxt(marcaEst).includes(normTxt(p.op) || "@@");
       let nivel = null;
       if (d <= 90) nivel = 1;
       else if (marcaOk && d <= 350) nivel = 2;
-      else if (d <= 250 && dirComun(p.dir, c.dir)) nivel = 3;
+      else if (d <= 250 && dirComun(p.dir, c.dir_norm || c.dir)) nivel = 3;
       if (nivel && (!mejor || nivel < mejor.nivel || (nivel === mejor.nivel && d < mejor.d))) {
         mejor = { est: c, nivel, d };
       }
@@ -156,11 +157,11 @@ PW.montarNav("costo.html");
       (c === "TODOS" ? ["93", "95", "97", "DI", "GLP"].some(x => p["p" + x] != null) : p["p" + c] != null) &&
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com) &&
-      (!marca || p.n === marca) &&
+      (!marca || (p.marca_norm || p.n) === marca) &&
       !combConEV.has(p)
     ).map(p => ({
       lat: p.lat, lon: p.lon, color: "#3b82f6", r: 5,
-      popup: `<b>${p.n || "Estación de combustible"}</b>` +
+      popup: `<b>${p.marca_norm || p.n || "Estación de combustible"}</b>` +
         (p.dir ? `<br>${p.dir}` : "") +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
         (p.at ? `<br>Atencion: ${p.at}` : "") +
@@ -171,10 +172,10 @@ PW.montarNav("costo.html");
     const ambos = [...evConComb.entries()].filter(([p, est]) =>
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com) &&
-      (!marca || est.n === marca)
+      (!marca || (est.marca_norm || est.n) === marca)
     ).map(([p, est]) => ({
       lat: p.lat, lon: p.lon, color: "#f97316", r: 7,
-      popup: `<b>${est.n} — Combustible + Carga EV</b>` +
+      popup: `<b>${est.marca_norm || est.n} — Combustible + Carga EV</b>` +
         ((p.dir || est.dir) ? `<br>${p.dir || est.dir}` : "") +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
         `<br><b>Combustibles:</b>` + preciosComb(est) +
