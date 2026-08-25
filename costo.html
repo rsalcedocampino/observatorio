@@ -122,12 +122,27 @@ PW.montarNav("costo.html");
         PW.waze(p.lat, p.lon),
       };
     });
-    const ev = M.ev_precio.filter(p =>
+    const ambos = M.ev_precio.filter(p =>
+      M.combustible.some(c => Math.abs(c.lat - p.lat) < 0.0001 && Math.abs(c.lon - p.lon) < 0.0001) &&
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com)
     ).map(p => ({
-      lat: p.lat, lon: p.lon, color: PW.color("--s2"), r: 6,
-      popup: `<b>${p.n || "Cargador"}</b>` +
+      lat: p.lat, lon: p.lon, color: "#f97316", r: 8,
+      popup: `<b>${p.n || "Estación"}</b>` +
+        (p.dir ? `<br>${p.dir}` : "") +
+        `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
+        (p.op ? `<br>Operador: ${p.op}` : "") +
+        `<br><b>🔌 Carga EV: $${PW.fmt(p.pkwh)}/kWh</b> (${p.nc} conectores)` +
+        (p.tipos ? `<br>Conectores: ${p.tipos}` : "") +
+        PW.waze(p.lat, p.lon),
+    }));
+    const ev = M.ev_precio.filter(p =>
+      !M.combustible.some(c => Math.abs(c.lat - p.lat) < 0.0001 && Math.abs(c.lon - p.lon) < 0.0001) &&
+      (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
+      (!filtroTerr.com || p.com === filtroTerr.com)
+    ).map(p => ({
+      lat: p.lat, lon: p.lon, color: "#22c55e", r: 6,
+      popup: `<b>${p.n || "Cargador EV"}</b>` +
         (p.dir ? `<br>${p.dir}` : "") +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
         (p.op ? `<br>Operador: ${p.op}` : "") +
@@ -139,7 +154,8 @@ PW.montarNav("costo.html");
     mapaP = PW.mapa("mapa-precios", {
       capas: [
         { nombre: NOMBRES[c], puntos: comb },
-        { nombre: "Carga EV con precio", puntos: ev },
+        { nombre: "Combustible + Carga EV", puntos: ambos },
+        { nombre: "Solo Carga EV", puntos: ev },
       ],
       centro: [-35.5, -71.5], zoom: 5,
     });
