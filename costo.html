@@ -94,16 +94,42 @@ PW.montarNav("costo.html");
   let filtroTerr = { rcut: null, com: null };
   let mapaP = null;
 
-  // Homologacion combustible <-> carga EV: mismo lugar (~200 m) y la marca de la estacion
-  // aparece en el operador o en el nombre del cargador (COPEC <-> "Copec"/"Copec Voltex").
+  // Homologacion combustible <-> carga EV, en 3 niveles (calibrada con las distancias reales
+  // entre ambas fuentes; el cargador puede tener otro operador que la estacion, p.ej. Enel X en Shell/Aramco):
+  //   1) <=90 m: mismo predio, cualquier operador (Aramco Chillan <-> Enel X a 89 m).
+  //   2) <=350 m y la marca de la estacion aparece en el operador/nombre del cargador (Copec <-> Copec).
+  //   3) <=250 m y las direcciones comparten calle/numero (Shell Vespucio 1501 <-> cargador Copec en el 1501).
+  // Cargadores de malls/calles a 200-400 m sin marca ni direccion comun NO se emparejan.
   const normTxt = s => (s || "").toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const DIR_STOP = new Set(["AVENIDA", "AVDA", "CALLE", "CAMINO", "RUTA", "KM", "SUR", "NORTE",
+    "ORIENTE", "PONIENTE", "ESQ", "ESQUINA", "LOCAL", "CHILE", "REGION", "METROPOLITANA", "LADO", "CON"]);
+  const toksDir = s => new Set(normTxt(s).replace(/[^A-Z0-9 ]/g, " ").split(/\s+/)
+    .filter(w => w.length >= 3 && !DIR_STOP.has(w)));
+  const dirComun = (a, b) => {
+    if (!a || !b) return false;
+    const ta = toksDir(a);
+    for (const t of toksDir(b)) if (ta.has(t)) return true;
+    return false;
+  };
+  const distM = (a, b) => Math.sqrt(Math.pow((a.lat - b.lat) * 111000, 2) + Math.pow((a.lon - b.lon) * 92000, 2));
   const evConComb = new Map();
   const combConEV = new Set();
   M.ev_precio.forEach(p => {
-    const est = M.combustible.find(c =>
-      c.n && Math.abs(c.lat - p.lat) < 0.002 && Math.abs(c.lon - p.lon) < 0.002 &&
-      (normTxt(p.op).includes(normTxt(c.n)) || normTxt(p.n).includes(normTxt(c.n))));
-    if (est) { evConComb.set(p, est); combConEV.add(est); }
+    let mejor = null;
+    M.combustible.forEach(c => {
+      if (!c.n) return;
+      const d = distM(p, c);
+      if (d > 400) return;
+      const marcaOk = normTxt(p.op).includes(normTxt(c.n)) || normTxt(p.n).includes(normTxt(c.n));
+      let nivel = null;
+      if (d <= 90) nivel = 1;
+      else if (marcaOk && d <= 350) nivel = 2;
+      else if (d <= 250 && dirComun(p.dir, c.dir)) nivel = 3;
+      if (nivel && (!mejor || nivel < mejor.nivel || (nivel === mejor.nivel && d < mejor.d))) {
+        mejor = { est: c, nivel, d };
+      }
+    });
+    if (mejor) { evConComb.set(p, mejor.est); combConEV.add(mejor.est); }
   });
   const nomEV = p => (p.n && !/^\d+$/.test(p.n)) ? p.n : "Cargador " + (p.op || "EV");
   const preciosComb = e => ["93", "95", "97", "DI", "GLP"].filter(x => e["p" + x] != null)
