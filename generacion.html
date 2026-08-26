@@ -66,6 +66,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota" id="nota-genmix"></p>
   </div>
 
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Factor de emisión de CO2 del sistema eléctrico</h2>
+    <p class="nota">Toneladas de CO2 por MWh generado (promedio anual ponderado por generación),
+    2010–2026. Antes de 2017 eran dos sistemas (SIC centro-hidro, SING norte-carbonero); desde 2017 el
+    SEN interconectado, en descenso. Fuente: CNE.</p>
+    <div id="g-co2"></div>
+    <div id="leg-co2" style="margin-top:8px"></div>
+    <p class="nota" id="nota-co2"></p>
+  </div>
+
   <div class="filtros">
     <label>Buscar
       <input type="search" id="busca" placeholder="Central o propietario...">
@@ -84,6 +94,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script src="data/generacion.js"></script>
 <script src="data/c_genmix.js"></script>
+<script src="data/c_co2.js"></script>
 <script src="assets/comun.js?v=260824a"></script>
 <script>
 PW.montarNav("generacion.html");
@@ -200,6 +211,33 @@ refrescar();
   if (i0 >= 0) g("nota-genmix").innerHTML =
     `Renovable: ${pct[i0]}% (${MX.anios[i0]}) → <b>${pct[ult]}%</b> (${MX.anios[ult]}). ` +
     `Total ${MX.anios[ult]}: ${PW.fmt(Math.round(MX.total[ult]))} GWh.`;
+})();
+
+// Factor de emisión de CO2 por sistema en el tiempo — desde c_co2.js
+(function () {
+  const CO = window.PW_DATA.c_co2;
+  if (!CO || !CO.series || !CO.series.length) return;
+  const COL = { "SEN": "--s2", "SIC": "--s1", "SING": "--critical" };
+  const col = s => PW.color(COL[s] || "--ink-3");
+  PW.lineas("g-co2", {
+    labels: CO.anios.map(String),
+    series: CO.series.map(s => ({ nombre: s.sistema, valores: s.valores, color: col(s.sistema) })),
+    alto: 260, min: 0,
+    fmtV: v => PW.fmt(v, 3) + " tCO2/MWh",
+    fmtY: v => PW.fmt(v, 2),
+  });
+  g("leg-co2").innerHTML = CO.series.map(s =>
+    `<span style="white-space:nowrap;margin-right:14px;font-size:12px">` +
+    `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${col(s.sistema)};margin-right:5px;vertical-align:middle"></span>${s.sistema}</span>`
+  ).join("");
+  const sen = CO.series.find(s => s.sistema === "SEN");
+  if (sen) {
+    const v = sen.valores, ai = CO.anios;
+    const i0 = v.findIndex(x => x != null);
+    const i1 = v.length - 1 - [...v].reverse().findIndex(x => x != null);
+    if (i0 >= 0) g("nota-co2").innerHTML =
+      `SEN: <b>${PW.fmt(v[i0], 3)}</b> tCO2/MWh (${ai[i0]}) → <b>${PW.fmt(v[i1], 3)}</b> (${ai[i1]}).`;
+  }
 })();
 
 g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
