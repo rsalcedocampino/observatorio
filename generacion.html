@@ -76,6 +76,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota" id="nota-co2"></p>
   </div>
 
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Generación distribuida (net billing)</h2>
+    <p class="nota" id="nota-gd">Autogeneración con Net Billing (Ley 21.118): techos solares y similares
+    que inyectan a la red. Fuente: SEC.</p>
+    <h3 style="margin:6px 0 6px;font-size:13.5px">Capacidad acumulada (MW)</h3>
+    <div id="g-gd-anio"></div>
+    <div class="fila2" style="margin-top:12px">
+      <div><h3 style="margin:2px 0 8px;font-size:13.5px">Por región (MW)</h3><div id="g-gd-reg"></div></div>
+      <div><h3 style="margin:2px 0 8px;font-size:13.5px">Por destino (MW)</h3><div id="g-gd-dest"></div></div>
+    </div>
+  </div>
+
   <div class="filtros">
     <label>Buscar
       <input type="search" id="busca" placeholder="Central o propietario...">
@@ -95,6 +107,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/generacion.js"></script>
 <script src="data/c_genmix.js"></script>
 <script src="data/c_co2.js"></script>
+<script src="data/c_gd.js"></script>
 <script src="assets/comun.js?v=260824a"></script>
 <script>
 PW.montarNav("generacion.html");
@@ -238,6 +251,30 @@ refrescar();
     if (i0 >= 0) g("nota-co2").innerHTML =
       `SEN: <b>${PW.fmt(v[i0], 3)}</b> tCO2/MWh (${ai[i0]}) → <b>${PW.fmt(v[i1], 3)}</b> (${ai[i1]}).`;
   }
+})();
+
+// Generación distribuida (net billing) — desde c_gd.js
+(function () {
+  const GD = window.PW_DATA.c_gd;
+  if (!GD || !GD.por_anio || !GD.por_anio.length) return;
+  const amber = PW.color("--s4");
+  if (GD.total) g("nota-gd").innerHTML =
+    `Autogeneración con Net Billing (Ley 21.118): techos solares y similares que inyectan a la red. ` +
+    `<b>${PW.fmt(GD.total.n_instalaciones)}</b> instalaciones, <b>${PW.fmt(Math.round(GD.total.potencia_kw / 1000))}</b> MW, ` +
+    `${PW.fmt(GD.total.pct_solar, 1)}% solar. Fuente: SEC.`;
+  PW.lineas("g-gd-anio", {
+    labels: GD.por_anio.map(x => String(x.anio)),
+    series: [{ nombre: "Capacidad acumulada", valores: GD.por_anio.map(x => x.kw_acum / 1000), color: amber }],
+    alto: 240, min: 0, fmtV: v => PW.fmt(v, 0) + " MW", fmtY: v => PW.fmt(v, 0),
+  });
+  PW.barras("g-gd-reg", {
+    items: GD.por_region.filter(r => r.region !== "(sin región)").map(r => ({ nombre: r.region, valor: r.kw / 1000 })),
+    color: amber, fmtV: v => PW.fmt(v, 1) + " MW",
+  });
+  PW.barras("g-gd-dest", {
+    items: GD.por_destino.map(d => ({ nombre: d.destino, valor: d.kw / 1000 })),
+    color: PW.color("--s3"), fmtV: v => PW.fmt(v, 1) + " MW",
+  });
 })();
 
 g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
