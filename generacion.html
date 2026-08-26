@@ -57,6 +57,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Generación por tecnología en el tiempo</h2>
+    <p class="nota">Generación eléctrica bruta anual por tecnología (GWh), 1996–2024: la transición
+    del sistema (caída del carbón y el diésel, auge de solar y eólica). Fuente: CNE, homologada.</p>
+    <div id="g-genmix"></div>
+    <div id="leg-genmix" style="margin-top:8px"></div>
+    <p class="nota" id="nota-genmix"></p>
+  </div>
+
   <div class="filtros">
     <label>Buscar
       <input type="search" id="busca" placeholder="Central o propietario...">
@@ -74,6 +83,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="fuente" id="fuente"></p>
 </main>
 <script src="data/generacion.js"></script>
+<script src="data/c_genmix.js"></script>
 <script src="assets/comun.js?v=260824a"></script>
 <script>
 PW.montarNav("generacion.html");
@@ -163,6 +173,33 @@ refrescar();
   const fmtMW = v => PW.fmt(Math.round(v)) + " MW";
   PW.barras("g-cap-tec", { items: suma(x => x.tecnologia || "—"), color: PW.color("--s6"), fmtV: fmtMW });
   PW.barras("g-cap-reg", { items: suma(x => canonReg(x.region)), color: PW.color("--s4"), fmtV: fmtMW });
+})();
+
+// Mix de generación por tecnología en el tiempo (GWh) — desde c_genmix.js
+(function () {
+  const MX = window.PW_DATA.c_genmix;
+  if (!MX || !MX.series || !MX.series.length) return;
+  const COL = {
+    "Solar FV + CSP": "--s4", "Eólica": "--s3", "Hidroelectricidad": "--s1",
+    "Gas Natural": "--s2", "Carbón": "--ink-2", "Petróleo": "--critical",
+    "Bioenergía": "--s6", "Geotérmica": "--s5", "Cogeneración": "--ink-3",
+  };
+  const col = t => PW.color(COL[t] || "--ink-3");
+  PW.lineas("g-genmix", {
+    labels: MX.anios.map(String),
+    series: MX.series.map(s => ({ nombre: s.nombre, valores: s.valores, color: col(s.nombre) })),
+    alto: 300, fmtV: v => PW.fmt(Math.round(v)) + " GWh",
+    fmtY: v => PW.fmt(Math.round(v / 1000)) + "k",
+  });
+  g("leg-genmix").innerHTML = MX.series.map(s =>
+    `<span style="white-space:nowrap;margin-right:12px;font-size:12px">` +
+    `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${col(s.nombre)};margin-right:5px;vertical-align:middle"></span>${s.nombre}</span>`
+  ).join("");
+  const pct = MX.renovable_pct || [], ult = MX.anios.length - 1;
+  const i0 = pct.findIndex(v => v != null);
+  if (i0 >= 0) g("nota-genmix").innerHTML =
+    `Renovable: ${pct[i0]}% (${MX.anios[i0]}) → <b>${pct[ult]}%</b> (${MX.anios[ult]}). ` +
+    `Total ${MX.anios[ult]}: ${PW.fmt(Math.round(MX.total[ult]))} GWh.`;
 })();
 
 g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
