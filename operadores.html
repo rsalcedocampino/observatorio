@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Ranking de operadores de carga — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260821b">
+<link rel="stylesheet" href="assets/estilo.css?v=260826a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -95,7 +95,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/operadores.js"></script>
 <script src="data/sitios.js"></script>
 <script src="data/mapa.js"></script>
-<script src="assets/comun.js?v=260824a"></script>
+<script src="assets/comun.js?v=260826a"></script>
 <script>
 PW.montarNav("operadores.html");
 
@@ -195,21 +195,37 @@ function refrescar() {
 }
 refrescar();
 
-// Marcas de cargador (equipamiento) homologadas
+// Marcas de cargador homologadas con su propio kit (Homologacion Marcas Cargador).
+// Se separan los FABRICANTES del equipo (ABB, Etrel, Infypower...) de la marca comercial
+// de un operador de red (Enel X pone su marca sobre equipos de terceros): son cosas
+// distintas y compararlas en el mismo ranking induce a error.
 (function () {
   const marcas = D.marcas_cargador || [];
   if (!marcas.length) { document.getElementById("g-marcas").textContent = "Sin dato de marca."; return; }
   const total = marcas.reduce((a, m) => a + m.cargadores, 0);
+  const fabricantes = marcas.filter(m => m.tipo !== "marca_operador");
+  const deOperador = marcas.filter(m => m.tipo === "marca_operador");
+  const base = fabricantes.length ? fabricantes : marcas;
+  const totalFab = base.reduce((a, m) => a + m.cargadores, 0);
   PW.barras("g-marcas", {
-    items: marcas.slice(0, 12).map(m => ({
+    items: base.slice(0, 12).map(m => ({
       nombre: m.marca, valor: m.cargadores,
-      extra: PW.pct(100 * m.cargadores / total) + " de la red",
+      extra: PW.pct(100 * m.cargadores / totalFab) + " de los equipos de fabricante" +
+             (m.pais ? " · " + m.pais : ""),
       color: PW.color("--s1"),
     })),
     fmtV: v => PW.fmt(v),
   });
-  document.getElementById("nota-marcas").textContent =
-    marcas.length + " marcas homologadas. " + PW.fmt(total) + " cargadores únicos con marca identificada.";
+  const nota = [
+    base.length + " fabricantes de equipo. " + PW.fmt(totalFab) + " cargadores únicos con fabricante identificado.",
+  ];
+  if (deOperador.length) {
+    nota.push("Aparte, " + PW.fmt(deOperador.reduce((a, m) => a + m.cargadores, 0)) +
+      " cargadores llevan la marca comercial de un operador (" +
+      deOperador.map(m => m.marca).join(", ") + "): el equipo lo fabrica un tercero.");
+  }
+  nota.push("Total con marca identificada: " + PW.fmt(total) + ".");
+  document.getElementById("nota-marcas").textContent = nota.join(" ");
 })();
 
 // ========== Datos de sitios (Top 20 comunas + Todas las comunas) ==========

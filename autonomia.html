@@ -27,7 +27,46 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Brechas de autonomía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260821b">
+<link rel="stylesheet" href="assets/estilo.css?v=260826a">
+<style>
+@media (max-width: 768px) {
+  .fila2 { grid-template-columns: 1fr !important; }
+  #mapa-dc { height: 320px !important; }
+  .tarjeta { padding: 12px !important; }
+  main > div > table { font-size: 12px !important; }
+}
+.kpi-info {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  background: var(--ink-3);
+  color: white;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: help;
+  margin-left: 4px;
+  position: relative;
+}
+.kpi-info:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink-0);
+  color: var(--ink-3);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: normal;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+</style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -45,7 +84,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   catálogo, para ver donde falta infraestructura para viajar.</p>
   <p class="nota" id="nota"></p>
 
-  <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">¿Buscas ubicaciones específicas de cargadores? → <a href="sitios.html" style="text-decoration:underline">Buscar cargador</a> | ¿Histórico de la capacidad instalada? → <a href="infraestructura.html" style="text-decoration:underline">Capacidad de carga instalada</a> (en sección Energía)</p>
+  <div style="margin:20px 0;padding:15px;background:var(--surface-2);border-radius:6px;max-width:860px">
+    <label style="display:block;margin-bottom:8px;font-weight:500">Filtrar por región:</label>
+    <select id="filtro-region" style="width:100%;max-width:300px;padding:8px;border:1px solid var(--ink-3);border-radius:4px;font-size:14px">
+      <option value="">Toda la red (nacional)</option>
+      <option value="Arica y Parinacota">Arica y Parinacota</option>
+      <option value="Tarapacá">Tarapacá</option>
+      <option value="Antofagasta">Antofagasta</option>
+      <option value="Atacama">Atacama</option>
+      <option value="Coquimbo">Coquimbo</option>
+      <option value="Valparaíso">Valparaíso</option>
+      <option value="Metropolitana">Metropolitana</option>
+      <option value="O'Higgins">O'Higgins</option>
+      <option value="Maule">Maule</option>
+      <option value="Ñuble">Ñuble</option>
+      <option value="Biobío">Biobío</option>
+      <option value="La Araucanía">La Araucanía</option>
+      <option value="Los Ríos">Los Ríos</option>
+      <option value="Los Lagos">Los Lagos</option>
+      <option value="Aysén">Aysén</option>
+      <option value="Magallanes">Magallanes</option>
+    </select>
+  </div>
+
+  <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">¿Buscas ubicaciones específicas de cargadores? → <a href="operadores.html" style="text-decoration:underline">Operadores y Sitios</a> | ¿Histórico de la capacidad instalada? → <a href="infraestructura.html" style="text-decoration:underline">Capacidad de carga instalada</a> (en sección Energía)</p>
 
   <div class="kpis" id="kpis"></div>
 
@@ -68,24 +130,95 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script src="data/c_autonomia.js"></script>
-<script src="assets/comun.js?v=260824a"></script>
+<script src="assets/comun.js?v=260826a"></script>
 <script>
+function initAut() {
+  if (typeof PW === "undefined") {
+    setTimeout(initAut, 100);
+    return;
+  }
+
 PW.montarNav("autonomia.html");
 const D = PW_DATA.c_autonomia;
 document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const K = D.kpis;
 document.getElementById("kpis").innerHTML = [
-  [K.estaciones_dc, "estaciones con carga rapida", "50 kW o mas"],
-  [PW.fmt(K.autonomia_p50) + " km", "autonomia mediana del catalogo", "p25: " + PW.fmt(K.autonomia_p25) + " km"],
-  [PW.fmt(K.rango_util_p25) + " km", "rango util conservador", "70% de la autonomia p25"],
-  [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada", D.brechas.length ? D.brechas[0].desde : ""],
+  [K.estaciones_dc, "estaciones con carga rapida <span class=\"kpi-info\" data-tooltip=\"Puntos de carga rápida: 50 kW o más\">ℹ</span>", "50 kW o mas"],
+  [PW.fmt(K.autonomia_p50) + " km", "autonomia mediana del catalogo <span class=\"kpi-info\" data-tooltip=\"Percentil 50: la mitad de vehículos llega más lejos\">ℹ</span>", "p25: " + PW.fmt(K.autonomia_p25) + " km"],
+  [PW.fmt(K.rango_util_p25) + " km", "rango util conservador <span class=\"kpi-info\" data-tooltip=\"70% del p25 para garantizar cobertura confiable incluso con envejecimiento de batería\">ℹ</span>", "70% de la autonomia p25"],
+  [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada <span class=\"kpi-info\" data-tooltip=\"Distancia más grande sin cargadores rápidos en corredor norte-sur\">ℹ</span>", D.brechas.length ? D.brechas[0].desde : ""],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
 const umbral = K.rango_util_p25;
-PW.mapa("mapa-dc", {
-  capas: [{
-    nombre: "Estaciones DC", puntos: D.puntos.map(p => ({
+let mapaRef = null;
+
+function calcularBrechaPorRegion() {
+  const brechasPorReg = {};
+  D.brechas.forEach(b => {
+    const pDesde = D.puntos.find(p => b.desde.includes(p.n));
+    const pHasta = D.puntos.find(p => b.hasta.includes(p.n));
+    if (pDesde && pHasta) {
+      const reg = pDesde.reg;
+      if (!brechasPorReg[reg]) brechasPorReg[reg] = 0;
+      brechasPorReg[reg] = Math.max(brechasPorReg[reg], b.km);
+    }
+  });
+  return brechasPorReg;
+}
+
+function colorPorBrecha(km, maxKm = 400) {
+  if (km === 0) return "#22c55e"; // verde
+  if (km < 100) return "#84cc16"; // lima
+  if (km < 200) return "#eab308"; // amarillo
+  if (km < 300) return "#f97316"; // naranja
+  return "#ef4444"; // rojo
+}
+
+function filtrarPorRegion() {
+  const regSel = document.getElementById("filtro-region").value;
+  const puntosFiltr = regSel ? D.puntos.filter(p => p.reg === regSel) : D.puntos;
+  const brechasFiltr = regSel ? D.brechas.filter(b => {
+    const pDesde = D.puntos.find(p => b.desde.includes(p.n));
+    const pHasta = D.puntos.find(p => b.hasta.includes(p.n));
+    return (pDesde && pDesde.reg === regSel) || (pHasta && pHasta.reg === regSel);
+  }) : D.brechas;
+
+  // Recalcular KPIs para región
+  const brechaPrinc = brechasFiltr.length ? brechasFiltr[0] : null;
+  const docKpis = document.getElementById("kpis");
+  docKpis.innerHTML = [
+    [puntosFiltr.length, "estaciones en region", regSel || "nacional"],
+    [puntosFiltr.length ? PW.fmt(brechasFiltr.length ? brechasFiltr[0].km : 0) + " km" : "—", "mayor brecha detectada", brechaPrinc ? brechaPrinc.desde.split("(")[0].trim().slice(-15) : ""],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  // Calcular brechas por región para heatmap
+  const brechasPorReg = calcularBrechaPorRegion();
+
+  // Recrear mapa
+  if (mapaRef) mapaRef.remove();
+
+  const capas = [];
+
+  // Capa de heatmap (regiones coloreadas)
+  if (!regSel) {
+    capas.push({
+      nombre: "Brechas por región",
+      puntos: Object.entries(brechasPorReg).map(([reg, km]) => {
+        const coord = PW_DATA.coords_region && PW_DATA.coords_region[reg] ? PW_DATA.coords_region[reg] : [-33, -71];
+        return {
+          lat: coord[0], lon: coord[1], r: 25,
+          color: colorPorBrecha(km),
+          popup: `<b>${reg}</b><br>Mayor brecha: ${PW.fmt(km)} km`,
+        };
+      }),
+    });
+  }
+
+  // Capa de puntos DC
+  capas.push({
+    nombre: regSel ? `Estaciones DC - ${regSel}` : "Estaciones DC",
+    puntos: puntosFiltr.map(p => ({
       lat: p.lat, lon: p.lon, r: 5,
       color: (p.nn_km || 0) > umbral ? PW.color("--critical") : PW.color("--s3"),
       popup: `<b>${p.n || "Estacion DC"}</b><br>${p.com}, ${p.reg}` +
@@ -93,27 +226,173 @@ PW.mapa("mapa-dc", {
         `<br>DC mas cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
         PW.waze(p.lat, p.lon),
     })),
-  }],
-  centro: [-33, -71], zoom: 4.5, alto: 460,
+  });
+
+  mapaRef = PW.mapa("mapa-dc", {
+    capas: capas,
+    centro: regSel && puntosFiltr.length ? [puntosFiltr[Math.floor(puntosFiltr.length/2)].lat, puntosFiltr[Math.floor(puntosFiltr.length/2)].lon] : [-33, -71],
+    zoom: regSel ? 7 : 4.5, alto: 460,
+    sinSelector: true,
+  });
+
+  // sin recuadro de capas: el filtro regional ya controla la vista
+  if (document.querySelector("#mapa-dc .leaflet-control-layers"))
+    document.querySelector("#mapa-dc .leaflet-control-layers").remove();
+
+  PW.leyendaMapa("ley-dc", [
+    ["Vecino DC dentro del rango util", PW.color("--s3")],
+    ["Aislada (vecino mas alla del rango)", PW.color("--critical")],
+    ...((!regSel) ? [
+      ["Brecha < 100 km", "#84cc16"],
+      ["Brecha 100-200 km", "#eab308"],
+      ["Brecha 200-300 km", "#f97316"],
+      ["Brecha > 300 km", "#ef4444"],
+    ] : []),
+  ]);
+
+  // Tablas filtradas
+  PW.tabla("t-brechas", [
+    { k: "desde", titulo: "Desde" },
+    { k: "hasta", titulo: "Hasta" },
+    { k: "km", titulo: "km", num: true, fmt: v => `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v)}</span>` },
+  ], brechasFiltr.slice(0, 20), { orden: "km" });
+
+  PW.tabla("t-puntos", [
+    { k: "n", titulo: "Estación" },
+    { k: "com", titulo: "Comuna" },
+    { k: "reg", titulo: "Región" },
+    { k: "kw", titulo: "kW", num: true, fmt: v => PW.fmt(v) },
+    { k: "nn_km", titulo: "DC mas cercano (km)", num: true, fmt: v => v == null ? "—" : `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
+  ], puntosFiltr, { orden: "nn_km", max: 300 });
+}
+
+// Listeners para tablas (re-attachear después de filtrar)
+function attachTableListeners() {
+  const umbral = K.rango_util_p25;
+  setTimeout(() => {  // Aumentado a 200ms para dar tiempo a PW.tabla() de renderizar
+    const rows = document.querySelectorAll("#t-brechas tbody tr");
+    if (rows.length === 0) return; // Si no hay filas, salir
+    rows.forEach((row, idx) => {
+      row.style.cursor = "pointer";
+      row.addEventListener("click", function tablaClickBrechas() {
+        const cells = row.querySelectorAll("td");
+        const kmCell = cells[2]?.textContent.trim();
+        if (!kmCell) return;
+
+        const km = parseFloat(kmCell.replace(/\s+/g, ''));
+        const regSel = document.getElementById("filtro-region").value;
+        const brechasFiltr = regSel ? D.brechas.filter(b => {
+          const pDesde = D.puntos.find(p => b.desde.includes(p.n));
+          const pHasta = D.puntos.find(p => b.hasta.includes(p.n));
+          return (pDesde && pDesde.reg === regSel) || (pHasta && pHasta.reg === regSel);
+        }) : D.brechas;
+        const brecha = brechasFiltr.find(b => Math.abs(b.km - km) < 0.1);
+
+        if (brecha && mapaRef) {
+          const pDesde = D.puntos.find(p => brecha.desde.includes(p.n));
+          const pHasta = D.puntos.find(p => brecha.hasta.includes(p.n));
+
+          if (pDesde && pHasta) {
+            if (mapaRef) mapaRef.remove();
+            mapaRef = PW.mapa("mapa-dc", {
+              capas: [{
+                nombre: "Brecha seleccionada",
+                puntos: [
+                  {
+                    lat: pDesde.lat, lon: pDesde.lon, r: 8,
+                    color: PW.color("--critical"),
+                    popup: `<b>${pDesde.n}</b><br>${pDesde.com}, ${pDesde.reg}<br>${PW.fmt(pDesde.kw)} kW`,
+                  },
+                  {
+                    lat: pHasta.lat, lon: pHasta.lon, r: 8,
+                    color: PW.color("--critical"),
+                    popup: `<b>${pHasta.n}</b><br>${pHasta.com}, ${pHasta.reg}<br>${PW.fmt(pHasta.kw)} kW`,
+                  }
+                ]
+              }],
+              centro: [(pDesde.lat + pHasta.lat) / 2, (pDesde.lon + pHasta.lon) / 2],
+              zoom: 6, alto: 460,
+              sinSelector: true,
+            });
+
+            // sin recuadro de capas
+            if (document.querySelector("#mapa-dc .leaflet-control-layers"))
+              document.querySelector("#mapa-dc .leaflet-control-layers").remove();
+
+            const bounds = L.latLngBounds([[pDesde.lat, pDesde.lon], [pHasta.lat, pHasta.lon]]);
+            mapaRef.fitBounds(bounds.pad(0.2), { animate: true });
+
+            row.style.backgroundColor = "var(--critical)";
+            row.style.color = "white";
+            setTimeout(() => {
+              row.style.backgroundColor = "";
+              row.style.color = "";
+            }, 3000);
+          }
+        }
+      });
+    });
+
+    document.querySelectorAll("#t-puntos tbody tr").forEach(row => {
+      row.style.cursor = "pointer";
+      row.addEventListener("click", function tablaClickPuntos() {
+        const cells = row.querySelectorAll("td");
+        const nombre = cells[0]?.textContent.trim();
+        if (!nombre) return;
+        const regSel = document.getElementById("filtro-region").value;
+        const puntosFiltr = regSel ? D.puntos.filter(p => p.reg === regSel) : D.puntos;
+        const p = puntosFiltr.find(pt => pt.n === nombre);
+
+        if (p && mapaRef) {
+          if (mapaRef) mapaRef.remove();
+          mapaRef = PW.mapa("mapa-dc", {
+            capas: [{
+              nombre: "Estación seleccionada",
+              puntos: [{
+                lat: p.lat, lon: p.lon, r: 10,
+                color: (p.nn_km || 0) > umbral ? PW.color("--critical") : PW.color("--s3"),
+                popup: `<b>${p.n}</b><br>${p.com}, ${p.reg}` +
+                  `<br>${PW.fmt(p.kw)} kW` +
+                  `<br>DC mas cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
+                  PW.waze(p.lat, p.lon),
+              }]
+            }],
+            centro: [p.lat, p.lon], zoom: 9, alto: 460,
+            sinSelector: true,
+          });
+
+          // sin recuadro de capas
+          if (document.querySelector("#mapa-dc .leaflet-control-layers"))
+            document.querySelector("#mapa-dc .leaflet-control-layers").remove();
+
+          mapaRef.flyTo([p.lat, p.lon], 11, { duration: 1 });
+
+          row.style.backgroundColor = "var(--s2)";
+          setTimeout(() => row.style.backgroundColor = "", 3000);
+        }
+      });
+    });
+  }, 200);
+}
+
+// Inicializar
+filtrarPorRegion();
+attachTableListeners();
+
+// Exponer funciones y datos globalmente para que el listener pueda usarlas
+window.filtrarPorRegionGlobal = filtrarPorRegion;
+window.attachTableListenersGlobal = attachTableListeners;
+window.D_GLOBAL = D;
+window.K_GLOBAL = K;
+
+// Event listener para cambios en filtro
+document.getElementById("filtro-region").addEventListener("change", () => {
+  window.filtrarPorRegionGlobal();
+  window.attachTableListenersGlobal();
 });
-PW.leyendaMapa("ley-dc", [
-  ["Vecino DC dentro del rango util", PW.color("--s3")],
-  ["Aislada (vecino mas alla del rango)", PW.color("--critical")],
-]);
 
-PW.tabla("t-brechas", [
-  { k: "desde", titulo: "Desde" },
-  { k: "hasta", titulo: "Hasta" },
-  { k: "km", titulo: "km", num: true, fmt: v => `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v)}</span>` },
-], D.brechas, { orden: "km" });
-
-PW.tabla("t-puntos", [
-  { k: "n", titulo: "Estación" },
-  { k: "com", titulo: "Comuna" },
-  { k: "reg", titulo: "Región" },
-  { k: "kw", titulo: "kW", num: true, fmt: v => PW.fmt(v) },
-  { k: "nn_km", titulo: "DC mas cercano (km)", num: true, fmt: v => v == null ? "—" : `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
-], D.puntos, { orden: "nn_km", max: 300 });
+}  // Cierre de initAut()
+initAut();
 </script>
 </body>
 </html>
