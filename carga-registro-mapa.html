@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0C4Z3N1KZJ');
+</script>
+<!-- End Google tag (gtag.js) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Registro Oficial de Carga (SEC) — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260827a">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <h1>Registro Oficial de Carga (SEC)</h1>
+  <p class="sub">Mapa del <b>registro oficial</b> de infraestructura de carga declarada a la SEC (reporte
+  EcoCarga), ubicado <b>estación por estación</b>. A diferencia del <a href="mapa-carga.html">mapa de la red
+  pública en vivo</a>, este incluye <b>todas las categorías</b>: pública, privada, electroterminales y
+  transporte público de buses. La comuna sale de la <b>geometría</b> (point-in-polygon contra los polígonos
+  comunales del Censo). Para los agregados por región y potencia ver
+  <a href="infraestructura.html">Capacidad de carga instalada</a>.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="filtros">
+    <label>Acceso <select id="f-ac"><option value="">Todos</option><option value="Red publica">Red pública</option><option value="No publica">No pública</option></select></label>
+    <label>Categoría <select id="f-cat"><option value="">Todas</option><option value="Publico">Pública</option><option value="Privado">Privada</option><option value="Electroterminal">Electroterminal (buses)</option><option value="Cargador de transporte publico">Transporte público (buses)</option><option value="Otros">Otros</option></select></label>
+    <label>Región <select id="f-reg"><option value="">Todas</option></select></label>
+    <label>Coropleta <select id="f-metrica"><option value="con">Conectores (todos)</option><option value="con_pub">Conectores públicos</option><option value="est">Estaciones</option></select></label>
+    <span class="pill" id="ambito"></span>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa del registro por estación</h2>
+    <div id="mapa-registro"></div>
+    <div id="leyenda-wrap" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px">
+      <span class="nota" style="margin:0">Color del punto por categoría:</span>
+      <div id="leyenda-mapa" class="leyenda" style="margin:0"></div>
+    </div>
+    <p class="nota">El fondo comunal (coropleta) colorea por la métrica elegida: <b>más oscuro = más</b>.
+    Los puntos se agrupan en clústeres al alejar; clic en una estación para ver categoría, acceso, operador,
+    comuna, cargadores y conectores. Los marcados <span class="pill">También en red pública en vivo</span>
+    cruzan con la red OCPI (por folio = exacto, o espacial = aproximado).</p>
+  </div>
+</main>
+<script src="data/geo_comunas.js"></script>
+<script src="data/carga_mapa.js"></script>
+<script src="assets/comun.js?v=260827a"></script>
+<script>
+PW.montarNav("carga-registro-mapa.html");
+const D = window.PW_DATA.carga_mapa || {};
+const PTS = (D.puntos || []).map(p => ({ ...p, lat: +p.lat, lon: +p.lon }))
+  .filter(p => !Number.isNaN(p.lat) && !Number.isNaN(p.lon));
+
+document.getElementById("nota").textContent =
+  "Fuente: registro SEC (reporte EcoCarga)" + (D.actualizacion ? ", snapshot " + D.actualizacion : "") +
+  ". Georreferenciación y comuna geográfica generadas " + (D.generado || "—") + ".";
+
+const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`;
+
+// color por categoria
+const COLC = {
+  "Publico": PW.color("--s2"),
+  "Privado": PW.color("--s5"),
+  "Electroterminal": PW.color("--s3"),
+  "Cargador de transporte publico": PW.color("--s4"),
+  "Otros": PW.color("--s6"),
+};
+const colorCat = c => COLC[c] || PW.color("--s6");
+
+// selects
+const selAc = document.getElementById("f-ac");
+const selCat = document.getElementById("f-cat");
+const selReg = document.getElementById("f-reg");
+const selMet = document.getElementById("f-metrica");
+const REG = {};
+PTS.forEach(p => { if (p.rcut) REG[p.rcut] = p.reg; });
+Object.entries(REG).sort((a, b) => (a[1] || "").localeCompare(b[1] || ""))
+  .forEach(([rc, nom]) => { const o = document.createElement("option"); o.value = rc; o.textContent = nom || rc; selReg.appendChild(o); });
+
+function filtrar() {
+  const ac = selAc.value, cat = selCat.value, rc = selReg.value;
+  return PTS.filter(p =>
+    (!ac || p.ac === ac) &&
+    (!cat || (cat === "Otros" ? !COLC[p.cat] || p.cat === "Otros" : p.cat === cat)) &&
+    (!rc || p.rcut === rc));
+}
+
+function popup(p) {
+  const L = [];
+  L.push(`<b>${PW.esc(p.n || "Estación")}</b>`);
+  L.push(`${PW.esc(p.cat || "—")} · <b>${PW.esc(p.ac || "—")}</b>`);
+  if (p.op) L.push(`Operador: ${PW.esc(p.op)}`);
+  L.push(`${PW.esc(p.com || "—")}${p.reg ? ", " + PW.esc(p.reg) : ""}`);
+  L.push(`${PW.fmt(p.ncar || 0)} cargadores · ${PW.fmt(p.nc || 0)} conectores`);
+  if (p.pub) L.push(`<span class="pill" style="margin-top:4px">También en red pública en vivo${p.mt ? " (" + PW.esc(p.mt) + ")" : ""}</span>`);
+  return L.join("<br>");
+}
+
+const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]);
+let mapa = null;
+function render() {
+  const pts = filtrar();
+  const rc = selReg.value, met = selMet.value;
+  const ambito = rc ? (REG[rc] || rc) : "todo el país";
+  document.getElementById("ambito").textContent = PW.fmt(pts.length) + " estaciones · " + ambito;
+
+  document.getElementById("kpis").innerHTML = [
+    [PW.fmt(pts.length), "estaciones", ambito],
+    [PW.fmt(pts.reduce((s, p) => s + (p.ncar || 0), 0)), "cargadores", "suma"],
+    [PW.fmt(pts.reduce((s, p) => s + (p.nc || 0), 0)), "conectores", "suma"],
+    [PW.fmt(pts.filter(p => p.ac === "Red publica").length), "de red pública", "acceso abierto"],
+  ].map(kpiHTML).join("");
+
+  const capas = [{
+    nombre: "Estaciones", visible: true, color: PW.color("--s2"),
+    puntos: pts.map(p => ({
+      lat: p.lat, lon: p.lon, r: 5, color: colorCat(p.cat),
+      tip: (p.n || "Estación") + " — " + (p.cat || ""),
+      popup: popup(p),
+    })),
+  }];
+
+  const valores = {};
+  Object.entries(D.comunas || {}).forEach(([cut, v]) => { valores[cut] = v[met]; });
+  const etq = { con: "conectores", con_pub: "conectores públicos", est: "estaciones" }[met];
+
+  const prev = mapa ? { c: mapa.getCenter(), z: mapa.getZoom() } : null;
+  if (mapa) { mapa.remove(); mapa = null; }
+  mapa = PW.mapa("mapa-registro", {
+    capas, sinSelector: true, alto: 560,
+    comunas: {
+      nombre: "Registro por comuna", visible: true, valores,
+      fmt: v => v == null ? "sin registro" : PW.fmt(v),
+      tip: (cut, nom, v) => `${nom}: ${v == null ? "sin registro" : PW.fmt(v) + " " + etq}`,
+    },
+    centro: prev ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3], zoom: prev ? prev.z : 5,
+  });
+  if (!prev) mapa.fitBounds(CHILE, { animate: false });
+  mapa.setMaxBounds(CHILE.pad(0.12));
+  mapa.options.maxBoundsViscosity = 1.0;
+  mapa.setMinZoom(mapa.getBoundsZoom(CHILE));
+}
+
+PW.leyendaMapa("leyenda-mapa", [
+  ["Pública", COLC["Publico"]],
+  ["Privada", COLC["Privado"]],
+  ["Electroterminal", COLC["Electroterminal"]],
+  ["Transporte público", COLC["Cargador de transporte publico"]],
+]);
+[selAc, selCat, selReg, selMet].forEach(s => s.addEventListener("input", render));
+render();
+</script>
+</body>
+</html>

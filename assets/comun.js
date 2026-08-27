@@ -28,6 +28,7 @@
       ["mapas.html", "Mapas Interactivos con Capas"],
       ["cargadores-cortes.html", "Cargadores Públicos y Cortes de Energía"],
       ["mapa-carga.html", "Infraestructura de Carga"],
+      ["carga-registro-mapa.html", "Registro Oficial de Carga (SEC)"],
     ]],
     ["Reporte Nacional", [
       ["tracker.html", "Meta 2035"],
@@ -156,6 +157,7 @@
   ICONOS["censo-proyectado.html"] = ICONOS["censo.html"];
   ICONOS["cargadores-cortes.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/><path d="M3 3l18 18"/>');
   ICONOS["mapa-carga.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>');
+  ICONOS["carga-registro-mapa.html"] = IC('<path d="M12 21s-6.5-5.6-6.5-10.4A6.5 6.5 0 0 1 12 4a6.5 6.5 0 0 1 6.5 6.6C18.5 15.4 12 21 12 21z"/><path d="M12.6 7.5L10 11.2h3l-.6 3 2.6-3.7h-3z"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
 
   // ---------- colaboradores (empresas / instituciones): banda de logos ARRIBA del pie.
@@ -1165,7 +1167,16 @@
       fila("Precio", precioTxt(p)) +
       fila("Horario", esc(p.hor)) +
       fila("Pago", esc(p.pago)) +
-      (p.ofi ? `<div class="pop-detalle">En registro oficial IRVE</div>` : "") +
+      // Procedencia registral precisa (269/274): OCPI y SEC son registros distintos; "ofi"
+      // (la union de ambos) queda solo como fallback para un payload viejo. "secf" indica si
+      // el flag SEC viene de la senal en linea (folio IRVE) o del catastro Excel de oct-2025.
+      (p.ocpi || p.sec
+        ? `<div class="pop-detalle">${[
+            p.ocpi ? "En feed OCPI de carga pública" : null,
+            p.sec ? "En registro SEC" + (p.secf === "excel2025" ? " (catastro oct-2025)"
+              : p.secf === "vivo" ? " (en línea)" : "") : null,
+          ].filter(Boolean).join(" · ")}</div>`
+        : (p.ofi ? `<div class="pop-detalle">En registro oficial IRVE</div>` : "")) +
       waze(p.lat, p.lon) +
       `</div>`;
   }
