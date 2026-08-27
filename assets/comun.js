@@ -1101,22 +1101,68 @@
     no_disponible: ["No disponible", "var(--ink-3)"],
     desconocido: ["Sin dato", "var(--ink-3)"],
   };
+  // Titular IRVE: quien registro la instalacion cuando NO hay operador de red detras
+  // (hotel, mall, municipalidad, universidad). NO es un operador: se etiqueta distinto.
+  const TITULAR_TXT = {
+    hotel: "Hotel", retail: "Comercio", universidad: "Universidad",
+    municipalidad: "Municipalidad", aeropuerto: "Aeropuerto",
+    estacionamiento: "Estacionamiento", edificio: "Edificio", empresa: "Empresa",
+    automotriz: "Automotriz", salud_educacion: "Salud / educación",
+  };
+  // Tarifa de la estacion. Se muestra POR CORRIENTE (p.tar = {AC: 315, DC: 395}) en vez de
+  // un unico numero: dentro de una estacion el precio cambia con el tipo de carga, y el
+  // promedio daba una tarifa que nadie cobra ($355 entre AC 315 y DC 395).
+  // Si la tarifa la aporto una fuente distinta de la que da el resto de los datos (el feed
+  // oficial no publica precio, asi que se completa desde Copec o Enel X), se dice de quien
+  // es: presentarla sin mas seria atribuirsela a la fuente equivocada.
+  function precioTxt(p) {
+    const cor = p.tar && Object.keys(p.tar);
+    if (!cor || !cor.length) {
+      return p.pkwh ? "$" + nf0.format(p.pkwh) + "/kWh" : null;
+    }
+    const orden = c => (c === "AC" ? 0 : c === "DC" ? 1 : 2);
+    const txt = cor.sort((a, b) => orden(a) - orden(b))
+      .map(c => (cor.length > 1 ? esc(c) + " " : "") + "$" + nf0.format(p.tar[c]) + "/kWh")
+      .join(" · ");
+    return txt + (p.pfte ? `<div class="pop-detalle">Tarifa informada por ${esc(p.pfte)}</div>` : "");
+  }
+
   function popupEstacion(p) {
-    const [estTxt, estColor] = ESTADO_TXT[p.est] || ["Sin dato", "var(--ink-3)"];
+    // `p.vivo === false` = la fuente de esta estacion NO publica estado en tiempo real (el
+    // registro del Ministerio es un catastro trimestral). Antes esto se mostraba como un
+    // "Sin dato" gris identico al de un cargador caido; ahora se dice cual es el caso.
+    const sinEstadoVivo = p.vivo === false && !p.est;
+    const [estTxt, estColor] = sinEstadoVivo
+      ? ["No informado", "var(--ink-3)"]
+      : (ESTADO_TXT[p.est] || ["Sin dato", "var(--ink-3)"]);
     const fila = (etq, val) => val
       ? `<div class="pop-linea"><span>${etq}</span><div>${val}</div></div>` : "";
     const conectores = p.nc
       ? (p.nc === 1 ? "1 conector" : p.nc + " conectores") +
         (p.tipos ? `<div class="pop-detalle">${esc(p.tipos)}</div>` : "")
       : null;
+    // Sin operador de red, se muestra el titular del IRVE en su propia fila.
+    const titular = !p.op && p.tit
+      ? esc(p.tit) + (TITULAR_TXT[p.titt] ? `<div class="pop-detalle">${TITULAR_TXT[p.titt]}</div>` : "")
+      : null;
     return `<div class="pop-est">` +
       `<div class="pop-titulo">${esc(p.n) || (p.op ? "Estación " + esc(p.op) : "Estación de carga")}</div>` +
       `<div class="pop-sub">${[esc(p.dir), [esc(p.com), esc(p.reg)].filter(Boolean).join(", ")].filter(Boolean).join("<br>")}</div>` +
       fila("Operador", esc(p.op)) +
+      fila("Titular IRVE", titular) +
+      // "Publico con restriccion" (267): la fuente viva la declara publica pero la SEC la
+      // tiene inscrita como privada (hotel, edificio, vina...). Es una ETIQUETA de
+      // despliegue: NO reclasifica `acceso` (los conteos publicos no cambian).
+      fila("Acceso", p.restr
+        ? "Público con restricción" +
+          (p.restrn ? `<div class="pop-detalle">Inscrito en el registro SEC como ${esc(p.restrn)}</div>` : "")
+        : null) +
       `<div class="pop-linea"><span>Estado</span><div><b style="color:${estColor}">${estTxt}</b></div></div>` +
+      (sinEstadoVivo
+        ? `<div class="pop-detalle">Esta fuente no publica estado en tiempo real</div>` : "") +
       fila("Potencia", p.kw ? nf0.format(p.kw) + " kW" + (p.cor ? " (" + esc(p.cor) + ")" : "") : null) +
       fila("Conectores", conectores) +
-      fila("Precio", p.pkwh ? "$" + nf0.format(p.pkwh) + "/kWh" : null) +
+      fila("Precio", precioTxt(p)) +
       fila("Horario", esc(p.hor)) +
       fila("Pago", esc(p.pago)) +
       (p.ofi ? `<div class="pop-detalle">En registro oficial IRVE</div>` : "") +
