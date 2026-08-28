@@ -204,6 +204,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </details>
 
     <details class="tarjeta seccion" open>
+      <summary>Cómo se mueve y con qué energía vive la región</summary>
+      <p class="nota" id="dist-sub" style="margin:8px 0 0"></p>
+      <div id="dist-movilidad" style="margin-top:10px"></div>
+      <div id="dist-energia" style="margin-top:6px"></div>
+    </details>
+
+    <details class="tarjeta seccion" open>
       <summary>Vulnerabilidad energética</summary>
       <div class="kpis" id="kpis-vulnerab" style="margin-top:10px"></div>
       <div id="t-vulnerab-altas" style="margin-top:10px"></div>
@@ -649,7 +656,7 @@ async function renderDossier(rcut, cut) {
   llenarProyeccion(ctx); llenarMeta(ctx); llenarParqueTrend(ctx);
   llenarEnergia(ctx); llenarCartera(ctx); llenarPelp(ctx);
   llenarResiliencia(ctx); llenarCenso(ctx);
-  llenarVivienda(ctx); llenarVulnerab(ctx); llenarMapa(ctx);
+  llenarVivienda(ctx); llenarDistribuciones(ctx); llenarVulnerab(ctx); llenarMapa(ctx);
   document.getElementById("reco").innerHTML = construirRecos(ctx).map(r => `<li>${r}</li>`).join("");
   const secComunas = document.getElementById("sec-comunas");
   if (nivelComuna) { secComunas.style.display = "none"; }
@@ -824,6 +831,63 @@ function llenarVivienda(ctx) {
     [PW.fmt(rec.pct_tenencia_propia, 1) + "%", "vivienda propia", PW.fmt(rec.pct_deficit_cuantitativo, 1) + "% de déficit cuantitativo"],
     [PW.fmt(rec.pct_casa, 1) + "%", "viviendas tipo casa", PW.fmt(rec.pct_departamento, 1) + "% departamentos"],
   ]);
+}
+
+// Composicion de movilidad y energia del hogar (Censo 2024, dist_region).
+// El dato es REGIONAL (el Censo no publica estas distribuciones por comuna), asi que en
+// modo comuna se muestra el de SU region y se dice explicitamente -- no se inventa el dato
+// comunal ni se oculta la seccion. Solo se traen los ambitos Movilidad y Energia: el resto
+// de las 19 variables (materialidad, estado conyugal...) no aporta al foco del sitio.
+const DIST_VARS = [
+  { id: "medio_transporte", titulo: "Cómo llega la gente al trabajo", cont: "dist-movilidad",
+    destacar: ["Auto particular", "Bicicleta o scooter"] },
+  { id: "fuente_electricidad", titulo: "De dónde viene la electricidad de la vivienda", cont: "dist-energia",
+    destacar: ["Panel solar", "Eólica"] },
+  { id: "combustible_calefaccion", titulo: "Con qué se calefacciona", cont: "dist-energia",
+    destacar: ["Electricidad"] },
+];
+
+function llenarDistribuciones(ctx) {
+  const CN = window.PW_DATA && PW_DATA.censo;
+  const dist = CN && CN.dist_region && CN.dist_region[ctx.rcut];
+  const meta = (CN && CN.dist_meta) || [];
+  const sub = document.getElementById("dist-sub");
+  const contMov = document.getElementById("dist-movilidad");
+  const contEne = document.getElementById("dist-energia");
+  contMov.innerHTML = ""; contEne.innerHTML = "";
+  if (!dist || !meta.length) {
+    sub.textContent = "Sin distribuciones del Censo para este territorio.";
+    return;
+  }
+  sub.textContent = "Censo 2024 (INE). Dato regional" +
+    (ctx.nivelComuna
+      ? " — se muestra el de " + (ctx.regNombre || "la región") + ", no el de la comuna: el Censo no " +
+        "publica estas distribuciones a nivel comunal."
+      : (ctx.regNombre ? " de " + ctx.regNombre + "." : "."));
+
+  DIST_VARS.forEach(v => {
+    const m = meta.find(x => x.id === v.id);
+    const vals = dist[v.id];
+    if (!m || !vals) return;
+    const cont = document.getElementById(v.cont);
+    const h = document.createElement("h3");
+    h.style.cssText = "margin:14px 0 2px; font-size:15px";
+    h.textContent = v.titulo;
+    cont.appendChild(h);
+    const box = document.createElement("div");
+    cont.appendChild(box);
+    // De mayor a menor, ocultando las categorias residuales (<0,3%): el grafico debe mostrar
+    // la estructura real del territorio, no una fila de ceros.
+    const items = m.cats.map((c, i) => ({ nombre: c, valor: vals[i] || 0 }))
+      .filter(x => x.valor >= 0.3)
+      .sort((a, b) => b.valor - a.valor)
+      .map(x => ({
+        nombre: x.nombre, valor: x.valor,
+        extra: PW.fmt(x.valor, 1) + "% de los casos",
+        color: v.destacar.includes(x.nombre) ? PW.color("--s1") : PW.color("--ink-3"),
+      }));
+    PW.barras(box, { items: items, fmtV: x => PW.fmt(x, 1) + "%" });
+  });
 }
 
 function llenarVulnerab(ctx) {
