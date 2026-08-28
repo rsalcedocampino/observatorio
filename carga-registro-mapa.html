@@ -169,6 +169,9 @@ function render() {
   mapa.setMaxBounds(CHILE.pad(0.12));
   mapa.options.maxBoundsViscosity = 1.0;
   mapa.setMinZoom(mapa.getBoundsZoom(CHILE));
+  // quitar el recuadro de capas de Leaflet (a pedido del usuario, como en autonomia/costo). Se re-aplica
+  // en cada render porque el mapa se reconstruye al cambiar de filtro; puntos y coropleta quedan siempre visibles.
+  mapa.getContainer().querySelectorAll(".leaflet-control-layers").forEach(e => e.remove());
 }
 
 PW.leyendaMapa("leyenda-mapa", [
