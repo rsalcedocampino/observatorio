@@ -70,6 +70,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <div class="tarjeta">
+      <h2 style="margin-top:0">¿A cuánto está la 93 en tu comuna?</h2>
+      <p class="nota">Precio por región y comuna, y cómo se ha movido en el tiempo. Elige
+      "Precio de hoy" para ver estación por estación, o una fecha de la serie para el detalle
+      de esa captura. Fuente: CNE, Bencina en Línea.</p>
+      <div class="filtros" id="b93-filtros">
+        <label>Región <select id="b93-reg"><option value="">Todo el país</option></select></label>
+        <label>Comuna <select id="b93-com"><option value="">Todas</option></select></label>
+        <label>Fecha <select id="b93-fecha"><option value="">Precio de hoy</option></select></label>
+      </div>
+      <div class="kpis" id="b93-kpis"></div>
+      <div id="b93-grafico"></div>
+      <p class="nota" id="b93-pie"></p>
+      <div id="b93-tabla"></div>
+    </div>
+
+    <div class="tarjeta">
       <h2 style="margin-top:0">Capturas de precio bencina 93 (promedio país)</h2>
       <div id="t-capturas"></div>
       <p class="nota">La regresion participación~precio con rezagos 0-6 meses se activará
@@ -132,6 +148,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/c_elasticidad.js"></script>
 <script src="data/c_elasticidad_tarifas.js"></script>
 <script src="data/c_elasticidad_tarifas_pnp.js"></script>
+<script src="data/combustible.js"></script>
+<script src="data/c_bencina93_serie.js"></script>
 <script src="assets/comun.js?v=260827a"></script>
 <script>
 // Navegación de tabs
@@ -164,6 +182,125 @@ PW.tabla("t-capturas", [
   { k: "captura", titulo: "Fecha de captura" },
   { k: "p93", titulo: "Bencina 93 promedio pais", num: true, fmt: v => PW.clp(v) + "/L" },
 ], D.capturas_p93, {});
+
+// TAB 1b: buscador de la 93 por region/comuna/fecha (CAMBIOS 217).
+// Dos fuentes con roles distintos, por eso conviven:
+//   combustible.js       = FOTO de hoy, estacion por estacion (permite la tabla con marca/direccion)
+//   c_bencina93_serie.js = SERIE por fecha, ya agregada a {n,min,prom,max} por region y comuna
+// Degrada con gracia: sin la serie el buscador queda solo con el precio de hoy.
+(function () {
+  const EST = (window.PW_DATA && PW_DATA.combustible && PW_DATA.combustible.estaciones || [])
+    .filter(e => e.p93 != null);
+  const S = window.PW_DATA && PW_DATA.c_bencina93_serie;
+  const cont = document.getElementById("b93-filtros");
+  if (!EST.length && !S) { cont.parentElement.style.display = "none"; return; }
+
+  const selReg = document.getElementById("b93-reg");
+  const selCom = document.getElementById("b93-com");
+  const selFecha = document.getElementById("b93-fecha");
+
+  // Indice comuna -> entrada de la serie (la serie keyea por CUT; la foto de hoy, por nombre).
+  const porComuna = (S && S.por_comuna) || {};
+  const cutDeComuna = {};
+  Object.entries(porComuna).forEach(([cut, v]) => { if (v && v.comuna) cutDeComuna[v.comuna] = cut; });
+
+  const regiones = [...new Set(EST.map(e => e.region).filter(Boolean))].sort();
+  regiones.forEach(r => { const o = document.createElement("option"); o.value = r; o.textContent = r; selReg.appendChild(o); });
+  ((S && S.fechas) || []).slice().reverse().forEach(f => {
+    const o = document.createElement("option"); o.value = f; o.textContent = f; selFecha.appendChild(o);
+  });
+
+  function poblarComunas() {
+    const r = selReg.value;
+    const coms = [...new Set(EST.filter(e => !r || e.region === r).map(e => e.comuna).filter(Boolean))].sort();
+    selCom.innerHTML = '<option value="">Todas</option>' +
+      coms.map(c => `<option value="${PW.esc(c)}">${PW.esc(c)}</option>`).join("");
+  }
+
+  // Estadistica del ambito elegido: de la SERIE si hay fecha, si no de la foto de hoy.
+  function stats() {
+    const r = selReg.value, c = selCom.value, f = selFecha.value;
+    if (f && S) {
+      const nodo = c ? (porComuna[cutDeComuna[c]] || {}).serie : (r ? (S.por_region || {})[r] : null);
+      if (nodo && nodo[f]) return Object.assign({}, nodo[f], { fuente: "serie" });
+      if (!r && !c) {  // pais: agrega las regiones de esa fecha ponderando por n
+        const ns = Object.values(S.por_region || {}).map(x => x[f]).filter(Boolean);
+        if (!ns.length) return null;
+        const n = ns.reduce((a, x) => a + x.n, 0);
+        return { n: n, min: Math.min(...ns.map(x => x.min)), max: Math.max(...ns.map(x => x.max)),
+                 prom: Math.round(ns.reduce((a, x) => a + x.prom * x.n, 0) / (n || 1)), fuente: "serie" };
+      }
+      return null;
+    }
+    const v = EST.filter(e => (!r || e.region === r) && (!c || e.comuna === c)).map(e => e.p93);
+    if (!v.length) return null;
+    return { n: v.length, min: Math.min(...v), max: Math.max(...v),
+             prom: Math.round(v.reduce((a, b) => a + b, 0) / v.length), fuente: "hoy" };
+  }
+
+  function pintar() {
+    const r = selReg.value, c = selCom.value, f = selFecha.value;
+    const ambito = c || r || "todo el país";
+    const st = stats();
+    const cuando = f ? "captura del " + f : "precio de hoy";
+
+    document.getElementById("b93-kpis").innerHTML = st ? [
+      [PW.clp(st.prom) + "/L", "precio promedio", ambito + " · " + cuando],
+      [PW.clp(st.min) + "/L", "la más barata", st.n + (st.n === 1 ? " estación" : " estaciones")],
+      [PW.clp(st.max) + "/L", "la más cara", "diferencia de " + PW.clp(st.max - st.min) + "/L"],
+    ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${PW.esc(d[2])}</div></div>`).join("")
+      : `<p class="nota">Sin dato de bencina 93 para ${PW.esc(ambito)}${f ? " en la captura del " + f : ""}.</p>`;
+
+    // Evolucion en el tiempo del ambito elegido (siempre la serie completa, no una fecha).
+    const nodo = S && (c ? (porComuna[cutDeComuna[c]] || {}).serie : (r ? (S.por_region || {})[r] : null));
+    const gr = document.getElementById("b93-grafico");
+    if (nodo && S.fechas && S.fechas.length > 1) {
+      const vals = S.fechas.map(x => nodo[x] || null);
+      // Eje acotado al rango real con 5% de aire: con base 0 la variacion mensual
+      // (decenas de pesos sobre ~1.400) se aplana y el grafico no dice nada.
+      const todos = vals.filter(Boolean).flatMap(v => [v.min, v.max]);
+      const lo = Math.min(...todos), hi = Math.max(...todos);
+      const aire = Math.max(20, (hi - lo) * 0.05);
+      PW.lineas("b93-grafico", {
+        labels: S.fechas,
+        series: [
+          { nombre: "Máximo", valores: vals.map(v => v && v.max), color: PW.color("--critical") },
+          { nombre: "Promedio", valores: vals.map(v => v && v.prom), color: PW.color("--s1") },
+          { nombre: "Mínimo", valores: vals.map(v => v && v.min), color: PW.color("--good") },
+        ],
+        alto: 240, min: Math.floor(lo - aire), max: Math.ceil(hi + aire), fmt: v => PW.clp(v),
+      });
+      document.getElementById("b93-pie").textContent =
+        "Evolución en " + ambito + ": " + S.fechas.length + " capturas entre " +
+        S.fechas[0] + " y " + S.fechas[S.fechas.length - 1] + ".";
+    } else {
+      gr.innerHTML = "";
+      document.getElementById("b93-pie").textContent = S
+        ? "Elige una región o comuna para ver su evolución en el tiempo."
+        : "";
+    }
+
+    // Estacion por estacion: solo tiene sentido con la foto de hoy (la serie viene agregada).
+    const tb = document.getElementById("b93-tabla");
+    if (!f && (r || c)) {
+      const filas = EST.filter(e => (!r || e.region === r) && (!c || e.comuna === c))
+        .map(e => ({ estacion: e.estacion, marca: e.marca, comuna: e.comuna, p93: e.p93 }));
+      PW.tabla("b93-tabla", [
+        { k: "estacion", titulo: "Estación" },
+        { k: "marca", titulo: "Marca" },
+        { k: "comuna", titulo: "Comuna" },
+        { k: "p93", titulo: "Bencina 93", num: true, fmt: v => PW.clp(v) + "/L" },
+      ], filas, { orden: "p93", asc: true });
+    } else {
+      tb.innerHTML = "";
+    }
+  }
+
+  selReg.addEventListener("input", () => { poblarComunas(); pintar(); });
+  [selCom, selFecha].forEach(s => s.addEventListener("input", pintar));
+  poblarComunas();
+  pintar();
+})();
 
 // TAB 2: Tarifas Electricidad
 if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas) {
