@@ -141,6 +141,12 @@ function render() {
   mapa.setMaxBounds(CHILE.pad(0.12));
   mapa.options.maxBoundsViscosity = 1.0;
   mapa.setMinZoom(mapa.getBoundsZoom(CHILE));
+  // [BATCH 3] auto-encuadre con región elegida: encuadra los puntos filtrados. Esta página
+  // NO carga geo_comunas (4 MB) así que no se usa PW.fitTerritorio; los puntos bastan y
+  // el render ya corre en cada cambio de filtro (sin listeners extra ni referencias muertas).
+  if (rc && pts.length) {
+    mapa.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.15), { animate: false });
+  }
 }
 
 PW.leyendaMapa("leyenda-mapa", [["DC (rápida)", COL_DC], ["AC", COL_AC]]);
