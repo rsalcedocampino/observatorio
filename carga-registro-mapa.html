@@ -117,6 +117,7 @@ function filtrar() {
 function popup(p) {
   const L = [];
   L.push(`<b>${PW.esc(p.n || "Estación")}</b>`);
+  if (p.dir) L.push(PW.esc(p.dir));
   L.push(`${PW.esc(p.cat || "—")} · <b>${PW.esc(p.ac || "—")}</b>`);
   if (p.op) L.push(`Operador: ${PW.esc(p.op)}`);
   L.push(`${PW.esc(p.com || "—")}${p.reg ? ", " + PW.esc(p.reg) : ""}`);
