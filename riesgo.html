@@ -433,6 +433,17 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
   }
   pintarToggleCortes();
   renderMapaCortes();
+  // [BATCH 3] auto-encuadre al territorio al cambiar región/comuna. Listener propio que
+  // cierra sobre la VARIABLE mapaCortes (siempre viva tras cada rebuild por toggle de capas);
+  // pasar la instancia a un helper la dejaría muerta al primer renderMapaCortes().
+  ["f-region", "f-comuna"].forEach(id => {
+    const s = document.getElementById(id);
+    if (s) s.addEventListener("change", () => {
+      const rcut = document.getElementById("f-region").value || null;
+      const com = document.getElementById("f-comuna").value || null;
+      if (mapaCortes && (rcut || com)) PW.fitTerritorio(mapaCortes, { rcut: rcut, com: com });
+    });
+  });
 })();
 
 // ============================================================
