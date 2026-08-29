@@ -496,7 +496,8 @@ function pintarContador(ind) {
   document.getElementById("ley-encoding").innerHTML =
     "Tamaño del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
     (transVis && totNew ? "Líneas nuevas (KMZ 2019): " + PW.fmt(totNew) + " (complemento de voltaje + ausentes del troncal IDE). " : "") +
-    (on("mt") || on("bt") ? "Red de distribución CGE: MT (media tensión) en violeta, BT (baja tensión) en rosado; por comuna (MT también por región). " : "") +
+    (on("mt") || on("bt") ? "Red de distribución (GIS de la SEC, todas las distribuidoras): MT (media tensión) en violeta, BT (baja tensión) en rosado; por comuna (MT también por región). " : "") +
+    (on("postes") ? "Postes de distribución: cobertura PARCIAL, no nacional (" + PW.fmt(Object.values(POSTES_IDX).filter(o => o.n > 0).length) + " de 346 comunas) — la SEC no publica postes; vienen de registros propios de cada distribuidora. " : "") +
     (!ind ? "Telón de fondo comunal apagado (elígelo en el selector para colorear las comunas)."
       : FUENTE_IND[ind] === "dist"
       ? "Distribución SEC: fondo azul, más oscuro = más kilómetros de red " + (ind === "km_bt" ? "BT (baja tensión)" : "MT (media tensión)") + " en la comuna (GIS de la SEC, todas las distribuidoras)."
