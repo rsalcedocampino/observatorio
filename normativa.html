@@ -157,9 +157,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Timeline de medidas de la Estrategia (2026-2030)</h2>
-    <p class="nota">Las medidas con año de término comprometido se concentran en 2027-2029 y se apagan
-    en 2030: <b>no hay ninguna medida nueva programada para 2031-2035</b>, justo el tramo final hacia la
-    meta.</p>
+    <p class="nota">La propia Estrategia fija la meta de <b>100% de ventas cero emisiones al 2035</b>
+    (y 100% del transporte público urbano al 2035), pero sus 26 medidas con año comprometido se concentran
+    en 2027-2029 y se apagan en 2030: <b>ninguna tiene hito en 2031-2035</b> — justo la década en que las
+    ventas deben pasar de ~20% a 100%. No es que la Estrategia termine antes de la meta: declara el 2035
+    y no lo calendariza.</p>
     <div class="tl-leyenda" id="tl-leyenda"></div>
     <div class="tl-chart" id="tl-chart"></div>
     <div class="tl-detalle" id="tl-detalle"></div>
@@ -511,7 +513,7 @@ function pintarDetalle(a) {
   if (a === "__vacio") {
     tlDetalle.className = "tl-detalle vacio";
     tlDetalle.innerHTML = `<h4>2031-2035 · sin medidas nuevas</h4>` +
-      `<p class="cap">La Estrategia no programa ninguna medida con término en el tramo final hacia la meta 2035. El plan de implementación debería extender medidas a estos años con hitos anuales de ventas y de despliegue de carga.</p>`;
+      `<p class="cap">La Estrategia declara la meta de <b>100% de ventas cero emisiones al 2035</b> pero no programa ninguna medida con término en esa década: describe el 2035 como visión y no lo instrumenta. El plan de implementación debería extender medidas a 2031-2035 con hitos anuales de ventas y de despliegue de carga.</p>`;
     return;
   }
   const esSF = a === "s/f";
