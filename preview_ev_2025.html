@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview EV 2025 Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        h1 { color: #333; border-bottom: 3px solid #0066cc; padding-bottom: 10px; }
+        .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
+        .kpi { background: #e8f4f8; padding: 15px; border-left: 4px solid #0066cc; border-radius: 4px; }
+        .kpi-valor { font-size: 24px; font-weight: bold; color: #0066cc; }
+        .kpi-label { font-size: 12px; color: #666; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { background: #0066cc; color: white; padding: 12px; text-align: left; }
+        td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
+        tr:hover { background: #f9f9f9; }
+        .region-header { font-weight: bold; color: #0066cc; }
+        .data-row { text-align: right; }
+        .section { margin: 30px 0; }
+        .note { background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; border-radius: 4px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Stock de Vehículos Eléctricos 2025 (Proyectado)</h1>
+
+        <div class="section">
+            <h2>Indicadores Clave</h2>
+            <div class="kpis">
+                <div class="kpi">
+                    <div class="kpi-valor">33.853</div>
+                    <div class="kpi-label">Stock 2024 (REAL)</div>
+                    <div style="font-size: 11px; color: #999;">INE Permisos Circulación</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-valor">69.596</div>
+                    <div class="kpi-label">Stock 2025 (PROYECTADO)</div>
+                    <div style="font-size: 11px; color: #999;">Crecimiento 105.6%</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-valor">+35.743</div>
+                    <div class="kpi-label">Incremento Esperado</div>
+                    <div style="font-size: 11px; color: #999;">Base crecimiento 2023-2024</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-valor">16</div>
+                    <div class="kpi-label">Regiones Cubiertas</div>
+                    <div style="font-size: 11px; color: #999;">Homologadas a CUT</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Tabla 1: Stock de EVs 2024-2025 por Región</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Región</th>
+                        <th style="text-align: right;">Stock 2024 (REAL)</th>
+                        <th style="text-align: right;">Stock 2025 (PROYECTADO)</th>
+                        <th style="text-align: right;">Incremento</th>
+                        <th style="text-align: right;">Crecimiento %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="region-header">Metropolitana</td>
+                        <td class="data-row">21.971</td>
+                        <td class="data-row">45.034</td>
+                        <td class="data-row">23.063</td>
+                        <td class="data-row">105.0%</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Maule</td>
+                        <td class="data-row">3.482</td>
+                        <td class="data-row">8.538</td>
+                        <td class="data-row">5.056</td>
+                        <td class="data-row">145.2%</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Valparaíso</td>
+                        <td class="data-row">2.515</td>
+                        <td class="data-row">4.245</td>
+                        <td class="data-row">1.730</td>
+                        <td class="data-row">68.8%</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Coquimbo</td>
+                        <td class="data-row">918</td>
+                        <td class="data-row">1.789</td>
+                        <td class="data-row">871</td>
+                        <td class="data-row">94.9%</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">O'Higgins</td>
+                        <td class="data-row">976</td>
+                        <td class="data-row">1.704</td>
+                        <td class="data-row">728</td>
+                        <td class="data-row">74.6%</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Biobío</td>
+                        <td class="data-row">1.131</td>
+                        <td class="data-row">1.667</td>
+                        <td class="data-row">536</td>
+                        <td class="data-row">47.5%</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Arica-Parinacota</td>
+                        <td class="data-row">303</td>
+                        <td class="data-row">1.275</td>
+                        <td class="data-row">972</td>
+                        <td class="data-row">320.8%</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Antofagasta</td>
+                        <td class="data-row">605</td>
+                        <td class="data-row">1.147</td>
+                        <td class="data-row">542</td>
+                        <td class="data-row">89.7%</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Los Lagos</td>
+                        <td class="data-row">460</td>
+                        <td class="data-row">892</td>
+                        <td class="data-row">432</td>
+                        <td class="data-row">94.1%</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Los Ríos</td>
+                        <td class="data-row">291</td>
+                        <td class="data-row">814</td>
+                        <td class="data-row">523</td>
+                        <td class="data-row">179.8%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Tabla 2: Correlación Tarifa Potencia vs Stock EV</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Región</th>
+                        <th style="text-align: right;">Tarifa Potencia ($/kW/mes)</th>
+                        <th style="text-align: right;">Tarifa Energía ($/kWh)</th>
+                        <th style="text-align: right;">Stock EV 2025</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="region-header">Metropolitana</td>
+                        <td class="data-row">2.497,03</td>
+                        <td class="data-row">257,05</td>
+                        <td class="data-row">45.034</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Maule</td>
+                        <td class="data-row">1.602,75</td>
+                        <td class="data-row">930,74</td>
+                        <td class="data-row">8.538</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Valparaíso</td>
+                        <td class="data-row">1.611,87</td>
+                        <td class="data-row">859,29</td>
+                        <td class="data-row">4.245</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Coquimbo</td>
+                        <td class="data-row">1.391,91</td>
+                        <td class="data-row">764,83</td>
+                        <td class="data-row">1.789</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">O'Higgins</td>
+                        <td class="data-row">1.554,36</td>
+                        <td class="data-row">949,57</td>
+                        <td class="data-row">1.704</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Biobío</td>
+                        <td class="data-row">1.858,13</td>
+                        <td class="data-row">952,56</td>
+                        <td class="data-row">1.667</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Arica-Parinacota</td>
+                        <td class="data-row">1.260,75</td>
+                        <td class="data-row">531,91</td>
+                        <td class="data-row">1.275</td>
+                    </tr>
+                    <tr>
+                        <td class="region-header">Antofagasta</td>
+                        <td class="data-row">1.408,13</td>
+                        <td class="data-row">679,81</td>
+                        <td class="data-row">1.147</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="note">
+            <strong>Nota de Proyección:</strong><br>
+            PROYECTADO: 2025 usa crecimiento 2023-2024. REAL: 2024 es dato INE Permisos de Circulación. Se actualiza cuando INE publique Permisos 2025 (septiembre 2026).
+        </div>
+
+        <div class="section" style="border-top: 1px solid #ddd; padding-top: 20px; font-size: 12px; color: #666;">
+            <strong>Fuentes:</strong>
+            <ul>
+                <li>Stock EV: INE Permisos de Circulación 2024 (homologado a región/CUT)</li>
+                <li>Proyección: Crecimiento regional 2023-2024 extrapolado a 2025</li>
+                <li>Tarifas: Consolidadas de distribuidoras + SEC, vigencia 2026-08</li>
+                <li>Estaciones de carga: 2.234 conectores EV en 1.614 estaciones (Cargadores Públicos + Enel X + Copec)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
