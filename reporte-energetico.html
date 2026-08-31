@@ -45,12 +45,35 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .oexp .odot { margin-top:5px; margin-right:0; }
   .oexp b { color:var(--ink-1); }
   .chip-o { display:inline-flex; align-items:center; font-size:12.5px; white-space:nowrap; color:var(--ink-2); }
-  .bc { display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.02em; border-radius:5px;
-        padding:1px 6px; margin-right:6px; background:var(--grid); color:var(--ink-2); border:1px solid var(--border); vertical-align:middle; }
   .re-tbl-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-  .btn-csv { cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--ink-1);
-             border-radius:8px; padding:6px 13px; font-size:13px; font-weight:600; font-family:inherit; }
-  .btn-csv:hover { border-color:var(--ink-3); }
+  /* Como reportar (paso a paso) via SIBNE */
+  .pasos-sibne { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:14px; }
+  @media (max-width:820px) { .pasos-sibne { grid-template-columns:1fr; } }
+  .paso-grupo .pg-tit { font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--s1); margin:0 0 10px; }
+  .paso-grupo ul { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px; }
+  .paso-grupo li { position:relative; padding-left:28px; font-size:13px; color:var(--ink-2); line-height:1.45; }
+  .paso-grupo li b { color:var(--ink-1); }
+  .paso-num { position:absolute; left:0; top:1px; width:19px; height:19px; border-radius:50%; background:var(--plane);
+              color:var(--s1); border:1px solid var(--border); font-size:11px; font-weight:700; display:flex;
+              align-items:center; justify-content:center; font-variant-numeric:tabular-nums; }
+  .aviso-plazo { margin:14px 0 0; font-size:12.5px; color:var(--ink-2); background:var(--plane); border:1px solid var(--border); border-radius:8px; padding:9px 12px; }
+  /* buscador + solicitud por correo */
+  .re-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:2px 0 12px; }
+  .re-toolbar input[type=search] { flex:1 1 240px; }
+  .re-count { margin-left:auto; font-size:12.5px; color:var(--ink-3); white-space:nowrap; }
+  .btn-principal { display:inline-flex; align-items:center; gap:6px; cursor:pointer; border:1px solid var(--s1);
+                   background:var(--s1); color:#fff; border-radius:8px; padding:7px 14px; font-size:13px;
+                   font-weight:600; font-family:inherit; text-decoration:none; }
+  .btn-principal:hover { opacity:.92; }
+  .reqpanel p { margin:0 0 10px; font-size:13px; color:var(--ink-2); }
+  .reqinfo { font-size:13px; background:var(--plane); border:1px solid var(--border); border-radius:8px; padding:9px 12px; margin-bottom:12px; }
+  .reqactions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .reqnote { margin:10px 0 0; font-size:12px; color:var(--ink-3); }
+  /* badges de cruce (operador / importador), nombre visible */
+  .hbadge { display:inline-block; font-size:10.5px; font-weight:700; border-radius:5px; padding:1px 6px;
+            margin-left:6px; border:1px solid var(--border); vertical-align:middle; }
+  .hbadge.op { background:color-mix(in srgb, var(--s1) 14%, transparent); color:var(--s1); }
+  .hbadge.im { background:color-mix(in srgb, var(--s4) 16%, transparent); color:var(--s4); }
 </style>
 </head>
 <body>
@@ -70,6 +93,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="re-plazo" id="plazo"></p>
   </div>
 
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Cómo reportar (paso a paso)</h2>
+    <p class="nota">El reporte se hace en línea en el <b>SIBNE</b> (Sistema de Información del Balance
+    Nacional de Energía) del Ministerio de Energía; es una encuesta con formularios. Plazo:
+    <b>2 de enero – 11 de mayo de 2026</b>.</p>
+    <div class="pasos-sibne">
+      <div class="paso-grupo">
+        <p class="pg-tit">1 · Preparación</p>
+        <ul>
+          <li><span class="paso-num">1</span><b>Confirma si estás obligado:</b> tu RUT en el listado, o
+          criterios del DS 340/2025 (más de 600.000 UF + 200 o más trabajadores + persona jurídica
+          comercial/extranjera + sin término de giro) o consumo igual o superior a 50 teracalorías.</li>
+          <li><span class="paso-num">2</span><b>Designa un responsable</b> (y, si serás CCGE, ve
+          identificando al Gestor Energético).</li>
+          <li><span class="paso-num">3</span><b>Reúne los consumos 2025</b> de todas las fuentes
+          (electricidad, gas, diésel…), por uso, más ventas/producción.</li>
+          <li><span class="paso-num">4</span><b>Homogeniza unidades</b> con las densidades y poderes
+          caloríficos del BNE.</li>
+          <li><span class="paso-num">5</span><b>Calcula la intensidad energética</b> = consumo total ÷
+          ventas.</li>
+        </ul>
+      </div>
+      <div class="paso-grupo">
+        <p class="pg-tit">2 · En la plataforma (SIBNE)</p>
+        <ul>
+          <li><span class="paso-num">6</span><b>Ingresa al SIBNE</b> y habilita el acceso del RUT si es
+          la primera vez.</li>
+          <li><span class="paso-num">7</span><b>Completa los formularios</b> con los consumos por
+          fuente/uso y la intensidad energética del 2025.</li>
+          <li><span class="paso-num">8</span><b>Revisa y envía</b> antes del 11 de mayo de 2026.</li>
+          <li><span class="paso-num">9</span><b>Guarda el comprobante</b>/respaldo del envío.</li>
+        </ul>
+      </div>
+      <div class="paso-grupo">
+        <p class="pg-tit">3 · Después</p>
+        <ul>
+          <li><span class="paso-num">10</span><b>Si consumes 50 Tcal o más → serás CCGE.</b> Vigila el
+          Diario Oficial: al publicarse el listado corren los plazos <b>20 / 30 / 40 días hábiles</b>
+          (discrepar ante la SEC, elegir tipo de SGE, nombrar Gestor Energético) y <b>12 meses</b> para
+          implementar el SGE.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="aviso-plazo">El incumplimiento del reporte en plazo habilita a la SEC a aplicar multas.</p>
+  </div>
+
   <div class="kpis" id="kpis"></div>
   <p class="nota" id="nota"></p>
 
@@ -84,13 +153,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tarjeta">
     <div class="re-tbl-head">
       <h2 style="margin:0">Listado de empresas obligadas</h2>
-      <button class="btn-csv" id="btn-csv" type="button">Descargar CSV del filtrado</button>
+      <button class="preset-btn" id="btn-solicitar" type="button">Solicitar por correo</button>
     </div>
-    <p class="nota" style="margin:8px 0 10px">Busca por razón social o RUT; filtra por Origen con los chips.
-    Los <b>27 CCGE</b> aparecen primero. Los distintivos indican empresas que además figuran en el
-    observatorio como operador de carga o importador de vehículos.</p>
+    <p class="nota" style="margin:8px 0 10px">Filtra por Origen con los chips. Los <b>27 CCGE</b> aparecen
+    primero. Los distintivos junto a la razón social indican empresas que además figuran en el observatorio
+    como operador de carga o importador de vehículos.</p>
     <div class="origen-chips" id="chips"></div>
+    <div class="re-toolbar">
+      <input type="search" id="re-buscar" placeholder="Buscar por razón social, RUT o grupo económico…" aria-label="Buscar empresa">
+      <span class="re-count" id="re-count"></span>
+    </div>
     <div id="tabla"></div>
+
+    <div class="tarjeta reqpanel" id="reqpanel" hidden>
+      <h3 style="margin:0 0 6px">Solicitar el listado por correo</h3>
+      <p>El listado completo <b>no se descarga directamente</b>: se entrega a solicitud por correo
+      electrónico. Revisa el resumen y abre tu correo para enviar la solicitud (o copia el texto).</p>
+      <div class="reqinfo" id="reqinfo"></div>
+      <div class="reqactions">
+        <a id="reqmail" class="btn-principal" href="#">Abrir correo</a>
+        <button id="reqcopy" class="preset-btn" type="button">Copiar texto</button>
+        <button id="reqclose" class="preset-btn" type="button">Cerrar</button>
+      </div>
+      <p class="reqnote">Se enviará a <span id="reqto"></span>.</p>
+    </div>
   </div>
 
   <p class="fuente" id="fuente"></p>
@@ -138,8 +224,46 @@ document.getElementById("origen-explica").innerHTML = M.origenes.map(o =>
   '<div class="oexp">' + dot(o.k) + "<div><b>" + esc(o.label) + "</b> — " + fmt(o.n) +
   " empresas. " + esc(o.desc) + "</div></div>").join("");
 
+// --- distintivos de cruce (nombre del grupo visible, no solo en tooltip)
+function cruces(f) {
+  let s = "";
+  if (f.op) s += ' <span class="hbadge op" title="Operador de energía">' + esc(f.op) + "</span>";
+  if (f.im) s += ' <span class="hbadge im" title="Importador de vehículos">' + esc(f.im) + "</span>";
+  return s;
+}
+function chipOrigen(k) {
+  const o = OMAP[k] || {};
+  return '<span class="chip-o">' + dot(k) + esc(o.label || k) + "</span>";
+}
+
+// --- tabla: buscador propio (razon social / RUT / grupo economico) + chips de Origen combinados
+const cols = [
+  { k: "r", titulo: "RUT" },
+  { k: "dv", titulo: "DV", num: true },
+  { k: "n", titulo: "Razón social", fmt: (v, f) => esc(v) + cruces(f) },
+  { k: "o", titulo: "Origen", fmt: v => chipOrigen(v) },
+];
+const T = PW.tabla("tabla", cols, D.v.slice(), { orden: null, buscador: false });
+
+function normaliza(s) { return String(s || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+let filtroO = "", filtroQ = "";
+function filtradas() {
+  const q = normaliza(filtroQ);
+  return D.v.filter(f => {
+    if (filtroO && f.o !== filtroO) return false;
+    if (!q) return true;
+    return normaliza(f.n).includes(q) || normaliza(f.r).includes(q) ||
+      (f.op && normaliza(f.op).includes(q)) || (f.im && normaliza(f.im).includes(q));
+  });
+}
+function aplicar() {
+  const filas = filtradas();
+  T.actualizar(filas);
+  document.getElementById("re-count").innerHTML = "<b>" + fmt(filas.length) + "</b> de " + fmt(D.v.length) + " empresas";
+}
+document.getElementById("re-buscar").addEventListener("input", e => { filtroQ = e.target.value; aplicar(); });
+
 // --- chips de filtro por Origen
-let filtroO = "";
 const chipsDefs = [{ k: "", label: "Todas", n: M.total }]
   .concat(M.origenes.map(o => ({ k: o.k, label: o.label, n: o.n })));
 function pintarChips() {
@@ -150,44 +274,43 @@ function pintarChips() {
     filtroO = b.dataset.k; pintarChips(); aplicar();
   }));
 }
-
-// --- chip de Origen en la celda + distintivos de cruce
-function chipOrigen(k) {
-  const o = OMAP[k] || {};
-  return '<span class="chip-o">' + dot(k) + esc(o.label || k) + "</span>";
-}
-function cruces(f) {
-  let s = "";
-  if (f.op) s += '<span class="bc" title="Operador de carga: ' + esc(f.op) + '">Operador</span>';
-  if (f.im) s += '<span class="bc" title="Importador: ' + esc(f.im) + '">Importador</span>';
-  return s;
-}
-
-// --- tabla (buscador incorporado de PW.tabla: razon social / RUT, acento-insensible)
-const cols = [
-  { k: "n", titulo: "Razón social", fmt: (v, f) => cruces(f) + esc(v) },
-  { k: "r", titulo: "RUT" },
-  { k: "o", titulo: "Origen", fmt: v => chipOrigen(v) },
-];
-const T = PW.tabla("tabla", cols, D.v.slice(), { orden: null });
-function filtradas() { return filtroO ? D.v.filter(x => x.o === filtroO) : D.v.slice(); }
-function aplicar() { T.actualizar(filtradas()); }
 pintarChips();
+aplicar();
 
-// --- descarga CSV del filtrado
-document.getElementById("btn-csv").addEventListener("click", () => {
-  const rows = filtradas();
-  const head = ["Razon social", "RUT", "Origen", "Operador de carga", "Importador"];
-  const cell = c => '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"';
-  const csv = [head].concat(rows.map(f =>
-    [f.n, f.r, (OMAP[f.o] || {}).label || f.o, f.op || "", f.im || ""]))
-    .map(r => r.map(cell).join(",")).join("\r\n");
-  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "reporte_energetico_2026" + (filtroO ? "_" + filtroO : "") + ".csv";
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+// --- solicitud del listado por correo (no hay descarga directa)
+const DEST_CORREO = "rsalcedocampino@gmail.com";
+function origenLabel(k) { return k ? ((OMAP[k] || {}).label || k) : "Todos los orígenes"; }
+function solicitudTexto() {
+  const filas = filtradas();
+  const asunto = "Solicitud de listado — Reporte Energético 2026 CCGE";
+  const cuerpo =
+    "Hola,\n\nSolicito el listado de empresas del Reporte Energético 2026 (CCGE) con el siguiente filtro:\n" +
+    "- Origen: " + origenLabel(filtroO) + "\n" +
+    (filtroQ ? ("- Búsqueda: " + filtroQ + "\n") : "") +
+    "- Resultados: " + filas.length + " de " + D.v.length + " empresas\n\n" +
+    "Mis datos de contacto:\n- Nombre:\n- Correo:\n- Organización:\n\nGracias.";
+  return { asunto, cuerpo, filas };
+}
+function abrirSolicitud() {
+  const r = solicitudTexto();
+  document.getElementById("reqinfo").innerHTML =
+    "<b>" + fmt(r.filas.length) + "</b> empresas · Origen: " + esc(origenLabel(filtroO)) +
+    (filtroQ ? (' · Búsqueda: "' + esc(filtroQ) + '"') : "");
+  document.getElementById("reqmail").href =
+    "mailto:" + DEST_CORREO + "?subject=" + encodeURIComponent(r.asunto) + "&body=" + encodeURIComponent(r.cuerpo);
+  document.getElementById("reqto").textContent = DEST_CORREO;
+  const p = document.getElementById("reqpanel");
+  p.hidden = false;
+  p.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+document.getElementById("btn-solicitar").addEventListener("click", abrirSolicitud);
+document.getElementById("reqclose").addEventListener("click", () => { document.getElementById("reqpanel").hidden = true; });
+document.getElementById("reqcopy").addEventListener("click", () => {
+  const r = solicitudTexto();
+  const txt = "Para: " + DEST_CORREO + "\nAsunto: " + r.asunto + "\n\n" + r.cuerpo;
+  if (navigator.clipboard) navigator.clipboard.writeText(txt);
+  const b = document.getElementById("reqcopy"), o = b.textContent;
+  b.textContent = "Copiado"; setTimeout(() => { b.textContent = o; }, 1500);
 });
 
 // --- fuente
