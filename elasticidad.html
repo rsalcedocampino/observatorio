@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Elasticidad bencina-EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260827a">
+<link rel="stylesheet" href="assets/estilo.css?v=260831a">
 <style>
   .tab-nav { display: flex; gap: 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc; }
   .tab-nav button { padding: 12px 20px; background: none; border: none; cursor: pointer; font-size: 1rem; color: #666; border-bottom: 3px solid transparent; }
@@ -48,6 +48,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tab-nav">
     <button class="tab-btn activo" data-tab="bencina">Bencina 93</button>
     <button class="tab-btn" data-tab="tarifas">Tarifas de Electricidad (Regional)</button>
+    <button class="tab-btn" data-tab="ev2025">Stock EV 2025 (Proyectado)</button>
     <button class="tab-btn" data-tab="pnp">Precios Nudo por Subestación</button>
   </div>
 
@@ -113,7 +114,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
-  <!-- TAB 3: Precios Nudo por Subestación -->
+  <!-- TAB 3: Stock de EVs 2025 -->
+  <div id="tab-ev2025" class="tab-content">
+    <p class="sub">Proyeccion de stock de vehiculos electricos por region (2024-2025). Basada en crecimiento INE 2023-2024.
+    Se actualiza cuando INE publique datos 2025 (septiembre 2026).</p>
+    <p class="nota" id="nota-ev2025"></p>
+
+    <div class="kpis" id="kpis-ev2025"></div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Stock de EVs 2024-2025 por region</h2>
+      <p class="nota">PROYECTADO: 2025 usa crecimiento 2023-2024. REAL: 2024 es dato INE Permisos de Circulacion.
+      Se actualiza cuando INE publique Permisos 2025.</p>
+      <div id="t-ev2025"></div>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
+        Datos 2024: INE Permisos de Circulacion (reales). Proyeccion 2025: basada en crecimiento 2023-2024.
+        Actualizacion esperada: septiembre 2026 (cuando salgan datos 2025).
+      </p>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Correlacion: Tarifa Potencia vs Stock EV</h2>
+      <p class="nota">¿A mayor tarifa de potencia, menos stock de EVs? Tabla muestra tarifa potencia ($/kW/mes) cruzada con
+      stock proyectado 2025 por region. Nota: Metropolitana domina cifras (64.8% del parque nacional).</p>
+      <div id="t-ev-tarifas"></div>
+    </div>
+  </div>
+
+  <!-- TAB 4: Precios Nudo por Subestacion -->
   <div id="tab-pnp" class="tab-content">
     <p class="sub">Precio Nudo Promedio (PNP) en subestaciones 220kV del Sistema Nacional de Transmisión.
     Selecciona una región y distribuidor para ver tarifas de energía ($/kWh) y potencia ($/kW/mes).</p>
@@ -148,9 +176,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/c_elasticidad.js"></script>
 <script src="data/c_elasticidad_tarifas.js"></script>
 <script src="data/c_elasticidad_tarifas_pnp.js"></script>
+<script src="data/c_tarifas.js"></script>
+<script src="data/c_ev_2025.js"></script>
 <script src="data/combustible.js"></script>
 <script src="data/c_bencina93_serie.js"></script>
-<script src="assets/comun.js?v=260827a"></script>
+<script src="assets/comun.js?v=260831a"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -409,6 +439,169 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
       { k: "potencia", titulo: "Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 0) },
     ], filas, {});
   });
+}
+
+// TAB 2: Tarifas de Electricidad - Datos de TarifasData (c_tarifas.js)
+(function() {
+  if (!window.TarifasData) return;
+
+  const T = window.TarifasData;
+  const stats = T.stats;
+
+  // Mostrar estadísticas principales
+  document.getElementById("nota-tarifas").innerHTML = `
+    <strong>Dataset:</strong> ${stats.total_filas.toLocaleString()} filas |
+    ${stats.meses} meses (${stats.fecha_inicio} - ${stats.fecha_fin}) |
+    ${stats.cobertura_cut_pct.toFixed(1)}% cobertura territorial (${stats.comunas_unicas} comunas)
+  `;
+
+  // KPIs principales
+  const kpis_html = [
+    [
+      T.hallazgos[0].valor,
+      "⚡ " + T.hallazgos[0].titulo,
+      T.hallazgos[0].descripcion
+    ],
+    [
+      T.hallazgos[2].valor,
+      "💰 " + T.hallazgos[2].titulo,
+      T.hallazgos[2].descripcion
+    ],
+    [
+      stats.regiones_unicas + " regiones",
+      "🗺️ " + T.hallazgos[1].titulo.replace("🗺️ ", ""),
+      T.hallazgos[1].descripcion
+    ],
+    [
+      stats.distribuidores.length + " distribuidoras",
+      "Competencia",
+      stats.distribuidores.join(", ").toUpperCase()
+    ]
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  document.getElementById("kpis-tarifas").innerHTML = kpis_html;
+
+  // Tabla de tarifas nacionales por categoría y fecha
+  const filas_nacional = T.tarifas_nacional.map(t => ({
+    fecha: t.fecha_vigencia,
+    categoria: (T.categorias[t.segmento_categoria]?.nombre || t.segmento_categoria),
+    energia: t.tarifa_energia_clp_kwh,
+    potencia: t.tarifa_potencia_clp_kw,
+  }));
+
+  PW.tabla("t-tarifas", [
+    { k: "fecha", titulo: "Fecha vigencia", num: false },
+    { k: "categoria", titulo: "Categoría", num: false },
+    { k: "energia", titulo: "Tarifa Energía ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
+    { k: "potencia", titulo: "Tarifa Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 1) },
+  ], filas_nacional.slice(-30), { max: 50 }); // Mostrar últimas 30 filas
+
+  // Información de categorías
+  const cat_info = Object.entries(T.categorias).map(([key, cat]) => `
+    <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f5f5f5; border-radius: 4px;">
+      <strong>${cat.nombre}</strong> (${key})<br/>
+      Descripción: ${cat.descripcion}<br/>
+      Límites: ${cat.amperes_max} / ${cat.potencia_max}<br/>
+      Consumo típico: ${cat.consumo_tipico}
+    </div>
+  `).join("");
+
+  // Insertar información en el div t-tarifas si está vacío
+  const t_tarifas = document.getElementById("t-tarifas");
+  if (t_tarifas && !t_tarifas.innerHTML.includes("<table")) {
+    t_tarifas.innerHTML = `
+      <div style="margin-bottom: 2rem; padding: 1rem; background: #fffacd; border-radius: 4px;">
+        <strong>⚠️ Hallazgo Principal (Enero 2026):</strong><br/>
+        Tarifa domiciliario se multiplicó ${T.hallazgos[0].valor} con entrada de ENEL Tarifas Flexibles.
+        Esto crea un punto de quiebre perfecto para medir elasticidad EV.
+      </div>
+      ${cat_info}
+      <table style="width:100%; border-collapse: collapse; margin-top: 2rem;">
+        <thead>
+          <tr style="background: #f0f0f0;">
+            <th style="text-align:left; padding: 8px; border-bottom: 1px solid #ccc;">Fecha</th>
+            <th style="text-align:left; padding: 8px; border-bottom: 1px solid #ccc;">Categoría</th>
+            <th style="text-align:right; padding: 8px; border-bottom: 1px solid #ccc;">Tarifa Energía</th>
+            <th style="text-align:right; padding: 8px; border-bottom: 1px solid #ccc;">Tarifa Potencia</th>
+          </tr>
+        </thead>
+        <tbody id="t-tarifas-tbody"></tbody>
+      </table>
+    `;
+
+    const tbody = document.getElementById("t-tarifas-tbody");
+    filas_nacional.slice(-30).reverse().forEach(f => {
+      const tr = tbody.insertRow();
+      tr.innerHTML = `
+        <td style="padding: 8px; border-bottom: 1px solid #eee;">${f.fecha}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #eee;">${f.categoria}</td>
+        <td style="text-align:right; padding: 8px; border-bottom: 1px solid #eee;">$${PW.fmt(f.energia, 2)}</td>
+        <td style="text-align:right; padding: 8px; border-bottom: 1px solid #eee;">$${PW.fmt(f.potencia, 1)}</td>
+      `;
+    });
+  }
+})();
+
+// TAB 3: Stock de EVs 2025 - Datos de EV2025Data (c_ev_2025.js)
+function cargarTabEV2025() {
+  if (!window.EV2025Data) {
+    setTimeout(cargarTabEV2025, 100);
+    return;
+  }
+
+  const D = window.EV2025Data;
+  const M = D.metadata;
+
+  // Nota
+  document.getElementById("nota-ev2025").textContent = M.nota + " Actualizado " + M.fecha_generacion + ".";
+
+  // KPIs
+  const kpis_html = [
+    [M.total_2024_real.toLocaleString(), "Stock 2024 (REAL)", "INE Permisos Circulacion"],
+    [M.total_2025_proyectado.toLocaleString(), "Stock 2025 (PROYECTADO)", "Crecimiento " + M.crecimiento_pct.toFixed(1) + "%"],
+    ["+" + (M.total_2025_proyectado - M.total_2024_real).toLocaleString(), "Incremento esperado", "base crecimiento 2023-2024"],
+    [M.cobertura_regiones, "regiones cubiertas", "homologadas a CUT"],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  document.getElementById("kpis-ev2025").innerHTML = kpis_html;
+
+  // Tabla principal: Stock por región
+  const filas_ev = D.regiones.map(r => ({
+    region: r.region,
+    stock_2024: r.stock_2024,
+    stock_2025: r.stock_2025_proyectado,
+    incremento: r.incremento,
+    crecimiento: r.crecimiento_pct + "%",
+  }));
+
+  PW.tabla("t-ev2025", [
+    { k: "region", titulo: "Region", num: false },
+    { k: "stock_2024", titulo: "Stock 2024 (REAL)", num: true, fmt: v => v.toLocaleString() },
+    { k: "stock_2025", titulo: "Stock 2025 (PROYECTADO)", num: true, fmt: v => v.toLocaleString() },
+    { k: "incremento", titulo: "Incremento unidades", num: true, fmt: v => v.toLocaleString() },
+    { k: "crecimiento", titulo: "Crecimiento %", num: false },
+  ], filas_ev, { max: 20 });
+
+  // Tabla: Correlacion Tarifa × Stock
+  const filas_correlacion = D.regiones.filter(r => r.tarifa_potencia_clp_kw != null).map(r => ({
+    region: r.region,
+    tarifa_potencia: r.tarifa_potencia_clp_kw,
+    tarifa_energia: r.tarifa_energia_clp_kwh,
+    stock_2025: r.stock_2025_proyectado,
+  }));
+
+  PW.tabla("t-ev-tarifas", [
+    { k: "region", titulo: "Region", num: false },
+    { k: "tarifa_potencia", titulo: "Tarifa Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 1) },
+    { k: "tarifa_energia", titulo: "Tarifa Energia ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
+    { k: "stock_2025", titulo: "Stock EV 2025", num: true, fmt: v => v.toLocaleString() },
+  ], filas_correlacion, { max: 20 });
+}
+// Llamar cuando DOM está listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', cargarTabEV2025);
+} else {
+  cargarTabEV2025();
 }
 </script>
 </body>
