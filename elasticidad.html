@@ -159,7 +159,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="tarjeta">
       <h2 style="margin-top:0">PRELIMINAR: Elasticidad Regional (Tarifa × Stock)</h2>
       <p class="nota">Análisis descriptivo de correlación entre tarifa de potencia y stock de EVs por región (2024-2026).
-      <span style="color:#d32f2f; font-weight:bold;"> ⚠️ PRELIMINAR:</span> Esperando datos mensuales de ANAC para análisis causal completo.</p>
+      <span style="color:#d32f2f; font-weight:bold;"> PRELIMINAR:</span> Esperando datos mensuales de ANAC para análisis causal completo.</p>
       <p class="nota" id="nota-elasticidad-regional" style="font-size:0.85rem; color:#666;"></p>
       <div id="t-elasticidad-regional"></div>
       <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
@@ -481,6 +481,9 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
 
   const T = window.TarifasData;
   const stats = T.stats;
+  // El shock tarifario viene con precisión de punto flotante cruda (85.11592673025604x);
+  // se redondea acá para mostrar, en el KPI y en el banner de abajo.
+  const shockValor = parseFloat(T.hallazgos[0].valor).toFixed(1) + "x";
 
   // Mostrar estadísticas principales
   document.getElementById("nota-tarifas").innerHTML = `
@@ -492,18 +495,18 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
   // KPIs principales
   const kpis_html = [
     [
-      T.hallazgos[0].valor,
-      "⚡ " + T.hallazgos[0].titulo,
+      shockValor,
+      T.hallazgos[0].titulo.replace("⚡ ", ""),
       T.hallazgos[0].descripcion
     ],
     [
       T.hallazgos[2].valor,
-      "💰 " + T.hallazgos[2].titulo,
+      T.hallazgos[2].titulo.replace("💰 ", ""),
       T.hallazgos[2].descripcion
     ],
     [
       stats.regiones_unicas + " regiones",
-      "🗺️ " + T.hallazgos[1].titulo.replace("🗺️ ", ""),
+      T.hallazgos[1].titulo.replace("🗺️ ", ""),
       T.hallazgos[1].descripcion
     ],
     [
@@ -545,8 +548,8 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
   if (t_tarifas && !t_tarifas.innerHTML.includes("<table")) {
     t_tarifas.innerHTML = `
       <div style="margin-bottom: 2rem; padding: 1rem; background: #fffacd; border-radius: 4px;">
-        <strong>⚠️ Hallazgo Principal (Enero 2026):</strong><br/>
-        Tarifa domiciliario se multiplicó ${T.hallazgos[0].valor} con entrada de ENEL Tarifas Flexibles.
+        <strong>Hallazgo Principal (Enero 2026):</strong><br/>
+        Tarifa domiciliario se multiplicó ${shockValor} con entrada de ENEL Tarifas Flexibles.
         Esto crea un punto de quiebre perfecto para medir elasticidad EV.
       </div>
       ${cat_info}
