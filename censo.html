@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Censo Nacional — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260831a">
+<link rel="stylesheet" href="assets/estilo.css?v=260901a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <style>
@@ -38,6 +38,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   details.tarjeta[open] > summary::before { content: "\25BE"; }
 </style>
 <link rel="preload" as="script" href="data/censo.js">
+<!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas), pero el mapa principal SIEMPRE lo
+     necesita (visible por defecto): precargarlo evita que la espera sea secuencial. La tarjeta de
+     "Crecimiento" (plegada por defecto) sigue sin precarga propia: no la necesita a menos que se abra. -->
 <link rel="preload" as="script" href="data/geo_comunas.js">
 </head>
 <body>
@@ -127,8 +130,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script src="data/censo.js"></script>
-<script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260831a"></script>
+<script src="assets/comun.js?v=260901a"></script>
 <script>
 PW.montarNav("censo.html");
 const D = window.PW_DATA.censo;
@@ -450,9 +452,11 @@ selCM.addEventListener("input", () => { selC.value = selCM.value; selC.dispatchE
 // [CRECIMIENTO 2017→2024] choropleth DIVERGENTE page-local (PW.choropleth es secuencial):
 // rojo = disminución, verde = aumento, gris = sin comparación 2017. Cortes fijos alineados a la
 // distribución real (p10 ≈ -4,4 / mediana ≈ 4,8 / p90 ≈ 16). Nunca se inventa: sin pob_2017 => gris.
-function pintarCrecimiento(scopeReg, resaltar) {
-  const geo = window.PW_DATA.geo_comunas;
+// geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) recien
+// al abrir esta tarjeta (por defecto plegada), no en cada carga de la pagina.
+async function pintarCrecimiento(scopeReg, resaltar) {
   const wrap = document.getElementById("crec-wrap");
+  const geo = (await PW.cargarGeoComunas()) ? window.PW_DATA.geo_comunas : null;
   if (!geo || typeof L === "undefined") { wrap.innerHTML = '<p class="nota">Mapa no disponible (falta la cartografía).</p>'; return; }
   wrap.innerHTML = '<div id="mapa-crec"></div>';
   const el = document.getElementById("mapa-crec");
@@ -523,7 +527,10 @@ document.getElementById("f-limpiar").addEventListener("click", () => {
   selInd.value = IND_DEFAULT; selInd2.value = "";
   aplicar();
 });
-aplicar();
+// geo_comunas.js (~4 MB) ya no se carga fijo: el mapa principal (PW.choropleth) lo necesita, asi
+// que la primera pintada espera a que este disponible bajo demanda (comun.js:cargarGeoComunas);
+// los refrescos por filtro ya lo tienen cacheado.
+PW.cargarGeoComunas().then(aplicar);
 </script>
 </body>
 </html>

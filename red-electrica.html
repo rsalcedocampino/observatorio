@@ -27,12 +27,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Red eléctrica y potencial — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260831a">
+<link rel="stylesheet" href="assets/estilo.css?v=260901a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
 <link rel="preload" as="script" href="data/c_redelec.js">
+<!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas): el choropleth de potencial solar SIEMPRE
+     lo necesita (visible por defecto), asi que se precarga; el filtro por comuna (cutDeComuna) es
+     opcional y sigue sin precarga propia. -->
 <link rel="preload" as="script" href="data/geo_comunas.js">
 <link rel="preload" as="script" href="data/geo_lineas.js">
 <link rel="preload" as="script" href="data/c_transmision_region.js">
@@ -95,10 +98,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script src="data/c_redelec.js"></script>
-<script src="data/geo_comunas.js"></script>
 <script src="data/geo_lineas.js"></script>
 <script src="data/c_transmision_region.js"></script>
-<script src="assets/comun.js?v=260831a"></script>
+<script src="assets/comun.js?v=260901a"></script>
 <script>
 PW.montarNav("red-electrica.html");
 const D = PW_DATA.c_redelec;
@@ -124,10 +126,16 @@ const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCas
 // [LINEAS por CUT] recorte de las lineas de transmision al territorio elegido (helper homologado
 // PW.lineaEnTerritorio; geo_lineas trae `cuts`). Puente nombre->CUT desde geo_comunas (las
 // subestaciones no traen cut). Con fallback: si geo_lineas llego cacheado SIN `cuts`, no filtra (todas).
-const cutDeComuna = {};
-((((window.PW_DATA.geo_comunas || {}).features) || [])).forEach(f => { cutDeComuna[norm(f.properties.comuna)] = String(f.properties.cut).padStart(5, "0"); });
+// geo_comunas.js (~4 MB) ya no se carga fijo: cutDeComuna solo hace falta al filtrar por UNA comuna
+// (no por region), asi que se construye bajo demanda (comun.js:cargarGeoComunas) la primera vez que
+// pintarSub() lo necesita, no en cada carga de la pagina.
+let cutDeComuna = null;
+function construirCutDeComuna() {
+  cutDeComuna = {};
+  (((window.PW_DATA.geo_comunas || {}).features) || []).forEach(f => { cutDeComuna[norm(f.properties.comuna)] = String(f.properties.cut).padStart(5, "0"); });
+}
 function filtroLineas() {
-  if (filtroTerr.com) return { cut: cutDeComuna[norm(filtroTerr.com)] || null };
+  if (filtroTerr.com) return { cut: (cutDeComuna && cutDeComuna[norm(filtroTerr.com)]) || null };
   if (filtroTerr.rcut) return { rcut: filtroTerr.rcut };
   return {};
 }
@@ -160,7 +168,8 @@ function popupSub(s) {
     `</div>`;
 }
 let filtroTerr = { rcut: null, com: null };
-function pintarSub() {
+async function pintarSub() {
+  if (filtroTerr.com && !cutDeComuna) { await PW.cargarGeoComunas(); construirCutDeComuna(); }
   const kvMin = +document.getElementById("f-kv").value || 0;
   const q = norm(document.getElementById("f-busca-sub").value.trim());
   const sel = D.subestaciones.filter(s =>
@@ -256,11 +265,14 @@ PW.tabla("t-lejanas", [
   { k: "sub", titulo: "Subestación más cercana" },
 ], D.estaciones_lejanas, { orden: "dist_km", max: 15 });
 
-// Choropleth de potencial solar
-PW.choropleth("mapa-potencial", {
-  valores: Object.fromEntries(D.potencial.map(p => [p.cut, p.solar > 0 ? p.solar : null])),
-  fmt: v => v == null ? "sin dato" : PW.fmt(v) + " MW",
-  alto: 540,
+// Choropleth de potencial solar. PW.choropleth necesita geo_comunas.js (~4 MB, ya no fijo): se trae
+// bajo demanda (comun.js:cargarGeoComunas) antes de pintar (este mapa no se vuelve a llamar despues).
+PW.cargarGeoComunas().then(() => {
+  PW.choropleth("mapa-potencial", {
+    valores: Object.fromEntries(D.potencial.map(p => [p.cut, p.solar > 0 ? p.solar : null])),
+    fmt: v => v == null ? "sin dato" : PW.fmt(v) + " MW",
+    alto: 540,
+  });
 });
 
 PW.tabla("t-potencial", [

@@ -27,13 +27,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cargadores Públicos y Cortes de Energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260831a">
+<link rel="stylesheet" href="assets/estilo.css?v=260901a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
 <link rel="preload" as="script" href="data/cortes.js">
 <link rel="preload" as="script" href="data/mapa.js">
+<!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas), pero esta pagina SIEMPRE lo necesita
+     (choropleth + filtros salen de sus poligonos): precargarlo evita que la espera sea secuencial. -->
 <link rel="preload" as="script" href="data/geo_comunas.js">
 </head>
 <body>
@@ -85,14 +87,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="data/cortes.js"></script>
 <script src="data/mapa.js"></script>
-<script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260831a"></script>
+<script src="assets/comun.js?v=260901a"></script>
 <script>
 PW.montarNav("cargadores-cortes.html");
 const D = window.PW_DATA.cortes;
 const V = D.vivo, K = D.kpis;
 
 document.getElementById("nota").textContent = "Fuente: SEC - Actualizado al " + D.generado + ".";
+
+// geo_comunas.js (~4 MB) ya no se carga fijo: esta pagina lo necesita para el choropleth, el hover
+// por comuna Y los propios filtros de region/comuna (salen de sus poligonos), asi que todo el resto
+// del script espera a que este disponible bajo demanda (comun.js:cargarGeoComunas) antes de correr.
+PW.cargarGeoComunas().then(() => {
 
 // ===== Mapa en vivo: choropleth de cortes por region + red de carga =====
 const MAPA = window.PW_DATA.mapa || {};
@@ -389,6 +395,8 @@ if (DI && (DI.por_grupo || []).length) {
     { k: "outages", titulo: "Fallas", num: true, fmt: v => PW.fmt(v) },
   ], DI.por_comuna || [], { orden: "clientes", buscador: false });
 }
+
+});
 </script>
 </body>
 </html>
