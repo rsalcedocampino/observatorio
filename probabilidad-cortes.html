@@ -27,10 +27,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Probabilidad de cortes — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260831a">
+<link rel="stylesheet" href="assets/estilo.css?v=260901a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="preload" as="script" href="data/c_probcortes.js">
+<!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas), pero esta pagina SIEMPRE lo necesita
+     (choropleth visible por defecto): precargarlo evita que la espera sea secuencial. -->
 <link rel="preload" as="script" href="data/geo_comunas.js">
 </head>
 <body>
@@ -81,8 +83,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script src="data/c_probcortes.js"></script>
-<script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260831a"></script>
+<script src="assets/comun.js?v=260901a"></script>
 <script>
 PW.montarNav("probabilidad-cortes.html");
 const D = PW_DATA.c_probcortes;
@@ -226,7 +227,9 @@ function refrescar() {
 selMes.addEventListener("input", refrescar);
 selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
 selC.addEventListener("input", refrescar);
-refrescar();
+// geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
+// recien entonces se pinta el choropleth inicial (los refrescos por filtro ya lo tienen cacheado).
+PW.cargarGeoComunas().then(refrescar);
 </script>
 </body>
 </html>

@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cortes de energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260831a">
+<link rel="stylesheet" href="assets/estilo.css?v=260901a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -35,7 +35,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preload" as="script" href="data/riesgo.js">
 <link rel="preload" as="script" href="data/cortes.js">
 <link rel="preload" as="script" href="data/mapa.js">
-<link rel="preload" as="script" href="data/geo_comunas.js">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -159,8 +158,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/riesgo.js"></script>
 <script src="data/cortes.js"></script>
 <script src="data/mapa.js"></script>
-<script src="data/geo_comunas.js"></script>
-<script src="assets/comun.js?v=260831a"></script>
+<script src="assets/comun.js?v=260901a"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
@@ -245,7 +243,9 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
 // región + red de carga + tooltip por comuna anti-solape + foco Chile + zoom mínimo Chile). Usa DC
 // (cortes.js). IIFE autocontenido; degrada si falta Leaflet / geo_comunas / datos.
 // ============================================================
-(function mapaVivo() {
+// geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) antes
+// de intentar pintar este mapa (antes era funcion autoejecutada; ahora se llama tras la promesa).
+function mapaVivo() {
   const cardMapa = document.getElementById("card-mapa");
   const GEO = window.PW_DATA && window.PW_DATA.geo_comunas;
   if (typeof L === "undefined" || !GEO || !DC || !DC.vivo) { if (cardMapa) cardMapa.style.display = "none"; return; }
@@ -448,7 +448,8 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
       if (mapaCortes && (rcut || com)) PW.fitTerritorio(mapaCortes, { rcut: rcut, com: com });
     });
   });
-})();
+}
+PW.cargarGeoComunas().then(mapaVivo);
 
 // ============================================================
 // PARTE 2 — HISTÓRICO (riesgo.js)

@@ -1520,6 +1520,6 @@
     return el;
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio };
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas };
 })();
 

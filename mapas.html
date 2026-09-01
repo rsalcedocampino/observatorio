@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Mapas Interactivos con Capas — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260831a">
+<link rel="stylesheet" href="assets/estilo.css?v=260901a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -54,7 +54,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preload" as="script" href="data/c_censoelec.js">
 <link rel="preload" as="script" href="data/c_distribucion.js">
 <link rel="preload" as="script" href="data/geo_lineas.js">
-<link rel="preload" as="script" href="data/geo_comunas.js">
 <link rel="preload" as="script" href="data/postes_index.js">
 </head>
 <body>
@@ -96,9 +95,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/c_censoelec.js"></script>
 <script src="data/c_distribucion.js"></script>
 <script src="data/geo_lineas.js"></script>
-<script src="data/geo_comunas.js"></script>
 <script src="data/postes_index.js"></script>
-<script src="assets/comun.js?v=260831a"></script>
+<script src="assets/comun.js?v=260901a"></script>
 <script>
 PW.montarNav("mapas.html");
 
@@ -577,7 +575,10 @@ const territorio = (RED.subestaciones || []).map(s => ({
 // que las comunas con postes CGE sean seleccionables aunque no tengan subestacion
 const regDe = {}; territorio.forEach(t => { if (t.rcut && t.reg) regDe[t.rcut] = t.reg; });
 Object.values(POSTES_IDX).forEach(o => territorio.push({ rcut: o.rcut, reg: regDe[o.rcut] || o.region, com: o.comuna }));
-PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; render(true); sincronizarPostes(); sincronizarTramos("mt"); sincronizarTramos("bt"); },
+// geo_comunas.js (~4 MB) ya no se carga fijo: ambos disparadores de abajo lo necesitan (zoom al
+// territorio elegido; telon de fondo por comuna) y lo piden bajo demanda (comun.js:cargarGeoComunas)
+// antes de re-renderizar. render(false) inicial NO lo necesita (sin filtro ni indicador activos).
+PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; PW.cargarGeoComunas().then(() => render(true)); sincronizarPostes(); sincronizarTramos("mt"); sincronizarTramos("bt"); },
   `<label>Telón de fondo por comuna
      <select id="f-ind">
        <option value="" selected>— (apagado)</option>
@@ -586,7 +587,7 @@ PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; render(t
          <option value="km_mt">km de red MT (media tensión)</option>
        </optgroup>
      </select></label>`);
-document.getElementById("f-ind").addEventListener("input", () => render(false));
+document.getElementById("f-ind").addEventListener("input", () => PW.cargarGeoComunas().then(() => render(false)));
 
 // cruces sugeridos
 const cont = document.getElementById("presets");
