@@ -55,20 +55,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- TAB 1: Bencina 93 -->
   <div id="tab-bencina" class="tab-content activo">
     <p class="sub">¿Cuándo sube la bencina, sube la adopción de enchufables meses después? Este
-    cruce contrasta la participación de mercado enchufable con el precio real de la bencina 93.
-    Es un análisis que madura solo: el histórico propio de precios captura cada 10 días.</p>
+    cruce contrasta la participación de mercado enchufable con el precio real de la bencina 93,
+    usando el histórico propio de precios (capturas acumuladas más abajo). La evolución completa de
+    la participación enchufable ya vive en <a href="tracker.html">Meta 2035</a> (no se repite aquí).</p>
     <p class="nota" id="nota"></p>
 
     <div class="kpis" id="kpis"></div>
-
-    <div class="tarjeta">
-      <h2 style="margin-top:0">Cómo se leerá este cruce</h2>
-      <p class="nota">Cuando se acumulen suficientes capturas, esta página cruzará la <b>participación
-      de ventas enchufables</b> con el <b>precio real de la bencina 93</b> (regresión con rezagos de
-      0-6 meses) para medir si las alzas de combustible empujan la adopción EV. La evolución completa de
-      la participación enchufable ya vive en <a href="tracker.html">Meta 2035</a> (no se repite aquí);
-      el precio de la bencina que se va acumulando está en la tabla de abajo.</p>
-    </div>
 
     <div class="tarjeta">
       <h2 style="margin-top:0">¿A cuánto está la 93 en tu comuna?</h2>
@@ -89,8 +81,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="tarjeta">
       <h2 style="margin-top:0">Capturas de precio bencina 93 (promedio país)</h2>
       <div id="t-capturas"></div>
-      <p class="nota">La regresion participación~precio con rezagos 0-6 meses se activará
-      automáticamente cuando existan suficientes capturas para construir una serie mensual.</p>
+      <p class="nota" id="capturas-pie"></p>
     </div>
   </div>
 
@@ -139,6 +130,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       stock proyectado 2025 por region. Nota: Metropolitana domina cifras (64.8% del parque nacional).</p>
       <div id="t-ev-tarifas"></div>
     </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Stock EV por Region y Segmento (2024-2027 Proyectado)</h2>
+      <p class="nota">Desagregación de stock por tipo de vehículo (BEV/PHEV/Buses/Camiones) usando proporciones de venta 2025.
+      Proyectado con tasas de crecimiento diferenciadas por segmento.</p>
+      <p class="nota" id="nota-segmentacion" style="font-size:0.85rem; color:#666;"></p>
+      <div id="t-ev-segmento-2024"></div>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem;">Stock 2024 (Real INE Cuadro 4) desagregado por segmento</p>
+
+      <div id="t-ev-segmento-2025"></div>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem;">Stock 2025 (Proyectado, +75% nacional)</p>
+
+      <div id="t-ev-segmento-2027"></div>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem;">Stock 2027 (Proyectado, +759% desde 2024)</p>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Segmentacion Nacional: Evolucion de Mix 2024-2027</h2>
+      <p class="nota">Proporción de cada segmento en el stock nacional total (BEV domina con ~50%, PHEV crece exponencial).</p>
+      <div id="t-ev-proporcion"></div>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
+        Fuente: INE Cuadro 4 (stock 2024) + desagregación proporciones venta 2025 + proyección tasas por segmento
+        (BEV +29% | PHEV +188.3% | Buses +25% | Trucks -17.8% anual).
+      </p>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">PRELIMINAR: Elasticidad Regional (Tarifa × Stock)</h2>
+      <p class="nota">Análisis descriptivo de correlación entre tarifa de potencia y stock de EVs por región (2024-2026).
+      <span style="color:#d32f2f; font-weight:bold;"> ⚠️ PRELIMINAR:</span> Esperando datos mensuales de ANAC para análisis causal completo.</p>
+      <p class="nota" id="nota-elasticidad-regional" style="font-size:0.85rem; color:#666;"></p>
+      <div id="t-elasticidad-regional"></div>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
+        Fuente: INE Cuadro 4 (stock 2024, real) + CNE PNP 2026 (tarifas) + ANAC H1 2026 (ventas agregadas).
+        Caveat: Tarifa × Stock muestra correlación, no causalidad (requiere ventas mensuales por región).
+      </p>
+    </div>
   </div>
 
   <!-- TAB 4: Precios Nudo por Subestacion -->
@@ -178,6 +206,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/c_elasticidad_tarifas_pnp.js"></script>
 <script src="data/c_tarifas.js"></script>
 <script src="data/c_ev_2025.js"></script>
+<script src="data/c_elasticidad_ine_regional.js"></script>
+<script src="data/c_elasticidad_regional_preliminar.js"></script>
 <script src="data/combustible.js"></script>
 <script src="data/c_bencina93_serie.js"></script>
 <script src="assets/comun.js?v=260831a"></script>
@@ -200,13 +230,17 @@ const D = PW_DATA.c_elasticidad;
 document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const n = D.capturas_p93.length;
+const primeraCaptura = n ? D.capturas_p93[0].captura : null;
+const ultimaCaptura = n ? D.capturas_p93[n - 1].captura : null;
 document.getElementById("kpis").innerHTML = [
-  [n + " / " + D.capturas_necesarias, "capturas de precio acumuladas", "cada 10 dias desde jul-2026"],
-  [n >= D.capturas_necesarias ? "Activo" : "En construccion", "estado del analisis",
-    n >= D.capturas_necesarias ? "" : "faltan " + (D.capturas_necesarias - n) + " capturas (~" + Math.ceil((D.capturas_necesarias - n) * 10 / 30) + " meses)"],
+  [n, "capturas de precio acumuladas", primeraCaptura ? "del " + primeraCaptura + " al " + ultimaCaptura : "aún sin capturas"],
   [D.participacion.length ? PW.fmt(D.participacion[D.participacion.length - 1].pct, 1) + "%" : "—",
     "participacion enchufable actual", D.participacion.length ? "mes " + D.participacion[D.participacion.length - 1].ym : ""],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+document.getElementById("capturas-pie").textContent = n
+  ? "Regresión participación~precio con rezagos (0-6 meses): aún no implementada. " + n +
+    " capturas acumuladas del " + primeraCaptura + " al " + ultimaCaptura + "."
+  : "Regresión participación~precio con rezagos (0-6 meses): aún no implementada. Sin capturas propias todavía.";
 
 PW.tabla("t-capturas", [
   { k: "captura", titulo: "Fecha de captura" },
@@ -542,7 +576,7 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
   }
 })();
 
-// TAB 3: Stock de EVs 2025 - Datos de EV2025Data (c_ev_2025.js)
+// TAB 3: Stock de EVs 2025 - Datos de EV2025Data (c_ev_2025.js) + ElasticidadINERegional
 function cargarTabEV2025() {
   if (!window.EV2025Data) {
     setTimeout(cargarTabEV2025, 100);
@@ -596,6 +630,147 @@ function cargarTabEV2025() {
     { k: "tarifa_energia", titulo: "Tarifa Energia ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
     { k: "stock_2025", titulo: "Stock EV 2025", num: true, fmt: v => v.toLocaleString() },
   ], filas_correlacion, { max: 20 });
+
+  // === NUEVOS DATOS: ElasticidadINERegional (desagregado por segmento) ===
+  if (!window.ElasticidadINERegional) {
+    document.getElementById("nota-segmentacion").textContent = "Datos regionales por segmento aún se están cargando...";
+    return;
+  }
+
+  const ER = window.ElasticidadINERegional;
+  const ER_M = ER.metadata;
+
+  document.getElementById("nota-segmentacion").textContent =
+    "Fuente: " + ER_M.fuente_stock + ". Desagregado usando proporciones venta 2025 (BEV 50.7%, PHEV 29.8%, Buses 18.5%, Trucks 1.0%). Proyectado con tasas por segmento.";
+
+  // Tabla: Stock 2024 por región y segmento
+  const filas_2024 = ER.regiones.map(r => ({
+    region: r.region,
+    bev: r.stock_2024.bev,
+    phev: r.stock_2024.phev,
+    buses: r.stock_2024.buses,
+    trucks: r.stock_2024.trucks,
+    total: r.stock_2024.total,
+  }));
+
+  PW.tabla("t-ev-segmento-2024", [
+    { k: "region", titulo: "Region", num: false },
+    { k: "bev", titulo: "BEV", num: true, fmt: v => v.toLocaleString() },
+    { k: "phev", titulo: "PHEV", num: true, fmt: v => v.toLocaleString() },
+    { k: "buses", titulo: "E-Buses", num: true, fmt: v => v.toLocaleString() },
+    { k: "trucks", titulo: "E-Trucks", num: true, fmt: v => v.toLocaleString() },
+    { k: "total", titulo: "Total", num: true, fmt: v => v.toLocaleString() },
+  ], filas_2024, { max: 20 });
+
+  // Tabla: Stock 2025 por región y segmento
+  const filas_2025 = ER.regiones.map(r => ({
+    region: r.region,
+    bev: r.stock_2025.bev,
+    phev: r.stock_2025.phev,
+    buses: r.stock_2025.buses,
+    trucks: r.stock_2025.trucks,
+    total: r.stock_2025.total,
+  }));
+
+  PW.tabla("t-ev-segmento-2025", [
+    { k: "region", titulo: "Region", num: false },
+    { k: "bev", titulo: "BEV", num: true, fmt: v => v.toLocaleString() },
+    { k: "phev", titulo: "PHEV", num: true, fmt: v => v.toLocaleString() },
+    { k: "buses", titulo: "E-Buses", num: true, fmt: v => v.toLocaleString() },
+    { k: "trucks", titulo: "E-Trucks", num: true, fmt: v => v.toLocaleString() },
+    { k: "total", titulo: "Total", num: true, fmt: v => v.toLocaleString() },
+  ], filas_2025, { max: 20 });
+
+  // Tabla: Stock 2027 por región y segmento
+  const filas_2027 = ER.regiones.map(r => ({
+    region: r.region,
+    bev: r.stock_2027.bev,
+    phev: r.stock_2027.phev,
+    buses: r.stock_2027.buses,
+    trucks: r.stock_2027.trucks,
+    total: r.stock_2027.total,
+  }));
+
+  PW.tabla("t-ev-segmento-2027", [
+    { k: "region", titulo: "Region", num: false },
+    { k: "bev", titulo: "BEV", num: true, fmt: v => v.toLocaleString() },
+    { k: "phev", titulo: "PHEV", num: true, fmt: v => v.toLocaleString() },
+    { k: "buses", titulo: "E-Buses", num: true, fmt: v => v.toLocaleString() },
+    { k: "trucks", titulo: "E-Trucks", num: true, fmt: v => v.toLocaleString() },
+    { k: "total", titulo: "Total", num: true, fmt: v => v.toLocaleString() },
+  ], filas_2027, { max: 20 });
+
+  // Tabla: Proporción nacional por segmento
+  const filas_prop = [
+    {
+      ano: "2024",
+      bev_pct: ((ER.segmentacion_nacional["2024"].bev / ER.stock_nacional["2024"]) * 100).toFixed(1),
+      phev_pct: ((ER.segmentacion_nacional["2024"].phev / ER.stock_nacional["2024"]) * 100).toFixed(1),
+      buses_pct: ((ER.segmentacion_nacional["2024"].buses / ER.stock_nacional["2024"]) * 100).toFixed(1),
+      trucks_pct: ((ER.segmentacion_nacional["2024"].trucks / ER.stock_nacional["2024"]) * 100).toFixed(1),
+    },
+    {
+      ano: "2025",
+      bev_pct: ((ER.segmentacion_nacional["2025"].bev / ER.stock_nacional["2025"]) * 100).toFixed(1),
+      phev_pct: ((ER.segmentacion_nacional["2025"].phev / ER.stock_nacional["2025"]) * 100).toFixed(1),
+      buses_pct: ((ER.segmentacion_nacional["2025"].buses / ER.stock_nacional["2025"]) * 100).toFixed(1),
+      trucks_pct: ((ER.segmentacion_nacional["2025"].trucks / ER.stock_nacional["2025"]) * 100).toFixed(1),
+    },
+    {
+      ano: "2027",
+      bev_pct: ((ER.segmentacion_nacional["2027"].bev / ER.stock_nacional["2027"]) * 100).toFixed(1),
+      phev_pct: ((ER.segmentacion_nacional["2027"].phev / ER.stock_nacional["2027"]) * 100).toFixed(1),
+      buses_pct: ((ER.segmentacion_nacional["2027"].buses / ER.stock_nacional["2027"]) * 100).toFixed(1),
+      trucks_pct: ((ER.segmentacion_nacional["2027"].trucks / ER.stock_nacional["2027"]) * 100).toFixed(1),
+    },
+  ];
+
+  PW.tabla("t-ev-proporcion", [
+    { k: "ano", titulo: "Año", num: false },
+    { k: "bev_pct", titulo: "BEV %", num: false },
+    { k: "phev_pct", titulo: "PHEV %", num: false },
+    { k: "buses_pct", titulo: "E-Buses %", num: false },
+    { k: "trucks_pct", titulo: "E-Trucks %", num: false },
+  ], filas_prop, { max: 5 });
+}
+
+// === ELASTICIDAD REGIONAL PRELIMINAR ===
+function cargarElasticidadRegional() {
+  if (!window.ElasticidadRegionalPreliminar) {
+    setTimeout(cargarElasticidadRegional, 100);
+    return;
+  }
+
+  const ERp = window.ElasticidadRegionalPreliminar;
+  const M = ERp.metadata;
+
+  // Nota
+  document.getElementById("nota-elasticidad-regional").textContent =
+    "Análisis descriptivo (correlación). " + M.caveat;
+
+  // Tabla: Elasticidad Regional
+  const filas_elasticidad = ERp.regiones.map(r => ({
+    region: r.region,
+    tarifa: r.tarifa_potencia_kwm,
+    stock_2024: r.stock_2024,
+    pct_nacional: r.pct_stock_nacional.toFixed(1),
+    ventas_h1: r.ventas_h1_2026_estimadas,
+  }));
+
+  PW.tabla("t-elasticidad-regional", [
+    { k: "region", titulo: "Región", num: false },
+    { k: "tarifa", titulo: "Tarifa Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 2) },
+    { k: "stock_2024", titulo: "Stock 2024 (Real)", num: true, fmt: v => v.toLocaleString() },
+    { k: "pct_nacional", titulo: "% Parque", num: false },
+    { k: "ventas_h1", titulo: "Ventas H1 2026 (Est.)", num: true, fmt: v => v.toLocaleString() },
+  ], filas_elasticidad, { max: 20 });
+}
+
+// Llamar elasticidad regional
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', cargarElasticidadRegional);
+} else {
+  cargarElasticidadRegional();
 }
 // Llamar cuando DOM está listo
 if (document.readyState === 'loading') {
