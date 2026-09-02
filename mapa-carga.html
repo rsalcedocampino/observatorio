@@ -32,7 +32,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
-<link rel="preload" as="script" href="data/mapa.js">
+<link rel="preload" as="script" href="data/mapa_carga.js">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -70,11 +70,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <b style="color:var(--s3)">AC</b>.</p>
   </div>
 </main>
-<script src="data/mapa.js"></script>
+<script src="data/mapa_carga.js"></script>
 <script src="assets/comun.js?v=260901a"></script>
 <script>
 PW.montarNav("mapa-carga.html");
-const MAPA = window.PW_DATA.mapa || {};
+const MAPA = window.PW_DATA.mapa_carga || {};  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
 const CARGA = (MAPA.carga || []).map(p => ({
   ...p, lat: +p.lat, lon: +p.lon, _kw: parseFloat(p.kw) || 0, _nc: parseInt(p.nc, 10) || 0,
   _dc: String(p.cor || "").toUpperCase() === "DC",

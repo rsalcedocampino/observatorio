@@ -34,7 +34,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
 <link rel="preload" as="script" href="data/operadores.js">
 <link rel="preload" as="script" href="data/sitios.js">
-<link rel="preload" as="script" href="data/mapa.js">
+<link rel="preload" as="script" href="data/mapa_carga.js">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -97,7 +97,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script src="data/operadores.js"></script>
 <script src="data/sitios.js"></script>
-<script src="data/mapa.js"></script>
+<script src="data/mapa_carga.js"></script>
 <script src="assets/comun.js?v=260901a"></script>
 <script>
 PW.montarNav("operadores.html");
@@ -110,7 +110,7 @@ PW.montarNav("operadores.html");
     fuera_de_servicio: PW.color("--critical"),
     no_disponible: PW.color("--ink-3"),
   };
-  const datos = PW_DATA.mapa.carga;
+  const datos = PW_DATA.mapa_carga.carga;  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
   const operadoresU = [...new Set(datos.map(p => p.op).filter(Boolean))].sort();
   let filtroTerr = { rcut: null, com: null };
   let mapaRed = null;
