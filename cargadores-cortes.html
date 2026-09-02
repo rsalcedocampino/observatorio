@@ -33,7 +33,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
 <link rel="preload" as="script" href="data/cortes.js">
-<link rel="preload" as="script" href="data/mapa.js">
+<link rel="preload" as="script" href="data/mapa_carga.js">
 <!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas), pero esta pagina SIEMPRE lo necesita
      (choropleth + filtros salen de sus poligonos): precargarlo evita que la espera sea secuencial. -->
 <link rel="preload" as="script" href="data/geo_comunas.js">
@@ -86,7 +86,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script src="data/cortes.js"></script>
-<script src="data/mapa.js"></script>
+<script src="data/mapa_carga.js"></script>
 <script src="assets/comun.js?v=260901a"></script>
 <script>
 PW.montarNav("cargadores-cortes.html");
@@ -101,7 +101,7 @@ document.getElementById("nota").textContent = "Fuente: SEC - Actualizado al " + 
 PW.cargarGeoComunas().then(() => {
 
 // ===== Mapa en vivo: choropleth de cortes por region + red de carga =====
-const MAPA = window.PW_DATA.mapa || {};
+const MAPA = window.PW_DATA.mapa_carga || {};  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
 const _norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim();
 // Corte confirmado por distribuidora, a nivel COMUNA (preciso pero parcial): resalta cargadores.
 const DIST = (D.distribuidoras && D.distribuidoras.por_comuna) || [];
