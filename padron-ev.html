@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0C4Z3N1KZJ');
+</script>
+<!-- End Google tag (gtag.js) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Padrón EV — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260906a">
+<link rel="preload" as="script" href="data/c_padron_ev.js">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <h1>Padrón EV</h1>
+  <p class="sub">Padrón de modelos electrificados identificados en Chile — identidad, especificaciones
+  oficiales, certificación CIT, ficha de rescate y seguro EV disponible, en un solo lugar. Consolida
+  <a href="rescate.html">Portal de rescate</a> y <a href="tco.html">Costo total de propiedad</a> sin
+  repetir su contenido: acá se busca y filtra el modelo, y se enlaza a la ficha completa.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <div class="filtros">
+      <label>Buscar <input type="search" id="f-buscar" placeholder="Marca o modelo..."></label>
+      <label>Tecnología <select id="f-tec"><option value="">Todas</option></select></label>
+      <label>Marca <select id="f-marca"><option value="">Todas</option></select></label>
+      <label><input type="checkbox" id="f-rescate"> Con ficha de rescate</label>
+      <label><input type="checkbox" id="f-cit"> Certificado en Chile (CIT)</label>
+      <label><input type="checkbox" id="f-seguro"> Con seguro EV</label>
+      <button type="button" id="f-limpiar" class="preset-btn">Limpiar filtros</button>
+    </div>
+    <p class="nota" id="nota-filtro"></p>
+    <div class="scroll-x" id="t-padron"></div>
+  </div>
+</main>
+
+<script src="data/c_padron_ev.js"></script>
+<script src="assets/comun.js?v=260906a"></script>
+<script>
+PW.montarNav("padron-ev.html");
+const D = PW_DATA.c_padron_ev;
+
+if (!D.disponible) {
+  document.getElementById("nota").textContent = "Padrón no disponible todavía.";
+} else {
+  const M = D.meta;
+  document.getElementById("nota").textContent =
+    "Fuente: " + M.fuente + ". Actualizado " + (D.generado || "") + ". " + M.descripcion;
+
+  document.getElementById("kpis").innerHTML = [
+    [PW.fmt(M.total), "modelos en el padrón", M.marcas.length + " marcas"],
+    [PW.fmt(M.n_cit) + " (" + PW.fmt(M.n_cit / M.total * 100, 0) + "%)", "certificados en Chile", "CIT / Etiqueta de Eficiencia"],
+    [PW.fmt(M.n_rescate) + " (" + PW.fmt(M.n_rescate / M.total * 100, 0) + "%)", "con ficha de rescate", "Euro NCAP / SEC / ANB"],
+    [PW.fmt(M.n_seguro), "con seguro EV", "de " + PW.fmt(M.total)],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+  const selTec = document.getElementById("f-tec");
+  selTec.innerHTML += M.tecnologias.map(t => `<option value="${PW.esc(t)}">${PW.esc(t)}</option>`).join("");
+  const selMarca = document.getElementById("f-marca");
+  selMarca.innerHTML += M.marcas.map(m => `<option value="${PW.esc(m)}">${PW.esc(m)}</option>`).join("");
+
+  const TEC_TXT = { BEV: "Eléctrico", PHEV: "Híbrido enchufable", HEV: "Híbrido", MHEV: "Híbrido leve", EREV: "Rango extendido", FCEV: "Hidrógeno" };
+
+  const cols = [
+    { k: "marca", titulo: "Marca" },
+    { k: "modelo", titulo: "Modelo" },
+    { k: "tec", titulo: "Tecnología", fmt: v => `<span class="pill">${PW.esc(TEC_TXT[v] || v)}</span>` },
+    { k: "carroceria", titulo: "Carrocería", fmt: v => v ? PW.esc(v) : "—" },
+    { k: "bateria", titulo: "Batería", num: true, fmt: v => v ? PW.fmt(v, 1) + " kWh" : "—" },
+    { k: "autonomia", titulo: "Autonomía", num: true, fmt: v => v ? PW.fmt(v) + " km" : "—" },
+    { k: "precio_min", titulo: "Precio", num: true, fmt: (v, f) => v ? (f.precio_max && f.precio_max !== v ? PW.clp(v) + " – " + PW.clp(f.precio_max) : PW.clp(v)) : "—" },
+    { k: "cit", titulo: "CIT", fmt: (v, f) => v ? `<a href="${PW.esc(f.etiqueta_url || '#')}" target="_blank" rel="noopener" class="pill" style="background:var(--good);color:#fff">certificado</a>` : "—" },
+    { k: "rescate", titulo: "Ficha de rescate", fmt: (v, f) => v ? `<a href="${PW.esc(f.rescate_url)}" target="_blank" rel="noopener">ver PDF</a>` : "—" },
+    { k: "seguro_ev", titulo: "Seguro EV", fmt: v => v ? `<span class="pill" style="background:var(--s3);color:#fff">disponible</span>` : "—" },
+  ];
+
+  let tab = null;
+  const norm = s => (s || "").toString().normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+  function filtradas() {
+    const q = norm(document.getElementById("f-buscar").value.trim());
+    const tec = selTec.value;
+    const marca = selMarca.value;
+    const soloRescate = document.getElementById("f-rescate").checked;
+    const soloCit = document.getElementById("f-cit").checked;
+    const soloSeguro = document.getElementById("f-seguro").checked;
+    return D.v.filter(x =>
+      (!q || norm(x.marca).includes(q) || norm(x.modelo).includes(q)) &&
+      (!tec || x.tec === tec) &&
+      (!marca || x.marca === marca) &&
+      (!soloRescate || x.rescate) &&
+      (!soloCit || x.cit) &&
+      (!soloSeguro || x.seguro_ev)
+    );
+  }
+
+  function aplicar() {
+    const filas = filtradas();
+    document.getElementById("nota-filtro").textContent =
+      "Mostrando " + PW.fmt(filas.length) + " de " + PW.fmt(D.v.length) + " modelos.";
+    if (tab) tab.actualizar(filas);
+    else tab = PW.tabla("t-padron", cols, filas, { orden: "marca", asc: true, buscador: false, max: 800 });
+  }
+
+  ["f-buscar"].forEach(id => document.getElementById(id).addEventListener("input", aplicar));
+  ["f-tec", "f-marca"].forEach(id => document.getElementById(id).addEventListener("input", aplicar));
+  ["f-rescate", "f-cit", "f-seguro"].forEach(id => document.getElementById(id).addEventListener("change", aplicar));
+  document.getElementById("f-limpiar").addEventListener("click", () => {
+    document.getElementById("f-buscar").value = "";
+    selTec.value = ""; selMarca.value = "";
+    document.getElementById("f-rescate").checked = false;
+    document.getElementById("f-cit").checked = false;
+    document.getElementById("f-seguro").checked = false;
+    aplicar();
+  });
+  aplicar();
+}
+</script>
+</body>
+</html>
