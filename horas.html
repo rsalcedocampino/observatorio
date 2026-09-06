@@ -44,10 +44,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Ocupación nacional por hora (hora de Chile)</h2>
+    <div class="filtros">
+      <label>Estado <select id="estado-sel">
+        <option value="ocupacion">Ocupado</option>
+        <option value="disponible_pct">Disponible</option>
+        <option value="fuera_de_servicio_pct">Fuera de servicio</option>
+        <option value="no_disponible_pct">No disponible</option>
+        <option value="desconocido_pct">Desconocido</option>
+      </select></label>
+    </div>
     <div id="g-nacional"></div>
-    <p class="nota">Filtro: solo cuentan los estados homologados "disponible" y "ocupado". Los
-    otros 3 estados posibles (fuera de servicio / no disponible / desconocido) quedan fuera del
-    cálculo — no ocupan ni desocupan, simplemente no se cuentan.</p>
+    <p class="nota" id="nota-estado"></p>
   </div>
 
   <div class="tarjeta">
@@ -83,17 +90,35 @@ if (!D.disponible) {
     "Basado en " + D.dias_observados + " dias de observacion. " + D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + ".";
 
   const horas = [...Array(24).keys()];
-  const nac = horas.map(h => {
-    const r = D.nacional.find(x => x.hora === h);
-    return r ? r.ocupacion : null;
-  });
-  PW.columnas("g-nacional", {
-    labels: horas.map(h => String(h).padStart(2, "0") + ":00"),
-    valores: nac,
-    fmtV: v => PW.fmt(v, 1) + "% ocupado",
-    fmtY: v => Math.round(v) + "%",
-    alto: 260,
-  });
+  // "ocupacion"/"disponible_pct" son % del pool operativo (disponible+ocupado, como siempre);
+  // los otros 3 son % del total de observaciones esa hora (los 5 estados) -- no encajan en esa
+  // dicotomia. Cada opcion trae su propia nota para que quede claro cual base usa.
+  const ESTADOS = {
+    ocupacion: { label: "ocupado", nota: 'Filtro: % del pool operativo ("disponible" + "ocupado"). Los otros 3 estados posibles (fuera de servicio / no disponible / desconocido) quedan fuera de esta base -- no ocupan ni desocupan, simplemente no se cuentan.' },
+    disponible_pct: { label: "disponible", nota: 'Filtro: % del pool operativo ("disponible" + "ocupado"), complementario de "Ocupado" (suman 100%). Los otros 3 estados quedan fuera de esta base.' },
+    fuera_de_servicio_pct: { label: "fuera de servicio", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos), no del pool operativo -- \"fuera de servicio\" no es ni disponible ni ocupado." },
+    no_disponible_pct: { label: "no disponible", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos), no del pool operativo." },
+    desconocido_pct: { label: "desconocido", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos) -- la fuente no informó el estado real." },
+  };
+  const selEstado = document.getElementById("estado-sel");
+  function pintarNacional() {
+    const campo = selEstado.value;
+    const info = ESTADOS[campo];
+    const nac = horas.map(h => {
+      const r = D.nacional.find(x => x.hora === h);
+      return r ? r[campo] : null;
+    });
+    PW.columnas("g-nacional", {
+      labels: horas.map(h => String(h).padStart(2, "0") + ":00"),
+      valores: nac,
+      fmtV: v => PW.fmt(v, 1) + "% " + info.label,
+      fmtY: v => Math.round(v) + "%",
+      alto: 260,
+    });
+    document.getElementById("nota-estado").textContent = info.nota;
+  }
+  selEstado.addEventListener("input", pintarNacional);
+  pintarNacional();
 
   PW.lineas("g-operadores", {
     labels: horas.map(h => String(h).padStart(2, "0")),
