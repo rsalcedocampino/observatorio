@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Infraestructura de Carga — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260906a">
+<link rel="stylesheet" href="assets/estilo.css?v=260908a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -41,10 +41,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
   <h1>Infraestructura de Carga</h1>
-  <p class="sub">Mapa interactivo de la <b>red pública de carga</b> de Chile: cada punto es un cargador,
-  con su operador, conector, potencia, estado, dirección y horario. Filtra por operador, corriente
-  (AC/DC), potencia y región. Para el registro declarado a la SEC (agregados por región y potencia) ver
-  <a href="infraestructura.html">Infraestructura declarada (SEC)</a>.</p>
+  <p class="sub">Mapa interactivo de la <b>red de carga</b> de Chile: cada punto es una estación, con su
+  operador, conectores, potencia, estado, dirección y horario. Incluye acceso público y
+  restringido/privado (flotas, estacionamientos) — marcado en el punto y en su ficha, nunca oculto.
+  Filtra por operador, corriente (AC/DC), potencia, región y acceso. Para el registro declarado a la
+  SEC (agregados por región y potencia) ver <a href="infraestructura.html">Infraestructura declarada
+  (SEC)</a>.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
@@ -54,24 +56,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <label>Corriente <select id="f-cor"><option value="">Todas</option><option value="DC">Carga rápida (DC)</option><option value="AC">Carga AC</option></select></label>
     <label>Potencia <select id="f-pot"><option value="">Todas</option><option value="ultra">Ultrarrápida (≥50 kW)</option><option value="rapida">Rápida (22–49 kW)</option><option value="lenta">Lenta (&lt;22 kW)</option></select></label>
     <label>Región <select id="f-reg"><option value="">Todas</option></select></label>
+    <label>Acceso <select id="f-acc"><option value="">Todos</option><option value="publico">Público</option><option value="restringido">Restringido</option><option value="mixto">Mixto</option></select></label>
     <span class="pill" id="ambito"></span>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Mapa de cargadores públicos</h2>
+    <h2 style="margin-top:0">Mapa de la red de carga</h2>
     <div id="mapa-carga"></div>
     <div id="leyenda-wrap" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px">
       <span class="nota" style="margin:0">Tipo de carga:</span>
       <div id="leyenda-mapa" class="leyenda" style="margin:0"></div>
+      <span class="nota" style="margin:0 0 0 12px">Acceso (borde):</span>
+      <div id="leyenda-acc" class="leyenda" style="margin:0"></div>
     </div>
     <p class="nota">Los puntos se agrupan en clústeres al alejar; acércate o haz clic en un clúster para
-    separarlos. Clic en un cargador para ver operador, conectores, potencia, estado, dirección, horario y
-    medios de pago. Color por tipo de carga: <b style="color:var(--s2)">DC (rápida)</b> /
-    <b style="color:var(--s3)">AC</b>.</p>
+    separarlos. Clic en una estación para ver operador, conectores, potencia, estado, dirección,
+    horario, medios de pago y acceso. Relleno por tipo de carga:
+    <b style="color:var(--s2)">DC (rápida)</b> / <b style="color:var(--s3)">AC</b>. Borde por acceso:
+    blanco = público, gris = restringido, azul = mixto (sitio con conectores de ambos tipos).</p>
   </div>
 </main>
 <script src="data/mapa_carga.js"></script>
-<script src="assets/comun.js?v=260906a"></script>
+<script src="assets/comun.js?v=260908a"></script>
 <script>
 PW.montarNav("mapa-carga.html");
 const MAPA = window.PW_DATA.mapa_carga || {};  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
@@ -98,14 +104,25 @@ Object.entries(REG).sort((a, b) => (a[1] || "").localeCompare(b[1] || ""))
 const selCor = document.getElementById("f-cor");
 const selPot = document.getElementById("f-pot");
 
+const selAcc = document.getElementById("f-acc");
 function claseP(kw) { return kw >= 50 ? "ultra" : (kw >= 22 ? "rapida" : "lenta"); }
 function filtrar() {
-  const op = selOp.value, cor = selCor.value, pot = selPot.value, rc = selReg.value;
+  const op = selOp.value, cor = selCor.value, pot = selPot.value, rc = selReg.value, acc = selAcc.value;
   return CARGA.filter(p =>
     (!op || p.op === op) &&
     (!cor || (cor === "DC" ? p._dc : !p._dc)) &&
     (!pot || claseP(p._kw) === pot) &&
-    (!rc || p.rcut === rc));
+    (!rc || p.rcut === rc) &&
+    (!acc || p.acc === acc));
+}
+
+// Borde del punto = acceso (441): publico sin marcar (blanco, el default), restringido gris,
+// mixto azul. Independiente del relleno, que ya codifica AC/DC -- son dos preguntas distintas.
+const COL_RESTR = PW.color("--ink-3"), COL_MIXTO = PW.color("--s1");
+function bordeAcceso(p) {
+  if (p.acc === "restringido") return COL_RESTR;
+  if (p.acc === "mixto") return COL_MIXTO;
+  return null; // publico: borde blanco por defecto, sin marca
 }
 
 const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]);
@@ -114,10 +131,10 @@ function render() {
   const pts = filtrar();
   const rc = selReg.value;
   const ambito = rc ? (REG[rc] || rc) : "todo el país";
-  document.getElementById("ambito").textContent = PW.fmt(pts.length) + " cargadores · " + ambito;
+  document.getElementById("ambito").textContent = PW.fmt(pts.length) + " estaciones · " + ambito;
 
   document.getElementById("kpis").innerHTML = [
-    [PW.fmt(pts.length), "cargadores", ambito],
+    [PW.fmt(pts.length), "estaciones", ambito],
     [PW.fmt(pts.reduce((s, p) => s + p._nc, 0)), "conectores", "suma de conectores"],
     [PW.fmt(new Set(pts.map(p => p.op).filter(Boolean)).size), "operadores", "distintos"],
     [PW.fmt(pts.reduce((s, p) => s + p._kw, 0) / 1000, 1) + " MW", "potencia instalada", "suma de kW"],
@@ -126,7 +143,7 @@ function render() {
   const capas = [{
     nombre: "Cargadores", visible: true, color: COL_AC,
     puntos: pts.map(p => ({
-      lat: p.lat, lon: p.lon, r: 5, color: p._dc ? COL_DC : COL_AC,
+      lat: p.lat, lon: p.lon, r: 5, color: p._dc ? COL_DC : COL_AC, borde: bordeAcceso(p),
       tip: (p.n || (p.op ? "Estación " + p.op : "Cargador")) + (p._kw ? " — " + PW.fmt(p._kw) + " kW" : ""),
       popup: PW.popupEstacion(p),
     })),
@@ -151,7 +168,10 @@ function render() {
 }
 
 PW.leyendaMapa("leyenda-mapa", [["DC (rápida)", COL_DC], ["AC", COL_AC]]);
-[selOp, selCor, selPot, selReg].forEach(s => s.addEventListener("input", render));
+// Solo las dos marcas EXCEPCIONALES: publico es el borde por defecto (sin marca), ya
+// explicado en el texto de abajo -- un cuadrito blanco en la leyenda no se ve.
+PW.leyendaMapa("leyenda-acc", [["Restringido", COL_RESTR], ["Mixto", COL_MIXTO]]);
+[selOp, selCor, selPot, selReg, selAcc].forEach(s => s.addEventListener("input", render));
 render();
 </script>
 </body>
