@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -45,6 +45,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preload" as="script" href="data/c_elasticidad_regional_preliminar.js">
 <link rel="preload" as="script" href="data/combustible.js">
 <link rel="preload" as="script" href="data/c_bencina93_serie.js">
+<link rel="preload" as="script" href="data/c_elasticidad_tarifas_detallado.js">
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -59,6 +60,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="tab-btn" data-tab="tarifas">Tarifas de Electricidad (Regional)</button>
     <button class="tab-btn" data-tab="ev2025">Stock EV 2025 (Proyectado)</button>
     <button class="tab-btn" data-tab="pnp">Precios Nudo por Subestación</button>
+    <button class="tab-btn" data-tab="tarifas-detalle">Tarifa Final (PNP + VAD)</button>
   </div>
 
   <!-- TAB 1: Bencina 93 -->
@@ -209,10 +211,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </p>
     </div>
   </div>
+
+  <!-- TAB 4: Tarifa Final (PNP + VAD) -->
+  <div id="tab-tarifas-detalle" class="tab-content">
+    <p class="sub">Tarifa final al cliente = Precio Nudo (transmisión CNE) + Valor Agregado Distribución (distribuidor).
+    Selecciona región, distribuidor y segmento para ver desglose completo: energía, potencia, cargos fijos y tarifa total.</p>
+    <p class="nota" id="nota-tarifa-detalle"></p>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Tarifa final por región, distribuidor y segmento</h2>
+
+      <div style="margin-bottom: 1rem;">
+        <label for="sel-region-det" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Región:</label>
+        <select id="sel-region-det" style="width: 100%; padding: 8px; font-size: 1rem;">
+          <option value="">-- Selecciona región --</option>
+        </select>
+      </div>
+
+      <div id="dist-det-container" style="display: none; margin-bottom: 1rem;">
+        <label for="sel-distribuidor-det" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Distribuidor:</label>
+        <select id="sel-distribuidor-det" style="width: 100%; padding: 8px; font-size: 1rem;">
+          <option value="">-- Selecciona distribuidor --</option>
+        </select>
+      </div>
+
+      <div id="seg-det-container" style="display: none; margin-bottom: 1rem;">
+        <label for="sel-segmento-det" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Segmento (tipo cliente):</label>
+        <select id="sel-segmento-det" style="width: 100%; padding: 8px; font-size: 1rem;">
+          <option value="">-- Selecciona segmento --</option>
+          <option value="BT1">BT1 - Domiciliario (residencial)</option>
+          <option value="BT2">BT2 - Comercial pequeño (10-50 kW)</option>
+          <option value="MT">MT - Media Tensión (50-500 kW)</option>
+          <option value="AT">AT - Alta Tensión (&gt;500 kW)</option>
+        </select>
+      </div>
+
+      <div id="tabla-tarifa-detalle"></div>
+
+      <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color: #666;">
+        Datos: PNP (CNE Decreto 2026-04) + VAD Regulado (SEC). Componentes: Energía ($/kWh) + Potencia ($/kW/mes) + Cargo fijo ($/mes).
+        Nota: VAD en revisión - valores de referencia regulados. Verificar con distribuidor para tarifas vigentes actuales.
+      </p>
+    </div>
+  </div>
 </main>
 <script src="data/c_elasticidad.js"></script>
 <script src="data/c_elasticidad_tarifas.js"></script>
 <script src="data/c_elasticidad_tarifas_pnp.js"></script>
+<script src="data/c_elasticidad_tarifas_detallado.js"></script>
 <script src="data/c_tarifas.js"></script>
 <script src="data/c_ev_2025.js"></script>
 <script src="data/c_elasticidad_ine_regional.js"></script>
@@ -481,6 +527,150 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
       { k: "energia", titulo: "Energía ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
       { k: "potencia", titulo: "Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 0) },
     ], filas, {});
+  });
+}
+
+// TAB 4: Tarifa Final (PNP + VAD)
+if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
+  const DTD = PW_DATA.c_elasticidad_tarifas_detallado;
+
+  // Actualizar nota
+  document.getElementById("nota-tarifa-detalle").textContent = "Actualizado " + (DTD.generado || "").slice(0, 10) + ". " + DTD.nota;
+
+  // Llenar dropdown regiones
+  const selRegionDet = document.getElementById("sel-region-det");
+  const regionesMapeo = {
+    "01": "Tarapacá",
+    "02": "Antofagasta",
+    "03": "Atacama",
+    "04": "Coquimbo",
+    "05": "Valparaíso",
+    "06": "O'Higgins",
+    "13": "Metropolitana"
+  };
+
+  Object.keys(DTD.tarifas || {}).sort().forEach(region => {
+    const opt = document.createElement("option");
+    opt.value = region;
+    opt.textContent = region + " - " + (regionesMapeo[region] || "");
+    selRegionDet.appendChild(opt);
+  });
+
+  // Evento: cambio región
+  selRegionDet.addEventListener("change", function() {
+    const region = this.value;
+    const distDetContainer = document.getElementById("dist-det-container");
+    const segDetContainer = document.getElementById("seg-det-container");
+    const selDistDet = document.getElementById("sel-distribuidor-det");
+    const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle");
+
+    if (!region) {
+      distDetContainer.style.display = "none";
+      segDetContainer.style.display = "none";
+      tablaTarifaDet.innerHTML = "";
+      return;
+    }
+
+    // Llenar dropdown distribuidores
+    selDistDet.innerHTML = '<option value="">-- Selecciona distribuidor --</option>';
+    const dists = Object.keys(DTD.tarifas[region] || {});
+    dists.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d.toUpperCase();
+      selDistDet.appendChild(opt);
+    });
+
+    distDetContainer.style.display = "block";
+    segDetContainer.style.display = "none";
+    tablaTarifaDet.innerHTML = "";
+  });
+
+  // Evento: cambio distribuidor
+  document.getElementById("sel-distribuidor-det").addEventListener("change", function() {
+    const region = document.getElementById("sel-region-det").value;
+    const dist = this.value;
+    const segDetContainer = document.getElementById("seg-det-container");
+    const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle");
+
+    if (!region || !dist) {
+      segDetContainer.style.display = "none";
+      tablaTarifaDet.innerHTML = "";
+      return;
+    }
+
+    segDetContainer.style.display = "block";
+    tablaTarifaDet.innerHTML = "";
+  });
+
+  // Evento: cambio segmento
+  document.getElementById("sel-segmento-det").addEventListener("change", function() {
+    const region = document.getElementById("sel-region-det").value;
+    const dist = document.getElementById("sel-distribuidor-det").value;
+    const segmento = this.value;
+    const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle");
+
+    if (!region || !dist || !segmento) {
+      tablaTarifaDet.innerHTML = "";
+      return;
+    }
+
+    const tarifa = DTD.tarifas[region][dist][segmento];
+    if (!tarifa) {
+      tablaTarifaDet.innerHTML = "<p style='color:#666;'>Sin datos para esta combinación.</p>";
+      return;
+    }
+
+    // Construir tabla con desglose PNP + VAD + Final
+    const filas = [
+      {
+        componente: "Precio Nudo (Transmisión CNE)",
+        energia: tarifa.pnp.energia,
+        potencia: tarifa.pnp.potencia,
+        cargo_fijo: "-"
+      },
+      {
+        componente: "VAD Distribuidor",
+        energia: tarifa.vad.energia,
+        potencia: tarifa.vad.potencia,
+        cargo_fijo: tarifa.vad.cargo_fijo
+      },
+      {
+        componente: "TARIFA FINAL (Total)",
+        energia: tarifa.final.energia,
+        potencia: tarifa.final.potencia,
+        cargo_fijo: tarifa.final.cargo_fijo,
+        style: "font-weight: bold; background-color: #f0f0f0;"
+      }
+    ];
+
+    const tabla = document.createElement("table");
+    tabla.style.cssText = "width:100%; border-collapse: collapse; margin: 1rem 0;";
+
+    // Encabezado
+    const thead = tabla.createTHead();
+    const headerRow = thead.insertRow();
+    ["Componente", "Energía ($/kWh)", "Potencia ($/kW/mes)", "Cargo Fijo ($/mes)"].forEach(h => {
+      const th = document.createElement("th");
+      th.textContent = h;
+      th.style.cssText = "text-align:left; padding:10px; border-bottom:2px solid #999; background:#f5f5f5;";
+      headerRow.appendChild(th);
+    });
+
+    // Filas
+    const tbody = tabla.createTBody();
+    filas.forEach(f => {
+      const row = tbody.insertRow();
+      if (f.style) row.style.cssText = f.style;
+      [f.componente, PW.fmt(f.energia, 2), PW.fmt(f.potencia, 0), f.cargo_fijo === "-" ? "-" : PW.fmt(f.cargo_fijo, 0)].forEach((val, i) => {
+        const cell = row.insertCell();
+        cell.textContent = val;
+        cell.style.cssText = "padding:10px; border-bottom:1px solid #ddd; text-align:" + (i === 0 ? "left" : "right");
+      });
+    });
+
+    tablaTarifaDet.innerHTML = "";
+    tablaTarifaDet.appendChild(tabla);
   });
 }
 
