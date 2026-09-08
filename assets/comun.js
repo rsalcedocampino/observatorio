@@ -954,11 +954,14 @@
         if (p.lat == null || p.lon == null) return;
         if (!enChile(p.lat, p.lon)) { fueraChile++; return; }
         const rBase = p.r || 5;
+        // Borde opcional por punto (p.borde/p.bordeAncho): sin ellos, mismo borde blanco de
+        // siempre. Lo usa mapa-carga.html para marcar acceso sin tocar el color de relleno,
+        // que ya codifica tipo de carga (AC/DC) -- son dos dimensiones distintas (ver 441).
         const mk = L.circleMarker([p.lat, p.lon], {
           renderer: usarCluster ? undefined : renderer,
           radius: rBase,
-          color: "#ffffff",
-          weight: 1,
+          color: p.borde || "#ffffff",
+          weight: p.bordeAncho || 1,
           fillColor: p.color || color("--s1"),
           fillOpacity: 0.85,
         });
@@ -1158,10 +1161,19 @@
       fila("Titular IRVE", titular) +
       // "Publico con restriccion" (267): la fuente viva la declara publica pero la SEC la
       // tiene inscrita como privada (hotel, edificio, vina...). Es una ETIQUETA de
-      // despliegue: NO reclasifica `acceso` (los conteos publicos no cambian).
+      // despliegue: NO reclasifica `acceso` (los conteos publicos no cambian). Tiene
+      // prioridad sobre `acc` porque explica un caso mas especifico.
+      // `acc` (441): publico/restringido/mixto a nivel ESTACION -- ver _marca_acceso en
+      // generar_datos.py. En las mixtas se dice cuantos de sus conectores son publicos.
       fila("Acceso", p.restr
         ? "Público con restricción" +
           (p.restrn ? `<div class="pop-detalle">Inscrito en el registro SEC como ${esc(p.restrn)}</div>` : "")
+        : p.acc === "mixto"
+        ? "Mixto" + `<div class="pop-detalle">${p.ncp != null ? p.ncp : "?"} de ${p.nc != null ? p.nc : "?"} conectores de acceso público</div>`
+        : p.acc === "restringido"
+        ? "Restringido (flotas / estacionamiento privado)"
+        : p.acc === "publico"
+        ? "Público"
         : null) +
       `<div class="pop-linea"><span>Estado</span><div><b style="color:${estColor}">${estTxt}</b></div></div>` +
       (sinEstadoVivo
