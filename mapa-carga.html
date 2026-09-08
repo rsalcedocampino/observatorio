@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Infraestructura de Carga — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260908a">
+<link rel="stylesheet" href="assets/estilo.css?v=260908b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -56,7 +56,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <label>Corriente <select id="f-cor"><option value="">Todas</option><option value="DC">Carga rápida (DC)</option><option value="AC">Carga AC</option></select></label>
     <label>Potencia <select id="f-pot"><option value="">Todas</option><option value="ultra">Ultrarrápida (≥50 kW)</option><option value="rapida">Rápida (22–49 kW)</option><option value="lenta">Lenta (&lt;22 kW)</option></select></label>
     <label>Región <select id="f-reg"><option value="">Todas</option></select></label>
-    <label>Acceso <select id="f-acc"><option value="">Todos</option><option value="publico">Público</option><option value="restringido">Restringido</option><option value="mixto">Mixto</option></select></label>
+    <label>Acceso <select id="f-acc"><option value="">Todos</option><option value="publico">Público</option><option value="publico_restringido">Público con restricción</option><option value="restringido">Restringido</option><option value="mixto">Mixto</option></select></label>
     <span class="pill" id="ambito"></span>
   </div>
 
@@ -73,11 +73,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     separarlos. Clic en una estación para ver operador, conectores, potencia, estado, dirección,
     horario, medios de pago y acceso. Relleno por tipo de carga:
     <b style="color:var(--s2)">DC (rápida)</b> / <b style="color:var(--s3)">AC</b>. Borde por acceso:
-    blanco = público, gris = restringido, azul = mixto (sitio con conectores de ambos tipos).</p>
+    blanco = público, <b style="color:var(--good)">verde</b> = público con restricción (inscrito en
+    el registro SEC con alguna condición; el detalle está en la ficha), gris = restringido, azul =
+    mixto (sitio con conectores de ambos tipos).</p>
   </div>
 </main>
 <script src="data/mapa_carga.js"></script>
-<script src="assets/comun.js?v=260908a"></script>
+<script src="assets/comun.js?v=260908b"></script>
 <script>
 PW.montarNav("mapa-carga.html");
 const MAPA = window.PW_DATA.mapa_carga || {};  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
@@ -116,12 +118,16 @@ function filtrar() {
     (!acc || p.acc === acc));
 }
 
-// Borde del punto = acceso (441): publico sin marcar (blanco, el default), restringido gris,
-// mixto azul. Independiente del relleno, que ya codifica AC/DC -- son dos preguntas distintas.
-const COL_RESTR = PW.color("--ink-3"), COL_MIXTO = PW.color("--s1");
+// Borde del punto = acceso (441, 4 valores desde 442): publico sin marcar (blanco, el
+// default); publico_restringido con marca propia -- ES publico, pero el registro SEC trae una
+// restriccion que conviene avisar (nunca igual que restringido: esconderia justo la distincion
+// que motivo el cambio); restringido gris; mixto azul. Independiente del relleno, que ya
+// codifica AC/DC -- son preguntas distintas.
+const COL_RESTR = PW.color("--ink-3"), COL_MIXTO = PW.color("--s1"), COL_PUBRESTR = PW.color("--good");
 function bordeAcceso(p) {
   if (p.acc === "restringido") return COL_RESTR;
   if (p.acc === "mixto") return COL_MIXTO;
+  if (p.acc === "publico_restringido") return COL_PUBRESTR;
   return null; // publico: borde blanco por defecto, sin marca
 }
 
@@ -170,7 +176,7 @@ function render() {
 PW.leyendaMapa("leyenda-mapa", [["DC (rápida)", COL_DC], ["AC", COL_AC]]);
 // Solo las dos marcas EXCEPCIONALES: publico es el borde por defecto (sin marca), ya
 // explicado en el texto de abajo -- un cuadrito blanco en la leyenda no se ve.
-PW.leyendaMapa("leyenda-acc", [["Restringido", COL_RESTR], ["Mixto", COL_MIXTO]]);
+PW.leyendaMapa("leyenda-acc", [["Público con restricción", COL_PUBRESTR], ["Restringido", COL_RESTR], ["Mixto", COL_MIXTO]]);
 [selOp, selCor, selPot, selReg, selAcc].forEach(s => s.addEventListener("input", render));
 render();
 </script>

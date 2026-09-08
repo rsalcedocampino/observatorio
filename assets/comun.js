@@ -1159,22 +1159,22 @@
       `<div class="pop-sub">${[esc(p.dir), [esc(p.com), esc(p.reg)].filter(Boolean).join(", ")].filter(Boolean).join("<br>")}</div>` +
       fila("Operador", esc(p.op)) +
       fila("Titular IRVE", titular) +
-      // "Publico con restriccion" (267): la fuente viva la declara publica pero la SEC la
-      // tiene inscrita como privada (hotel, edificio, vina...). Es una ETIQUETA de
-      // despliegue: NO reclasifica `acceso` (los conteos publicos no cambian). Tiene
-      // prioridad sobre `acc` porque explica un caso mas especifico.
-      // `acc` (441): publico/restringido/mixto a nivel ESTACION -- ver _marca_acceso en
-      // generar_datos.py. En las mixtas se dice cuantos de sus conectores son publicos.
-      fila("Acceso", p.restr
-        ? "Público con restricción" +
-          (p.restrn ? `<div class="pop-detalle">Inscrito en el registro SEC como ${esc(p.restrn)}</div>` : "")
-        : p.acc === "mixto"
-        ? "Mixto" + `<div class="pop-detalle">${p.ncp != null ? p.ncp : "?"} de ${p.nc != null ? p.nc : "?"} conectores de acceso público</div>`
-        : p.acc === "restringido"
-        ? "Restringido (flotas / estacionamiento privado)"
-        : p.acc === "publico"
-        ? "Público"
-        : null) +
+      // `acc` (441, 4 valores desde 442): publico / publico_restringido / restringido / mixto
+      // a nivel ESTACION -- ver _marca_acceso en generar_datos.py. `restr`/`restrn` (267) es el
+      // DETALLE que explica la restriccion (inscripcion SEC), no una marca aparte: antes
+      // competia con `acc` por prioridad y eso escondia 29 estaciones publicas bajo
+      // "restringido" en la marca visual (el acc de 2 valores no distinguia el caso
+      // intermedio). Con las 4 marcas, `acc` ya es la fuente unica de verdad.
+      fila("Acceso", (() => {
+        const detalleRestr = p.restrn
+          ? `<div class="pop-detalle">Inscrito en el registro SEC como ${esc(p.restrn)}</div>` : "";
+        if (p.acc === "publico_restringido") return "Público con restricción" + detalleRestr;
+        if (p.acc === "mixto")
+          return "Mixto" + `<div class="pop-detalle">${p.ncp != null ? p.ncp : "?"} de ${p.nc != null ? p.nc : "?"} conectores de acceso público</div>` + detalleRestr;
+        if (p.acc === "restringido") return "Restringido (flotas / estacionamiento privado)" + detalleRestr;
+        if (p.acc === "publico") return "Público" + detalleRestr;
+        return null;
+      })()) +
       `<div class="pop-linea"><span>Estado</span><div><b style="color:${estColor}">${estTxt}</b></div></div>` +
       (sinEstadoVivo
         ? `<div class="pop-detalle">Esta fuente no publica estado en tiempo real</div>` : "") +
