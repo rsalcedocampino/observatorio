@@ -91,6 +91,23 @@ const CARGA = (MAPA.carga || []).map(p => ({
 document.getElementById("nota").textContent =
   "Fuente: red pública de carga (OCPI + Ministerio de Energía + operadores). Actualizado " + (MAPA.generado || "—") + ".";
 
+// [CACHE STALE] data/*.js no lleva token de version (a diferencia de comun.js) y el sitio lo
+// sirve con max-age de 4 h: un visitante que cacheo esta pagina ANTES de que `acc` existiera
+// recibe el CODIGO nuevo con el DATO viejo (acc undefined en las 646). Sin esto, filtrar por
+// cualquier opcion de Acceso vaciaba el mapa sin explicacion. Medido en vivo, no hipotetico
+// (aviso cruzado de "Cargadores y Conectores", 2026-09-08). Se detecta y se degrada visible: el
+// filtro se deshabilita con una nota, en vez de fallar en silencio.
+const HAY_ACC = CARGA.some(p => p.acc);
+if (!HAY_ACC && CARGA.length) {
+  selAcc.disabled = true;
+  selAcc.title = "Datos de acceso desactualizados en tu navegador; recarga la página para verlos.";
+  const avisoAcc = document.createElement("span");
+  avisoAcc.className = "nota";
+  avisoAcc.style.margin = "0";
+  avisoAcc.textContent = "Filtro de acceso no disponible: recarga la página para ver el dato más reciente.";
+  selAcc.closest("label").insertAdjacentElement("afterend", avisoAcc);
+}
+
 const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`;
 const COL_DC = PW.color("--s2"), COL_AC = PW.color("--s3");
 
@@ -115,7 +132,9 @@ function filtrar() {
     (!cor || (cor === "DC" ? p._dc : !p._dc)) &&
     (!pot || claseP(p._kw) === pot) &&
     (!rc || p.rcut === rc) &&
-    (!acc || p.acc === acc));
+    // HAY_ACC en falso = dato cacheado viejo sin `acc`: no filtrar por un campo que no llego,
+    // que vaciaria el mapa entero. El select ya queda deshabilitado, esto es la segunda capa.
+    (!acc || !HAY_ACC || p.acc === acc));
 }
 
 // Borde del punto = acceso (441, 4 valores desde 442): publico sin marcar (blanco, el
@@ -139,8 +158,17 @@ function render() {
   const ambito = rc ? (REG[rc] || rc) : "todo el país";
   document.getElementById("ambito").textContent = PW.fmt(pts.length) + " estaciones · " + ambito;
 
+  // Estaciones de acceso publico = "acc !== restringido" (no "=== publico"), a proposito: tiene
+  // que cuadrar con el criterio de la (438) -- publico + publico_restringido + mixto, el mismo
+  // universo que ya usan tracker.html y reporte-regional.html como `estaciones_publico`. Contar
+  // solo "publico" daria un numero distinto para lo mismo en tres paginas del sitio.
+  // Si HAY_ACC es falso (dato cacheado viejo, ver la 445) el conteo no se puede calcular: se
+  // muestra "sin dato" en vez de un 0 o un 646 que se leerian como una cifra real.
+  const pub = HAY_ACC ? PW.fmt(pts.filter(p => p.acc !== "restringido").length) : "—";
+
   document.getElementById("kpis").innerHTML = [
     [PW.fmt(pts.length), "estaciones", ambito],
+    [pub, "de acceso público", HAY_ACC ? "público + público con restricción + mixto" : "sin dato (recargá la página)"],
     [PW.fmt(pts.reduce((s, p) => s + p._nc, 0)), "conectores", "suma de conectores"],
     [PW.fmt(new Set(pts.map(p => p.op).filter(Boolean)).size), "operadores", "distintos"],
     [PW.fmt(pts.reduce((s, p) => s + p._kw, 0) / 1000, 1) + " MW", "potencia instalada", "suma de kW"],
