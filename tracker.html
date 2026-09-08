@@ -350,7 +350,7 @@ function refrescarInfra() {
   const metaAnio = +document.getElementById("meta-carg-anio").value || 2030;
   const serie = D.infraestructura;
   const ult = serie[serie.length - 1];
-  const hoyCarg = D.red_viva ? D.red_viva.cargadores : ult.cargadores_acum;
+  const hoyCarg = D.red_viva ? (D.red_viva.cargadores_publico ?? D.red_viva.cargadores) : ult.cargadores_acum;
   const xUlt = ymAnum(ult.ym);
 
   const hace12 = serie[Math.max(0, serie.length - 13)];

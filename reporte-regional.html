@@ -469,7 +469,7 @@ function renderResumenNacional() {
   const rm = D.regiones.find(r => r.rcut === "13");
   const pctRM = (rm && parqueEV) ? +(100 * rm.parque_ev / parqueEV).toFixed(1) : null;
   document.getElementById("kpi-red").innerHTML = kpiHTML([
-    [PW.fmt(rv.cargadores_publico), "cargadores de acceso público (red viva)", "abiertos a cualquiera · " + PW.fmt(rv.estaciones) + " estaciones · de " + PW.fmt(rv.cargadores) + " totales"],
+    [PW.fmt(rv.cargadores_publico), "cargadores de acceso público (red viva)", "abiertos a cualquiera · " + PW.fmt(rv.estaciones_publico ?? rv.estaciones) + " estaciones · de " + PW.fmt(rv.cargadores) + " totales"],
     [PW.fmt((rv.cargadores || 0) - (rv.cargadores_publico || 0)), "cargadores de acceso restringido", "flotas y estacionamientos con control de acceso · " + PW.fmt(rv.cargadores) + " totales en la red viva"],
     [PW.fmt(nuevos12), "cargadores públicos nuevos (12 meses)", "ritmo de instalación · SEC EcoCarga"],
     [evCarg != null ? PW.fmt(evCarg, 1) : "—", "EV por cargador (nacional)", "objetivo de servicio: 20"],
