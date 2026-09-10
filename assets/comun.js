@@ -1118,6 +1118,13 @@
     estacionamiento: "Estacionamiento", edificio: "Edificio", empresa: "Empresa",
     automotriz: "Automotriz", salud_educacion: "Salud / educación",
   };
+  // Procedencia del operador cuando la fuente NO lo declaro (viaja en `opatr`, generar_datos.py
+  // ::modulo_mapa). 'api'/'sin_operador' se omiten a proposito: 'api' es el caso normal (la
+  // fuente lo declara) y 'sin_operador' ya se distingue solo (no hay operador, va el titular IRVE).
+  const OPATR_TXT = {
+    nombre: "Inferido del nombre de la estación (no declarado por la fuente)",
+    visual: "Verificado visualmente en terreno (no declarado por la fuente)",
+  };
   // Tarifa de la estacion. Se muestra POR CORRIENTE (p.tar = {AC: 315, DC: 395}) en vez de
   // un unico numero: dentro de una estacion el precio cambia con el tipo de carga, y el
   // promedio daba una tarifa que nadie cobra ($355 entre AC 315 y DC 395).
@@ -1154,10 +1161,18 @@
     const titular = !p.op && p.tit
       ? esc(p.tit) + (TITULAR_TXT[p.titt] ? `<div class="pop-detalle">${TITULAR_TXT[p.titt]}</div>` : "")
       : null;
+    // `opatr` (398/458) viaja SOLO cuando el operador no lo declaro la fuente -- el caso que
+    // el lector no puede deducir solo. Se omite en 'api' (lo normal) y en 'sin_operador' (ya
+    // se ve: no hay p.op y en su lugar va el titular IRVE arriba). Mismo criterio que `secf`:
+    // la procedencia viaja junto al dato para que un operador inferido y uno declarado no se
+    // vean identicos.
+    const operador = p.op
+      ? esc(p.op) + (OPATR_TXT[p.opatr] ? `<div class="pop-detalle">${OPATR_TXT[p.opatr]}</div>` : "")
+      : null;
     return `<div class="pop-est">` +
       `<div class="pop-titulo">${esc(p.n) || (p.op ? "Estación " + esc(p.op) : "Estación de carga")}</div>` +
       `<div class="pop-sub">${[esc(p.dir), [esc(p.com), esc(p.reg)].filter(Boolean).join(", ")].filter(Boolean).join("<br>")}</div>` +
-      fila("Operador", esc(p.op)) +
+      fila("Operador", operador) +
       fila("Titular IRVE", titular) +
       // `acc` (441, 4 valores desde 442): publico / publico_restringido / restringido / mixto
       // a nivel ESTACION -- ver _marca_acceso en generar_datos.py. `restr`/`restrn` (267) es el
