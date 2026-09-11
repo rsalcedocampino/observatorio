@@ -282,6 +282,7 @@ PW.tabla("t-potencial", [
   { k: "eolico", titulo: "Eólico (MW)", num: true, fmt: v => PW.fmt(v) },
   { k: "hidro", titulo: "Hidro (MW)", num: true, fmt: v => PW.fmt(v) },
   { k: "csp", titulo: "CSP (MW)", num: true, fmt: v => PW.fmt(v) },
+  { k: "bombeo", titulo: "Bombeo agua de mar (MW)", num: true, fmt: v => PW.fmt(v) },
   { k: "total", titulo: "Total (MW)", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
 ], D.potencial, { orden: "total", max: 400 });
 
