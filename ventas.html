@@ -44,18 +44,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <main>
   <h1>Ventas de vehículos EV</h1>
   <p class="sub">Cuánto se vende, de qué tecnología y qué marca lidera: el pulso mensual del
-  mercado de vehículos electrificados livianos y medianos en Chile, desde 2010 (informe ANAC
-  "Cero y Bajas Emisiones", homologado). Buses y camiones eléctricos tienen su propio módulo:
-  <a href="buses.html">Buses eléctricos</a>.</p>
+  mercado de vehículos electrificados livianos y medianos en Chile, desde 2010, homologado.
+  Buses y camiones eléctricos tienen su propio módulo: <a href="buses.html">Buses eléctricos</a>.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Ventas mensuales: enchufables vs. no enchufables</h2>
+    <h2 style="margin-top:0" id="t-serie">Ventas mensuales: enchufables vs. no enchufables</h2>
+    <div class="filtros">
+      <label>Año <select id="f-anio"><option value="">Todos</option></select></label>
+      <label>Tecnología <select id="f-tec"><option value="">Todas</option></select></label>
+      <label>Marca <select id="f-marca"><option value="">Todas</option></select></label>
+      <button type="button" id="f-limpiar" class="preset-btn">Limpiar filtros</button>
+    </div>
     <div id="g-serie"></div>
-    <p class="nota">Enchufables = BEV + PHEV/PEREV (se cargan de la red). No enchufables = HEV/EREV,
-    MHEV y FCEV: se electrifican pero no se enchufan.</p>
+    <p class="nota" id="nota-serie">Enchufables = BEV + PHEV/PEREV (se cargan de la red). No
+    enchufables = HEV/EREV, MHEV y FCEV: se electrifican pero no se enchufan.</p>
+    <p class="nota">Los filtros de marca y tecnología usan el detalle desde
+    <span id="detalle-desde"></span> (cuando la fuente empieza a desglosar por marca) y también
+    recalculan el ranking de marcas de más abajo.</p>
   </div>
 
   <div class="tarjeta">
@@ -101,15 +109,6 @@ document.getElementById("kpis").innerHTML = [
   [lider.marca, "marca líder (enchufables)", PW.fmt(lider.unidades) + " unidades · " + PW.fmt(lider.pct, 1) + "%"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
-PW.lineas("g-serie", {
-  labels: D.meses,
-  series: [
-    { nombre: "Enchufables (BEV+PHEV)", valores: D.serie_enchufable },
-    { nombre: "No enchufables (HEV/MHEV/FCEV)", valores: D.serie_no_enchufable, color: PW.color("--s3") },
-  ],
-  fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " unid.", alto: 280,
-});
-
 PW.lineas("g-participacion", {
   labels: D.participacion.meses,
   series: [
@@ -120,30 +119,127 @@ PW.lineas("g-participacion", {
   fmtY: v => PW.fmt(v) + "%", fmtV: v => PW.fmt(v, 1) + "%", max: 100, alto: 260,
 });
 
-const maxPct = Math.max(...D.marcas.map(m => m.pct), 1);
-function barra(pct) {
-  const w = Math.min(100, pct / maxPct * 100);
+// ---------- filtros (Año / Tecnología / Marca) sobre el detalle mes x marca x tecnologia.
+// Ese detalle solo existe desde D.detalle_desde (2020-05, cuando la fuente empieza a desglosar
+// por marca); sin filtro se muestra la serie completa desde 2010 (comportamiento de siempre).
+const BUCKETS = ["BEV", "PHEV + PEREV", "HEV + EREV", "MHEV"];
+const BUCKET_LABEL = { "BEV": "BEV", "PHEV + PEREV": "PHEV / PEREV", "HEV + EREV": "HEV / EREV", "MHEV": "MHEV" };
+const DET = D.detalle;
+document.getElementById("detalle-desde").textContent = (D.detalle_desde || "").slice(0, 7);
+
+const selAnio = document.getElementById("f-anio");
+const selTec = document.getElementById("f-tec");
+const selMarca = document.getElementById("f-marca");
+[...new Set(D.meses.map(m => m.slice(0, 4)))].filter(a => a >= D.detalle_desde.slice(0, 4)).sort()
+  .forEach(a => selAnio.add(new Option(a, a)));
+BUCKETS.forEach(b => selTec.add(new Option(BUCKET_LABEL[b], b)));
+[...D.marcas].map(m => m.marca).sort((a, b) => a.localeCompare(b, "es"))
+  .forEach(m => selMarca.add(new Option(m, m)));
+
+function detalleFiltrado() {
+  const anio = selAnio.value, tec = selTec.value, marca = selMarca.value;
+  return DET.filter(r =>
+    (!anio || r.mes.slice(0, 4) === anio) &&
+    (!tec || r.tecnologia === tec) &&
+    (!marca || r.marca === marca));
+}
+
+function pintarSerie() {
+  const anio = selAnio.value, tec = selTec.value, marca = selMarca.value;
+  const tituloEl = document.getElementById("t-serie");
+  if (!anio && !tec && !marca) {
+    tituloEl.textContent = "Ventas mensuales: enchufables vs. no enchufables";
+    PW.lineas("g-serie", {
+      labels: D.meses,
+      series: [
+        { nombre: "Enchufables (BEV+PHEV)", valores: D.serie_enchufable },
+        { nombre: "No enchufables (HEV/MHEV/FCEV)", valores: D.serie_no_enchufable, color: PW.color("--s3") },
+      ],
+      fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " unid.", alto: 280,
+    });
+    return;
+  }
+  const partes = [marca, tec ? BUCKET_LABEL[tec] : null, anio].filter(Boolean);
+  tituloEl.textContent = "Ventas mensuales — " + partes.join(" · ");
+  const labels = (anio ? D.meses.filter(m => m.startsWith(anio)) : D.meses.filter(m => m >= D.detalle_desde));
+  const filas = detalleFiltrado();
+  let series;
+  if (tec) {
+    const porMes = {};
+    filas.forEach(r => { porMes[r.mes] = (porMes[r.mes] || 0) + r.cantidad; });
+    series = [{ nombre: marca || BUCKET_LABEL[tec], valores: labels.map(m => porMes[m] || 0) }];
+  } else {
+    const porTecMes = {};
+    filas.forEach(r => {
+      (porTecMes[r.tecnologia] = porTecMes[r.tecnologia] || {})[r.mes] =
+        (porTecMes[r.tecnologia] && porTecMes[r.tecnologia][r.mes] || 0) + r.cantidad;
+    });
+    series = BUCKETS.filter(b => porTecMes[b]).map(b => ({
+      nombre: BUCKET_LABEL[b], valores: labels.map(m => (porTecMes[b] && porTecMes[b][m]) || 0),
+    }));
+  }
+  PW.lineas("g-serie", { labels, series, fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " unid.", alto: 280 });
+}
+
+function colsMarcas(conUltimos12) {
+  return [
+    { k: "marca", titulo: "Marca" },
+    { k: "unidades", titulo: "Unidades", num: true, fmt: v => PW.fmt(v) },
+    { k: "pct", titulo: "Participación", num: true, fmt: (v, f) => barraPct(v, f._max) },
+  ].concat(conUltimos12 ? [{ k: "ultimos_12m", titulo: "Últimos 12 meses", num: true, fmt: v => PW.fmt(v) }] : []);
+}
+function barraPct(pct, max) {
+  const w = Math.min(100, pct / (max || 1) * 100);
   return `<div class="part"><span class="n">${PW.fmt(pct, 1)}%</span>` +
     `<div class="track"><i style="width:${w}%"></i></div></div>`;
 }
-PW.tabla("t-marcas", [
-  { k: "marca", titulo: "Marca" },
-  { k: "unidades", titulo: "Unidades (histórico)", num: true, fmt: v => PW.fmt(v) },
-  { k: "pct", titulo: "Participación", num: true, fmt: barra },
-  { k: "ultimos_12m", titulo: "Últimos 12 meses", num: true, fmt: v => PW.fmt(v) },
-], D.marcas, { orden: "unidades" });
+function pintarMarcas() {
+  const anio = selAnio.value, tec = selTec.value;
+  if (!anio && !tec) {
+    const max = Math.max(...D.marcas.map(m => m.pct), 1);
+    PW.tabla("t-marcas", colsMarcas(true).map(c => c.k === "pct" ? { ...c, fmt: v => barraPct(v, max) } : c),
+      D.marcas, { orden: "unidades" });
+    return;
+  }
+  // recalcula el ranking para el Año/Tecnología elegidos (Tecnología = esa sola; si no, enchufables)
+  const filas = DET.filter(r =>
+    (!anio || r.mes.slice(0, 4) === anio) &&
+    (tec ? r.tecnologia === tec : (r.tecnologia === "BEV" || r.tecnologia === "PHEV + PEREV")));
+  const porMarca = {};
+  filas.forEach(r => { porMarca[r.marca] = (porMarca[r.marca] || 0) + r.cantidad; });
+  const total = Object.values(porMarca).reduce((a, b) => a + b, 0) || 1;
+  const filasTabla = Object.entries(porMarca).filter(([, u]) => u > 0)
+    .map(([marca, unidades]) => ({ marca, unidades, pct: Math.round(unidades / total * 1000) / 10 }))
+    .sort((a, b) => b.unidades - a.unidades);
+  const max = Math.max(...filasTabla.map(f => f.pct), 1);
+  PW.tabla("t-marcas", colsMarcas(false).map(c => c.k === "pct" ? { ...c, fmt: v => barraPct(v, max) } : c),
+    filasTabla, { orden: "unidades" });
+}
 
-if (D.top_modelos.modelos.length) {
+function pintarModelos() {
+  const marca = selMarca.value;
+  const modelos = marca ? D.top_modelos.modelos.filter(m => m.marca === marca) : D.top_modelos.modelos;
+  if (!modelos.length) {
+    document.getElementById("t-modelos").innerHTML =
+      '<p class="nota">' + (marca ? "Sin modelos de " + marca + " en el mes disponible." : "Sin dato disponible.") + "</p>";
+    return;
+  }
   document.getElementById("t-modelos-titulo").textContent =
-    "Modelos más vendidos — " + D.top_modelos.mes.slice(0, 7);
+    "Modelos más vendidos — " + D.top_modelos.mes.slice(0, 7) + (marca ? " · " + marca : "");
   PW.tabla("t-modelos", [
     { k: "marca", titulo: "Marca" },
     { k: "modelo", titulo: "Modelo" },
     { k: "unidades", titulo: "Unidades", num: true, fmt: v => PW.fmt(v) },
-  ], D.top_modelos.modelos, { orden: "unidades" });
-} else {
-  document.getElementById("t-modelos").innerHTML = '<p class="nota">Sin dato disponible.</p>';
+  ], modelos, { orden: "unidades" });
 }
+
+function pintarTodo() { pintarSerie(); pintarMarcas(); pintarModelos(); }
+[selAnio, selTec, selMarca].forEach(s => s.addEventListener("input", pintarTodo));
+document.getElementById("f-limpiar").addEventListener("click", () => {
+  selAnio.value = ""; selTec.value = ""; selMarca.value = "";
+  pintarTodo();
+});
+pintarTodo();
 
 document.getElementById("fuente").textContent = D.nota;
 </script>
