@@ -114,8 +114,58 @@ header.pw nav a.activo, header.pw nav a:hover { background: var(--plane); color:
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
   z-index: 30;
 }
-.nav-grupo:hover .submenu, .nav-grupo:focus-within .submenu { display: block; }
-.submenu a { display: block; padding: 7px 11px; border-radius: 6px; }
+.nav-grupo:hover .submenu, .nav-grupo:focus-within .submenu, .nav-grupo.abierto .submenu { display: block; }
+.submenu a { display: flex; align-items: center; gap: 8px; padding: 7px 11px; border-radius: 6px; }
+.submenu a .ic { display: inline-flex; flex: none; color: var(--s1); }
+.submenu a .ic svg { width: 16px; height: 16px; }
+
+/* ---------- boton hamburguesa: oculto en desktop, visible bajo el breakpoint mobile ---------- */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.nav-toggle span { display: block; width: 18px; height: 2px; margin: 0 auto; background: var(--ink-1); border-radius: 2px; transition: transform 150ms, opacity 150ms; }
+.nav-toggle.activo span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-toggle.activo span:nth-child(2) { opacity: 0; }
+.nav-toggle.activo span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+@media (max-width: 1050px) {
+  .nav-toggle { display: flex; }
+  header.pw nav {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0;
+  }
+  header.pw nav.abierto { display: flex; }
+  header.pw nav a { padding: 10px 6px; font-size: 14px; }
+  .nav-grupo { width: 100%; }
+  .nav-grupo > a { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 6px; }
+  .nav-grupo .submenu {
+    display: none;
+    position: static;
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0 0 6px 14px;
+    min-width: 0;
+  }
+  .nav-grupo:hover .submenu { display: none; }
+  .nav-grupo:focus-within .submenu, .nav-grupo.abierto .submenu { display: block; }
+  .nav-grupo.abierto > a::after { content: " \25B4"; }
+}
 
 /* hero de portada */
 .hero {
