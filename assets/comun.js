@@ -56,6 +56,7 @@
       ["petroleras.html", "Transición de las petroleras"],
     ]],
     ["Mercado e inversión", [
+      ["ventas.html", "Ventas de vehículos EV"],
       ["rotacion.html", "Rotación de inventario"],
       ["elasticidad.html", "Elasticidad bencina-EV"],
       ["buses.html", "Buses eléctricos"],
@@ -130,6 +131,7 @@
   ICONOS["combustible.html"] = IC('<path d="M5 21V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v16H4"/><path d="M14 8h2.5a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 0 3 0V8l-2.5-2.5"/><path d="M7 8h5"/>');
   ICONOS["permisos.html"] = IC('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 15V9h3a2 2 0 0 1 0 4H8"/>');
   ICONOS["duales.html"] = ICONOS["costo.html"];
+  ICONOS["ventas.html"] = ICONOS["radar.html"];
   ICONOS["autonomia.html"] = ICONOS["sitios.html"];
   ICONOS["conectores-red.html"] = ICONOS["operadores.html"];
   ICONOS["tco.html"] = ICONOS["costo.html"];

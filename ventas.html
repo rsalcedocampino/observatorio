@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0C4Z3N1KZJ');
+</script>
+<!-- End Google tag (gtag.js) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Ventas de vehículos EV — Energías Futuro</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260916c">
+<style>
+  .part { display: flex; align-items: center; gap: 9px; }
+  .part .n { min-width: 92px; text-align: right; font-variant-numeric: tabular-nums; }
+  .part .track { position: relative; height: 14px; border-radius: 4px; background: var(--grid); flex: 1; min-width: 100px; overflow: hidden; }
+  .part .track > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--s1); }
+</style>
+<link rel="preload" as="script" href="data/c_ventas.js">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <h1>Ventas de vehículos EV</h1>
+  <p class="sub">Cuánto se vende, de qué tecnología y qué marca lidera: el pulso mensual del
+  mercado de vehículos electrificados livianos y medianos en Chile, desde 2010 (informe ANAC
+  "Cero y Bajas Emisiones", homologado). Buses y camiones eléctricos tienen su propio módulo:
+  <a href="buses.html">Buses eléctricos</a>.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Ventas mensuales: enchufables vs. no enchufables</h2>
+    <div id="g-serie"></div>
+    <p class="nota">Enchufables = BEV + PHEV/PEREV (se cargan de la red). No enchufables = HEV/EREV,
+    MHEV y FCEV: se electrifican pero no se enchufan.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Participación de mercado</h2>
+    <div id="g-participacion"></div>
+    <p class="nota">Sobre el 100% de las ventas del segmento livianos y medianos, incluida la
+    combustión pura — a diferencia del gráfico de arriba, que solo cuenta unidades electrificadas.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Ranking de marcas (enchufables)</h2>
+    <div id="t-marcas"></div>
+    <p class="nota">Unidades acumuladas de toda la serie homologada (desde 2020-05, cuando la
+    fuente empieza a desglosar por marca). ¿Buscas la lectura por grupo económico? →
+    <a href="grupoauto.html">Grupo automotriz 360</a>.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0" id="t-modelos-titulo">Modelos más vendidos</h2>
+    <div id="t-modelos"></div>
+    <p class="nota">La fuente solo publica este ranking para algunos meses recientes, no para
+    todo el histórico. ¿Ficha completa de un modelo? → <a href="padron-ev.html">Padrón EV</a>.</p>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+
+<script src="data/c_ventas.js"></script>
+<script src="assets/comun.js?v=260916c"></script>
+<script>
+PW.montarNav("ventas.html");
+const D = PW_DATA.c_ventas;
+const K = D.kpis;
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
+
+const lider = D.marcas[0];
+const varTxt = K.var_mes_pct == null ? "sin dato el mes anterior" :
+  (K.var_mes_pct >= 0 ? "+" : "") + PW.fmt(K.var_mes_pct, 1) + "% vs. mes anterior";
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(K.total_enchufables_historico), "enchufables vendidos", "histórico desde 2010, livianos y medianos"],
+  [PW.fmt(K.unidades_ultimo_mes), "unidades en " + K.ultimo_mes.slice(0, 7), varTxt],
+  [PW.fmt(K.participacion_ultimo_pct, 1) + "%", "participación de mercado", "enchufables sobre el total del segmento"],
+  [lider.marca, "marca líder (enchufables)", PW.fmt(lider.unidades) + " unidades · " + PW.fmt(lider.pct, 1) + "%"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+PW.lineas("g-serie", {
+  labels: D.meses,
+  series: [
+    { nombre: "Enchufables (BEV+PHEV)", valores: D.serie_enchufable },
+    { nombre: "No enchufables (HEV/MHEV/FCEV)", valores: D.serie_no_enchufable, color: PW.color("--s3") },
+  ],
+  fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " unid.", alto: 280,
+});
+
+PW.lineas("g-participacion", {
+  labels: D.participacion.meses,
+  series: [
+    { nombre: "Combustión", valores: D.participacion.combustion, color: PW.color("--ink-3") },
+    { nombre: "Híbridos (no enchufables)", valores: D.participacion.hibridos, color: PW.color("--s4") },
+    { nombre: "Enchufables", valores: D.participacion.enchufables, color: PW.color("--s1") },
+  ],
+  fmtY: v => PW.fmt(v) + "%", fmtV: v => PW.fmt(v, 1) + "%", max: 100, alto: 260,
+});
+
+const maxPct = Math.max(...D.marcas.map(m => m.pct), 1);
+function barra(pct) {
+  const w = Math.min(100, pct / maxPct * 100);
+  return `<div class="part"><span class="n">${PW.fmt(pct, 1)}%</span>` +
+    `<div class="track"><i style="width:${w}%"></i></div></div>`;
+}
+PW.tabla("t-marcas", [
+  { k: "marca", titulo: "Marca" },
+  { k: "unidades", titulo: "Unidades (histórico)", num: true, fmt: v => PW.fmt(v) },
+  { k: "pct", titulo: "Participación", num: true, fmt: barra },
+  { k: "ultimos_12m", titulo: "Últimos 12 meses", num: true, fmt: v => PW.fmt(v) },
+], D.marcas, { orden: "unidades" });
+
+if (D.top_modelos.modelos.length) {
+  document.getElementById("t-modelos-titulo").textContent =
+    "Modelos más vendidos — " + D.top_modelos.mes.slice(0, 7);
+  PW.tabla("t-modelos", [
+    { k: "marca", titulo: "Marca" },
+    { k: "modelo", titulo: "Modelo" },
+    { k: "unidades", titulo: "Unidades", num: true, fmt: v => PW.fmt(v) },
+  ], D.top_modelos.modelos, { orden: "unidades" });
+} else {
+  document.getElementById("t-modelos").innerHTML = '<p class="nota">Sin dato disponible.</p>';
+}
+
+document.getElementById("fuente").textContent = D.nota;
+</script>
+</body>
+</html>
