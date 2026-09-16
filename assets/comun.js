@@ -209,12 +209,49 @@
       const sub = items.map(([f, t]) => {
         const [fb, fh] = f.split("#");
         const on = fb === activa && (!fh || "#" + fh === location.hash);
-        return `<a href="${f}" class="${on ? "activo" : ""}">${t}</a>`;
+        const ic = icono(fb);
+        return `<a href="${f}" class="${on ? "activo" : ""}">${ic ? `<span class="ic">${ic}</span>` : ""}${t}</a>`;
       }).join("");
       nav += `<div class="nav-grupo"><a class="${contiene ? "activo" : ""}" tabindex="0">${grupo}</a><div class="submenu">${sub}</div></div>`;
     });
-    h.innerHTML = `<a href="index.html" class="marca"><img src="assets/logo-icon.png" alt="" width="28" height="28"><span>Energías Futuro</span></a><nav>${nav}</nav>`;
+    h.innerHTML = `<a href="index.html" class="marca"><img src="assets/logo-icon.png" alt="" width="28" height="28"><span>Energías Futuro</span></a>` +
+      `<button type="button" class="nav-toggle" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>` +
+      `<nav>${nav}</nav>`;
     document.body.prepend(h);
+
+    // menu movil: sin :hover en touch, así que el toggle y cada grupo se abren/cierran con click/tap.
+    // :focus-within se conserva para navegación por teclado (no se pisa con este JS).
+    const toggle = h.querySelector(".nav-toggle");
+    const navEl = h.querySelector("nav");
+    toggle.addEventListener("click", () => {
+      const abierto = navEl.classList.toggle("abierto");
+      toggle.classList.toggle("activo", abierto);
+      toggle.setAttribute("aria-expanded", abierto ? "true" : "false");
+      if (!abierto) navEl.querySelectorAll(".nav-grupo.abierto").forEach(g => g.classList.remove("abierto"));
+    });
+    navEl.querySelectorAll(".nav-grupo > a").forEach(a => {
+      a.addEventListener("click", ev => {
+        ev.preventDefault();
+        const grupo = a.parentElement;
+        const yaAbierto = grupo.classList.contains("abierto");
+        navEl.querySelectorAll(".nav-grupo.abierto").forEach(g => { if (g !== grupo) g.classList.remove("abierto"); });
+        grupo.classList.toggle("abierto", !yaAbierto);
+      });
+    });
+    document.addEventListener("click", ev => {
+      if (h.contains(ev.target)) return;
+      navEl.classList.remove("abierto");
+      toggle.classList.remove("activo");
+      toggle.setAttribute("aria-expanded", "false");
+      navEl.querySelectorAll(".nav-grupo.abierto").forEach(g => g.classList.remove("abierto"));
+    });
+    document.addEventListener("keydown", ev => {
+      if (ev.key !== "Escape") return;
+      navEl.classList.remove("abierto");
+      toggle.classList.remove("activo");
+      toggle.setAttribute("aria-expanded", "false");
+      navEl.querySelectorAll(".nav-grupo.abierto").forEach(g => g.classList.remove("abierto"));
+    });
 
     // icono junto al titulo de la seccion
     const h1 = document.querySelector("main h1");
