@@ -23,75 +23,69 @@
     });
   }
 
+  // Agrupacion por intencion del visitante (no por origen del dato): 5 grupos + "Mapas" como
+  // link directo (fuera de GRUPOS, ver montarNav) porque cruza 5 fuentes a la vez y no es "de"
+  // ningun grupo. Reemplaza los 10 grupos por origen de dato que tenia el nav hasta 2026-09-16
+  // (ver CAMBIOS.md). infraestructura.html se mueve de "Energia" a "Red de carga": es capacidad
+  // de carga instalada (SEC), la portada ya lo agrupaba asi.
   const GRUPOS = [
-    ["Mapas", [
-      ["mapas.html", "Mapas Interactivos con Capas"],
-      ["cargadores-cortes.html", "Cargadores Públicos y Cortes de Energía"],
-      ["mapa-carga.html", "Infraestructura de Carga"],
-      ["carga-registro-mapa.html", "Registro Oficial de Carga (SEC)"],
-    ]],
-    ["Reporte Nacional", [
-      ["tracker.html", "Meta 2035"],
-      ["reporte-regional.html", "Reporte Regional"],
-      ["vulnerabilidad.html", "Vulnerabilidad energética"],
-      ["censo-electricidad.html", "Electricidad en las viviendas"],
-    ]],
-    ["Mercado", [
+    ["Mi auto", [
       ["padron-ev.html", "Padrón EV"],
       ["vehiculo.html", "Vehículo 360"],
-      ["rotacion.html", "Rotación de inventario"],
-      ["elasticidad.html", "Elasticidad bencina-EV"],
-      ["combustible.html", "Precio de combustible"],
-      ["buses.html", "Buses eléctricos"],
-      ["grupoauto.html", "Grupo automotriz 360"],
-      ["inversion.html", "Inversión verde"],
-      ["permisos.html", "Parque de vehículos"],
-    ]],
-    ["TCO/Costos", [
       ["tco.html#comparador", "Comparar EV vs combustión"],
       ["tco.html#mi-vehiculo", "Desde mi vehículo"],
       ["tco.html#recomendar", "Recomiéndame un EV"],
       ["tco.html#solar", "Simulador solar"],
-    ]],
-    ["Importaciones", [
-      ["radar.html", "Vehículos"],
-      ["baterias.html", "Baterías de litio"],
-    ]],
-    ["Carga", [
-      ["operadores.html", "Operadores y Sitios"],
-      ["autonomia.html", "Brecha de cobertura"],
       ["costo.html", "Bencina vs Enchufe"],
       ["horas.html", "Mejor hora"],
+      ["combustible.html", "Precio de combustible"],
+      ["rescate.html", "Fichas de rescate"],
+      ["fichacober.html", "Cobertura de rescate"],
+      ["seguros.html", "Coberturas EV"],
+    ]],
+    ["Red de carga", [
+      ["cargadores-cortes.html", "Cargadores Públicos y Cortes de Energía"],
+      ["mapa-carga.html", "Infraestructura de Carga"],
+      ["carga-registro-mapa.html", "Registro Oficial de Carga (SEC)"],
+      ["infraestructura.html", "Capacidad de carga instalada"],
+      ["operadores.html", "Operadores y Sitios"],
+      ["autonomia.html", "Brecha de cobertura"],
       ["duales.html", "Estaciones duales"],
       ["conectores-red.html", "Conectores flota-red"],
-      ["resiliencia.html", "Resiliencia ante cortes"],
       ["concentracion.html", "Concentración del mercado"],
       ["petroleras.html", "Transición de las petroleras"],
     ]],
-    ["Energía", [
-      ["infraestructura.html", "Capacidad de carga instalada"],
+    ["Mercado e inversión", [
+      ["rotacion.html", "Rotación de inventario"],
+      ["elasticidad.html", "Elasticidad bencina-EV"],
+      ["buses.html", "Buses eléctricos"],
+      ["grupoauto.html", "Grupo automotriz 360"],
+      ["inversion.html", "Inversión verde"],
+      ["radar.html", "Importaciones de vehículos"],
+      ["baterias.html", "Importaciones de baterías de litio"],
+      ["integracion.html", "Integración vertical"],
+    ]],
+    ["Energía y resiliencia", [
       ["riesgo.html", "Cortes de energía"],
       ["probabilidad-cortes.html", "Probabilidad de cortes"],
+      ["resiliencia.html", "Resiliencia ante cortes"],
       ["bess-cortes.html", "Almacenamiento (BESS)"],
       ["demanda-ev.html", "Demanda del parque EV"],
       ["red-electrica.html", "Red eléctrica y potencial"],
       ["pelp.html", "Chile vs PELP"],
-      ["integracion.html", "Integración vertical"],
       ["generacion.html", "Parque de generación"],
     ]],
-    ["Censo Nacional", [
+    ["Normativa y territorio", [
+      ["tracker.html", "Meta 2035"],
+      ["reporte-regional.html", "Reporte Regional"],
+      ["vulnerabilidad.html", "Vulnerabilidad energética"],
+      ["censo-electricidad.html", "Electricidad en las viviendas"],
+      ["permisos.html", "Parque de vehículos"],
       ["censo.html", "Censo Nacional"],
       ["censo-proyectado.html", "Censo proyectado"],
-    ]],
-    ["Normativa", [
       ["normativa.html", "Metas y marco legal"],
       ["reporte-energetico.html", "Reporte Energético 2026 CCGE"],
       ["bodegaje.html", "Bodegaje de sustancias peligrosas"],
-    ]],
-    ["Seguridad", [
-      ["rescate.html", "Fichas de rescate"],
-      ["fichacober.html", "Cobertura de rescate"],
-      ["seguros.html", "Coberturas EV"],
     ]],
   ];
 
@@ -202,6 +196,7 @@
     const h = document.createElement("header");
     h.className = "pw";
     let nav = `<a href="index.html" class="${activa === "index.html" ? "activo" : ""}">Inicio</a>`;
+    nav += `<a href="mapas.html" class="${activa === "mapas.html" ? "activo" : ""}">Mapas</a>`;
     GRUPOS.forEach(([grupo, items]) => {
       // los items pueden traer ancla ("tco.html#solar"): el archivo base decide la pagina activa
       // y el ancla decide cual item del submenu se marca (pestañas dentro de una misma pagina)
