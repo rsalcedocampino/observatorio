@@ -124,13 +124,18 @@ PW.lineas("g-participacion", {
 // por marca); sin filtro se muestra la serie completa desde 2010 (comportamiento de siempre).
 const BUCKETS = ["BEV", "PHEV + PEREV", "HEV + EREV", "MHEV"];
 const BUCKET_LABEL = { "BEV": "BEV", "PHEV + PEREV": "PHEV / PEREV", "HEV + EREV": "HEV / EREV", "MHEV": "MHEV" };
-const DET = D.detalle;
-document.getElementById("detalle-desde").textContent = (D.detalle_desde || "").slice(0, 7);
+// D.detalle/D.detalle_desde son campos nuevos: un navegador con data/c_ventas.js viejo en caché
+// (de antes de este cambio) no los trae. Sin resguardo, el primer .slice()/.filter() sobre
+// undefined tiraba el script entero abajo -- ni graficos ni tablas ni opciones de filtro,
+// porque todo corre en el mismo bloque <script> (bug real, reportado por el usuario).
+const DET = D.detalle || [];
+const detalleDesde = D.detalle_desde || null;
+document.getElementById("detalle-desde").textContent = (detalleDesde || "").slice(0, 7);
 
 const selAnio = document.getElementById("f-anio");
 const selTec = document.getElementById("f-tec");
 const selMarca = document.getElementById("f-marca");
-[...new Set(D.meses.map(m => m.slice(0, 4)))].filter(a => a >= D.detalle_desde.slice(0, 4)).sort()
+[...new Set(D.meses.map(m => m.slice(0, 4)))].filter(a => !detalleDesde || a >= detalleDesde.slice(0, 4)).sort()
   .forEach(a => selAnio.add(new Option(a, a)));
 BUCKETS.forEach(b => selTec.add(new Option(BUCKET_LABEL[b], b)));
 [...D.marcas].map(m => m.marca).sort((a, b) => a.localeCompare(b, "es"))
@@ -161,7 +166,7 @@ function pintarSerie() {
   }
   const partes = [marca, tec ? BUCKET_LABEL[tec] : null, anio].filter(Boolean);
   tituloEl.textContent = "Ventas mensuales — " + partes.join(" · ");
-  const labels = (anio ? D.meses.filter(m => m.startsWith(anio)) : D.meses.filter(m => m >= D.detalle_desde));
+  const labels = (anio ? D.meses.filter(m => m.startsWith(anio)) : D.meses.filter(m => !detalleDesde || m >= detalleDesde));
   const filas = detalleFiltrado();
   let series;
   if (tec) {
