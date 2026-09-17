@@ -49,12 +49,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .preset-btn.activo { border-color: var(--s1); box-shadow: inset 0 0 0 1px var(--s1);
     color: var(--s1); font-weight: 700; }
 </style>
-<link rel="preload" as="script" href="data/mapa.js">
-<link rel="preload" as="script" href="data/c_redelec.js">
-<link rel="preload" as="script" href="data/c_censoelec.js">
-<link rel="preload" as="script" href="data/c_distribucion.js">
-<link rel="preload" as="script" href="data/geo_lineas.js">
-<link rel="preload" as="script" href="data/postes_index.js">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/mapa.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_redelec.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_censoelec.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_distribucion.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/geo_lineas.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/postes_index.js?v='+_pwv+'">')</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -90,12 +91,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 </main>
 
-<script src="data/mapa.js"></script>
-<script src="data/c_redelec.js"></script>
-<script src="data/c_censoelec.js"></script>
-<script src="data/c_distribucion.js"></script>
-<script src="data/geo_lineas.js"></script>
-<script src="data/postes_index.js"></script>
+<script>document.write('<script src="data/mapa.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_redelec.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_censoelec.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_distribucion.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/geo_lineas.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/postes_index.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260917b"></script>
 <script>
 PW.montarNav("mapas.html");
@@ -154,14 +155,15 @@ function filtroLineas() {
   return {};
 }
 function lineaEnTerr(f) { return PW.lineaEnTerritorio(f, filtroLineas()); }
-// geo_lineas.js se sirve SIN ?v=, asi que el navegador puede tener una copia cacheada SIN `cuts`
-// (rompe el recorte por comuna/region). Si detectamos eso, recargamos el archivo fresco una vez
-// (URL con query => evita la cache; re-asigna window.PW_DATA.geo_lineas) y re-render.
+// resguardo por si la carga normal (arriba) trajo una copia sin `cuts` (rompe el recorte por
+// comuna/region) -- por ejemplo de un tab que quedo abierto de un bucket de cache anterior.
+// Si detectamos eso, recargamos el archivo fresco una vez (re-asigna window.PW_DATA.geo_lineas)
+// y re-render. La causa de fondo (geo_lineas.js sin ?v=) ya no aplica: ver versionar_datos.py.
 function hayCuts() { return !!(LIN && LIN.features.some(f => f.properties.cuts)); }
 function asegurarCuts() {
   if (hayCuts()) return;
   const s = document.createElement("script");
-  s.src = "data/geo_lineas.js?cuts=1";
+  s.src = "data/geo_lineas.js?cuts=1&v=" + _pwv;
   s.onload = () => { LIN = window.PW_DATA.geo_lineas || LIN; render(false); };
   document.head.appendChild(s);
 }
@@ -262,7 +264,7 @@ function asegurarConcesiones() {
   if (!on("concesion") || window.PW_DATA.geo_concesiones || concesionCargando) return;
   concesionCargando = true;
   const sc = document.createElement("script");
-  sc.src = "data/geo_concesiones.js";
+  sc.src = "data/geo_concesiones.js?v=" + _pwv;
   sc.onload = () => { concesionCargando = false; render(false); };
   document.head.appendChild(sc);
 }

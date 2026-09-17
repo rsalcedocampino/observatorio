@@ -34,8 +34,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
 <!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas), pero esta pagina SIEMPRE lo necesita
      (registro por comuna visible por defecto): precargarlo evita que la espera sea secuencial. -->
-<link rel="preload" as="script" href="data/geo_comunas.js">
-<link rel="preload" as="script" href="data/carga_mapa.js">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/geo_comunas.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/carga_mapa.js?v='+_pwv+'">')</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -75,7 +76,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     cruzan con la red OCPI (por folio = exacto, o espacial = aproximado).</p>
   </div>
 </main>
-<script src="data/carga_mapa.js"></script>
+<script>document.write('<script src="data/carga_mapa.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260917b"></script>
 <script>
 PW.montarNav("carga-registro-mapa.html");
