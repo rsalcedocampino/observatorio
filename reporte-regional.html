@@ -419,9 +419,13 @@ function refrescarEnergiaReg(filasTodas, regSel) {
   });
   const filas = regSel ? filasE.filter((_, i) => filasTodas[i].rcut === regSel) : filasE;
   const demTot = filasE.reduce((s, f) => s + f.demanda_2035, 0);
-  const solarOp = filasE.reduce((s, f) => s + f.solar_op, 0);
-  const solarPipe = filasE.reduce((s, f) => s + f.solar_pipe, 0);
-  const bessOp = filasE.reduce((s, f) => s + f.bess_op, 0);
+  // + ER.SR: proyectos sin region_cut resoluble en la fuente (no una region real, no aparece como
+  // fila en la tabla) -- sin sumarlo, el KPI "nacional" quedaba por debajo del total real (8,1% del
+  // BESS operando invisible). Ver generar_datos.py/modulo_tracker.
+  const sr = ER.SR || {};
+  const solarOp = filasE.reduce((s, f) => s + f.solar_op, 0) + (sr.solar_op_mw || 0);
+  const solarPipe = filasE.reduce((s, f) => s + f.solar_pipe, 0) + (sr.solar_pipe_mw || 0);
+  const bessOp = filasE.reduce((s, f) => s + f.bess_op, 0) + (sr.bess_op_mwh || 0);
   document.getElementById("kpis-energia-nac").innerHTML = kpiHTML([
     [PW.fmt(demTot, 1) + " GWh", "demanda EV proyectada 2035 (pais)", gwhSen ? PW.fmt(100 * demTot / gwhSen, 2) + "% del SEN actual" : ""],
     [PW.fmt(solarOp) + " MW", "solar operando hoy", "+" + PW.fmt(solarPipe) + " MW en pipeline"],
