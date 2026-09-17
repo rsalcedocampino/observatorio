@@ -62,6 +62,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="g-serie"></div>
     <p class="nota" id="nota-serie">Enchufables = BEV + PHEV/PEREV (se cargan de la red). No
     enchufables = HEV/EREV, MHEV y FCEV: se electrifican pero no se enchufan.</p>
+    <p class="nota" id="nota-hueco" style="display:none;color:var(--warning)"></p>
     <p class="nota">Los filtros de marca y tecnología usan el detalle desde
     <span id="detalle-desde"></span> (cuando la fuente empieza a desglosar por marca) y también
     recalculan el ranking de marcas de más abajo.</p>
@@ -77,6 +78,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tarjeta">
     <h2 style="margin-top:0" id="t-marcas-titulo">Ranking de marcas (enchufables)</h2>
     <div id="t-marcas"></div>
+    <p class="nota" id="nota-marcas-hueco" style="display:none;color:var(--warning)"></p>
     <p class="nota">Unidades acumuladas de toda la serie homologada (desde 2020-05, cuando la
     fuente empieza a desglosar por marca). ¿Buscas la lectura por grupo económico? →
     <a href="grupoauto.html">Grupo automotriz 360</a>.</p>
@@ -131,6 +133,10 @@ const BUCKET_LABEL = { "BEV": "BEV", "PHEV + PEREV": "PHEV / PEREV", "HEV + EREV
 // porque todo corre en el mismo bloque <script> (bug real, reportado por el usuario).
 const DET = D.detalle || [];
 const detalleDesde = D.detalle_desde || null;
+// Hueco real de la fuente, no un bug: "Ventas Marca y Modelo por Mes" no trae NINGUNA fila para
+// estos meses (verificado contra el CSV), aunque el agregado sin marca (arriba, sin filtro) si
+// tiene venta real esos meses. Sin este resguardo, un mes asi se pintaba como 0 -- enganoso.
+const MESES_SIN_DETALLE = new Set(D.meses_sin_detalle || []);
 document.getElementById("detalle-desde").textContent = (detalleDesde || "").slice(0, 7);
 
 const selAnio = document.getElementById("f-anio");
@@ -173,17 +179,21 @@ function pintarSerie() {
       ],
       fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " unid.", alto: 280,
     });
+    document.getElementById("nota-hueco").style.display = "none";
     return;
   }
   const partes = [marca, tec ? BUCKET_LABEL[tec] : null, anio].filter(Boolean);
   tituloEl.textContent = "Ventas mensuales — " + partes.join(" · ");
   const labels = (anio ? D.meses.filter(m => m.startsWith(anio)) : D.meses.filter(m => !detalleDesde || m >= detalleDesde));
   const filas = detalleFiltrado();
+  // meses sin ninguna fila de detalle: null (corta la linea) en vez de 0 (que diria "sin venta"
+  // cuando en realidad la fuente no trae desglose por marca ese mes -- ver MESES_SIN_DETALLE).
   let series;
   if (tec) {
     const porMes = {};
     filas.forEach(r => { porMes[r.mes] = (porMes[r.mes] || 0) + r.cantidad; });
-    series = [{ nombre: marca || BUCKET_LABEL[tec], valores: labels.map(m => porMes[m] || 0) }];
+    series = [{ nombre: marca || BUCKET_LABEL[tec],
+      valores: labels.map(m => MESES_SIN_DETALLE.has(m) ? null : (porMes[m] || 0)) }];
   } else {
     const porTecMes = {};
     filas.forEach(r => {
@@ -191,10 +201,19 @@ function pintarSerie() {
         (porTecMes[r.tecnologia] && porTecMes[r.tecnologia][r.mes] || 0) + r.cantidad;
     });
     series = BUCKETS.filter(b => porTecMes[b]).map(b => ({
-      nombre: BUCKET_LABEL[b], valores: labels.map(m => (porTecMes[b] && porTecMes[b][m]) || 0),
+      nombre: BUCKET_LABEL[b],
+      valores: labels.map(m => MESES_SIN_DETALLE.has(m) ? null : ((porTecMes[b] && porTecMes[b][m]) || 0)),
     }));
   }
   PW.lineas("g-serie", { labels, series, fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " unid.", alto: 280 });
+  const huecos = labels.filter(m => MESES_SIN_DETALLE.has(m));
+  const notaHueco = document.getElementById("nota-hueco");
+  notaHueco.style.display = huecos.length ? "" : "none";
+  if (huecos.length) {
+    notaHueco.textContent = "La fuente no trae desglose por marca/tecnología para " +
+      huecos.map(m => m.slice(0, 7)).join(", ") + " (sí hubo venta real esos meses — se ve en " +
+      "el gráfico de arriba sin filtro — solo falta el detalle por marca).";
+  }
 }
 
 function colsMarcas(conUltimos12) {
@@ -218,6 +237,7 @@ function pintarMarcas() {
     const max = Math.max(...D.marcas.map(m => m.pct), 1);
     PW.tabla("t-marcas", colsMarcas(true).map(c => c.k === "pct" ? { ...c, fmt: v => barraPct(v, max) } : c),
       D.marcas, { orden: "unidades" });
+    document.getElementById("nota-marcas-hueco").style.display = "none";
     return;
   }
   // recalcula el ranking para el Año/Tecnología elegidos (Tecnología = esa sola; si no, enchufables)
@@ -233,6 +253,13 @@ function pintarMarcas() {
   const max = Math.max(...filasTabla.map(f => f.pct), 1);
   PW.tabla("t-marcas", colsMarcas(false).map(c => c.k === "pct" ? { ...c, fmt: v => barraPct(v, max) } : c),
     filasTabla, { orden: "unidades" });
+  const huecos = (anio ? D.meses.filter(m => m.startsWith(anio)) : D.meses).filter(m => MESES_SIN_DETALLE.has(m));
+  const notaHueco = document.getElementById("nota-marcas-hueco");
+  notaHueco.style.display = huecos.length ? "" : "none";
+  if (huecos.length) {
+    notaHueco.textContent = "Este ranking no incluye " + huecos.map(m => m.slice(0, 7)).join(", ") +
+      ": la fuente no trae desglose por marca esos meses.";
+  }
 }
 
 function pintarModelos() {
