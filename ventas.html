@@ -52,6 +52,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0" id="t-serie">Ventas mensuales: enchufables vs. no enchufables</h2>
+    <p class="nota" id="aviso-cache" style="display:none;color:var(--critical);font-weight:600"></p>
     <div class="filtros">
       <label>Año <select id="f-anio"><option value="">Todos</option></select></label>
       <label>Tecnología <select id="f-tec"><option value="">Todas</option></select></label>
@@ -74,7 +75,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Ranking de marcas (enchufables)</h2>
+    <h2 style="margin-top:0" id="t-marcas-titulo">Ranking de marcas (enchufables)</h2>
     <div id="t-marcas"></div>
     <p class="nota">Unidades acumuladas de toda la serie homologada (desde 2020-05, cuando la
     fuente empieza a desglosar por marca). ¿Buscas la lectura por grupo económico? →
@@ -135,6 +136,16 @@ document.getElementById("detalle-desde").textContent = (detalleDesde || "").slic
 const selAnio = document.getElementById("f-anio");
 const selTec = document.getElementById("f-tec");
 const selMarca = document.getElementById("f-marca");
+// Sin el resguardo de arriba el script ya no se cae, pero un filtro "activo" sin datos de
+// detalle mostraba un grafico vacio (linea en 0) sin explicar por que -- mas confuso que un
+// error claro. Se avisa y se deshabilitan los filtros hasta que el visitante recargue.
+if (!DET.length) {
+  const aviso = document.getElementById("aviso-cache");
+  aviso.textContent = "Los filtros no cargaron bien en esta visita (versión vieja en caché del " +
+    "navegador). Recargá la página con Ctrl+F5 (o Cmd+Shift+R en Mac) para activarlos.";
+  aviso.style.display = "";
+  [selAnio, selTec, selMarca].forEach(s => s.disabled = true);
+}
 [...new Set(D.meses.map(m => m.slice(0, 4)))].filter(a => !detalleDesde || a >= detalleDesde.slice(0, 4)).sort()
   .forEach(a => selAnio.add(new Option(a, a)));
 BUCKETS.forEach(b => selTec.add(new Option(BUCKET_LABEL[b], b)));
@@ -200,6 +211,9 @@ function barraPct(pct, max) {
 }
 function pintarMarcas() {
   const anio = selAnio.value, tec = selTec.value;
+  const tituloEl = document.getElementById("t-marcas-titulo");
+  tituloEl.textContent = "Ranking de marcas — " + (tec ? BUCKET_LABEL[tec] : "enchufables") +
+    (anio ? " · " + anio : "");
   if (!anio && !tec) {
     const max = Math.max(...D.marcas.map(m => m.pct), 1);
     PW.tabla("t-marcas", colsMarcas(true).map(c => c.k === "pct" ? { ...c, fmt: v => barraPct(v, max) } : c),
