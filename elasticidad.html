@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Elasticidad bencina-EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260917c">
+<link rel="stylesheet" href="assets/estilo.css?v=260917d">
 <style>
   .tab-nav { display: flex; gap: 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc; }
   .tab-nav button { padding: 12px 20px; background: none; border: none; cursor: pointer; font-size: 1rem; color: #666; border-bottom: 3px solid transparent; }
@@ -266,7 +266,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_elasticidad_regional_preliminar.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260917c"></script>
+<script src="assets/comun.js?v=260917d"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -428,10 +428,16 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas) {
   document.getElementById("nota-tarifas").textContent = "Actualizado " + (DT.generado || "").slice(0, 10) + ". " + DT.nota;
 
   const regiones_con_datos = DT.tarifas_por_region ? Object.keys(DT.tarifas_por_region).length : 0;
+  // [FIX auditoria 2026-09-17] "DT.tarifas" no existe en este contrato (las claves reales son
+  // total_subestaciones y tarifas_por_region; "tarifas" parece un nombre de campo de una version
+  // anterior del esquema) -- "DT.tarifas && DT.tarifas.length || 0" evaluaba SIEMPRE undefined,
+  // asi que el KPI mostraba "0 subestaciones en padron" y "—" de periodo el 100% de las veces,
+  // aunque el dato real (34, verificado = suma exacta de las 7 regiones) estaba disponible en
+  // total_subestaciones.
   document.getElementById("kpis-tarifas").innerHTML = [
-    [DT.tarifas && DT.tarifas.length || 0, "subestaciones en padrón", "Sistema Nacional de Transmisión"],
+    [DT.total_subestaciones || 0, "subestaciones en padrón", "Sistema Nacional de Transmisión"],
     [regiones_con_datos, "regiones con tarifas", "datos APR-2026"],
-    [DT.tarifas && DT.tarifas.length ? "APR-2026" : "—", "período actual", "próximo: OCT-2026"],
+    [regiones_con_datos ? "APR-2026" : "—", "período actual", "próximo: OCT-2026"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
   if (DT.tarifas_por_region) {

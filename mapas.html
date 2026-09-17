@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Mapas Interactivos con Capas — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260917c">
+<link rel="stylesheet" href="assets/estilo.css?v=260917d">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -97,7 +97,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_distribucion.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/geo_lineas.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/postes_index.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260917c"></script>
+<script src="assets/comun.js?v=260917d"></script>
 <script>
 PW.montarNav("mapas.html");
 
@@ -389,12 +389,23 @@ function render(fit) {
 }
 
 function pintarKpis() {
-  const suma = (arr, campo) => arr.filter(dentro).reduce((a, x) => a + (x[campo] || 0), 0);
+  // (x[campo] || 0) da la MISMA suma que saltarse los nulos (para sumar da igual sumar 0 o
+  // saltar el termino), asi que el total en si no queda mal calculado. El hueco real es que
+  // conteos.* SI cuenta las entidades sin dato (verificado: 325 de 1260 subestaciones sin MVA
+  // informada, 30 de 415 proyectos BESS sin MWh -- mismo universo que se corrigio en
+  // bess-cortes.html), y el KPI las mostraba juntas sin avisar que la cifra de la derecha no
+  // las refleja. Se declara cuantas quedan fuera, mismo criterio usado hoy en todo el sitio.
+  const suma = (arr, campo) => {
+    const filtrado = arr.filter(dentro);
+    const sinDato = filtrado.filter(x => x[campo] == null).length;
+    return { total: filtrado.reduce((a, x) => a + (x[campo] || 0), 0), sinDato };
+  };
+  const notaSuma = (r, unidad) => PW.fmt(Math.round(r.total)) + " " + unidad + (r.sinDato ? " (" + PW.fmt(r.sinDato) + " sin dato)" : "");
   const kpis = [
     ["Cargadores", conteos.carga, "puntos de carga"],
-    ["Subestaciones", conteos.sub, PW.fmt(Math.round(suma(RED.subestaciones || [], "mva"))) + " MVA"],
-    ["Generación solar", conteos.solar, PW.fmt(Math.round(suma(M.solar || [], "mw"))) + " MW"],
-    ["Almacenamiento", conteos.bess, PW.fmt(Math.round(suma(M.bess || [], "mwh"))) + " MWh"],
+    ["Subestaciones", conteos.sub, notaSuma(suma(RED.subestaciones || [], "mva"), "MVA")],
+    ["Generación solar", conteos.solar, notaSuma(suma(M.solar || [], "mw"), "MW")],
+    ["Almacenamiento", conteos.bess, notaSuma(suma(M.bess || [], "mwh"), "MWh")],
     ["Comunas (Censo)", conteos.censo, "con dato"],
   ];
   document.getElementById("kpis-mapa").innerHTML = kpis.map(([l, v, d]) =>

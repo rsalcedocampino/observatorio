@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Almacenamiento BESS y cortes — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260917c">
+<link rel="stylesheet" href="assets/estilo.css?v=260917d">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -100,7 +100,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_besscortes.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/baterias.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_bess.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260917c"></script>
+<script src="assets/comun.js?v=260917d"></script>
 <script>
 PW.montarNav("bess-cortes.html");
 const D = PW_DATA.c_besscortes;
@@ -152,10 +152,18 @@ document.getElementById("nota").textContent = "Actualizado " + (D.generado || ""
     if (mapaB && pts.length && (filtroTerr.rcut || filtroTerr.com)) {
       mapaB.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.2), { animate: false });
     }
-    const mwhTot = sel.reduce((a, p) => a + (p.mwh || 0), 0);
+    // (p.mwh || 0) fabricaba un 0 real para proyectos que SI declaran almacenamiento
+    // (es_almacenamiento/incluye_almacenamiento en ACERA) pero sin capacidad MWh informada en
+    // la fuente (30 de 415 hoy, ej. "Proyecto Alba" 560 MW sin MWh) -- el acumulado quedaba
+    // subestimado (172.761 de los 385 con dato) sin ninguna marca. Se suma solo lo informado y
+    // se declara cuantos quedan fuera, mismo criterio que el resto del sitio con datos ausentes.
+    const conMwh = sel.filter(p => p.mwh != null);
+    const sinMwh = sel.length - conMwh.length;
+    const mwhTot = conMwh.reduce((a, p) => a + p.mwh, 0);
     document.getElementById("cont-bess").textContent =
       pts.length + " proyectos mostrados de " + puntos.length + " — " +
-      PW.fmt(Math.round(mwhTot)) + " MWh acumulados en la seleccion.";
+      PW.fmt(Math.round(mwhTot)) + " MWh acumulados en la seleccion" +
+      (sinMwh ? " (" + sinMwh + " proyecto" + (sinMwh === 1 ? "" : "s") + " sin capacidad MWh informada, no incluido" + (sinMwh === 1 ? "" : "s") + " en el acumulado)" : "") + ".";
   }
 
   PW.filtrosTerritorio("filtros-bess", puntos, f => { filtroTerr = f; pintar(); },

@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Parque de vehículos — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260917c">
+<link rel="stylesheet" href="assets/estilo.css?v=260917d">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/permisos.js?v='+_pwv+'">')</script>
 </head>
@@ -59,6 +59,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="ch-parque"></div>
   </div>
 
+  <div class="tarjeta" id="tarjeta-proy">
+    <h2>Proyección 2025 <span class="pill" style="background:var(--warning);color:#1a1a1a;border-color:transparent">ESTIMACIÓN</span></h2>
+    <div class="aviso-borrador" id="aviso-proy">No es dato oficial. El INE aún no publica 2025
+    (último año oficial: <span id="proy-ano-base"></span>); esta es una estimación de trabajo
+    basada en la tendencia del parque y en las ventas de vehículos electrificados de 2025. Se
+    reemplaza por la cifra real apenas el INE la publique.</div>
+    <div class="capas-panel" id="proy-chips"></div>
+    <div class="filtros"><label>Región <select id="proy-region"></select></label></div>
+    <div id="proy-chart"></div>
+    <div class="leyenda" id="proy-leyenda"></div>
+    <p class="nota" id="proy-metodo"></p>
+  </div>
+
   <div class="tarjeta">
     <h2>Por región <span class="pill" id="ano-reg"></span></h2>
     <p class="sub">Vehículos motorizados por región y tipo de motor. Ordena por la columna que quieras;
@@ -75,7 +88,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="fuente" id="fuente"></p>
 </main>
 <script>document.write('<script src="data/permisos.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260917c"></script>
+<script src="assets/comun.js?v=260917d"></script>
 <script>
 PW.montarNav("permisos.html");
 const D = PW_DATA.permisos;
@@ -108,6 +121,94 @@ PW.lineas("ch-parque", {
   series: [{ nombre: "Parque motorizado", valores: S.map(x => x.motorizados) }],
   fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
 });
+
+// ---------- Proyección 2025 (ESTIMACIÓN) ----------
+// Insumo de la sesión "Permisos de Circulación" (CAMBIOS 558): metodo, backtest y reconciliacion
+// (suma de regiones = nacional, salvo "no motorizados" que la fuente regional no desglosa)
+// documentados en Permisos de Circulacion\proyeccion\README.md, ya verificados antes de integrar.
+// Grafico propio (no PW.lineas): necesita un abanico de 3 escenarios punteados desde el ultimo
+// dato real hasta 2025, toggleables por separado -- PW.lineas() no tiene ese patron y agregarlo
+// ahi por un solo modulo no valia la pena; se porto el SVG ya armado y probado del insumo.
+(function () {
+  const PY = D.proyeccion;
+  const aviso = g("aviso-proy");
+  if (!PY) {
+    aviso.innerHTML = "Falta el insumo de proyección " +
+      "(<code>Permisos de Circulacion\\proyeccion\\permisos_proy.js</code>) al generar los datos. " +
+      "Ver CAMBIOS (558).";
+    return;
+  }
+  g("proy-ano-base").textContent = PY.anioBase;
+  const ESC_COLOR = { baja: "--s4", central: "--s1", alta: "--s6" };
+  const ESC_NOMBRE = { baja: "Baja", central: "Central", alta: "Alta" };
+  const escOn = new Set(["baja", "central", "alta"]);
+  const XMIN = 2008, XMAX = 2025;
+
+  const selReg = g("proy-region");
+  selReg.innerHTML = '<option value="">Nacional (total)</option>' +
+    PY.orden.map(r => `<option value="${PW.esc(r)}">${PW.esc(r)}</option>`).join("");
+
+  g("proy-chips").innerHTML = Object.keys(ESC_COLOR).map(e =>
+    `<span class="capa-chip on" data-esc="${e}" style="--c:${PW.color(ESC_COLOR[e])}">` +
+    `<span class="dot"></span>${ESC_NOMBRE[e]} ${PY.growth[e]}</span>`).join("");
+  g("proy-chips").querySelectorAll(".capa-chip").forEach(chip => chip.addEventListener("click", () => {
+    const e = chip.dataset.esc;
+    if (escOn.has(e)) { escOn.delete(e); chip.classList.replace("on", "off"); }
+    else { escOn.add(e); chip.classList.replace("off", "on"); }
+    pintarProyeccion();
+  }));
+  selReg.addEventListener("change", pintarProyeccion);
+
+  function niceCeil(x) {
+    const p = Math.pow(10, Math.floor(Math.log10(x)));
+    const n = x / p;
+    return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+  }
+  function panelSVG(o) {
+    const sx = a => o.x + (a - XMIN) / (XMAX - XMIN) * o.w;
+    const sy = v => o.y + o.h - v / o.ymax * o.h;
+    const fmt = o.ymax >= 1e6 ? (v => (v / 1e6).toFixed(1) + "M") : o.ymax >= 1e3 ? (v => (v / 1e3).toFixed(0) + "k") : (v => "" + Math.round(v));
+    let s = `<text x="${o.x}" y="${o.y - 11}" font-size="14" font-weight="700" fill="${PW.color("--ink-1")}">${PW.esc(o.title)}</text>`;
+    for (let i = 0; i <= 5; i++) {
+      const v = o.ymax * i / 5, yy = sy(v);
+      s += `<line x1="${o.x}" y1="${yy.toFixed(1)}" x2="${o.x + o.w}" y2="${yy.toFixed(1)}" stroke="${PW.color("--grid")}"/>`;
+      s += `<text x="${o.x - 8}" y="${(yy + 4).toFixed(1)}" font-size="10.5" fill="${PW.color("--ink-3")}" text-anchor="end">${fmt(v)}</text>`;
+    }
+    for (let a = XMIN; a <= XMAX; a++) if (a % 2 === 0 || a === XMAX)
+      s += `<text x="${sx(a).toFixed(1)}" y="${o.y + o.h + 16}" font-size="10" fill="${PW.color("--ink-3")}" text-anchor="middle">${a}</text>`;
+    s += `<polyline points="${o.serie.map(([a, v]) => sx(a).toFixed(1) + "," + sy(v).toFixed(1)).join(" ")}" fill="none" stroke="${PW.color("--ink-2")}" stroke-width="2.4"/>`;
+    o.serie.forEach(([a, v]) => s += `<circle cx="${sx(a).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.3" fill="${PW.color("--ink-2")}"/>`);
+    const [la, lv] = o.serie[o.serie.length - 1], xa = sx(la), xb = sx(XMAX);
+    escOn.forEach(e => {
+      const v = o.proj[e], c = PW.color(ESC_COLOR[e]);
+      s += `<line x1="${xa.toFixed(1)}" y1="${sy(lv).toFixed(1)}" x2="${xb.toFixed(1)}" y2="${sy(v).toFixed(1)}" stroke="${c}" stroke-width="2.2" stroke-dasharray="6 4"/>`;
+      s += `<circle cx="${xb.toFixed(1)}" cy="${sy(v).toFixed(1)}" r="4.5" fill="${c}" stroke="${PW.color("--surface-1")}" stroke-width="1.5"/>`;
+    });
+    return s;
+  }
+  function pintarProyeccion() {
+    const v = selReg.value, esNac = !v;
+    const Dp = esNac ? PY.nacional : PY.regiones[v];
+    const nom = esNac ? "Nacional" : v;
+    const m1 = esNac ? "Parque total" : "Motorizados";
+    const ymax1 = niceCeil(Math.max(...Dp.serie1.map(p => p[1]).concat(Object.values(Dp.band1))) * 1.05);
+    const ymax2 = niceCeil(Math.max(...Dp.serie2.map(p => p[1]).concat(Object.values(Dp.band2))) * 1.05);
+    g("proy-chart").innerHTML = `<svg viewBox="0 0 920 600">` +
+      panelSVG({ x: 74, y: 52, w: 780, h: 200, ymax: ymax1, serie: Dp.serie1, proj: Dp.band1, title: m1 + " — " + nom }) +
+      panelSVG({ x: 74, y: 360, w: 780, h: 200, ymax: ymax2, serie: Dp.serie2, proj: Dp.band2, title: "Vehículos eléctricos — " + nom }) +
+      `</svg>`;
+    g("proy-leyenda").innerHTML = [...escOn].map(e =>
+      `<span style="--c:${PW.color(ESC_COLOR[e])}">${ESC_NOMBRE[e]} ${PY.growth[e]}: ` +
+      `${m1} ${PW.fmt(Dp.band1[e])} · Eléctrico ${PW.fmt(Dp.band2[e])}</span>`).join("") ||
+      `<span>Selecciona un escenario.</span>`;
+  }
+  g("proy-metodo").textContent = "Método: total del parque por tendencia (crecimiento central " +
+    PY.growth.central + "; banda " + PY.growth.baja + " / " + PY.growth.alta + "); columna eléctrica " +
+    "anclada en las ventas de electrificados 2025 con tasa de captura histórica (0,80–1,00). Por " +
+    "región, Nacional muestra el parque total; cada región muestra motorizados (la fuente regional " +
+    "no desglosa no motorizados). Cuando el INE publique 2025, esta sección se reemplaza por el dato real.";
+  pintarProyeccion();
+})();
 
 const colsReg = [
   { k: "region", titulo: "Región", fmt: v => `<b>${v}</b>` },

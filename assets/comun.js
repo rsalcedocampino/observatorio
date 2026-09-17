@@ -704,7 +704,12 @@
     }
     function PW_fmtEntero(n) { return new Intl.NumberFormat("es-CL").format(n); }
     render();
-    return { actualizar(nuevas) { filas = nuevas; render(); } };
+    // [COLS DINAMICAS] actualizar() recibia solo las filas nuevas y reusaba los `cols` de la
+    // creacion original -- si una pagina arma el titulo de una columna con un valor del filtro
+    // (p.ej. "Prob. sep" o "TCO 5 anios"), ese titulo quedaba congelado para siempre aunque los
+    // datos de abajo si se recalculaban (bug real, mismo patron que el del h2 en ventas.html).
+    // nuevosCols es opcional: quien no lo pasa mantiene el comportamiento de siempre.
+    return { actualizar(nuevas, nuevosCols) { filas = nuevas; if (nuevosCols) cols = nuevosCols; render(); } };
   }
 
   // =====================================================================

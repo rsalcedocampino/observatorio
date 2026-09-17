@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cortes de energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260917c">
+<link rel="stylesheet" href="assets/estilo.css?v=260917d">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -159,7 +159,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/riesgo.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/cortes.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260917c"></script>
+<script src="assets/comun.js?v=260917d"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
@@ -563,9 +563,15 @@ selY.addEventListener("input", refrescar);
 // Series nacionales: la anual resalta el año elegido; la estacional muestra ESE año (o el promedio historico)
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 function dibujarNacional(anho) {
+  // "hueco" viene del backend por año (cualquier año con >=1 mes en huecos_datos, no solo 2019):
+  // un año con meses de fuente ausentes tiene el total anual incompleto, no "cero cortes" ahí.
+  // Si dos años de hueco son consecutivos (ej. 2018-2019), el texto va una sola vez, en el
+  // primero, para que las etiquetas no se superpongan; la linea punteada igual marca cada año.
+  const aniosHueco = new Set(D.anual.filter(a => a.hueco).map(a => a.anho));
   const anot = [
     { i: D.anual.findIndex(a => a.anho === 2025), texto: "Apagon nacional 25-feb" },
-    { i: D.anual.findIndex(a => a.anho === 2019), texto: "Hueco de fuente" },
+    ...D.anual.map((a, i) => !a.hueco ? null :
+      { i, texto: aniosHueco.has(a.anho - 1) ? "" : "Hueco de fuente" }).filter(Boolean),
   ].filter(a => a.i >= 0);
   if (anho) {
     const iSel = D.anual.findIndex(a => String(a.anho) === anho);
