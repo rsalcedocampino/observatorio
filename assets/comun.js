@@ -1052,6 +1052,7 @@
           radius: rBase,
           color: p.borde || "#ffffff",
           weight: p.bordeAncho || 1,
+          dashArray: p.bordeDash || undefined,
           fillColor: p.color || color("--s1"),
           fillOpacity: 0.85,
         });
