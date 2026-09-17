@@ -74,9 +74,10 @@ details.seccion > summary { padding: 4px 0; }
   #dossier { display: block !important; }
 }
 </style>
-<link rel="preload" as="script" href="data/tracker.js">
-<link rel="preload" as="script" href="data/c_demanda.js">
-<link rel="preload" as="script" href="data/sitios.js">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/tracker.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_demanda.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/sitios.js?v='+_pwv+'">')</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -263,9 +264,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </ul>
   </div>
 </main>
-<script src="data/tracker.js"></script>
-<script src="data/c_demanda.js"></script>
-<script src="data/sitios.js"></script>
+<script>document.write('<script src="data/tracker.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/sitios.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260917b"></script>
 <script>
 PW.montarNav("reporte-regional.html");

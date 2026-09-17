@@ -46,7 +46,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 /* campos de dinero con puntos de miles: type=text, pero angostos como los numericos */
 .filtros input.miles { min-width: 0; width: 120px; }
 </style>
-<link rel="preload" as="script" href="data/c_tco.js">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_tco.js?v='+_pwv+'">')</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -198,7 +199,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </section>
 </main>
 
-<script src="data/c_tco.js"></script>
+<script>document.write('<script src="data/c_tco.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260917b"></script>
 <script>
 PW.montarNav("tco.html");

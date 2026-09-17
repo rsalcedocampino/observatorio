@@ -37,11 +37,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   details.tarjeta > summary::before { content: "\25B8"; margin-right: 8px; color: var(--s1); }
   details.tarjeta[open] > summary::before { content: "\25BE"; }
 </style>
-<link rel="preload" as="script" href="data/censo.js">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/censo.js?v='+_pwv+'">')</script>
 <!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas), pero el mapa principal SIEMPRE lo
      necesita (visible por defecto): precargarlo evita que la espera sea secuencial. La tarjeta de
      "Crecimiento" (plegada por defecto) sigue sin precarga propia: no la necesita a menos que se abra. -->
-<link rel="preload" as="script" href="data/geo_comunas.js">
+<script>document.write('<link rel="preload" as="script" href="data/geo_comunas.js?v='+_pwv+'">')</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -129,7 +130,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="fuente" id="fuente"></p>
 </main>
 
-<script src="data/censo.js"></script>
+<script>document.write('<script src="data/censo.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260917b"></script>
 <script>
 PW.montarNav("censo.html");

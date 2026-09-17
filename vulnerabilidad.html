@@ -30,10 +30,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="stylesheet" href="assets/estilo.css?v=260917b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
-<link rel="preload" as="script" href="data/c_vulnerab.js">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_vulnerab.js?v='+_pwv+'">')</script>
 <!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas), pero esta pagina SIEMPRE lo necesita
      (choropleth visible por defecto): precargarlo evita que la espera sea secuencial. -->
-<link rel="preload" as="script" href="data/geo_comunas.js">
+<script>document.write('<link rel="preload" as="script" href="data/geo_comunas.js?v='+_pwv+'">')</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -76,7 +77,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     región.</p>
   </div>
 </main>
-<script src="data/c_vulnerab.js"></script>
+<script>document.write('<script src="data/c_vulnerab.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260917b"></script>
 <script>
 PW.montarNav("vulnerabilidad.html");

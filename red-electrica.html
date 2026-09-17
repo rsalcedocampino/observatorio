@@ -32,13 +32,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
-<link rel="preload" as="script" href="data/c_redelec.js">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_redelec.js?v='+_pwv+'">')</script>
 <!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas): el choropleth de potencial solar SIEMPRE
      lo necesita (visible por defecto), asi que se precarga; el filtro por comuna (cutDeComuna) es
      opcional y sigue sin precarga propia. -->
-<link rel="preload" as="script" href="data/geo_comunas.js">
-<link rel="preload" as="script" href="data/geo_lineas.js">
-<link rel="preload" as="script" href="data/c_transmision_region.js">
+<script>document.write('<link rel="preload" as="script" href="data/geo_comunas.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/geo_lineas.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_transmision_region.js?v='+_pwv+'">')</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -97,9 +98,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="t-potencial"></div>
   </div>
 </main>
-<script src="data/c_redelec.js"></script>
-<script src="data/geo_lineas.js"></script>
-<script src="data/c_transmision_region.js"></script>
+<script>document.write('<script src="data/c_redelec.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/geo_lineas.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_transmision_region.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260917b"></script>
 <script>
 PW.montarNav("red-electrica.html");
@@ -144,7 +145,7 @@ function hayCutsLineas() { const g = window.PW_DATA.geo_lineas; return !!(g && g
 function asegurarCutsLineas() {
   if (hayCutsLineas()) return;
   const s = document.createElement("script");
-  s.src = "data/geo_lineas.js?cuts=1";
+  s.src = "data/geo_lineas.js?cuts=1&v=" + _pwv;
   s.onload = () => pintarSub();
   document.head.appendChild(s);
 }
