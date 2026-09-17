@@ -524,11 +524,23 @@
     const tip = crearTip(wrap);
     items.forEach((it, i) => {
       const y = m.t + i * alto;
-      const w = (W - m.l - m.r) * (it.valor || 0) / maxV;
       const c = it.color || cfg.color || color("--s1");
       const t = svgEl("text", { x: m.l - 8, y: y + alto / 2 + 4, "text-anchor": "end", "font-size": 12, fill: color("--ink-2") });
       t.textContent = it.nombre.length > 30 ? it.nombre.slice(0, 29) + "…" : it.nombre;
       svg.appendChild(t);
+      // it.valor == null ("sin dato"): antes "it.valor || 0" lo mostraba como una barra de largo
+      // cero con etiqueta "0" -- indistinguible de un cero real. Ahora banda + texto explicito.
+      if (it.valor == null) {
+        svg.appendChild(svgEl("rect", {
+          x: m.l, y: y + 5, width: W - m.l - m.r, height: alto - 10, rx: 4,
+          fill: color("--warning"), "fill-opacity": 0.14,
+        }));
+        const tv = svgEl("text", { x: m.l + 7, y: y + alto / 2 + 4, "font-size": 11.5, fill: color("--ink-3") });
+        tv.textContent = "sin dato";
+        svg.appendChild(tv);
+        return;
+      }
+      const w = (W - m.l - m.r) * it.valor / maxV;
       const r = svgEl("rect", { x: m.l, y: y + 5, width: Math.max(w, 1.5), height: alto - 10, rx: 4, fill: c });
       svg.appendChild(r);
       const tv = svgEl("text", { x: m.l + Math.max(w, 1.5) + 7, y: y + alto / 2 + 4, "font-size": 11.5, fill: color("--ink-2") });
@@ -564,6 +576,15 @@
       t.textContent = cfg.fmtY ? cfg.fmtY(v) : nf0.format(Math.round(v));
       svg.appendChild(t);
     }
+    // hueco (null): sin marca, una columna faltante se pierde entre las lineas de grilla y se lee
+    // igual que "todavia no cargo" -- mismo problema que ya se corrigio en lineas(), misma banda.
+    vals.forEach((v, i) => {
+      if (v != null) return;
+      svg.appendChild(svgEl("rect", {
+        x: m.l + i * ancho, y: m.t, width: ancho, height: H - m.t - m.b,
+        fill: color("--warning"), "fill-opacity": 0.14,
+      }));
+    });
     const tip = crearTip(wrap);
     vals.forEach((v, i) => {
       if (v == null) return;
