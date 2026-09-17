@@ -389,6 +389,32 @@
       if (!rotular.has(i)) return;
       ponerEtiquetaX(svg, etiquetaEje(lb), X(i), H - 8, i === labels.length - 1, W);
     });
+    // huecos (null): al medio, el corte en el trazo (mas abajo, "M" en vez de "L") ya es tecnicamente
+    // correcto, pero un hueco corto se pierde a simple vista y parece curva continua. Al principio o
+    // al final, sin banda quedaba un tramo en blanco indistinguible de "no cargo" -- probado con el
+    // usuario, un blanco liso SI se lee como error. Por eso banda + circulos en TODO hueco, por serie
+    // (al principio/final el circulo solo va en el borde que tiene dato real).
+    const gapsPorSerie = series.map(s => {
+      const pares = [];
+      const validos = [];
+      s.valores.forEach((v, i) => { if (v != null) validos.push(i); });
+      if (!validos.length) return pares;
+      const primero = validos[0], ultimo = validos[validos.length - 1];
+      if (primero > 0) pares.push([0, primero]);
+      for (let k = 1; k < validos.length; k++) {
+        if (validos[k] - validos[k - 1] > 1) pares.push([validos[k - 1], validos[k]]);
+      }
+      if (ultimo < s.valores.length - 1) pares.push([ultimo, s.valores.length - 1]);
+      return pares;
+    });
+    [...new Set(gapsPorSerie.flat().map(([i0, i1]) => i0 + "-" + i1))]
+      .map(k => k.split("-").map(Number))
+      .forEach(([i0, i1]) => {
+        svg.appendChild(svgEl("rect", {
+          x: X(i0).toFixed(1), y: m.t, width: (X(i1) - X(i0)).toFixed(1), height: H - m.t - m.b,
+          fill: color("--warning"), "fill-opacity": 0.14,
+        }));
+      });
     series.forEach((s, si) => {
       const c = s.color || color(SERIES[si % SERIES.length]);
       let d = "", pen = false, primero = null, ultimo = null;
@@ -408,6 +434,15 @@
       const atributos = { d, fill: "none", stroke: c, "stroke-width": 2, "stroke-linejoin": "round" };
       if (s.dash) atributos["stroke-dasharray"] = "6 5";
       svg.appendChild(svgEl("path", atributos));
+      gapsPorSerie[si].forEach(([i0, i1]) => {
+        [i0, i1].forEach(i => {
+          if (s.valores[i] == null) return;
+          svg.appendChild(svgEl("circle", {
+            cx: X(i).toFixed(1), cy: Y(s.valores[i]).toFixed(1), r: 3.5,
+            fill: color("--surface-1"), stroke: c, "stroke-width": 2,
+          }));
+        });
+      });
     });
     // separador vertical (ej. "Hoy"): cfg.lineaX = {i, texto}
     if (cfg.lineaX && cfg.lineaX.i != null && cfg.lineaX.i >= 0) {
