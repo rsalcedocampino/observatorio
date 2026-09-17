@@ -27,7 +27,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Ficha vehículo 360 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260917c">
+<link rel="stylesheet" href="assets/estilo.css?v=260917d">
+<style>#t-modelos tbody tr { cursor: pointer; }</style>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/vehiculo.js?v='+_pwv+'">')</script>
 </head>
@@ -60,7 +61,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/vehiculo.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260917c"></script>
+<script src="assets/comun.js?v=260917d"></script>
 <script>
 PW.montarNav("vehiculo.html");
 const D = PW_DATA.vehiculo;
@@ -102,7 +103,10 @@ function mostrarDetalle(m) {
 }
 
 const cols = [
-  { k: "marca", titulo: "Marca" },
+  // data-i en vez de solo texto: 57 de 954 modelos comparten marca+modelo (variantes/anios
+  // distintos con el mismo nombre, ej. dos "BMW 330e Sedan" con autonomia 78 y 71 km) -- el
+  // click delegado de abajo lee este indice; por texto, siempre abria el primero de los dos.
+  { k: "marca", titulo: "Marca", fmt: (v, f) => `<span data-i="${f._i}">${PW.esc(v)}</span>` },
   { k: "modelo", titulo: "Modelo" },
   { k: "tipo", titulo: "Tipo", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
   { k: "bateria_kwh", titulo: "kWh", num: true, fmt: v => PW.fmt(v, 1) },
@@ -122,24 +126,25 @@ function refrescar() {
   filasActuales = D.modelos.filter(m =>
     (!tipo || m.tipo === tipo) &&
     (!q || norm(m.marca + " " + m.modelo).includes(q)));
+  filasActuales.forEach((m, i) => { m._i = i; });
   if (tab) tab.actualizar(filasActuales);
   else tab = PW.tabla("t-modelos", cols, filasActuales, { orden: "imp_unidades", max: 300, buscador: false });
-  enganchar();
-}
-function enganchar() {
-  document.querySelectorAll("#t-modelos tbody tr").forEach((tr) => {
-    tr.style.cursor = "pointer";
-    tr.addEventListener("click", () => {
-      const marca = tr.children[0].textContent, modelo = tr.children[1].textContent;
-      const m = D.modelos.find(x => x.marca === marca && x.modelo === modelo);
-      if (m) mostrarDetalle(m);
-    });
-  });
 }
 ["busca", "f-tipo"].forEach(id => document.getElementById(id).addEventListener("input", refrescar));
 refrescar();
-// re-enganchar tras cada orden por click en cabecera
-document.getElementById("t-modelos").addEventListener("click", () => setTimeout(enganchar, 0));
+// Delegado en el contenedor ESTABLE (nunca se recrea), no en cada <tr>: sigue funcionando igual
+// despues de cualquier repintado (filtrar u ordenar por cabecera recrean las filas). Antes se
+// re-enganchaba un listener NUEVO por fila en cada click dentro de la tabla -incluidos los clicks
+// en las propias filas, via el "re-enganchar tras ordenar" de mas abajo- sin quitar los anteriores:
+// cada click quedaba disparando mostrarDetalle() una vez mas que el click anterior (bug real,
+// confirmado interactivamente: 1, +2, +3... llamadas por click a medida que se clickeaba la tabla).
+document.getElementById("t-modelos").addEventListener("click", e => {
+  const tr = e.target.closest("tbody tr");
+  if (!tr) return;
+  const marcador = tr.querySelector("[data-i]");
+  const m = marcador ? filasActuales[+marcador.dataset.i] : null;
+  if (m) mostrarDetalle(m);
+});
 </script>
 </body>
 </html>

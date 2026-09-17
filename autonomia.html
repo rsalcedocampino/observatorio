@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Brechas de autonomía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260917c">
+<link rel="stylesheet" href="assets/estilo.css?v=260917d">
 <style>
 @media (max-width: 768px) {
   .fila2 { grid-template-columns: 1fr !important; }
@@ -50,6 +50,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   margin-left: 4px;
   position: relative;
 }
+#t-brechas tbody tr, #t-puntos tbody tr { cursor: pointer; }
 .kpi-info:hover::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -132,7 +133,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_autonomia.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260917c"></script>
+<script src="assets/comun.js?v=260917d"></script>
 <script>
 function initAut() {
   if (typeof PW === "undefined") {
@@ -142,6 +143,11 @@ function initAut() {
 
 PW.montarNav("autonomia.html");
 const D = PW_DATA.c_autonomia;
+// indice estable (una sola vez, sobre el array completo): 2 de 23 brechas comparten el mismo
+// km redondeado -- reidentificar la fila clickeada por valor de km (como hacia el fix anterior)
+// podia abrir la brecha equivocada de esas 2. Los objetos filtrados abajo son las MISMAS
+// referencias (filter() no clona), asi que _i sobrevive a cualquier filtro por region.
+D.brechas.forEach((b, i) => { b._i = i; });
 document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const K = D.kpis;
@@ -254,7 +260,7 @@ function filtrarPorRegion() {
 
   // Tablas filtradas
   PW.tabla("t-brechas", [
-    { k: "desde", titulo: "Desde" },
+    { k: "desde", titulo: "Desde", fmt: (v, f) => `<span data-i="${f._i}">${PW.esc(v)}</span>` },
     { k: "hasta", titulo: "Hasta" },
     { k: "km", titulo: "km", num: true, fmt: v => `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v)}</span>` },
   ], brechasFiltr.slice(0, 20), { orden: "km" });
@@ -268,129 +274,115 @@ function filtrarPorRegion() {
   ], puntosFiltr, { orden: "nn_km", max: 300 });
 }
 
-// Listeners para tablas (re-attachear después de filtrar)
-function attachTableListeners() {
-  const umbral = K.rango_util_p25;
-  setTimeout(() => {  // Aumentado a 200ms para dar tiempo a PW.tabla() de renderizar
-    const rows = document.querySelectorAll("#t-brechas tbody tr");
-    if (rows.length === 0) return; // Si no hay filas, salir
-    rows.forEach((row, idx) => {
-      row.style.cursor = "pointer";
-      row.addEventListener("click", function tablaClickBrechas() {
-        const cells = row.querySelectorAll("td");
-        const kmCell = cells[2]?.textContent.trim();
-        if (!kmCell) return;
+// Listeners para tablas: DELEGADOS en el contenedor ESTABLE (#t-brechas / #t-puntos nunca se
+// recrean), no uno por fila. Antes se re-enganchaba un listener nuevo POR FILA cada vez que
+// cambiaba el filtro de Región, con un setTimeout(200) para esperar a que PW.tabla() terminara
+// de pintar. Si el usuario cambiaba la región dos veces seguidas (o más) antes de que pasaran esos
+// 200ms -- p.ej. recorriendo el <select> con flechas -- TODAS esas llamadas terminaban enganchando
+// sobre las MISMAS filas finales (la última tabla pintada), duplicando el handler por cada cambio
+// encimado: un solo click llegaba a disparar el mapa/selección 2, 3... veces (bug real, confirmado
+// interactivamente encadenando cambios rápidos de filtro). La delegación no necesita re-enganchar
+// nunca: sigue funcionando igual sin importar cuántas veces PW.tabla() repinte las filas.
+document.getElementById("t-brechas").addEventListener("click", e => {
+  const row = e.target.closest("tbody tr");
+  if (!row) return;
+  const marcador = row.querySelector("[data-i]");
+  const brecha = marcador ? D.brechas[+marcador.dataset.i] : null;
 
-        const km = parseFloat(kmCell.replace(/\s+/g, ''));
-        const regSel = document.getElementById("filtro-region").value;
-        const brechasFiltr = regSel ? D.brechas.filter(b => {
-          const pDesde = D.puntos.find(p => b.desde.includes(p.n));
-          const pHasta = D.puntos.find(p => b.hasta.includes(p.n));
-          return (pDesde && pDesde.reg === regSel) || (pHasta && pHasta.reg === regSel);
-        }) : D.brechas;
-        const brecha = brechasFiltr.find(b => Math.abs(b.km - km) < 0.1);
+  if (brecha && mapaRef) {
+    const pDesde = D.puntos.find(p => brecha.desde.includes(p.n));
+    const pHasta = D.puntos.find(p => brecha.hasta.includes(p.n));
 
-        if (brecha && mapaRef) {
-          const pDesde = D.puntos.find(p => brecha.desde.includes(p.n));
-          const pHasta = D.puntos.find(p => brecha.hasta.includes(p.n));
-
-          if (pDesde && pHasta) {
-            if (mapaRef) mapaRef.remove();
-            mapaRef = PW.mapa("mapa-dc", {
-              capas: [{
-                nombre: "Brecha seleccionada",
-                puntos: [
-                  {
-                    lat: pDesde.lat, lon: pDesde.lon, r: 8,
-                    color: PW.color("--critical"),
-                    popup: `<b>${pDesde.n}</b><br>${pDesde.com}, ${pDesde.reg}<br>${PW.fmt(pDesde.kw)} kW`,
-                  },
-                  {
-                    lat: pHasta.lat, lon: pHasta.lon, r: 8,
-                    color: PW.color("--critical"),
-                    popup: `<b>${pHasta.n}</b><br>${pHasta.com}, ${pHasta.reg}<br>${PW.fmt(pHasta.kw)} kW`,
-                  }
-                ]
-              }],
-              centro: [(pDesde.lat + pHasta.lat) / 2, (pDesde.lon + pHasta.lon) / 2],
-              zoom: 6, alto: 460,
-              sinSelector: true,
-            });
-
-            // sin recuadro de capas
-            if (document.querySelector("#mapa-dc .leaflet-control-layers"))
-              document.querySelector("#mapa-dc .leaflet-control-layers").remove();
-
-            const bounds = L.latLngBounds([[pDesde.lat, pDesde.lon], [pHasta.lat, pHasta.lon]]);
-            mapaRef.fitBounds(bounds.pad(0.2), { animate: true });
-
-            row.style.backgroundColor = "var(--critical)";
-            row.style.color = "white";
-            setTimeout(() => {
-              row.style.backgroundColor = "";
-              row.style.color = "";
-            }, 3000);
-          }
-        }
+    if (pDesde && pHasta) {
+      if (mapaRef) mapaRef.remove();
+      mapaRef = PW.mapa("mapa-dc", {
+        capas: [{
+          nombre: "Brecha seleccionada",
+          puntos: [
+            {
+              lat: pDesde.lat, lon: pDesde.lon, r: 8,
+              color: PW.color("--critical"),
+              popup: `<b>${pDesde.n}</b><br>${pDesde.com}, ${pDesde.reg}<br>${PW.fmt(pDesde.kw)} kW`,
+            },
+            {
+              lat: pHasta.lat, lon: pHasta.lon, r: 8,
+              color: PW.color("--critical"),
+              popup: `<b>${pHasta.n}</b><br>${pHasta.com}, ${pHasta.reg}<br>${PW.fmt(pHasta.kw)} kW`,
+            }
+          ]
+        }],
+        centro: [(pDesde.lat + pHasta.lat) / 2, (pDesde.lon + pHasta.lon) / 2],
+        zoom: 6, alto: 460,
+        sinSelector: true,
       });
+
+      // sin recuadro de capas
+      if (document.querySelector("#mapa-dc .leaflet-control-layers"))
+        document.querySelector("#mapa-dc .leaflet-control-layers").remove();
+
+      const bounds = L.latLngBounds([[pDesde.lat, pDesde.lon], [pHasta.lat, pHasta.lon]]);
+      mapaRef.fitBounds(bounds.pad(0.2), { animate: true });
+
+      row.style.backgroundColor = "var(--critical)";
+      row.style.color = "white";
+      setTimeout(() => {
+        row.style.backgroundColor = "";
+        row.style.color = "";
+      }, 3000);
+    }
+  }
+});
+
+document.getElementById("t-puntos").addEventListener("click", e => {
+  const row = e.target.closest("tbody tr");
+  if (!row) return;
+  const cells = row.querySelectorAll("td");
+  const nombre = cells[0]?.textContent.trim();
+  if (!nombre) return;
+  const regSel = document.getElementById("filtro-region").value;
+  const puntosFiltr = regSel ? D.puntos.filter(p => p.reg === regSel) : D.puntos;
+  const p = puntosFiltr.find(pt => pt.n === nombre);
+
+  if (p && mapaRef) {
+    if (mapaRef) mapaRef.remove();
+    mapaRef = PW.mapa("mapa-dc", {
+      capas: [{
+        nombre: "Estación seleccionada",
+        puntos: [{
+          lat: p.lat, lon: p.lon, r: 10,
+          color: (p.nn_km || 0) > umbral ? PW.color("--critical") : PW.color("--s3"),
+          popup: `<b>${p.n}</b><br>${p.com}, ${p.reg}` +
+            `<br>${PW.fmt(p.kw)} kW` +
+            `<br>DC mas cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
+            PW.waze(p.lat, p.lon),
+        }]
+      }],
+      centro: [p.lat, p.lon], zoom: 9, alto: 460,
+      sinSelector: true,
     });
 
-    document.querySelectorAll("#t-puntos tbody tr").forEach(row => {
-      row.style.cursor = "pointer";
-      row.addEventListener("click", function tablaClickPuntos() {
-        const cells = row.querySelectorAll("td");
-        const nombre = cells[0]?.textContent.trim();
-        if (!nombre) return;
-        const regSel = document.getElementById("filtro-region").value;
-        const puntosFiltr = regSel ? D.puntos.filter(p => p.reg === regSel) : D.puntos;
-        const p = puntosFiltr.find(pt => pt.n === nombre);
+    // sin recuadro de capas
+    if (document.querySelector("#mapa-dc .leaflet-control-layers"))
+      document.querySelector("#mapa-dc .leaflet-control-layers").remove();
 
-        if (p && mapaRef) {
-          if (mapaRef) mapaRef.remove();
-          mapaRef = PW.mapa("mapa-dc", {
-            capas: [{
-              nombre: "Estación seleccionada",
-              puntos: [{
-                lat: p.lat, lon: p.lon, r: 10,
-                color: (p.nn_km || 0) > umbral ? PW.color("--critical") : PW.color("--s3"),
-                popup: `<b>${p.n}</b><br>${p.com}, ${p.reg}` +
-                  `<br>${PW.fmt(p.kw)} kW` +
-                  `<br>DC mas cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
-                  PW.waze(p.lat, p.lon),
-              }]
-            }],
-            centro: [p.lat, p.lon], zoom: 9, alto: 460,
-            sinSelector: true,
-          });
+    mapaRef.flyTo([p.lat, p.lon], 11, { duration: 1 });
 
-          // sin recuadro de capas
-          if (document.querySelector("#mapa-dc .leaflet-control-layers"))
-            document.querySelector("#mapa-dc .leaflet-control-layers").remove();
-
-          mapaRef.flyTo([p.lat, p.lon], 11, { duration: 1 });
-
-          row.style.backgroundColor = "var(--s2)";
-          setTimeout(() => row.style.backgroundColor = "", 3000);
-        }
-      });
-    });
-  }, 200);
-}
+    row.style.backgroundColor = "var(--s2)";
+    setTimeout(() => row.style.backgroundColor = "", 3000);
+  }
+});
 
 // Inicializar
 filtrarPorRegion();
-attachTableListeners();
 
-// Exponer funciones y datos globalmente para que el listener pueda usarlas
+// Exponer funciones y datos globalmente (por si algo externo las referencia)
 window.filtrarPorRegionGlobal = filtrarPorRegion;
-window.attachTableListenersGlobal = attachTableListeners;
 window.D_GLOBAL = D;
 window.K_GLOBAL = K;
 
 // Event listener para cambios en filtro
 document.getElementById("filtro-region").addEventListener("change", () => {
   window.filtrarPorRegionGlobal();
-  window.attachTableListenersGlobal();
 });
 
 }  // Cierre de initAut()

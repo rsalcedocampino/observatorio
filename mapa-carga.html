@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Infraestructura de Carga — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260917c">
+<link rel="stylesheet" href="assets/estilo.css?v=260917d">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -80,7 +80,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260917c"></script>
+<script src="assets/comun.js?v=260917d"></script>
 <script>
 PW.montarNav("mapa-carga.html");
 const MAPA = window.PW_DATA.mapa_carga || {};  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
@@ -167,12 +167,18 @@ function render() {
   // muestra "sin dato" en vez de un 0 o un 646 que se leerian como una cifra real.
   const pub = HAY_ACC ? PW.fmt(pts.filter(p => p.acc !== "restringido").length) : "—";
 
+  // Mismo criterio que "pub" arriba (438/445): _kw = parseFloat(p.kw)||0 no descuadra la SUMA
+  // (sumar 0 o saltarse el termino da el mismo total), pero 54/651 puntos hoy no tienen kw
+  // informado y quedaban contribuyendo 0 silencioso a "potencia instalada" -- sin la marca, se
+  // lee como "esos puntos no tienen potencia" en vez de "no se sabe cual es".
+  const sinKw = pts.filter(p => p.kw == null).length;
   document.getElementById("kpis").innerHTML = [
     [PW.fmt(pts.length), "estaciones", ambito],
     [pub, "de acceso público", HAY_ACC ? "público + público con restricción + mixto" : "sin dato (recargá la página)"],
     [PW.fmt(pts.reduce((s, p) => s + p._nc, 0)), "conectores", "suma de conectores"],
     [PW.fmt(new Set(pts.map(p => p.op).filter(Boolean)).size), "operadores", "distintos"],
-    [PW.fmt(pts.reduce((s, p) => s + p._kw, 0) / 1000, 1) + " MW", "potencia instalada", "suma de kW"],
+    [PW.fmt(pts.reduce((s, p) => s + p._kw, 0) / 1000, 1) + " MW", "potencia instalada",
+     "suma de kW" + (sinKw ? " · " + PW.fmt(sinKw) + " sin dato de kW" : "")],
   ].map(kpiHTML).join("");
 
   const capas = [{
