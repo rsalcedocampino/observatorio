@@ -27,10 +27,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Elasticidad bencina-EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260917d">
+<link rel="stylesheet" href="assets/estilo.css?v=260918b">
 <style>
   .tab-nav { display: flex; gap: 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc; }
-  .tab-nav button { padding: 12px 20px; background: none; border: none; cursor: pointer; font-size: 1rem; color: #666; border-bottom: 3px solid transparent; }
+  .tab-nav button { padding: 12px 20px; background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--ink-3); border-bottom: 3px solid transparent; }
   .tab-nav button.activo { color: #000; font-weight: bold; border-bottom-color: #0066cc; }
   .tab-nav button:hover { color: #000; }
   .tab-content { display: none; }
@@ -46,6 +46,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script>document.write('<link rel="preload" as="script" href="data/combustible.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_bencina93_serie.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_elasticidad_tarifas_detallado.js?v='+_pwv+'">')</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -109,7 +110,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h2 style="margin-top:0">Tarifas de electricidad por región</h2>
       <p class="nota">Precio de energía ($/kWh) y potencia ($/kW/mes) en tarifas mensuales de distribuidoras a cliente final, por categoría de consumo.</p>
       <div id="t-tarifas"></div>
-      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">
         Datos: tarifas de distribuidoras a cliente final (CGE, CNE Peajes, CNE Suministro, ENEL, ENEL Chile),
         por categoría domiciliario, comercial pequeño e industrial. Actualización manual, sin fecha fija
         para el próximo dato.
@@ -131,7 +132,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p class="nota">PROYECTADO: 2025 usa crecimiento 2023-2024. REAL: 2024 es dato INE Permisos de Circulacion.
       Se actualiza cuando INE publique Permisos 2025.</p>
       <div id="t-ev2025"></div>
-      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">
         Datos 2024: INE Permisos de Circulacion (reales). Proyeccion 2025: basada en crecimiento 2023-2024.
         Actualizacion esperada: septiembre 2026 (cuando salgan datos 2025).
       </p>
@@ -148,22 +149,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h2 style="margin-top:0">Stock EV por Region y Segmento (2024-2027 Proyectado)</h2>
       <p class="nota">Desagregación de stock por tipo de vehículo (BEV/PHEV/Buses/Camiones) usando proporciones de venta 2025.
       Proyectado con tasas de crecimiento diferenciadas por segmento.</p>
-      <p class="nota" id="nota-segmentacion" style="font-size:0.85rem; color:#666;"></p>
+      <p class="nota" id="nota-segmentacion" style="font-size:0.85rem; color:var(--ink-2);"></p>
       <div id="t-ev-segmento-2024"></div>
-      <p class="nota" style="margin-top:1rem; font-size:0.85rem;">Stock 2024 (Real INE Cuadro 4) desagregado por segmento</p>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">Stock 2024 (Real INE Cuadro 4) desagregado por segmento</p>
 
       <div id="t-ev-segmento-2025"></div>
-      <p class="nota" style="margin-top:1rem; font-size:0.85rem;">Stock 2025 (Proyectado, +75% nacional)</p>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">Stock 2025 (Proyectado, +75% nacional)</p>
 
       <div id="t-ev-segmento-2027"></div>
-      <p class="nota" style="margin-top:1rem; font-size:0.85rem;">Stock 2027 (Proyectado, +759% desde 2024)</p>
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">Stock 2027 (Proyectado, +759% desde 2024)</p>
     </div>
 
     <div class="tarjeta">
       <h2 style="margin-top:0">Segmentacion Nacional: Evolucion de Mix 2024-2027</h2>
       <p class="nota">Proporción de cada segmento en el stock nacional total (BEV domina con ~50%, PHEV crece exponencial).</p>
       <div id="t-ev-proporcion"></div>
-      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">
         Fuente: INE Cuadro 4 (stock 2024) + desagregación proporciones venta 2025 + proyección tasas por segmento
         (BEV +29% | PHEV +188.3% | Buses +25% | Trucks -17.8% anual).
       </p>
@@ -173,9 +174,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h2 style="margin-top:0">PRELIMINAR: Elasticidad Regional (Tarifa × Stock)</h2>
       <p class="nota">Análisis descriptivo de correlación entre tarifa de potencia y stock de EVs por región (2024-2026).
       <span style="color:#d32f2f; font-weight:bold;"> PRELIMINAR:</span> Esperando datos mensuales de ANAC para análisis causal completo.</p>
-      <p class="nota" id="nota-elasticidad-regional" style="font-size:0.85rem; color:#666;"></p>
+      <p class="nota" id="nota-elasticidad-regional" style="font-size:0.85rem; color:var(--ink-2);"></p>
       <div id="t-elasticidad-regional"></div>
-      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
+      <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">
         Fuente: INE Cuadro 4 (stock 2024, real) + CNE PNP 2026 (tarifas) + ANAC H1 2026 (ventas agregadas).
         Caveat: Tarifa × Stock muestra correlación, no causalidad (requiere ventas mensuales por región).
       </p>
@@ -207,7 +208,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       <div id="tabla-pnp"></div>
 
-      <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color: #666;">
+      <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color:var(--ink-2);">
         Datos: Decreto PNP-2026-04 (CNE). Transmisión Nacional (220kV). Próximos datos: octubre 2026.
         Nota: estos son precios de transmisión. Para tarifa final al cliente, sumar VAD distribuidor.
       </p>
@@ -250,7 +251,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       <div id="tabla-tarifa-detalle"></div>
 
-      <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color: #666;">
+      <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color:var(--ink-2);">
         Datos: PNP (CNE Decreto 2026-04) + VAD Regulado (SEC). Componentes: Energía ($/kWh) + Potencia ($/kW/mes) + Cargo fijo ($/mes).
         Nota: VAD en revisión - valores de referencia regulados. Verificar con distribuidor para tarifas vigentes actuales.
       </p>
@@ -266,7 +267,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_elasticidad_regional_preliminar.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260917d"></script>
+<script src="assets/comun.js?v=260918b"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -480,7 +481,7 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
     const subs = DPNP.subestaciones_por_region_dist[region][dist] || [];
 
     if (subs.length === 0) {
-      tablaPnp.innerHTML = "<p style='color:#666;'>Sin datos para esta combinación.</p>";
+      tablaPnp.innerHTML = "<p style='color:var(--ink-2);'>Sin datos para esta combinación.</p>";
       return;
     }
 
@@ -588,7 +589,7 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
 
     const tarifa = DTD.tarifas[region][dist][segmento];
     if (!tarifa) {
-      tablaTarifaDet.innerHTML = "<p style='color:#666;'>Sin datos para esta combinación.</p>";
+      tablaTarifaDet.innerHTML = "<p style='color:var(--ink-2);'>Sin datos para esta combinación.</p>";
       return;
     }
 
