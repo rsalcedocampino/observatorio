@@ -38,7 +38,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </style>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_elasticidad.js?v='+_pwv+'">')</script>
-<script>document.write('<link rel="preload" as="script" href="data/c_elasticidad_tarifas.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_elasticidad_tarifas_pnp.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_tarifas.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_ev_2025.js?v='+_pwv+'">')</script>
@@ -101,26 +100,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div id="tab-tarifas" class="tab-content">
     <p class="sub">¿Sube la adopción de enchufables cuando baja la tarifa de electricidad? Este análisis
     cruzará el precio de electricidad con la participación EV por región y segmento (domiciliario, comercial, industrial).
-    Se actualiza conforme CNE publique nuevos Decretos de Precio Nudo Promedio (PNP) semestral.</p>
+    Se actualiza de forma manual junto con los datos de tarifas de distribuidoras a cliente final, sin fecha fija para el próximo dato.</p>
     <p class="nota" id="nota-tarifas"></p>
 
     <div class="kpis" id="kpis-tarifas"></div>
 
     <div class="tarjeta">
       <h2 style="margin-top:0">Tarifas de electricidad por región</h2>
-      <p class="nota">Precio de energía ($/kWh) y potencia ($/kW/mes) en el Sistema Nacional de Transmisión (220kV).</p>
+      <p class="nota">Precio de energía ($/kWh) y potencia ($/kW/mes) en tarifas mensuales de distribuidoras a cliente final, por categoría de consumo.</p>
       <div id="t-tarifas"></div>
       <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:#666;">
-        Datos: Decreto PNP (CNE). Fuente: Subestaciones 220kV del Sistema de Transmisión Nacional.
-        Próximos datos: octubre 2026 (semestral).
+        Datos: tarifas de distribuidoras a cliente final (CGE, CNE Peajes, CNE Suministro, ENEL, ENEL Chile),
+        por categoría domiciliario, comercial pequeño e industrial. Actualización manual, sin fecha fija
+        para el próximo dato.
       </p>
     </div>
   </div>
 
   <!-- TAB 3: Stock de EVs 2025 -->
   <div id="tab-ev2025" class="tab-content">
-    <p class="sub">Proyeccion de stock de vehiculos electricos por region (2024-2025). Basada en crecimiento INE 2023-2024.
-    Se actualiza cuando INE publique datos 2025 (septiembre 2026).</p>
+    <p class="sub">Proyección de stock de vehículos eléctricos por región (2024-2025), a partir de los Permisos de
+    Circulación del INE: 2024 es el último dato real publicado, y 2025 se proyecta con la tasa de crecimiento
+    2023-2024. Se actualiza cuando el INE publique los Permisos de Circulación 2025 (septiembre 2026).</p>
     <p class="nota" id="nota-ev2025"></p>
 
     <div class="kpis" id="kpis-ev2025"></div>
@@ -257,7 +258,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_elasticidad.js?v='+_pwv+'"><\/script>')</script>
-<script>document.write('<script src="data/c_elasticidad_tarifas.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_elasticidad_tarifas_pnp.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_elasticidad_tarifas_detallado.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_tarifas.js?v='+_pwv+'"><\/script>')</script>
@@ -421,42 +421,6 @@ PW.tabla("t-capturas", [
   poblarComunas();
   pintar();
 })();
-
-// TAB 2: Tarifas Electricidad
-if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas) {
-  const DT = PW_DATA.c_elasticidad_tarifas;
-  document.getElementById("nota-tarifas").textContent = "Actualizado " + (DT.generado || "").slice(0, 10) + ". " + DT.nota;
-
-  const regiones_con_datos = DT.tarifas_por_region ? Object.keys(DT.tarifas_por_region).length : 0;
-  // [FIX auditoria 2026-09-17] "DT.tarifas" no existe en este contrato (las claves reales son
-  // total_subestaciones y tarifas_por_region; "tarifas" parece un nombre de campo de una version
-  // anterior del esquema) -- "DT.tarifas && DT.tarifas.length || 0" evaluaba SIEMPRE undefined,
-  // asi que el KPI mostraba "0 subestaciones en padron" y "—" de periodo el 100% de las veces,
-  // aunque el dato real (34, verificado = suma exacta de las 7 regiones) estaba disponible en
-  // total_subestaciones.
-  document.getElementById("kpis-tarifas").innerHTML = [
-    [DT.total_subestaciones || 0, "subestaciones en padrón", "Sistema Nacional de Transmisión"],
-    [regiones_con_datos, "regiones con tarifas", "datos APR-2026"],
-    [regiones_con_datos ? "APR-2026" : "—", "período actual", "próximo: OCT-2026"],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-  if (DT.tarifas_por_region) {
-    const filas = Object.entries(DT.tarifas_por_region).map(([region, data]) => ({
-      region: region,
-      subestaciones: data.subestaciones || 0,
-      tarifa_energia_min: data.tarifa_energia_min,
-      tarifa_energia_max: data.tarifa_energia_max,
-      tarifa_energia_promedio: data.tarifa_energia_promedio,
-    }));
-    PW.tabla("t-tarifas", [
-      { k: "region", titulo: "Región (CUT)" },
-      { k: "subestaciones", titulo: "Subestaciones", num: true },
-      { k: "tarifa_energia_promedio", titulo: "Tarifa energía promedio", num: true, fmt: v => PW.fmt(v, 1) + " $/kWh" },
-      { k: "tarifa_energia_min", titulo: "Mín", num: true, fmt: v => PW.fmt(v, 1) },
-      { k: "tarifa_energia_max", titulo: "Máx", num: true, fmt: v => PW.fmt(v, 1) },
-    ], filas, {});
-  }
-}
 
 // TAB 3: Precios Nudo por Subestación
 if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
