@@ -194,6 +194,53 @@
   }
 
   // ---------- navegacion + pie
+  // ---------- selector claro/oscuro (esquina del encabezado)
+  // El CSS ya traia el contrato: sin atributo sigue al sistema (@media prefers-color-scheme),
+  // [data-theme="dark"] fuerza oscuro y [data-theme="light"] gana sobre el media query. Esto solo
+  // escribe ese atributo y lo recuerda. El valor se aplica ANTES de pintar con un snippet inline
+  // en el <head> (ver instalar_tema.py); aca solo se refresca el boton y se maneja el click.
+  const TEMA_KEY = "pw-tema";
+  const IC_SOL = IC('<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/>');
+  const IC_LUNA = IC('<path d="M20 13.2A8.2 8.2 0 0 1 10.8 4a8.4 8.4 0 1 0 9.2 9.2z"/>');
+
+  function temaEfectivo() {
+    const fijado = document.documentElement.getAttribute("data-theme");
+    if (fijado === "dark" || fijado === "light") return fijado;
+    return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function montarTema(btn) {
+    if (!btn) return;
+    const pintar = () => {
+      const oscuro = temaEfectivo() === "dark";
+      // el boton anuncia la ACCION, no el estado actual: en oscuro ofrece pasar a claro
+      btn.innerHTML = oscuro ? IC_SOL : IC_LUNA;
+      const txt = oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
+      btn.setAttribute("aria-label", txt);
+      btn.setAttribute("title", txt);
+    };
+    btn.addEventListener("click", () => {
+      const nuevo = temaEfectivo() === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", nuevo);
+      let persistio = true;
+      // localStorage puede fallar (ventana privada, cookies bloqueadas): el tema igual queda
+      // aplicado en esta pagina, solo no se recuerda en la siguiente.
+      try { localStorage.setItem(TEMA_KEY, nuevo); } catch (e) { persistio = false; }
+      pintar();
+      // El CSS cambia solo, pero graficos y mapas NO: sus colores se resuelven con PW.color() al
+      // dibujar y quedan escritos como atributos SVG / tiles de Leaflet ya cargados, asi que
+      // conservarian la paleta anterior hasta la proxima carga (verificado: una linea seguia en
+      // el azul del modo oscuro sobre fondo claro, y el mapa mantenia su basemap). Se recarga para
+      // que TODO quede consistente. Si no se pudo persistir, recargar perderia la eleccion: en ese
+      // caso se deja el cambio solo-CSS, que es mejor que revertirlo al recargar.
+      if (persistio && document.querySelector("svg, .leaflet-container")) location.reload();
+    });
+    // si el visitante nunca eligió, seguimos al sistema: reflejar sus cambios en vivo
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      if (!document.documentElement.getAttribute("data-theme")) pintar();
+    });
+    pintar();
+  }
+
   function montarNav(activa) {
     const h = document.createElement("header");
     h.className = "pw";
@@ -213,8 +260,10 @@
     });
     h.innerHTML = `<a href="index.html" class="marca"><img src="assets/logo-icon.png" alt="" width="28" height="28"><span>Energías Futuro</span></a>` +
       `<button type="button" class="nav-toggle" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>` +
-      `<nav>${nav}</nav>`;
+      `<nav>${nav}</nav>` +
+      `<button type="button" class="tema-toggle"></button>`;
     document.body.prepend(h);
+    montarTema(h.querySelector(".tema-toggle"));
 
     // menu movil: sin :hover en touch, así que el toggle y cada grupo se abren/cierran con click/tap.
     // :focus-within se conserva para navegación por teclado (no se pisa con este JS).
