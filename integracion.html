@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Integración vertical del sector energético — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260918b">
+<link rel="stylesheet" href="assets/estilo.css?v=260919a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_integracion.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -61,7 +61,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/c_integracion.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260918b"></script>
+<script src="assets/comun.js?v=260919a"></script>
 <script>
 PW.montarNav("integracion.html");
 const D = window.PW_DATA.c_integracion;
@@ -98,7 +98,9 @@ function celda(c, v) {
   return `<td class="num" style="background:${bg};font-weight:600">${c.fmt(v)}</td>`;
 }
 function badge(n) {
-  const col = n >= 4 ? C("--critical") : (n >= 3 ? C("--s2") : (n >= 2 ? C("--s4") : "--ink-3"));
+  // C() obligatorio tambien en la ultima rama: sin el se emitia background:--ink-3 (CSS
+  // invalido) y el badge quedaba blanco sobre fondo transparente, invisible en el tema claro.
+  const col = n >= 4 ? C("--critical") : (n >= 3 ? C("--s2") : (n >= 2 ? C("--s4") : C("--ink-3")));
   return `<span style="display:inline-block;min-width:20px;text-align:center;border-radius:6px;` +
     `padding:1px 7px;font-weight:700;color:#fff;background:${col}">${n}</span>`;
 }

@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Grupo automotriz 360 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260918b">
+<link rel="stylesheet" href="assets/estilo.css?v=260919a">
 <style>
   .part { display: flex; align-items: center; gap: 9px; }
   .part .n { min-width: 78px; text-align: right; font-variant-numeric: tabular-nums; }
@@ -67,7 +67,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/c_grupoauto.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260918b"></script>
+<script src="assets/comun.js?v=260919a"></script>
 <script>
 PW.montarNav("grupoauto.html");
 const D = window.PW_DATA.c_grupoauto;
@@ -94,7 +94,11 @@ function barra(g) {
     `<div class="track"><i style="width:${w}%"></i></div></div>`;
 }
 function chipMarcas(n) {
-  const col = n >= 5 ? C("--critical") : (n >= 2 ? C("--s4") : "--ink-3");
+  // C() obligatorio tambien en la ultima rama: sin el se emitia background:--ink-3 (CSS
+  // invalido, el navegador lo descarta) y el chip quedaba con texto blanco sobre fondo
+  // transparente, es decir invisible sobre la tarjeta -- la columna "Marcas" se veia vacia
+  // en los grupos de una sola marca (BYD, Tesla, Changan). Fallaba en el tema por defecto.
+  const col = n >= 5 ? C("--critical") : (n >= 2 ? C("--s4") : C("--ink-3"));
   return `<span class="chip-n" style="background:${col}">${n}</span>`;
 }
 const th = `<thead><tr><th>Grupo económico</th><th>Participación EV</th>` +

@@ -23,6 +23,16 @@
   --seq-100: #cde2fb;
   --seq-400: #3987e5;
   --seq-700: #0d366b;
+  /* Escala secuencial de 5 tramos (coropletas y su leyenda). En claro va de claro a oscuro
+     sobre fondo blanco; en oscuro se invierte el sentido -- de oscuro a claro -- para que el
+     tramo alto siga siendo el mas visible. Antes estaba fija en JS y el ultimo tramo
+     (#0d366b) caia a 1,46 de contraste sobre la tarjeta oscura: el cuadradito de la leyenda
+     desaparecia y dejaba la etiqueta "sobre X" sin color. */
+  --seq-1: #cde2fb;
+  --seq-2: #9ec5f4;
+  --seq-3: #5598e7;
+  --seq-4: #256abf;
+  --seq-5: #0d366b;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -41,6 +51,11 @@
     --s4: #c98500;
     --s5: #d55181;
     --s6: #008300;
+    --seq-1: #12355f;
+    --seq-2: #1d5296;
+    --seq-3: #2f79cf;
+    --seq-4: #6fadf0;
+    --seq-5: #b3d5fa;
   }
 }
 :root[data-theme="dark"] {
@@ -59,6 +74,11 @@
   --s4: #c98500;
   --s5: #d55181;
   --s6: #008300;
+  --seq-1: #12355f;
+  --seq-2: #1d5296;
+  --seq-3: #2f79cf;
+  --seq-4: #6fadf0;
+  --seq-5: #b3d5fa;
 }
 
 * { box-sizing: border-box; }
