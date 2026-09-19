@@ -114,7 +114,9 @@
     "tracker.html": IC('<path d="M5 21V4"/><path d="M5 4h13l-2.5 3.5L18 11H5"/>'),
     "vehiculo.html": IC('<path d="M4 15l1.5-5.5C5.8 8.6 6.6 8 7.5 8h9c.9 0 1.7.6 2 1.5L20 15"/><rect x="3" y="14" width="18" height="4" rx="1.5"/><circle cx="7.5" cy="18.5" r="1.4"/><circle cx="16.5" cy="18.5" r="1.4"/>'),
     "operadores.html": IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>'),
-    "sitios.html": IC('<path d="M12 21s-6.5-5.6-6.5-10.4A6.5 6.5 0 0 1 12 4a6.5 6.5 0 0 1 6.5 6.6C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/>'),
+    // clave de icono compartida, no una pagina: sitios.html se fusiono hace tiempo en
+    // operadores.html. Se la nombra "_pin" para que no parezca una entrada de navegacion rota.
+    "_pin": IC('<path d="M12 21s-6.5-5.6-6.5-10.4A6.5 6.5 0 0 1 12 4a6.5 6.5 0 0 1 6.5 6.6C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.2"/>'),
     "costo.html": IC('<circle cx="12" cy="12" r="9"/><path d="M12 6.5v11M14.8 8.7c-.6-.9-1.6-1.4-2.8-1.4-1.7 0-3 .9-3 2.3 0 2.9 6 1.7 6 4.6 0 1.4-1.3 2.3-3 2.3-1.2 0-2.2-.5-2.8-1.4"/>'),
     "horas.html": IC('<circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l3.5 2.5"/>'),
     "riesgo.html": IC('<path d="M12 3L2.5 20h19z"/><path d="M12 9.5v5M12 17.6v.4"/>'),
@@ -132,13 +134,13 @@
   ICONOS["permisos.html"] = IC('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 15V9h3a2 2 0 0 1 0 4H8"/>');
   ICONOS["duales.html"] = ICONOS["costo.html"];
   ICONOS["ventas.html"] = ICONOS["radar.html"];
-  ICONOS["autonomia.html"] = ICONOS["sitios.html"];
+  ICONOS["autonomia.html"] = ICONOS["_pin"];
   ICONOS["conectores-red.html"] = ICONOS["operadores.html"];
   ICONOS["tco.html"] = ICONOS["costo.html"];
   ICONOS["resiliencia.html"] = ICONOS["riesgo.html"];
   ICONOS["probabilidad-cortes.html"] = ICONOS["riesgo.html"];
   ICONOS["red-electrica.html"] = ICONOS["operadores.html"];
-  ICONOS["censo-electricidad.html"] = ICONOS["sitios.html"];
+  ICONOS["censo-electricidad.html"] = ICONOS["_pin"];
   ICONOS["normativa.html"] = IC('<path d="M12 3v18M5 21h14"/><path d="M5 7h14M7 7l-3 6h6zM17 7l-3 6h6z"/>');
   ICONOS["reporte-energetico.html"] = IC('<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M12 10l-2 4h3l-1 4"/>');
   ICONOS["bodegaje.html"] = ICONOS["normativa.html"];
@@ -730,11 +732,22 @@
           return asc ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
         });
       }
+      // [TRUNCAMIENTO VISIBLE] `max` corta la tabla, pero hasta ahora la pildora imprimia
+      // SIEMPRE filas.length -- el total -- y con buscador:false no habia pildora ninguna. El
+      // usuario leia "1.802 estaciones" sobre una tabla de 300 sin ningun indicio del corte
+      // (y peor: ordenada por precio ascendente, asi que 9 regiones no aparecian nunca).
+      // Ahora, cuando se corta, la pildora dice cuantas se ven y se agrega una nota al pie
+      // con el criterio de orden, que es lo que permite entender QUE quedo afuera.
+      const truncada = !!opciones.max && totalFiltrado > opciones.max;
       if (opciones.max) datos = datos.slice(0, opciones.max);
       if (el._contadorBusca) {
-        el._contadorBusca.textContent = filtro
-          ? totalFiltrado + " de " + filas.length
-          : PW_fmtEntero(filas.length) + " filas";
+        // Con filtro activo la pildora decia "1.162 de 1.162 filas" sobre una tabla de 200:
+        // el numero de la izquierda tiene que ser SIEMPRE lo que se esta viendo.
+        el._contadorBusca.textContent = truncada
+          ? PW_fmtEntero(datos.length) + " de " + PW_fmtEntero(totalFiltrado)
+            + (filtro ? " coincidencias" : " filas")
+          : (filtro ? PW_fmtEntero(totalFiltrado) + " de " + PW_fmtEntero(filas.length) + " filas"
+                    : PW_fmtEntero(filas.length) + " filas");
       }
       const th = cols.map(c =>
         `<th class="${c.num ? "num" : ""} ${orden === c.k ? "orden" + (asc ? " asc" : "") : ""}" data-k="${c.k}">${c.titulo}</th>`
@@ -745,6 +758,18 @@
         return `<td class="${c.num ? "num" : ""}">${txt}</td>`;
       }).join("") + "</tr>").join("");
       contTabla.innerHTML = `<div class="scroll-x"><table class="pw"><thead><tr>${th}</tr></thead><tbody>${cuerpo}</tbody></table></div>`;
+      // Siempre que se corta, tenga buscador o no. Condicionarla a la ausencia de pildora
+      // dejaba ciegas ~20 tablas, justo las que mas se filtran; y la pildora nunca dice el
+      // CRITERIO DE ORDEN, que es lo que permite entender que quedo afuera. Prefiero que los
+      // dos numeros se repitan antes que volver a ocultar el corte.
+      if (truncada) {
+        const colOrd = cols.find(c => c.k === orden);
+        contTabla.insertAdjacentHTML("beforeend",
+          '<p class="nota" style="margin:8px 0 0">Se muestran ' + PW_fmtEntero(datos.length) +
+          " de " + PW_fmtEntero(totalFiltrado) + " filas" +
+          (colOrd ? ", ordenadas por " + esc(colOrd.titulo) + (asc ? " de menor a mayor" : " de mayor a menor") : "") +
+          ". Usa los filtros para llegar al resto.</p>");
+      }
       contTabla.querySelectorAll("th").forEach(t => t.addEventListener("click", () => {
         const k = t.dataset.k;
         if (orden === k) asc = !asc; else { orden = k; asc = false; }
@@ -1699,6 +1724,70 @@
     return el;
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas };
+  // [SERIE COMPLETA] Rellena los periodos ausentes de una serie temporal con un elemento que
+  // SOLO trae la clave del periodo, para que el grafico los dibuje como "sin dato" en vez de
+  // borrarlos del eje. Sin esto la serie se comprime y los periodos vecinos quedan pegados:
+  // es el bug que teniamos en cortes (abril-2019 dibujado al lado de julio-2019, con cinco
+  // meses ausentes en el medio) y que se repetia en normativa, seguros, buses, infraestructura
+  // y bess. No inventa valores -- declara la ausencia, que es lo contrario.
+  // paso: "anio" | "mes" (YYYY-MM) | "dia" (YYYY-MM-DD).
+  // `vacio` es OBLIGATORIO pensarlo, y hay TRES casos distintos:
+  //   - MEDICION (una lectura diaria): el periodo ausente es "sin dato". Se omite `vacio` y el
+  //     grafico pinta la banda ambar.
+  //   - CONTEO o SUMA (normas por anio, buses importados por mes): la ausencia significa CERO,
+  //     no "no medimos". Se pasa {n: 0} / {unidades: 0} y la barra va en cero.
+  //   - ACUMULADO (un stock que solo crece): el valor del mes ausente SI se conoce, es el del
+  //     mes anterior, porque no hubo altas. Se pasa "arrastrar". Marcarlo como hueco seria
+  //     declarar ignorancia sobre un mes que el registro cubre.
+  // Elegir mal es tan falso como inventar el dato, en la direccion contraria.
+  function completarSerie(items, clave, paso, vacio) {
+    // una sola fila con la clave nula bastaba para devolver [] y dejar el grafico en blanco,
+    // sin error: String(null) ordena ultimo y +"null" es NaN, asi que el bucle no iteraba.
+    const arr = (items || []).filter(x => x && x[clave] != null && String(x[clave]) !== "").slice().sort((a, b) =>
+      String(a[clave]) < String(b[clave]) ? -1 : (String(a[clave]) > String(b[clave]) ? 1 : 0));
+    if (arr.length < 2) return arr;
+    const idx = {};
+    arr.forEach(x => { idx[String(x[clave])] = x; });
+    const prim = String(arr[0][clave]), ult = String(arr[arr.length - 1][clave]);
+    // arma el elemento de un periodo ausente segun el modo elegido
+    const _hueco = (valorClave, hasta) => {
+      if (vacio === "arrastrar") {
+        const prev = hasta.length ? hasta[hasta.length - 1] : null;
+        return prev ? Object.assign({}, prev, { [clave]: valorClave }) : { [clave]: valorClave };
+      }
+      return Object.assign({ [clave]: valorClave }, vacio || {});
+    };
+    const salida = [];
+    let guarda = 0;                        // corta cualquier recorrido que se descontrole
+    const numerico = typeof arr[0][clave] === "number";
+    if (paso === "anio") {
+      for (let a = +prim; a <= +ult && guarda++ < 5000; a++) {
+        const k = String(a);
+        salida.push(idx[k] || _hueco(numerico ? a : k, salida));
+      }
+    } else if (paso === "mes") {
+      let a = +prim.slice(0, 4), m = +prim.slice(5, 7);
+      const af = +ult.slice(0, 4), mf = +ult.slice(5, 7);
+      while ((a < af || (a === af && m <= mf)) && guarda++ < 5000) {
+        const k = a + "-" + String(m).padStart(2, "0");
+        salida.push(idx[k] || _hueco(k, salida));
+        m++;
+        if (m > 12) { m = 1; a++; }
+      }
+    } else if (paso === "dia") {
+      const d = new Date(prim + "T00:00:00Z"), fin = new Date(ult + "T00:00:00Z");
+      if (isNaN(d) || isNaN(fin)) return arr;
+      while (d <= fin && guarda++ < 20000) {
+        const k = d.toISOString().slice(0, 10);
+        salida.push(idx[k] || _hueco(k, salida));
+        d.setUTCDate(d.getUTCDate() + 1);
+      }
+    } else {
+      return arr;
+    }
+    return salida;
+  }
+
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie };
 })();
 

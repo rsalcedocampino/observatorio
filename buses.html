@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Buses eléctricos — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_buses.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -83,7 +83,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_buses.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("buses.html");
 const D = PW_DATA.c_buses;
@@ -164,9 +164,12 @@ PW.tabla("t-marcas-a", [
   { k: "cif_unit", titulo: "CIF por bus (USD)", num: true, fmt: v => "US$" + PW.fmt(v) },
 ], D.marcas_aduana, { orden: "unidades" });
 
+// 12 meses sin importacion de buses no venian como fila: el eje contaba barras y no meses,
+// asi que el tick se corria (ene 19, ene 20, mar 21, may 22...) y el ritmo se leia mas denso.
+const ADUANA = PW.completarSerie(D.aduana.filter(a => a.ym >= "2019-01"), "ym", "mes", { unidades: 0 });
 PW.columnas("g-aduana", {
-  labels: D.aduana.filter(a => a.ym >= "2019-01").map(a => a.ym),
-  valores: D.aduana.filter(a => a.ym >= "2019-01").map(a => a.unidades),
+  labels: ADUANA.map(a => a.ym),
+  valores: ADUANA.map(a => a.unidades),
   color: PW.color("--s2"),
   fmtV: v => PW.fmt(v) + " buses",
 });

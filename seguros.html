@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Seguros y coberturas EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <style>
 .celda-cob { text-align: center; font-weight: 600; border-radius: 6px; padding: 3px 6px; display: inline-block; min-width: 54px; font-size: 12px; }
 .cob-si { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
@@ -92,7 +92,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="hallazgo"><b>Solo existe UN seguro EV específico en Chile</b>: BCI "Seguro Auto
     Sustentable" (cable de recarga UF 15 solo robo, carga en ruta, RC en estaciones, reposición
     0 km, prima trianual en UF fija). BCI asegura más de la mitad de los Tesla del país.</div>
-    <div class="hallazgo">Los 58 condicionados depositados en CMF <b>no mencionan "batería",
+    <div class="hallazgo">Los <span id="n-depos">—</span> condicionados depositados en CMF <b>no mencionan "batería",
     "cargador" ni "vehículo eléctrico"</b>: todo lo EV vive en condiciones particulares no
     públicas.</div>
     <div class="hallazgo">El <b>cable cargador esta excluido de facto</b> en todo el mercado
@@ -111,20 +111,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_seguros.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("seguros.html");
 const D = PW_DATA.c_seguros;
+// El texto decia 58 y la suma de los depositos que grafica la propia pagina da 68.
+{
+  const _e = document.getElementById("n-depos");
+  if (_e && D.depositos) _e.textContent = PW.fmt(D.depositos.reduce((s, d) => s + (d.n || 0), 0));
+}
 document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 
 const conEV = D.aseguradoras.filter(a => a.oferta_ev).length;
 const matEV = D.matriz.filter(m => D.coberturas_ev[m.cobertura]);
 const cubiertas = matEV.filter(m => m.incluida === "si").length;
+// El denominador tiene que ser la grilla que la tabla efectivamente pinta (productos x
+// coberturas EV), no matEV.length. matEV son las filas que EXISTEN en la matriz, y hoy son 8:
+// las de un unico producto. El KPI decia "3 de 8" con el subtitulo "el resto: no, opcional o
+// S/I", dando a entender que 8 era el universo, cuando abajo se ven 208 celdas y 200 de ellas
+// ni siquiera tienen fila en la fuente.
+const celdasEV = D.productos.length * Object.keys(D.coberturas_ev).length;
+const prodConEV = new Set(matEV.map(m => m.producto)).size;
 document.getElementById("kpis").innerHTML = [
   [D.aseguradoras.length, "aseguradoras analizadas", conEV + " con oferta EV especifica"],
   [D.productos.length, "productos y planes", "condicionados POL/CAD citados"],
   ["8", "coberturas EV canonicas", "del catalogo del proyecto"],
-  [cubiertas + " de " + matEV.length, "celdas EV con cobertura confirmada", "el resto: no, opcional o S/I"],
+  [cubiertas + " de " + celdasEV, "celdas EV con cobertura confirmada",
+   "solo " + prodConEV + " de " + D.productos.length + " productos declara cobertura EV"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
 // selector de aseguradoras
@@ -163,9 +176,12 @@ selA.addEventListener("input", pintarMatriz);
 document.getElementById("f-tipo").addEventListener("input", pintarMatriz);
 pintarMatriz();
 
+// Faltaban 7 de 14 anios: 2018 quedaba pegado a 2025 y se perdian de vista los seis anios sin
+// ningun deposito, que son justamente lo que vuelve significativa la renovacion 2025-2026.
+const DEPOS = PW.completarSerie(D.depositos, "anio", "anio", { n: 0 });
 PW.columnas("g-depositos", {
-  labels: D.depositos.map(d => String(d.anio)),
-  valores: D.depositos.map(d => d.n),
+  labels: DEPOS.map(d => String(d.anio)),
+  valores: DEPOS.map(d => d.n),
   fmtV: v => PW.fmt(v) + " depositos",
 });
 

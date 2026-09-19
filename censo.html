@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Censo Nacional — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <style>
@@ -91,7 +91,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="ley"></div>
     <p class="nota">Colores por quintiles del indicador elegido; usa los filtros de arriba (Año, Región,
     Comuna). Al elegir una <b>región</b> el mapa hace zoom a ella; al elegir una <b>comuna</b> se muestra
-    su región de contexto y la comuna se resalta en <b style="color:#e11d48">rojo</b>. El indicador
+    su región de contexto y la comuna se resalta en <b style="color:var(--ink-baja)">rojo</b>. El indicador
     "Población" cambia con el <b>Año</b>; los demás son del Censo 2024.</p>
     <h3 style="margin:14px 0 4px">Top 20 comunas por el indicador elegido</h3>
     <div id="g-top"></div>
@@ -102,7 +102,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="crec-wrap"><div id="mapa-crec"></div></div>
     <div id="ley-crec" class="leyenda"></div>
     <p class="nota">Variación de la población censada por comuna entre el Censo 2017 y el Censo 2024.
-    <b style="color:#b91c1c">Rojo = disminución</b>, <b style="color:#15803d">verde = aumento</b>;
+    <b style="color:var(--ink-baja)">Rojo = disminución</b>, <b style="color:var(--ink-alza)">verde = aumento</b>;
     gris = sin comparación 2017. Respeta el filtro de <b>Región</b>. Pasa el mouse por una comuna
     para ver su población en ambos censos.</p>
     <div class="fila2">
@@ -132,7 +132,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/censo.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("censo.html");
 const D = window.PW_DATA.censo;

@@ -33,6 +33,11 @@
   --seq-3: #5598e7;
   --seq-4: #256abf;
   --seq-5: #0d366b;
+  /* Texto semantico. Separado de los colores de dato (mapas y barras) a proposito: el dato se
+     pinta sobre tiles claros y no cambia, el TEXTO se pinta sobre la tarjeta y tiene que seguir
+     al tema. Mismo tono, distinta luminosidad. Medido sobre la tarjeta de cada tema. */
+  --ink-baja: #b91c1c;   /* 6,30 sobre la tarjeta clara */
+  --ink-alza: #15803d;   /* 4,89 */
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -56,6 +61,8 @@
     --seq-3: #2f79cf;
     --seq-4: #6fadf0;
     --seq-5: #b3d5fa;
+    --ink-baja: #f28b82;   /* 7,29 sobre la tarjeta oscura (el #b91c1c daba 2,69) */
+    --ink-alza: #6cc58b;   /* 8,29 (el #15803d daba 3,47) */
   }
 }
 :root[data-theme="dark"] {
@@ -79,6 +86,8 @@
   --seq-3: #2f79cf;
   --seq-4: #6fadf0;
   --seq-5: #b3d5fa;
+  --ink-baja: #f28b82;
+  --ink-alza: #6cc58b;
 }
 
 * { box-sizing: border-box; }

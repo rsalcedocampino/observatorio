@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Probabilidad de cortes — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
@@ -85,7 +85,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_probcortes.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("probabilidad-cortes.html");
 const D = PW_DATA.c_probcortes;
@@ -166,10 +166,18 @@ function refrescar() {
     tituloPerfil = "% de comunas afectadas por mes — " + reg.region;
     notaPerfil = "Promedio historico del porcentaje de comunas de la region con al menos un corte en el mes.";
   } else {
-    perfil = MESES.map((_, m) =>
-      +(D.regiones.reduce((s, r) => s + r.pct_comunas[m], 0) / D.regiones.length).toFixed(1));
-    tituloPerfil = "% de comunas afectadas por mes — promedio pais";
-    notaPerfil = "Promedio simple de las 16 regiones.";
+    // Ponderado por n_comunas y no promedio simple de regiones: el simple le da el mismo peso
+    // a Aysen que a la Metropolitana, y el numero que sale NO es "el % de comunas del pais
+    // afectadas", que es lo que promete el titulo. Subestimaba entre 6,7 y 9,7 puntos segun el
+    // mes (enero: 61,2% simple contra 70,5% real). n_comunas ya venia en el dato, sin usarse.
+    const totCom = D.regiones.reduce((s, r) => s + (r.n_comunas || 0), 0);
+    perfil = MESES.map((_, m) => totCom
+      ? +(D.regiones.reduce((s, r) => s + r.pct_comunas[m] * (r.n_comunas || 0), 0) / totCom).toFixed(1)
+      : +(D.regiones.reduce((s, r) => s + r.pct_comunas[m], 0) / D.regiones.length).toFixed(1));
+    tituloPerfil = "% de comunas afectadas por mes — país";
+    notaPerfil = totCom
+      ? "Porcentaje de las " + totCom + " comunas del país, ponderado por el tamaño de cada región."
+      : "Promedio simple de las " + D.regiones.length + " regiones.";
   }
   document.getElementById("titulo-perfil").textContent = tituloPerfil;
   document.getElementById("nota-perfil").textContent = notaPerfil;
