@@ -1412,7 +1412,12 @@
 
   // [CHOROPLETH] mapa de comunas coloreadas por valor (requiere geo_comunas.js cargado)
   // cfg: {valores: {cut: numero}, fmt, alto, titulo}
-  const SEQ = ["#cde2fb", "#9ec5f4", "#5598e7", "#256abf", "#0d366b"];
+  // Escala secuencial desde los tokens --seq-1..5, que se invierten en modo oscuro (ver
+  // estilo.css). Fija en JS, el tramo alto #0d366b quedaba en 1,46 de contraste sobre la
+  // tarjeta oscura y el cuadradito de la leyenda desaparecia. color() devuelve el nombre del
+  // token cuando no existe, asi que solo aceptamos la respuesta si es un color de verdad.
+  const SEQ = ["#cde2fb", "#9ec5f4", "#5598e7", "#256abf", "#0d366b"]
+    .map((hex, i) => { const t = color("--seq-" + (i + 1)); return t.charAt(0) === "#" ? t : hex; });
   function choropleth(cont, cfg) {
     const el = typeof cont === "string" ? document.getElementById(cont) : cont;
     const geo = window.PW_DATA && window.PW_DATA.geo_comunas;

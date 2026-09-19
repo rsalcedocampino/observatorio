@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cortes de energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260918b">
+<link rel="stylesheet" href="assets/estilo.css?v=260919a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -160,7 +160,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/riesgo.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/cortes.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260918b"></script>
+<script src="assets/comun.js?v=260919a"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
@@ -410,7 +410,9 @@ function mapaVivo() {
     pintarLeyenda();
   }
   const COLOR_CONLUZ = "#f7ebb0"; // amarillo claro = con luz (sin corte)
-  const SEQ_LEY = ["#cde2fb", "#9ec5f4", "#5598e7", "#256abf", "#0d366b"];
+  // Misma escala que PW.choropleth: desde los tokens, que se invierten en modo oscuro.
+  const SEQ_LEY = ["#cde2fb", "#9ec5f4", "#5598e7", "#256abf", "#0d366b"]
+    .map((hex, i) => { const t = PW.color("--seq-" + (i + 1)); return t.charAt(0) === "#" ? t : hex; });
   function pintarLeyenda() {
     const wrap = document.getElementById("leyenda-wrap");
     if (!wrap) return;
@@ -590,7 +592,7 @@ function dibujarNacional(anho) {
   if (anho) {
     const meses = (D.mensual || []).filter(m => m.ym.slice(0, 4) === anho);
     hEst.textContent = "Cliente-horas por mes — " + anho;
-    nEst.textContent = "Serie nacional mensual de " + anho + ". Los meses sin dato de fuente quedan en blanco.";
+    nEst.textContent = "Serie nacional mensual de " + anho + ". Los meses sin dato de fuente quedan marcados en ámbar, no en cero.";
     PW.columnas("g-estacional", {
       labels: meses.map(m => MESES[+m.ym.slice(5, 7) - 1]),
       valores: meses.map(m => m.hueco ? null : m.cliente_horas),
