@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Infraestructura de Carga — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -56,7 +56,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="filtros">
     <label>Operador <select id="f-op"><option value="">Todos</option></select></label>
     <label>Corriente <select id="f-cor"><option value="">Todas</option><option value="DC">Carga rápida (DC)</option><option value="AC">Carga AC</option></select></label>
-    <label>Potencia <select id="f-pot"><option value="">Todas</option><option value="ultra">Ultrarrápida (≥50 kW)</option><option value="rapida">Rápida (22–49 kW)</option><option value="lenta">Lenta (&lt;22 kW)</option></select></label>
+    <label>Potencia <select id="f-pot"><option value="">Todas</option><option value="ultra">Ultrarrápida (≥50 kW)</option><option value="rapida">Rápida (22–49 kW)</option><option value="lenta">Lenta (&lt;22 kW)</option><option value="sindato">Sin potencia declarada</option></select></label>
     <label>Región <select id="f-reg"><option value="">Todas</option></select></label>
     <label>Acceso <select id="f-acc"><option value="">Todos</option><option value="publico">Público</option><option value="publico_restringido">Público con restricción</option><option value="restringido">Restringido</option><option value="mixto">Mixto</option></select></label>
     <span class="pill" id="ambito"></span>
@@ -81,12 +81,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("mapa-carga.html");
 const MAPA = window.PW_DATA.mapa_carga || {};  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
 const CARGA = (MAPA.carga || []).map(p => ({
-  ...p, lat: +p.lat, lon: +p.lon, _kw: parseFloat(p.kw) || 0, _nc: parseInt(p.nc, 10) || 0,
+  // _kw = null cuando la fuente no trae potencia, NO 0: con "|| 0" los 54 puntos sin dato
+  // caian en el balde "Lenta (<22 kW)", que anunciaba 208 cuando solo 154 tienen una potencia
+  // medida bajo 22 kW. No saber cuanta potencia tiene un cargador no es que tenga poca.
+  ...p, lat: +p.lat, lon: +p.lon,
+  _kw: isFinite(parseFloat(p.kw)) ? parseFloat(p.kw) : null,
+  _nc: parseInt(p.nc, 10) || 0,
   _dc: String(p.cor || "").toUpperCase() === "DC",
 })).filter(p => !Number.isNaN(p.lat) && !Number.isNaN(p.lon));
 
@@ -126,7 +131,7 @@ const selCor = document.getElementById("f-cor");
 const selPot = document.getElementById("f-pot");
 
 const selAcc = document.getElementById("f-acc");
-function claseP(kw) { return kw >= 50 ? "ultra" : (kw >= 22 ? "rapida" : "lenta"); }
+function claseP(kw) { return kw == null ? "sindato" : (kw >= 50 ? "ultra" : (kw >= 22 ? "rapida" : "lenta")); }
 function filtrar() {
   const op = selOp.value, cor = selCor.value, pot = selPot.value, rc = selReg.value, acc = selAcc.value;
   return CARGA.filter(p =>
@@ -168,17 +173,18 @@ function render() {
   // muestra "sin dato" en vez de un 0 o un 646 que se leerian como una cifra real.
   const pub = HAY_ACC ? PW.fmt(pts.filter(p => p.acc !== "restringido").length) : "—";
 
-  // Mismo criterio que "pub" arriba (438/445): _kw = parseFloat(p.kw)||0 no descuadra la SUMA
-  // (sumar 0 o saltarse el termino da el mismo total), pero 54/651 puntos hoy no tienen kw
-  // informado y quedaban contribuyendo 0 silencioso a "potencia instalada" -- sin la marca, se
-  // lee como "esos puntos no tienen potencia" en vez de "no se sabe cual es".
-  const sinKw = pts.filter(p => p.kw == null).length;
+  // _kw ahora es null cuando no hay potencia declarada. La SUMA no cambia (saltarse el termino
+  // equivale a sumar 0). El conteo mira _kw y no el campo crudo por consistencia con el filtro,
+  // no porque cambie el resultado: los 54 casos son null de JSON, no cadenas vacias, asi que
+  // p.kw == null tambien los tomaba. Se declara aparte para que no se lea como "esos puntos no
+  // tienen potencia" sino "no se sabe cual es".
+  const sinKw = pts.filter(p => p._kw == null).length;
   document.getElementById("kpis").innerHTML = [
     [PW.fmt(pts.length), "estaciones", ambito],
     [pub, "de acceso público", HAY_ACC ? "público + público con restricción + mixto" : "sin dato (recargá la página)"],
     [PW.fmt(pts.reduce((s, p) => s + p._nc, 0)), "conectores", "suma de conectores"],
     [PW.fmt(new Set(pts.map(p => p.op).filter(Boolean)).size), "operadores", "distintos"],
-    [PW.fmt(pts.reduce((s, p) => s + p._kw, 0) / 1000, 1) + " MW", "potencia instalada",
+    [PW.fmt(pts.reduce((s, p) => s + (p._kw || 0), 0) / 1000, 1) + " MW", "potencia instalada",
      "suma de kW" + (sinKw ? " · " + PW.fmt(sinKw) + " sin dato de kW" : "")],
   ].map(kpiHTML).join("");
 

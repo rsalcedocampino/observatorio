@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Mejor hora para cargar — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/horas.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_horaverde.js?v='+_pwv+'">')</script>
@@ -61,6 +61,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Por operador (los 5 con más observaciones)</h2>
+    <p class="nota" id="nota-operadores"></p>
     <div id="g-operadores"></div>
   </div>
 
@@ -81,7 +82,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script>document.write('<script src="data/horas.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_horaverde.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("horas.html");
 const D = PW_DATA.horas;
@@ -122,6 +123,18 @@ if (!D.disponible) {
   selEstado.addEventListener("input", pintarNacional);
   pintarNacional();
 
+  // El operador viene homologado al canonico del kit (antes "Copec" y "COPEC S.A." eran dos
+  // series distintas). Lo que no mapea a un operador_id queda fuera del ranking, igual que en
+  // el modulo de operadores; se declara cuanto es para que la exclusion no sea muda.
+  const nOp = document.getElementById("nota-operadores");
+  if (D.obs_sin_homologar) {
+    nOp.textContent = "Operador homologado al catálogo canónico. Quedan fuera "
+      + PW.fmt(D.obs_sin_homologar) + " de " + PW.fmt(D.obs_operadores_total) + " observaciones ("
+      + PW.fmt(100 * D.obs_sin_homologar / D.obs_operadores_total, 1)
+      + "%) cuya grafía del histórico no aparece en el catálogo de conectores, que es lo que "
+      + "permite reconocerlas: "
+      + (D.operadores_sin_homologar || []).join(", ") + ".";
+  }
   PW.lineas("g-operadores", {
     labels: horas.map(h => String(h).padStart(2, "0")),
     series: Object.entries(D.por_operador).map(([op, serie]) => ({

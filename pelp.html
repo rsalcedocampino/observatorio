@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Chile vs PELP — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_pelp.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -57,6 +57,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="tarjeta">
       <h2 style="margin-top:0">Emisiones CO2 proyectadas por escenario (Mt)</h2>
       <div id="g-emisiones"></div>
+      <p class="nota" id="nota-emisiones"></p>
     </div>
     <div class="tarjeta">
       <h2 style="margin-top:0">Consumo final de electricidad del país (GWh)</h2>
@@ -75,7 +76,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_pelp.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("pelp.html");
 const D = PW_DATA.c_pelp;
@@ -116,11 +117,26 @@ pintar();
 
 // Emisiones y consumo electrico historico
 if (D.emisiones) {
+  // La PELP modela anio a anio hasta 2035 y despues cada 5 anios. El eje es equiespaciado por
+  // indice, asi que el tramo 2035-2060 (25 anios) ocupa lo mismo que 2030-2035 (5 anios) y las
+  // trayectorias de largo plazo se leen mucho mas empinadas de lo que son. NO se rellena con
+  // nulos: no es dato faltante sino una cadencia mas gruesa, y ademas PW.lineas corta el trazo
+  // en los nulos, lo que dejaria la proyeccion en puntos sueltos. Se advierte el cambio de paso.
+  const aE = D.anios_emisiones;
+  const iSalto = aE.findIndex((a, i) => i > 0 && a - aE[i - 1] > 1);
   PW.lineas("g-emisiones", {
     labels: D.anios_emisiones.map(String),
     series: Object.entries(D.emisiones).map(([esc, v]) => ({ nombre: esc, valores: v })),
     fmtV: v => PW.fmt(v, 1) + " Mt", alto: 260,
+    lineaX: iSalto > 0 ? { i: iSalto - 1, texto: "desde aquí, cada 5 años" } : null,
   });
+  document.getElementById("nota-emisiones").textContent = iSalto > 0
+    ? "Ojo con el eje: la PELP modela año a año hasta " + aE[iSalto - 1] + " y desde ahí cada 5 años, "
+      + "pero los puntos se dibujan equiespaciados. Cada paso del tramo final vale 5 años y cada uno "
+      + "del inicial vale 1, así que los últimos " + (aE[aE.length - 1] - aE[iSalto - 1])
+      + " años ocupan el ancho de " + (aE.length - iSalto) + ": la pendiente de la derecha se ve "
+      + "unas cinco veces más empinada de lo que es y no es comparable con la de la izquierda."
+    : "";
 }
 if (D.consumo_electricidad) {
   PW.lineas("g-consumo", {

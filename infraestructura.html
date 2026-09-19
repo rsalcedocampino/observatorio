@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Infraestructura de carga (SEC) — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/infraestructura.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -90,7 +90,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/infraestructura.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("infraestructura.html");
 const D = window.PW_DATA.infraestructura;
@@ -105,11 +105,15 @@ document.getElementById("kpis").innerHTML = [
   [PW.fmt(D.kpis.mw, 1) + " MW", "potencia instalada", "capacidad declarada"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
+// Serie ACUMULADA ("aditiva desde 2018"): el unico mes ausente (2019-10) no es un hueco de
+// medicion, es un mes sin altas, asi que el stock vale lo mismo que el mes anterior. Marcarlo
+// "sin dato" declaraba ignorancia sobre un mes que el registro SI cubre.
+const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar");
 PW.lineas("g-serie", {
-  labels: D.serie.map(x => x.ym),
+  labels: SERIE.map(x => x.ym),
   series: [
-    { nombre: "Conectores", valores: D.serie.map(x => x.conectores), area: true },
-    { nombre: "Cargadores", valores: D.serie.map(x => x.cargadores), color: PW.color("--s2") },
+    { nombre: "Conectores", valores: SERIE.map(x => x.conectores), area: true },
+    { nombre: "Cargadores", valores: SERIE.map(x => x.cargadores), color: PW.color("--s2") },
   ],
   fmtV: v => PW.fmt(v), alto: 300,
 });

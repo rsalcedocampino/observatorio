@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Ventas de vehículos EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <style>
   .part { display: flex; align-items: center; gap: 9px; }
   .part .n { min-width: 92px; text-align: right; font-variant-numeric: tabular-nums; }
@@ -97,7 +97,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/c_ventas.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("ventas.html");
 const D = PW_DATA.c_ventas;
@@ -111,7 +111,12 @@ document.getElementById("kpis").innerHTML = [
   [PW.fmt(K.total_enchufables_historico), "enchufables vendidos", "histórico desde 2010, livianos y medianos"],
   [PW.fmt(K.unidades_ultimo_mes), "unidades en " + K.ultimo_mes.slice(0, 7), varTxt],
   [PW.fmt(K.participacion_ultimo_pct, 1) + "%", "participación de mercado", "enchufables sobre el total del segmento"],
-  [lider.marca, "marca líder (enchufables)", PW.fmt(lider.unidades) + " unidades · " + PW.fmt(lider.pct, 1) + "%"],
+  // El pct del lider se calcula sobre el detalle por marca, que arranca despues que la serie
+  // historica del KPI de al lado (32.534 desde 2010 contra 26.370 con detalle). Decir solo
+  // "15,2%" al lado de ese 32.534 se lee como participacion historica y no lo es.
+  [lider.marca, "marca líder (enchufables)",
+   PW.fmt(lider.unidades) + " unidades · " + PW.fmt(lider.pct, 1) + "% de las "
+   + PW.fmt(D.marcas.reduce((s, m) => s + m.unidades, 0)) + " con detalle por marca"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
 PW.lineas("g-participacion", {

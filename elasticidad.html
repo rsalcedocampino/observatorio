@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Elasticidad bencina-EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <style>
   .tab-nav { display: flex; gap: 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc; }
   .tab-nav button { padding: 12px 20px; background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--ink-3); border-bottom: 3px solid transparent; }
@@ -267,7 +267,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_elasticidad_regional_preliminar.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -804,6 +804,16 @@ function cargarTabEV2025() {
     { k: "tarifa_energia", titulo: "Tarifa Energia ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
     { k: "stock_2025", titulo: "Stock EV 2025", num: true, fmt: v => v.toLocaleString() },
   ], filas_correlacion, { max: 20 });
+  // El filtro por tarifa_potencia deja regiones afuera sin decirlo: la tabla se leia como si
+  // fuera el pais entero. Se declara cuantas y cuales.
+  const sinTarifa = D.regiones.filter(r => r.tarifa_potencia_clp_kw == null).map(r => r.region);
+  if (sinTarifa.length) {
+    const cont = document.getElementById("t-ev-tarifas");
+    if (cont) cont.insertAdjacentHTML("beforeend",
+      '<p class="nota" style="margin:8px 0 0">' + filas_correlacion.length + " de " + D.regiones.length +
+      " regiones: quedan fuera las que no tienen tarifa de potencia publicada (" +
+      PW.esc(sinTarifa.join(", ")) + ").</p>");
+  }
 
   // === NUEVOS DATOS: ElasticidadINERegional (desagregado por segmento) ===
   if (!window.ElasticidadINERegional) {

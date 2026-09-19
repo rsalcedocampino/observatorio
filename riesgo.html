@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cortes de energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -160,7 +160,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/riesgo.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/cortes.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
@@ -271,6 +271,19 @@ function mapaVivo() {
     else { const rc = cut.slice(0, 2); if (regCli[rc] != null) valoresCorte[cut] = regCli[rc]; }
   });
   const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length;
+  // Universo del MAPA: las mismas comunas que se pintan de azul (SEC vivo por comuna). El KPI
+  // contaba solo las confirmadas por distribuidora, que es un subconjunto estricto: al medirlo
+  // el 2026-09-19 eran 20 de 153 comunas, y el KPI anunciaba 37 cargadores sobre un mapa donde
+  // 432 de 651 caian en comuna con corte activo. (Ese feed se actualiza cada 30 min, asi que
+  // las cifras del ejemplo envejecen; la proporcion es lo que importa.) El dato de
+  // distribuidora no se pierde: pasa al subtitulo, que es su lugar.
+  // Si la SEC no publica el detalle por comuna (el generador declara que puede venir vacio),
+  // el mapa cae a pintar por region pero el KPI se quedaba en 0 con el subtitulo diciendo 37.
+  // Sin detalle comunal no hay universo que contar: se marca como sin dato.
+  const hayComunal = ((V.por_comuna) || []).some(c => (c.clientes || 0) > 0);
+  const afectadasVivo = new Set(((V.por_comuna) || [])
+    .filter(c => (c.clientes || 0) > 0).map(c => _norm(c.comuna)));
+  const nCargAfectVivo = (MAPA.carga || []).filter(p => afectadasVivo.has(_norm(p.com))).length;
 
   // Tooltip por comuna: cortes activos + % (si la fuente lo provee) + cortes de los últimos 12 meses.
   const HIST12 = DC.hist12m_comuna || {};
@@ -369,7 +382,8 @@ function mapaVivo() {
   document.getElementById("nota-mapa").textContent =
     V.clientes > 0
       ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
-        (nCargAfect ? " " + PW.fmt(nCargAfect) + " cargadores están en comunas con corte confirmado por la distribuidora." : "")
+        (nCargAfectVivo ? " " + PW.fmt(nCargAfectVivo) + " cargadores están en comunas sin luz según la SEC, de los cuales "
+          + PW.fmt(nCargAfect) + " en comunas con corte confirmado por la distribuidora." : "")
       : "Sin cortes relevantes ahora (SEC " + (DC.hora_sec || "—") + "): el mapa muestra la red de carga sobre el territorio.";
 
   const CAP_CORTES = [

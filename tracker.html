@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Meta 2035 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <style>
 .semaforo td:first-child { font-weight: 600; }
 .sem-punto { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 7px; vertical-align: -1px; }
@@ -180,7 +180,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_pelp.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_normativa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("tracker.html");
 const D = PW_DATA.tracker;
@@ -478,23 +478,35 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
   const G = D.generacion_mensual;
   if (!G || !G.length) return;
   const ult = G[G.length - 1];
-  const prim = G[0];
-  const pendiente = (ult.pct_renov - prim.pct_renov) / Math.max((ymAnum(ult.ym) - ymAnum(prim.ym)), 0.5);
-  const llegada = pendiente > 0.2 ? ymAnum(ult.ym) + (80 - ult.pct_renov) / pendiente : null;
+  // Los meses INCOMPLETOS no compiten ni marcan tendencia: el ultimo suele ir a medio andar y
+  // su % renovable no es comparable con un mes cerrado. Hoy 2026-09 daba 73,0% con 18 dias y se
+  // publicaba como "mejor mes"; el mejor mes cerrado es 67,8%. Mismo criterio que la
+  // estacionalidad de cortes. El ultimo mes se sigue mostrando, pero rotulado como parcial.
+  const cerrados = G.filter(x => !x.parcial);
+  const base = cerrados.length ? cerrados : G;
+  const ultC = base[base.length - 1];
+  const primC = base[0];
+  const pendiente = (ultC.pct_renov - primC.pct_renov) / Math.max((ymAnum(ultC.ym) - ymAnum(primC.ym)), 0.5);
+  const llegada = pendiente > 0.2 ? ymAnum(ultC.ym) + (80 - ultC.pct_renov) / pendiente : null;
+  const mejor = base.reduce((a, b2) => b2.pct_renov > a.pct_renov ? b2 : a, base[0]);
   document.getElementById("kpis-gen").innerHTML = [
-    [PW.fmt(ult.pct_renov, 1) + "%", "renovable el ultimo mes", ult.ym],
-    [PW.fmt(Math.max(...G.map(x => x.pct_renov)), 1) + "%", "mejor mes del año movil", ""],
+    [PW.fmt(ult.pct_renov, 1) + "%", "renovable el ultimo mes",
+     ult.ym + (ult.parcial ? " · mes parcial, " + ult.dias + " días" : "")],
+    [PW.fmt(mejor.pct_renov, 1) + "%", "mejor mes cerrado", mejor.ym],
     [fmtAnio(llegada), "llegada a 80% (tendencia simple)", "referencia ilustrativa"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
   PW.lineas("g-renov", {
-    labels: G.map(x => x.ym),
+    labels: G.map(x => x.ym + (x.parcial ? " (parcial)" : "")),
     series: [{ nombre: "% renovable", valores: G.map(x => x.pct_renov), color: PW.color("--s3"), area: true }],
     lineaY: { v: 80, texto: "Referencia 80%" },
     fmtV: v => PW.fmt(v, 1) + "%", fmtY: v => Math.round(v) + "%", max: 100, alto: 260,
   });
   const [, colorS, textoS] = estadoMeta(llegada, 2035);
   SEM.renov = {
-    nombre: "Energía: generación renovable", hoy: PW.fmt(ult.pct_renov, 1) + "%",
+    // El semaforo compara contra la meta, asi que usa el ultimo mes CERRADO: con el parcial
+    // publicaba 73,0% (18 dias) como el valor de hoy contra el 80% objetivo, cuando el ultimo
+    // mes completo da 67,7%. El KPI de arriba si muestra el parcial, pero rotulado como tal.
+    nombre: "Energía: generación renovable", hoy: PW.fmt(ultC.pct_renov, 1) + "%",
     objetivo: "80% (referencial)",
     llegada: fmtAnio(llegada), color: colorS, texto: textoS,
   };

@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Conectores: flota vs red — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_conectred.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -61,15 +61,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2 style="margin-top:0">Vehículos entrantes por conector instalado</h2>
     <div id="t-ratio"></div>
     <p class="nota">Lectura: cuanta flota nueva compite por cada conector del estándar. El
-    stock CHAdeMO instalado (144) sirve a una flota entrante mínima; CCS2 concentra la presión.
+    stock CHAdeMO instalado (<span id="n-chademo">—</span>) sirve a una flota entrante mínima; CCS2 concentra la presión.
     Cobertura del match marca/modelo indicada arriba: el resto de la flota no aparece.</p>
   </div>
 </main>
 <script>document.write('<script src="data/c_conectred.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("conectores-red.html");
 const D = PW_DATA.c_conectred;
+// El 144 estaba escrito a mano en el texto y el dato decia 141: se lee del dato para que no
+// vuelva a quedar desfasado cuando la red cambie.
+{
+  const _ch = (D.red || []).find(x => x.tipo === "chademo");
+  const _el = document.getElementById("n-chademo");
+  if (_el) _el.textContent = _ch ? PW.fmt(_ch.conectores) : "s/d";
+}
 document.getElementById("nota").textContent =
   "Ventana " + D.ventana + ". Cobertura del match marca/modelo: " + D.cobertura_pct +
   "% de las unidades BEV/PHEV importadas. Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;

@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Costo total de propiedad (TCO) — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260919a">
+<link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <style>
 .pestanas { display: flex; gap: 2px; flex-wrap: wrap; margin: 16px 0 4px; border-bottom: 1px solid var(--border); }
 .pestanas button { background: none; border: 0; padding: 8px 14px; font: inherit; color: var(--ink-2); cursor: pointer; border-radius: 8px 8px 0 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
@@ -201,7 +201,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/c_tco.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260919a"></script>
+<script src="assets/comun.js?v=260919b"></script>
 <script>
 PW.montarNav("tco.html");
 let D = PW_DATA.c_tco;
@@ -287,15 +287,26 @@ const confNota = v => v.pcf === "baja" ? "precio estimado desde tasación fiscal
 function opts(arr, fmt) { return arr.map(x => `<option value="${PW.esc(String(x))}">${PW.esc(fmt ? fmt(x) : x)}</option>`).join(""); }
 function marcas(pool) { return [...new Set(pool.map(x => x.mk))].sort((a, b) => a.localeCompare(b, "es")); }
 function modelos(pool, mk) { return [...new Set(pool.filter(x => x.mk === mk).map(x => x.md))].sort((a, b) => a.localeCompare(b, "es")); }
-function anios(pool, mk, md) { return [...new Set(pool.filter(x => x.mk === mk && x.md === md).map(x => x.yr))].sort((a, b) => b - a); }
-function buscar(pool, mk, md, yr) { return pool.find(x => x.mk === mk && x.md === md && x.yr === +yr) || null; }
+// [VARIANTES] (mk, md, yr) NO identifica un vehiculo, asi que buscar() devolvia siempre la
+// primera coincidencia y el resto quedaba inalcanzable. Medido sobre los pools que el picker
+// realmente sirve (no sobre V completo): 4 filas ocultas en POOL_EV y 49 en POOL_ICE. Son
+// variantes reales con precios distintos -- p.ej. dos "LEAPMOTOR LPM C10 2025", una a $36,99M
+// y otra a $39,99M, que difieren ademas en seguro, mantencion y consumo. El selector de anio
+// pasa a listar una entrada por FILA con un indice estable y desambigua por precio cuando el
+// anio se repite. Agrupar por modelo_id NO sirve aqui: el mismo id cubre vehiculos distintos
+// (jmc:vigus = "VIGUS" y "VIGUS EV", combustion y electrico).
+let _tcoIdx = 0;
+function marcarPool(pool) { pool.forEach(v => { if (v._i == null) v._i = _tcoIdx++; }); }
 function kpi(v, l, d, cls) { return `<div class="kpi"><div class="v ${cls || ""}">${PW.esc(v)}</div><div class="l">${PW.esc(l)}</div>${d ? `<div class="d">${PW.esc(d)}</div>` : ""}</div>`; }
 
 // [PICKER FACETADO] (pedido 2026-08-19) marca/modelo/año INTERACTÚAN entre sí y se puede partir
 // por CUALQUIERA (incluido el año primero): cada selector muestra solo las opciones compatibles
 // con lo ya elegido en los otros dos; si la combinación deja un único vehículo, se completa solo.
 function selVeh(pool, mkS, mdS, yrS, cb, auto) {
-  const sel = { mk: "", md: "", yr: "" };
+  // sel.yr vuelve a ser el ANIO: es lo que facetan marca y modelo. sel.vi es el indice de la
+  // fila elegida, que es lo unico que distingue dos variantes del mismo (marca, modelo, anio).
+  // Mezclar ambos en sel.yr colapsaba los otros selectores a una sola opcion (probado).
+  const sel = { mk: "", md: "", yr: "", vi: "" };
   const sub = f => pool.filter(v =>
     (f === "mk" || !sel.mk || v.mk === sel.mk) &&
     (f === "md" || !sel.md || v.md === sel.md) &&
@@ -303,28 +314,60 @@ function selVeh(pool, mkS, mdS, yrS, cb, auto) {
   function pinta() {
     const mks = [...new Set(sub("mk").map(v => v.mk))].sort((a, b) => a.localeCompare(b, "es"));
     const mds = [...new Set(sub("md").map(v => v.md))].sort((a, b) => a.localeCompare(b, "es"));
-    const yrs = [...new Set(sub("yr").map(v => v.yr))].sort((a, b) => b - a);
+    const filasYr = sub("yr").slice().sort((a, b) => b.yr - a.yr);
+    const repetido = {};
+    filasYr.forEach(v => { repetido[v.yr] = (repetido[v.yr] || 0) + 1; });
     if (sel.mk && mks.indexOf(sel.mk) < 0) sel.mk = "";
     if (sel.md && mds.indexOf(sel.md) < 0) sel.md = "";
-    if (sel.yr && yrs.indexOf(+sel.yr) < 0) sel.yr = "";
+    if (sel.yr && !filasYr.some(v => v.yr === +sel.yr)) { sel.yr = ""; sel.vi = ""; }
+    if (sel.vi && !filasYr.some(v => String(v._i) === sel.vi)) sel.vi = "";
+    if (!sel.vi && sel.yr) {
+      const cand = filasYr.find(v => v.yr === +sel.yr);
+      if (cand) sel.vi = String(cand._i);
+    }
     mkS.innerHTML = `<option value="">— marca —</option>` + opts(mks);
     mdS.innerHTML = `<option value="">— modelo —</option>` + opts(mds);
-    yrS.innerHTML = `<option value="">— año —</option>` + opts(yrs);
-    mkS.value = sel.mk; mdS.value = sel.md; yrS.value = sel.yr;
+    // Listar UNA ENTRADA POR FILA solo tiene sentido con marca y modelo ya elegidos: si no,
+    // el desplegable mostraba las 948 filas del pool (2.774 en el de combustion) como precios
+    // sueltos sin marca ni modelo que los distinga. Sin marca o sin modelo, vuelve a listar
+    // anios. El prefijo distingue las dos cosas: "a"=anio (facetea), "i"=fila (resuelve).
+    const detalle = !!(sel.mk && sel.md);
+    yrS.innerHTML = `<option value="">— año —</option>` + (detalle
+      ? filasYr.map(v => `<option value="i${v._i}">${PW.esc(String(v.yr))}` +
+          (repetido[v.yr] > 1 && v.pr ? PW.esc(" · " + PW.clp(v.pr)) : "") + `</option>`).join("")
+      : [...new Set(filasYr.map(v => v.yr))].sort((a, b) => b - a)
+          .map(a => `<option value="a${a}">${PW.esc(String(a))}</option>`).join(""));
+    mkS.value = sel.mk; mdS.value = sel.md;
+    yrS.value = detalle ? (sel.vi ? "i" + sel.vi : "") : (sel.yr ? "a" + sel.yr : "");
   }
   function emite(autoOK) {
     let v = null;
-    if (sel.mk && sel.md && sel.yr) v = buscar(pool, sel.mk, sel.md, sel.yr);
+    if (sel.mk && sel.md && sel.vi) v = pool.find(x => String(x._i) === sel.vi) || null;
     else if (autoOK) {
       // completa solo tras una SELECCIÓN del usuario (nunca tras limpiar una faceta,
       // para no re-llenar al instante lo que el usuario acaba de vaciar)
       const q = sub("");  // filtrado por las tres facetas
-      if (q.length === 1) { v = q[0]; sel.mk = v.mk; sel.md = v.md; sel.yr = String(v.yr); pinta(); }
+      if (q.length === 1) { v = q[0]; sel.mk = v.mk; sel.md = v.md; sel.yr = String(v.yr); sel.vi = String(v._i); pinta(); }
     }
     cb(v);
   }
-  const on = f => () => { const val = (f === "mk" ? mkS : f === "md" ? mdS : yrS).value; sel[f] = val; pinta(); emite(val !== ""); };
+  const on = f => () => {
+    const val = (f === "mk" ? mkS : f === "md" ? mdS : yrS).value;
+    if (f === "yr") {
+      if (!val) { sel.yr = ""; sel.vi = ""; }
+      else if (val.charAt(0) === "i") {
+        sel.vi = val.slice(1);
+        const fila = pool.find(x => String(x._i) === sel.vi);
+        sel.yr = fila ? String(fila.yr) : "";
+      } else { sel.yr = val.slice(1); sel.vi = ""; }
+    } else {
+      sel[f] = val;
+    }
+    pinta();
+    emite(val !== "");
+  };
   mkS.onchange = on("mk"); mdS.onchange = on("md"); yrS.onchange = on("yr");
+  marcarPool(pool);
   pinta();
   if (auto) {
     const mks = [...new Set(pool.map(v => v.mk))].sort((a, b) => a.localeCompare(b, "es"));
@@ -332,8 +375,9 @@ function selVeh(pool, mkS, mdS, yrS, cb, auto) {
       sel.mk = mks[0];
       const mds = [...new Set(pool.filter(v => v.mk === sel.mk).map(v => v.md))].sort((a, b) => a.localeCompare(b, "es"));
       sel.md = mds[0] || "";
-      const yrs = [...new Set(pool.filter(v => v.mk === sel.mk && v.md === sel.md).map(v => v.yr))].sort((a, b) => b - a);
-      sel.yr = yrs.length ? String(yrs[0]) : "";
+      const fy = pool.filter(v => v.mk === sel.mk && v.md === sel.md).slice().sort((a, b) => b.yr - a.yr);
+      sel.yr = fy.length ? String(fy[0].yr) : "";
+      sel.vi = fy.length ? String(fy[0]._i) : "";
       pinta(); emite(true);
     }
   }
@@ -459,7 +503,7 @@ BUILD["comparador"] = function () {
     ];
     if (tComp) tComp.actualizar(filas); else tComp = PW.tabla("t-comp", cols, filas, { buscador: false });
   };
-  const fijar = (mkS, mdS, yrS, v) => { mkS.value = v.mk; mkS.onchange(); mdS.value = v.md; mdS.onchange(); yrS.value = String(v.yr); yrS.onchange(); };
+  const fijar = (mkS, mdS, yrS, v) => { mkS.value = v.mk; mkS.onchange(); mdS.value = v.md; mdS.onchange(); yrS.value = "i" + v._i; yrS.onchange(); };
   selVeh(POOL_EV, g("ev-mk"), g("ev-md"), g("ev-yr"), v => { ev = v; prefill("ev", v, true); render(); });
   selVeh(POOL_ICE, g("ice-mk"), g("ice-md"), g("ice-yr"), v => { ice = v; prefill("ice", v, false); render(); });
   // Default sensato: BEV puro de precio mediano vs gasolina puro de OTRA marca (evita "Alfa vs Alfa" y PHEV/MHEV como default)
