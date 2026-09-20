@@ -68,7 +68,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <p class="nota">En <b>azul</b> las comunas <b>sin luz ahora</b> (más intenso = más clientes sin luz,
     según el detalle por comuna de la SEC); en <b>amarillo claro</b> las que <b>tienen luz</b>. Los puntos
-    son la red pública de carga; los que están en comunas con corte confirmado por la distribuidora
+    son la red de carga mapeada; los que están en comunas con corte confirmado por la distribuidora
     aparecen en <span style="color:var(--critical);font-weight:600">rojo</span>. Pasa el mouse por una
     comuna para ver sus cortes activos, el % de la comuna y los cortes de los últimos 12 meses.</p>
   </div>
@@ -382,7 +382,7 @@ function mapaVivo() {
   document.getElementById("nota-mapa").textContent =
     V.clientes > 0
       ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
-        (nCargAfectVivo ? " " + PW.fmt(nCargAfectVivo) + " cargadores están en comunas sin luz según la SEC, de los cuales "
+        (nCargAfectVivo ? " " + PW.fmt(nCargAfectVivo) + " estaciones de carga están en comunas sin luz según la SEC, de las cuales "
           + PW.fmt(nCargAfect) + " en comunas con corte confirmado por la distribuidora." : "")
       : "Sin cortes relevantes ahora (SEC " + (DC.hora_sec || "—") + "): el mapa muestra la red de carga sobre el territorio.";
 

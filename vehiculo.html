@@ -28,7 +28,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=260919b">
-<style>#t-modelos tbody tr { cursor: pointer; }</style>
+<style>
+  #t-modelos tbody tr { cursor: pointer; }
+  /* el foco tiene que verse: una fila enfocable sin indicador deja el teclado a ciegas */
+  #t-modelos tbody tr:focus-visible { outline: 2px solid var(--s1); outline-offset: -2px; }
+</style>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/vehiculo.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -139,11 +143,40 @@ refrescar();
 // en las propias filas, via el "re-enganchar tras ordenar" de mas abajo- sin quitar los anteriores:
 // cada click quedaba disparando mostrarDetalle() una vez mas que el click anterior (bug real,
 // confirmado interactivamente: 1, +2, +3... llamadas por click a medida que se clickeaba la tabla).
-document.getElementById("t-modelos").addEventListener("click", e => {
+const contModelos = document.getElementById("t-modelos");
+function filaDe(tr) {
+  const marcador = tr.querySelector("[data-i]");
+  return marcador ? filasActuales[+marcador.dataset.i] : null;
+}
+contModelos.addEventListener("click", e => {
   const tr = e.target.closest("tbody tr");
   if (!tr) return;
-  const marcador = tr.querySelector("[data-i]");
-  const m = marcador ? filasActuales[+marcador.dataset.i] : null;
+  const m = filaDe(tr);
+  if (m) mostrarDetalle(m);
+});
+
+// [A11Y FILAS] la ficha solo se abria con el mouse: los <tr> no tenian tabindex ni rol, asi que
+// con teclado la tabla era una lista muerta y el detalle del vehiculo, inalcanzable. PW.tabla
+// regenera las filas al ordenar por una cabecera o al filtrar, por eso se marcan con un
+// MutationObserver y no una sola vez; solo observamos childList, y lo que escribimos son
+// atributos, asi que no se realimenta.
+function marcarFilasAccesibles() {
+  contModelos.querySelectorAll("tbody tr").forEach(tr => {
+    if (tr.getAttribute("role") === "button") return;
+    tr.tabIndex = 0;
+    tr.setAttribute("role", "button");
+    const f = filaDe(tr);
+    if (f) tr.setAttribute("aria-label", "Ver la ficha de " + f.marca + " " + f.modelo);
+  });
+}
+new MutationObserver(marcarFilasAccesibles).observe(contModelos, { childList: true, subtree: true });
+marcarFilasAccesibles();
+contModelos.addEventListener("keydown", e => {
+  if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
+  const tr = e.target.closest("tbody tr");
+  if (!tr) return;
+  e.preventDefault();               // Espacio no debe scrollear la pagina
+  const m = filaDe(tr);
   if (m) mostrarDetalle(m);
 });
 </script>
