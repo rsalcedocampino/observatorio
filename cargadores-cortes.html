@@ -67,7 +67,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <p class="nota">En <b>azul</b> las comunas <b>sin luz ahora</b> (más intenso = más clientes sin luz,
     según el detalle por comuna de la SEC); en <b>amarillo claro</b> las que <b>tienen luz</b>. Los puntos
-    son la red pública de carga (clic para operador, conector, potencia y estado). Los cargadores en
+    son la red de carga mapeada (clic para operador, conector, potencia y estado). Las estaciones en
     <span style="color:var(--critical);font-weight:600">rojo</span> están en comunas con corte
     confirmado por la distribuidora (posiblemente sin servicio).</p>
   </div>
@@ -124,7 +124,13 @@ const valoresCorte = {};
   if (usarComuna) { if (comCli[cut] != null) valoresCorte[cut] = comCli[cut]; }
   else { const rc = cut.slice(0, 2); if (regCli[rc] != null) valoresCorte[cut] = regCli[rc]; }
 });
+// MAPA.carga es una lista de ESTACIONES, no de cargadores: 651 estaciones agrupan 1.619
+// cargadores y 2.242 conectores. El KPI decia "651 cargadores publicos" y erraba dos veces --
+// ni son cargadores ni son todos publicos (115 estaciones son restringidas). Es la misma
+// confusion que costo el arreglo del "912 cargadores" de la portada. Solo cambia el texto y
+// se agrega el conteo de publicas: no se toca el mapa ni el tamaño de nada.
 const nCarga = (MAPA.carga || []).length;
+const nCargaPub = (MAPA.carga || []).filter(p => p.acc !== "restringido").length;
 const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length;
 // Universo del MAPA: las mismas comunas que se pintan de azul (SEC vivo por comuna). El KPI
 // contaba solo las confirmadas por distribuidora, que es un subconjunto estricto: al medirlo
@@ -256,15 +262,15 @@ function attachHoverComuna(map) {
 document.getElementById("kpis").innerHTML = [
   [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + D.hora_sec],
   [PW.fmt(V.pct_pais, 2) + "%", "del país sin suministro", PW.fmt(V.n_comunas) + " comunas afectadas"],
-  [PW.fmt(nCarga), "cargadores públicos", "en la red mapeada"],
-  [hayComunal ? PW.fmt(nCargAfectVivo) : "s/d", "cargadores en zona de corte",
+  [PW.fmt(nCarga), "estaciones de carga", PW.fmt(nCargaPub) + " de acceso público"],
+  [hayComunal ? PW.fmt(nCargAfectVivo) : "s/d", "estaciones en zona de corte",
    "en comuna sin luz según la SEC · " + PW.fmt(nCargAfect) + " con corte confirmado por la distribuidora"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
 document.getElementById("nota-mapa").textContent =
   V.clientes > 0
     ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
-      (nCargAfect ? " " + PW.fmt(nCargAfect) + " cargadores están en comunas con corte confirmado por la distribuidora." : "")
+      (nCargAfect ? " " + PW.fmt(nCargAfect) + " estaciones están en comunas con corte confirmado por la distribuidora." : "")
     : "Sin cortes relevantes ahora (SEC " + D.hora_sec + "): el mapa muestra la red de carga sobre el territorio.";
 const CAP_CORTES = [
   { k: "cortes", nombre: "Cortes en vivo", col: "--seq-400", on: true },

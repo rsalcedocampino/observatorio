@@ -29,7 +29,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=260919b">
 <style>
-  .tab-nav { display: flex; gap: 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc; }
+  /* flex-wrap: a 360px los 5 botones median 587px en una fila de 320 y desbordaban la pagina
+     entera (medido: scrollWidth 584 contra ventana 360). El color de esta barra no se toca. */
+  .tab-nav { display: flex; flex-wrap: wrap; gap: 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc; }
   .tab-nav button { padding: 12px 20px; background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--ink-3); border-bottom: 3px solid transparent; }
   .tab-nav button.activo { color: #000; font-weight: bold; border-bottom-color: #0066cc; }
   .tab-nav button:hover { color: #000; }
@@ -141,7 +143,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="tarjeta">
       <h2 style="margin-top:0">Correlacion: Tarifa Potencia vs Stock EV</h2>
       <p class="nota">¿A mayor tarifa de potencia, menos stock de EVs? Tabla muestra tarifa potencia ($/kW/mes) cruzada con
-      stock proyectado 2025 por region. Nota: Metropolitana domina cifras (64.8% del parque nacional).</p>
+      stock proyectado 2025 por region. Nota: Metropolitana domina cifras (<span id="pct-rm">—</span> del parque nacional).</p>
       <div id="t-ev-tarifas"></div>
     </div>
 
@@ -265,6 +267,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_ev_2025.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_elasticidad_ine_regional.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_elasticidad_regional_preliminar.js?v='+_pwv+'"><\/script>')</script>
+<script>
+// El texto decia 64.8% y el propio dato de esta pagina da 64,9%. Se calcula en vez de
+// escribirse: RM sobre el total de las 16 regiones del mismo array que alimenta la tabla.
+(function () {
+  // este archivo NO se registra en PW_DATA sino en su propio global (verificado en vivo:
+  // PW_DATA no tiene la clave y la pagina ya lo consume como ElasticidadRegionalPreliminar)
+  const P = window.ElasticidadRegionalPreliminar;
+  const R = (P && P.regiones) || [];
+  const el = document.getElementById("pct-rm");
+  if (!el || !R.length) return;
+  const tot = R.reduce((s, x) => s + (x.stock_2024 || 0), 0);
+  const rm = R.find(x => /etropolitana/.test(x.region || ""));
+  // sin PW.fmt: este bloque corre ANTES de comun.js (linea 287) y PW todavia no existe --
+  // usarlo lanzaba y el span se quedaba en el guion, en silencio (verificado en vivo).
+  if (tot && rm) {
+    el.textContent = (100 * rm.stock_2024 / tot).toFixed(1).replace(".", ",") + "%";
+  }
+})();
+</script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260919b"></script>

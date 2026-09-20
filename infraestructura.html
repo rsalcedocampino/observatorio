@@ -95,8 +95,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 PW.montarNav("infraestructura.html");
 const D = window.PW_DATA.infraestructura;
 
+// Declarar el desvio contra la vista georreferenciada del MISMO registro: esta pagina publica
+// el total oficial de EcoCarga y el mapa publica lo que pudo ubicar, y las dos cifras conviven
+// en el sitio sin que nada dijera por que difieren. Dos instalaciones vigentes no traen
+// coordenada; el resto del desvio no esta conciliado aguas arriba, y decirlo es mas honesto
+// que dejar al lector descubriendo dos numeros para el mismo hecho.
 document.getElementById("nota").textContent =
-  "Actualización SEC: " + D.actualizacion + ".";
+  "Actualización SEC: " + D.actualizacion + ". Estas son las cifras del registro oficial "
+  + "completo. La vista georreferenciada del mismo registro (mapa del catastro SEC) muestra "
+  + "menos, porque solo puede ubicar las instalaciones con coordenada: esa diferencia no está "
+  + "conciliada en la fuente y por eso los dos módulos no dan el mismo total.";
 
 document.getElementById("kpis").innerHTML = [
   [PW.fmt(D.kpis.instalaciones), "instalaciones", "puntos de carga declarados"],
