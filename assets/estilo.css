@@ -282,6 +282,12 @@ p.nota { color: var(--ink-3); font-size: 12.5px; max-width: 860px; }
   margin: 14px 0;
 }
 .fila2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+/* Un item de grid trae min-width:auto, o sea que NO baja de su ancho minimo de contenido: una
+   tabla ancha adentro estiraba la pista (medido en red-electrica: 664px dentro de un contenedor
+   de 320) y la pagina entera se salia de la pantalla. Peor aun, eso anulaba el .scroll-x que
+   estaba justamente para contenerla. Con min-width:0 la tarjeta puede encogerse y el scroll
+   horizontal vuelve a quedar DENTRO de la tabla, que es donde corresponde. */
+.fila2 > * { min-width: 0; }
 @media (max-width: 860px) { .fila2 { grid-template-columns: 1fr; } }
 
 .filtros { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0; }
