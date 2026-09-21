@@ -566,8 +566,14 @@
     wrap.className = "chart-wrap";
     el.appendChild(wrap);
     const items = cfg.items;
+    // El margen de etiquetas se topaba solo en 230px, sin mirar el ancho disponible: en un
+    // celular (W~282) eso dejaba barras de 2 pixeles en operadores.html -- el grafico existia
+    // y no comunicaba nada. Ahora ademas se limita a una fraccion del ancho, para que la barra
+    // conserve espacio util; el nombre largo se recorta con ellipsis via CSS del <text>.
     const W = el.clientWidth || 640;
-    const alto = 26, m = { t: 4, r: 60, b: 4, l: Math.min(230, Math.max(...items.map(i => i.nombre.length)) * 7 + 14) };
+    const alto = 26;
+    const lTexto = Math.max(...items.map(i => i.nombre.length)) * 7 + 14;
+    const m = { t: 4, r: 60, b: 4, l: Math.max(60, Math.min(230, lTexto, W * 0.42)) };
     const H = m.t + m.b + items.length * alto;
     const maxV = Math.max(...items.map(i => i.valor || 0), 1);
     const svg = svgEl("svg", { width: "100%", viewBox: `0 0 ${W} ${H}` });
@@ -749,8 +755,16 @@
           : (filtro ? PW_fmtEntero(totalFiltrado) + " de " + PW_fmtEntero(filas.length) + " filas"
                     : PW_fmtEntero(filas.length) + " filas");
       }
+      // [A11Y ORDEN] las cabeceras ordenan con click, pero eran <th> pelados: sin tabindex no
+      // se podian alcanzar con Tab y no habia ningun otro control de orden, asi que ordenar era
+      // imposible sin mouse en las 34 paginas que usan esta tabla. Se agrega tabindex (foco),
+      // aria-sort (el lector anuncia el estado) y title (pista visible al pasar el mouse).
+      // NO se envuelve en <button> a proposito: cambiaria el aspecto de la cabecera, y aca la
+      // condicion es que no se mueva ni un pixel.
       const th = cols.map(c =>
-        `<th class="${c.num ? "num" : ""} ${orden === c.k ? "orden" + (asc ? " asc" : "") : ""}" data-k="${c.k}">${c.titulo}</th>`
+        `<th class="${c.num ? "num" : ""} ${orden === c.k ? "orden" + (asc ? " asc" : "") : ""}" data-k="${c.k}"` +
+        ` tabindex="0" title="Ordenar por ${esc(c.titulo)}"` +
+        ` aria-sort="${orden === c.k ? (asc ? "ascending" : "descending") : "none"}">${c.titulo}</th>`
       ).join("");
       const cuerpo = datos.map(f => "<tr>" + cols.map(c => {
         const v = f[c.k];
@@ -770,11 +784,23 @@
           (colOrd ? ", ordenadas por " + esc(colOrd.titulo) + (asc ? " de menor a mayor" : " de mayor a menor") : "") +
           ". Usa los filtros para llegar al resto.</p>");
       }
-      contTabla.querySelectorAll("th").forEach(t => t.addEventListener("click", () => {
+      const ordenarPor = t => {
         const k = t.dataset.k;
         if (orden === k) asc = !asc; else { orden = k; asc = false; }
         render();
-      }));
+        // devolver el foco a la misma cabecera: render() rehace el <thead> y sin esto el foco
+        // se perdia al <body> en cada orden, dejando al teclado sin punto de retorno.
+        const nueva = contTabla.querySelector(`th[data-k="${k}"]`);
+        if (nueva) nueva.focus();
+      };
+      contTabla.querySelectorAll("th").forEach(t => {
+        t.addEventListener("click", () => ordenarPor(t));
+        t.addEventListener("keydown", e => {
+          if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
+          e.preventDefault();          // Espacio no debe scrollear
+          ordenarPor(t);
+        });
+      });
     }
     function PW_fmtEntero(n) { return new Intl.NumberFormat("es-CL").format(n); }
     render();
