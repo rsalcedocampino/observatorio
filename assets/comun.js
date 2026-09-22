@@ -326,6 +326,30 @@
   // ---------- formato
   const nf0 = new Intl.NumberFormat("es-CL", { maximumFractionDigits: 0 });
   const nf1 = new Intl.NumberFormat("es-CL", { maximumFractionDigits: 1 });
+
+  // [MEDIR TEXTO] Los margenes de los graficos se fijaban con anchos a ojo (52 px, 48 px) o con
+  // "7 px por letra", y las cifras largas se salian del SVG: en tco.html "$18.661.931" se leia
+  // "8.661.931", una cifra FALSA en pantalla. Se mide el texto de verdad con canvas, con la
+  // misma familia que hereda el SVG del body. Sin canvas (entorno raro) cae a una estimacion.
+  const _lienzo = (() => { try { return document.createElement("canvas").getContext("2d"); } catch (e) { return null; } })();
+  const FAMILIA = 'system-ui, -apple-system, "Segoe UI", sans-serif';
+  function anchoTexto(txt, px) {
+    const t = String(txt == null ? "" : txt);
+    if (!_lienzo) return t.length * px * 0.62;
+    _lienzo.font = px + "px " + FAMILIA;
+    return _lienzo.measureText(t).width;
+  }
+  // Recorta con "…" para que el texto quepa en `max` px, midiendo (no contando letras).
+  function recortarA(txt, px, max) {
+    const t = String(txt == null ? "" : txt);
+    if (anchoTexto(t, px) <= max) return t;
+    let lo = 0, hi = t.length;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1;
+      if (anchoTexto(t.slice(0, mid) + "…", px) <= max) lo = mid; else hi = mid - 1;
+    }
+    return lo > 0 ? t.slice(0, lo) + "…" : "…";
+  }
   function fmt(v, dec) {
     if (v === null || v === undefined || Number.isNaN(v)) return "—";
     return (dec ? nf1 : nf0).format(v);
@@ -397,9 +421,15 @@
     return new Set(idx);
   }
   function ponerEtiquetaX(svg, texto, x, y, esUltima, W) {
+    // Se mide la etiqueta y se ancla al borde si centrada no cabe. Antes solo la ULTIMA se
+    // corregia, y con un umbral fijo de 40 px que no alcanza para fechas como "2026-08"; la
+    // primera nunca se revisaba. Ahora vale para cualquier etiqueta, en los dos bordes.
     const attrs = { y, "font-size": 11, fill: color("--ink-3") };
-    if (esUltima && x > W - 40) {
-      attrs.x = W - 2; attrs["text-anchor"] = "end";
+    const medio = anchoTexto(texto, 11) / 2;
+    if (x + medio > W - 1) {
+      attrs.x = W - 1; attrs["text-anchor"] = "end";
+    } else if (x - medio < 1) {
+      attrs.x = 1; attrs["text-anchor"] = "start";
     } else {
       attrs.x = x; attrs["text-anchor"] = "middle";
     }
@@ -421,6 +451,18 @@
     const todos = series.flatMap(s => s.valores).filter(v => v != null);
     const maxV = cfg.max != null ? cfg.max : Math.max(...todos, 1);
     const minV = cfg.min != null ? cfg.min : 0;
+    // [MARGEN DEL EJE] las etiquetas del eje Y van alineadas a la derecha en m.l - 7: si no caben,
+    // se salen del SVG por la izquierda y se pierden los primeros digitos. Se mide la mas ancha
+    // (mismos 5 ticks que se dibujan abajo) y el margen crece lo justo, con tope.
+    {
+      const ets = [];
+      for (let i = 0; i <= 4; i++) {
+        const v = minV + (maxV - minV) * i / 4;
+        ets.push(cfg.fmtY ? cfg.fmtY(v) : nf0.format(Math.round(v)));
+      }
+      const need = Math.ceil(Math.max(...ets.map(t => anchoTexto(t, 11)))) + 12;
+      m.l = Math.max(m.l, Math.min(Math.round(W * 0.45), need));
+    }
     const X = i => m.l + (W - m.l - m.r) * (labels.length === 1 ? 0.5 : i / (labels.length - 1));
     const Y = v => m.t + (H - m.t - m.b) * (1 - (v - minV) / (maxV - minV || 1));
 
@@ -502,10 +544,18 @@
         x1: x, x2: x, y1: m.t, y2: H - m.b,
         stroke: color("--ink-3"), "stroke-width": 1, "stroke-dasharray": "3 3",
       }));
+      // Se mide: si a la derecha de la linea no cabe, va a la izquierda anclada al final. Antes
+      // se dibujaba siempre en x + 5 sin medir, y en pelp.html a 375 px "desde aqui, cada 5 anios"
+      // se salia 49 px por la derecha.
+      const txtX = cfg.lineaX.texto || "";
+      const anchoX = anchoTexto(txtX, 10.5);
+      const cabeDer = x + 5 + anchoX <= W - 2;
       const t = svgEl("text", {
-        x: x + 5, y: m.t + 11, "font-size": 10.5, "font-weight": 600, fill: color("--ink-2"),
+        x: cabeDer ? x + 5 : Math.max(anchoX + 2, x - 5), y: m.t + 11,
+        "text-anchor": cabeDer ? "start" : "end",
+        "font-size": 10.5, "font-weight": 600, fill: color("--ink-2"),
       });
-      t.textContent = cfg.lineaX.texto || "";
+      t.textContent = txtX;
       svg.appendChild(t);
     }
     // linea de meta horizontal: cfg.lineaY = {v, texto}
@@ -567,13 +617,23 @@
     el.appendChild(wrap);
     const items = cfg.items;
     // El margen de etiquetas se topaba solo en 230px, sin mirar el ancho disponible: en un
-    // celular (W~282) eso dejaba barras de 2 pixeles en operadores.html -- el grafico existia
-    // y no comunicaba nada. Ahora ademas se limita a una fraccion del ancho, para que la barra
-    // conserve espacio util; el nombre largo se recorta con ellipsis via CSS del <text>.
+    // celular (W~282) eso dejaba barras de 2 pixeles en operadores.html. Ahora se limita a una
+    // fraccion del ancho para que la barra conserve espacio util.
+    // CORRECCION (2026-09-21): la version anterior de este comentario decia que el nombre largo
+    // "se recortaba con ellipsis via CSS" -- ese CSS nunca existio, y el nombre seguia cortado a
+    // 30 letras fijas, que no caben en un margen angosto: en celular se leia "RES GILDEMEISTER S A".
+    // Ahora el nombre se recorta MIDIENDO contra el margen real (recortarA), y el margen derecho
+    // tambien se mide: estaba fijo en 60 px y cortaba valores como "1.056 cone" o "US$125.395M".
     const W = el.clientWidth || 640;
     const alto = 26;
-    const lTexto = Math.max(...items.map(i => i.nombre.length)) * 7 + 14;
-    const m = { t: 4, r: 60, b: 4, l: Math.max(60, Math.min(230, lTexto, W * 0.42)) };
+    const fmtV = cfg.fmtV || (v => nf0.format(v));
+    const lTexto = Math.ceil(Math.max(...items.map(i => anchoTexto(i.nombre, 12)))) + 16;
+    const rTexto = Math.ceil(Math.max(0, ...items.filter(i => i.valor != null).map(i => anchoTexto(fmtV(i.valor), 11.5)))) + 14;
+    const m = { t: 4, b: 4,
+      l: Math.max(60, Math.min(230, lTexto, Math.round(W * 0.42))),
+      // tope 40% y no 30%: la regresion del 2026-09-21 midio "1.056 conectores" en 100 px sobre
+      // un grafico de 297 px, y con 30% (89 px) se salia 4 px. La medicion era exacta; el tope no.
+      r: Math.max(40, Math.min(rTexto, Math.round(W * 0.40))) };
     const H = m.t + m.b + items.length * alto;
     const maxV = Math.max(...items.map(i => i.valor || 0), 1);
     const svg = svgEl("svg", { width: "100%", viewBox: `0 0 ${W} ${H}` });
@@ -583,7 +643,7 @@
       const y = m.t + i * alto;
       const c = it.color || cfg.color || color("--s1");
       const t = svgEl("text", { x: m.l - 8, y: y + alto / 2 + 4, "text-anchor": "end", "font-size": 12, fill: color("--ink-2") });
-      t.textContent = it.nombre.length > 30 ? it.nombre.slice(0, 29) + "…" : it.nombre;
+      t.textContent = recortarA(it.nombre, 12, m.l - 12);   // el nombre completo sigue en el tooltip
       svg.appendChild(t);
       // it.valor == null ("sin dato"): antes "it.valor || 0" lo mostraba como una barra de largo
       // cero con etiqueta "0" -- indistinguible de un cero real. Ahora banda + texto explicito.
@@ -622,6 +682,14 @@
     const m = { t: 12, r: 10, b: 26, l: 48 };
     const vals = cfg.valores, labels = cfg.labels;
     const maxV = Math.max(...vals.filter(v => v != null), 1);
+    // [MARGEN DEL EJE] mismo problema que en lineas(): etiqueta del eje mas ancha que el margen
+    // fijo de 48 px -> se cortaban los primeros digitos. Se mide sobre los 4 ticks que se dibujan.
+    {
+      const ets = [];
+      for (let i = 0; i <= 3; i++) ets.push(cfg.fmtY ? cfg.fmtY(maxV * i / 3) : nf0.format(Math.round(maxV * i / 3)));
+      const need = Math.ceil(Math.max(...ets.map(t => anchoTexto(t, 11)))) + 11;
+      m.l = Math.max(m.l, Math.min(Math.round(W * 0.45), need));
+    }
     const n = vals.length;
     const ancho = (W - m.l - m.r) / n;
     const svg = svgEl("svg", { width: "100%", viewBox: `0 0 ${W} ${H}` });
@@ -1814,6 +1882,6 @@
     return salida;
   }
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie };
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto };
 })();
 

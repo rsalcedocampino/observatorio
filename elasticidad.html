@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Elasticidad bencina-EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260921a">
+<link rel="stylesheet" href="assets/estilo.css?v=260922a">
 <style>
   /* flex-wrap: a 360px los 5 botones median 587px en una fila de 320 y desbordaban la pagina
      entera (medido: scrollWidth 584 contra ventana 360). El color de esta barra no se toca. */
@@ -122,20 +122,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- TAB 3: Stock de EVs 2025 -->
   <div id="tab-ev2025" class="tab-content">
     <p class="sub">Proyección de stock de vehículos eléctricos por región (2024-2025), a partir de los Permisos de
-    Circulación del INE: 2024 es el último dato real publicado, y 2025 se proyecta con la tasa de crecimiento
-    2023-2024. Se actualiza cuando el INE publique los Permisos de Circulación 2025 (septiembre 2026).</p>
+    Circulación del INE: 2024 es el último dato real publicado, y 2025 se proyecta con las ventas de
+    electrificados del año y una tasa de captura de 0,80 a 1,00 — el mismo método del módulo Parque de
+    vehículos, que es el único del sitio con método documentado y backtest. Por eso se publica con banda.</p>
     <p class="nota" id="nota-ev2025"></p>
 
     <div class="kpis" id="kpis-ev2025"></div>
 
     <div class="tarjeta">
-      <h2 style="margin-top:0">Stock de EVs 2024-2025 por region</h2>
-      <p class="nota">PROYECTADO: 2025 usa crecimiento 2023-2024. REAL: 2024 es dato INE Permisos de Circulacion.
-      Se actualiza cuando INE publique Permisos 2025.</p>
+      <h2 style="margin-top:0">Stock de EVs 2024-2025 por región</h2>
+      <p class="nota">REAL: 2024 es dato del INE, Permisos de Circulación. PROYECTADO: 2025, valor central con su
+      banda baja y alta. Se reemplaza por el dato real cuando el INE publique los Permisos 2025.</p>
       <div id="t-ev2025"></div>
       <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">
-        Datos 2024: INE Permisos de Circulacion (reales). Proyeccion 2025: basada en crecimiento 2023-2024.
-        Actualizacion esperada: septiembre 2026 (cuando salgan datos 2025).
+        Datos 2024: INE, Permisos de Circulación (reales). Proyección 2025: ventas de electrificados por tasa
+        de captura (módulo Parque de vehículos). Se actualiza cuando el INE publique los datos 2025.
       </p>
     </div>
 
@@ -271,7 +272,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260921a"></script>
+<script src="assets/comun.js?v=260922a"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -393,7 +394,10 @@ PW.tabla("t-capturas", [
           { nombre: "Promedio", valores: vals.map(v => v && v.prom), color: PW.color("--s1") },
           { nombre: "Mínimo", valores: vals.map(v => v && v.min), color: PW.color("--good") },
         ],
-        alto: 240, min: Math.floor(lo - aire), max: Math.ceil(hi + aire), fmt: v => PW.clp(v),
+        // PW.lineas lee fmtY (eje) y fmtV (tooltip), no `fmt`: con `fmt` el formato se ignoraba
+        // y el eje mostraba "1.099" en vez de "$1.099".
+        alto: 240, min: Math.floor(lo - aire), max: Math.ceil(hi + aire),
+        fmtY: v => PW.clp(v), fmtV: v => PW.clp(v),
       });
       document.getElementById("b93-pie").textContent =
         "Evolución en " + ambito + ": " + S.fechas.length + " capturas entre " +

@@ -314,10 +314,13 @@ table.pw th {
   color: var(--ink-2);
   font-weight: 600;
   font-size: 12.5px;
-  cursor: pointer;
-  user-select: none;
   white-space: nowrap;
 }
+/* La mano solo en las cabeceras que de verdad ordenan (las de PW.tabla llevan data-k). Antes iba
+   en TODA cabecera de table.pw, y 9 paginas con tablas hechas a mano (tracker, seguros,
+   concentracion, petroleras, integracion, grupoauto, fichacober, demanda-ev, censo-proyectado)
+   prometian con el cursor un orden que no existe. */
+table.pw th[data-k] { cursor: pointer; user-select: none; }
 table.pw th.orden::after { content: " \25BE"; color: var(--ink-3); }
 table.pw th.orden.asc::after { content: " \25B4"; }
 table.pw td.num, table.pw th.num { text-align: right; font-variant-numeric: tabular-nums; }
