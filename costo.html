@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>La bencina vs el enchufe — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260921a">
+<link rel="stylesheet" href="assets/estilo.css?v=260922a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -63,9 +63,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa de precios: combustible y carga pública</h2>
     <p class="nota">Azul: estación de combustible. Naranja: estación de combustible que además
-    tiene carga EV (homologada por ubicación y operador). Verde: cargador público con $/kWh
-    publicado. Gris: cargador público sin precio publicado. Haz clic en un punto para ver sus
-    precios.</p>
+    tiene carga EV (homologada por ubicación y operador). Verde: estación de carga con $/kWh
+    publicado. Gris: estación de carga sin precio publicado, incluidas las de acceso restringido
+    (flotas, edificios, condominios). Cada punto es una estación, no un cargador. Haz clic en un
+    punto para ver sus precios.</p>
     <div class="filtros" id="filtros-mapa"></div>
     <div id="mapa-precios"></div>
     <div id="ley-precios"></div>
@@ -81,7 +82,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script>document.write('<script src="data/costo.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260921a"></script>
+<script src="assets/comun.js?v=260922a"></script>
 <script>
 PW.montarNav("costo.html");
 
@@ -126,7 +127,7 @@ PW.montarNav("costo.html");
     }
     return p.pkwh != null ? `$${PW.fmt(p.pkwh)}/kWh` : null;
   };
-  // Red de carga completa: ev_precio (225, con $/kWh) + el resto de M.carga (sin precio publicado),
+  // Red de carga completa: ev_precio (con $/kWh) + el resto de M.carga (sin precio publicado),
   // deduplicando por coordenada (~50 m) los cargadores que estan en ambas listas.
   const todosEV = M.ev_precio.map(p => Object.assign({ conPrecio: true }, p)).concat(
     M.carga.filter(c => !M.ev_precio.some(p =>
@@ -214,8 +215,9 @@ PW.montarNav("costo.html");
         PW.waze(p.lat, p.lon),
     }));
     const evsin = todosEV.filter(p => !p.conPrecio && filtroEV(p)).map(p => ({
-      lat: p.lat, lon: p.lon, color: "#9ca3af", r: 4,
+      lat: p.lat, lon: p.lon, color: "#9ca3af", r: 4, acc: p.acc,
       popup: `<b>${nomEV(p)}</b>` +
+        (p.acc === "restringido" ? `<br><i>Acceso restringido (no abierta al público)</i>` : "") +
         (p.dir ? `<br>${p.dir}` : "") +
         `<br>${p.com || ""}${p.reg ? ", " + p.reg : ""}` +
         (p.op ? `<br>Operador: ${p.op}` : "") +
@@ -244,9 +246,15 @@ PW.montarNav("costo.html");
     }
     const partes = [];
     if (verComb) partes.push(comb.length + " estaciones de combustible");
-    if (verAmbos) partes.push(ambos.length + " cargadores en estaciones de combustible");
-    if (verEV) partes.push(ev.length + " solo carga EV con precio");
-    if (verEV) partes.push(evsin.length + " sin precio publicado");
+    // Cada punto es una ESTACION de carga (la capa `carga` de mapa.js va por estacion), no un
+    // cargador: la suma de los tres grupos da las estaciones de la red viva. Decia "cargadores" y
+    // "cargador publico" sobre 651 estaciones, 115 de ellas de acceso restringido (revision del
+    // 2026-09-21). Las sin precio salen de M.carga, que trae `acc`: se dice cuantas son restringidas.
+    const nRestrSinPrecio = evsin.filter(p => p.acc === "restringido").length;
+    if (verAmbos) partes.push(ambos.length + " estaciones de carga en bencineras");
+    if (verEV) partes.push(ev.length + " estaciones solo de carga con precio");
+    if (verEV) partes.push(evsin.length + " estaciones de carga sin precio publicado" +
+      (nRestrSinPrecio ? " (" + nRestrSinPrecio + " de acceso restringido)" : ""));
     document.getElementById("cont-mapa").textContent =
       "Mostrando: " + partes.join(" · ") + ". Promedio pais (" + etiq.toLowerCase() + "): $" + PW.fmt(Math.round(ref)) + ".";
     const ley = [];
