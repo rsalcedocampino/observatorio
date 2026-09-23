@@ -244,9 +244,9 @@ function attachHoverComuna(map) {
   const ocultar = () => { card.style.display = "none"; };
   cont.addEventListener("mousemove", ev => {
     // [ANTI-SOLAPE] si Leaflet ya muestra la card de un cargador (hover real sobre un punto, según su
-    // hit-detection), no superponer la de la comuna. Robusto a cualquier zoom/densidad (a diferencia de un
-    // radio fijo en píxeles, que a zoom bajo -país completo- taparía casi todo).
-    if (document.querySelector(".leaflet-tooltip:not(.pw-tip-comuna)")) { ocultar(); return; }
+    // hit-detection) O un popup está abierto, no superponer la de la comuna. Robusto a cualquier zoom/densidad
+    // (a diferencia de un radio fijo en píxeles, que a zoom bajo -país completo- taparía casi todo).
+    if (document.querySelector(".leaflet-tooltip:not(.pw-tip-comuna)") || document.querySelector(".leaflet-popup")) { ocultar(); return; }
     const c = comunaEn(map.mouseEventToLatLng(ev));
     if (!c) { ocultar(); return; }
     const p = map.mouseEventToContainerPoint(ev);
