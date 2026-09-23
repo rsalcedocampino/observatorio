@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Vulnerabilidad energética — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
@@ -79,7 +79,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_vulnerab.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("vulnerabilidad.html");
 
@@ -88,7 +88,7 @@ const D = PW_DATA.c_vulnerab;
 // region) y hace foco/zoom a la seleccion (comuna: zoom a la comuna dentro de su region).
 let MAPA = null;
 
-// [FICHA] El mapa (choropleth) por defecto solo muestra "comuna: numero" al pasar el mouse,
+// [FICHA] El mapa (choropleth) por defecto solo muestra "comuna: número" al pasar el mouse,
 // sin decir QUE es ese numero. Aca se enriquece page-local: tooltip etiquetado + popup al clic
 // con el detalle completo. byCut = indice rapido cut -> registro de la comuna.
 const byCut = Object.fromEntries(D.comunas.map(c => [c.cut, c]));

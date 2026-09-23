@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cortes de energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -84,7 +84,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota" id="dist-head"></p>
     <div id="g-dist-grupo"></div>
     <h3 style="margin:14px 0 6px;font-size:14px">Comunas con más clientes afectados (top 20)</h3>
-    <div class="scroll-x"><table class="pw" id="t-dist-comuna"></table></div>
+    <div class="scroll-x"><div id="t-dist-comuna"></div></div>
     <p class="nota" id="dist-caveats" style="margin-top:12px"></p>
   </div>
 
@@ -145,7 +145,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Peores apagones registrados (por evento)</h2>
-    <div class="scroll-x"><table class="pw" id="t-eventos"></table></div>
+    <div class="scroll-x"><div id="t-eventos"></div></div>
     <p class="nota">Eventos individuales con mayor peak de clientes afectados desde 2017 (umbral 500
     clientes). El apagón nacional del 25 de febrero de 2025 domina el registro.</p>
   </div>
@@ -160,7 +160,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/riesgo.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/cortes.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("riesgo.html");
 const D = PW_DATA.riesgo;
@@ -508,11 +508,11 @@ function refrescar() {
   const anho = selY.value;
   const fuente = anho ? D.ranking_anual.filter(c => String(c.anho) === anho) : D.ranking;
   const periodo = anho ? ("año " + anho) : "acumulado 2017-hoy";
-  const ambito = com ? com : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el pais");
+  const ambito = com ? com : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el país");
   document.getElementById("ambito").textContent = "Mostrando: " + ambito + " · " + periodo;
   document.getElementById("nota-anho").textContent = anho
     ? "Datos comunales de " + anho + ": registro de eventos significativos (500+ clientes). Elige 'Todos los años' para el acumulado completo."
-    : "Acumulado 2017 a hoy: incluye ademas los cortes menores de la serie horaria. Elige un año para ver ese periodo.";
+    : "Acumulado 2017 a hoy: incluye además los cortes menores de la serie horaria. Elige un año para ver ese periodo.";
 
   // filas comunales de la seleccion (fuente segun el año elegido)
   const comunas = fuente.filter(c => (!rcut || c.cod_region === rcut) && (!com || c.comuna === com));
@@ -526,12 +526,12 @@ function refrescar() {
   document.getElementById("h-horas").textContent = "Horas sin energía — " + periodo;
 
   document.getElementById("kpis-clientes").innerHTML = [
-    [PW.fmt(totClientes), com ? "peak de clientes sin energia" : "clientes sin energia (peak sumado)", ambito],
+    [PW.fmt(totClientes), com ? "peak de clientes sin energía" : "clientes sin energia (peak sumado)", ambito],
     [comunas.length, com ? "comuna" : "comunas con registro", periodo],
   ].map(kpiHTML).join("");
 
   document.getElementById("kpis-horas").innerHTML = [
-    [PW.fmt(totHoras), com ? "horas con corte" : "horas-comuna sin energia", ambito],
+    [PW.fmt(totHoras), com ? "horas con corte" : "horas-comuna sin energía", ambito],
     [PW.fmt(totCH / 1e6, 1) + "M", "cliente-horas de la seleccion", periodo],
   ].map(kpiHTML).join("");
 
@@ -565,8 +565,8 @@ function refrescar() {
 const cols = [
   { k: "comuna", titulo: "Comuna" },
   { k: "region", titulo: "Región" },
-  { k: "peak_clientes", titulo: "Clientes sin energia", num: true, fmt: v => `<span class="estado-mal">${PW.fmt(v)}</span>` },
-  { k: "horas_afectada", titulo: "Horas sin energia", num: true, fmt: v => PW.fmt(v) },
+  { k: "peak_clientes", titulo: "Clientes sin energía", num: true, fmt: v => `<span class="estado-mal">${PW.fmt(v)}</span>` },
+  { k: "horas_afectada", titulo: "Horas sin energía", num: true, fmt: v => PW.fmt(v) },
   { k: "cliente_horas", titulo: "Cliente-horas", num: true, fmt: v => PW.fmt(v) },
   { k: "ch_por_hab", titulo: "Cliente-h / hab", num: true, fmt: v => PW.fmt(v, 1) },
   { k: "poblacion", titulo: "Poblacion 2024", num: true, fmt: v => PW.fmt(v) },

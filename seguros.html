@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Seguros y coberturas EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <style>
 .celda-cob { text-align: center; font-weight: 600; border-radius: 6px; padding: 3px 6px; display: inline-block; min-width: 54px; font-size: 12px; }
 .cob-si { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
@@ -111,7 +111,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_seguros.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("seguros.html");
 const D = PW_DATA.c_seguros;
@@ -160,7 +160,7 @@ function pintarMatriz() {
     const m = idx[p.id + "|" + c];
     const v = m ? m.incluida : "S/I";
     const clase = v === "si" ? "cob-si" : v === "no" ? "cob-no" : v === "opcional" ? "cob-opcional" : "cob-si1";
-    const titulo = m ? [m.limite, m.nota, m.fuente].filter(Boolean).join(" — ") : "Sin informacion en la fuente";
+    const titulo = m ? [m.limite, m.nota, m.fuente].filter(Boolean).join(" — ") : "Sin información en la fuente";
     return `<span class="celda-cob ${clase}" title="${(titulo || "").replace(/"/g, "'")}">${v}</span>`;
   }
   const nombreCob = c => c.replace(/_/g, " ").replace("bateria hv", "bateria alta tension");

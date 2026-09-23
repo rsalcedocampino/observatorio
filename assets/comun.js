@@ -48,6 +48,7 @@
       ["mapa-carga.html", "Infraestructura de Carga"],
       ["carga-registro-mapa.html", "Registro Oficial de Carga (SEC)"],
       ["infraestructura.html", "Capacidad de carga instalada"],
+      ["carga-reporte-sec.html", "Reporte Nacional SEC 2026"],
       ["operadores.html", "Operadores y Sitios"],
       ["autonomia.html", "Brecha de cobertura"],
       ["duales.html", "Estaciones duales"],
@@ -155,6 +156,7 @@
   ICONOS["petroleras.html"] = IC('<path d="M5 20V7l6-3 6 3v13M3 20h18M9 11h4M9 15h4"/><path d="M19 20v-6l2 1v5"/>');
   ICONOS["fichacober.html"] = IC('<path d="M12 3l8 3v6c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>');
   ICONOS["infraestructura.html"] = IC('<rect x="4" y="20" width="4" height="1.5"/><rect x="10" y="16" width="4" height="5.5"/><rect x="16" y="10" width="4" height="11.5"/><path d="M4 20V9l3-2 3 2M7 7V4"/>');
+  ICONOS["carga-reporte-sec.html"] = IC('<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 12h5M9.5 15.5h5M9.5 8.5h2"/>');
   ICONOS["censo.html"] = IC('<circle cx="9" cy="7" r="3"/><path d="M3.5 21v-1.5a5.5 5.5 0 0 1 11 0V21"/><path d="M16 4.2a3 3 0 0 1 0 5.6"/><path d="M18 14.2a5 5 0 0 1 2.5 4.3V21"/>');
   ICONOS["censo-proyectado.html"] = ICONOS["censo.html"];
   ICONOS["cargadores-cortes.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/><path d="M3 3l18 18"/>');
@@ -1881,6 +1883,56 @@
     }
     return salida;
   }
+
+  // ---------- aviso de datos nuevos (pestana que quedo abierta)
+  // Los datos se republican cada 2 h y la pagina no se entera: el 2026-09-22 la portada mostraba
+  // cifras de 13 h antes en una pestana nunca recargada. Al volver a la pestana tras >= 10 min se
+  // lee `data/resumen.js` (mismo origen, pocos KB) y se compara su `generado` con el momento de
+  // esta carga. Avisa, no recarga: quien dejo la pestana abierta puede tener filtros puestos.
+  const CARGADA_EN = Date.now();
+  let ultimaRevision = 0;
+  let avisoPuesto = false;
+
+  function mostrarAvisoDatos(generado) {
+    if (avisoPuesto) return;
+    avisoPuesto = true;
+    const caja = document.createElement("div");
+    caja.className = "pw-aviso-datos";
+    caja.setAttribute("role", "status");
+    const txt = document.createElement("span");
+    txt.textContent = "Hay datos más nuevos (" + generado + ").";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "Actualizar";
+    btn.addEventListener("click", () => location.reload());
+    const cerrar = document.createElement("button");
+    cerrar.type = "button";
+    cerrar.className = "cerrar";
+    cerrar.setAttribute("aria-label", "Cerrar aviso");
+    cerrar.textContent = "\u00d7";
+    cerrar.addEventListener("click", () => caja.remove());
+    caja.append(txt, btn, cerrar);
+    document.body.appendChild(caja);
+  }
+
+  async function revisarDatosNuevos() {
+    if (document.visibilityState !== "visible" || avisoPuesto) return;
+    const ahora = Date.now();
+    if (ahora - CARGADA_EN < 6e5 || ahora - ultimaRevision < 6e5) return;   // 10 min
+    ultimaRevision = ahora;
+    try {
+      const r = await fetch("data/resumen.js?v=" + Math.floor(ahora / 6e5), { cache: "no-store" });
+      if (!r.ok) return;
+      const m = /"generado"\s*:\s*"([^"]+)"/.exec(await r.text());
+      if (!m) return;
+      // "YYYY-MM-DD HH:MM" es hora local; Date lo parsea con la T intermedia
+      const t = new Date(m[1].replace(" ", "T")).getTime();
+      if (t && t > CARGADA_EN + 6e4) mostrarAvisoDatos(m[1]);
+    } catch (e) { /* sin red o CSP: la pagina sigue igual, sin aviso */ }
+  }
+
+  document.addEventListener("visibilitychange", revisarDatosNuevos);
+  window.addEventListener("focus", revisarDatosNuevos);
 
   window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto };
 })();

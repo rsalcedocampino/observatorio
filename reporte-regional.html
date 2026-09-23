@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Reporte Regional — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -268,7 +268,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/tracker.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/sitios.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("reporte-regional.html");
 const D = PW_DATA.tracker;
@@ -373,19 +373,19 @@ function refrescarRegiones(p2035Nac, ratio) {
   const ambito = regSel ? filas[0].region : "pais";
   document.getElementById("kpis-reg").innerHTML = kpiHTML([
     [PW.fmt(totalFaltan), "cargadores faltantes 2035 (" + ambito + ")", ratio + " EV por cargador"],
-    [enRitmo + " de " + filas.length, (filas.length === 1 ? "region" : "regiones") + " al ritmo requerido", "ultimos 12 meses SEC"],
-    [filas[0] ? filas[0].region : "—", regSel ? "region seleccionada" : "region con mas parque EV", filas[0] ? PW.fmt(filas[0].parque_ev) + " vehiculos" : ""],
+    [enRitmo + " de " + filas.length, (filas.length === 1 ? "region" : "regiones") + " al ritmo requerido", "últimos 12 meses SEC"],
+    [filas[0] ? filas[0].region : "—", regSel ? "region seleccionada" : "región con más parque EV", filas[0] ? PW.fmt(filas[0].parque_ev) + " vehículos" : ""],
   ]);
   const th = (t, f) => `<span title="${f}">${t}</span>`;
   const cols = [
     { k: "region", titulo: "Región" },
     { k: "parque_ev", titulo: th("Parque EV hoy", "Vehiculos electricos registrados (INE, permisos 2024; puede incluir hibridos)"), num: true, fmt: v => PW.fmt(v) },
     { k: "ev_1000hab", titulo: th("EV / 1.000 hab", "Parque EV / poblacion regional (INE + Censo 2024)"), num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
-    { k: "parque_2035", titulo: th("Parque 2035 proy.", "Proyeccion nacional repartida por participacion actual"), num: true, fmt: v => PW.fmt(v) },
+    { k: "parque_2035", titulo: th("Parque 2035 proy.", "Proyección nacional repartida por participación actual"), num: true, fmt: v => PW.fmt(v) },
     { k: "cargadores_pub", titulo: th("Cargadores públicos", "Cargadores de acceso publico (base de la brecha; excluye privado/restringido)"), num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
     { k: "ev_por_carg", titulo: th("EV por cargador", "Parque EV / cargadores publicos"), num: true, fmt: v => v == null ? "sin red" : PW.fmt(v, 1) },
     { k: "necesarios_2035", titulo: th("Necesarios 2035", "Parque 2035 / ratio"), num: true, fmt: v => PW.fmt(v) },
-    { k: "faltan", titulo: th("Faltan a 2035", "Necesarios - cargadores publicos"), num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
+    { k: "faltan", titulo: th("Faltan a 2035", "Necesarios - cargadores públicos"), num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
     { k: "ritmo_actual", titulo: th("Ritmo real 12m", "Cargadores publicos nuevos ult. 12 meses (SEC)"), num: true, fmt: v => PW.fmt(v) },
     { k: "ritmo_req", titulo: th("Ritmo requerido/año", "Faltantes / años a 2035"), num: true, fmt: v => PW.fmt(v) },
     { k: "estado", titulo: "Estado", fmt: v => `<span class="${v === "En ritmo" ? "estado-ok" : "estado-mal"}">${v}</span>` },
@@ -437,7 +437,7 @@ function refrescarEnergiaReg(filasTodas, regSel) {
     { k: "region", titulo: "Región" },
     { k: "solar_op", titulo: th("Solar operando (MW)", "FV en operacion (Coordinador + ACERA)"), num: true, fmt: v => PW.fmt(v) },
     { k: "solar_pipe", titulo: th("Solar pipeline (MW)", "Solar en construccion/aprobada"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
-    { k: "bess_op", titulo: th("Almacenamiento op. (MWh)", "BESS en operacion"), num: true, fmt: v => v > 0 ? PW.fmt(v) : `<span class="estado-mal">0</span>` },
+    { k: "bess_op", titulo: th("Almacenamiento op. (MWh)", "BESS en operación"), num: true, fmt: v => v > 0 ? PW.fmt(v) : `<span class="estado-mal">0</span>` },
     { k: "bess_pipe", titulo: th("Almacenamiento pipe. (MWh)", "BESS en construccion/aprobado"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
     { k: "gd_mw", titulo: th("Gen. distribuida (MW)", "Net billing SEC"), num: true, fmt: v => PW.fmt(v, 1) },
     { k: "demanda_2035", titulo: th("Demanda EV 2035 (GWh)", "Parque 2035 x km/año / km/kWh"), num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
