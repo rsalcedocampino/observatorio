@@ -25,9 +25,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Costo total de propiedad (TCO) — Energías Futuro</title>
+<meta name="description" content="Compara el costo real de tener un vehículo eléctrico frente a uno a combustión a lo largo de los años: compra, energía, mantención, seguro, permiso de...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260923a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923c">
 <style>
 .pestanas { display: flex; gap: 2px; flex-wrap: wrap; margin: 16px 0 4px; border-bottom: 1px solid var(--border); }
 .pestanas button { background: none; border: 0; padding: 8px 14px; font: inherit; color: var(--ink-2); cursor: pointer; border-radius: 8px 8px 0 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
@@ -201,7 +202,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/c_tco.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260923a"></script>
+<script src="assets/comun.js?v=260923c"></script>
 <script>
 PW.montarNav("tco.html");
 let D = PW_DATA.c_tco;
@@ -397,6 +398,10 @@ function mostrar(t) {
     b.classList.toggle("activo", x === t);
   });
   if (location.hash.slice(1) !== t) history.replaceState(null, "", "#" + t);
+  // el submenu se arma al cargar (montarNav) y no se entera de los cambios de pestana: sin esto,
+  // entrando a tco.html sin ancla no queda marcado ningun item de "Mi auto"
+  document.querySelectorAll('header.pw nav a[href^="tco.html#"]').forEach(
+    a => a.classList.toggle("activo", a.getAttribute("href") === "tco.html#" + t));
   if (!construido[t]) { construido[t] = true; BUILD[t](); }
   if (DRAW[t]) DRAW[t]();
 }
