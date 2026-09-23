@@ -469,7 +469,7 @@ function refrescarParque() {
     "Proyeccion de parque: ventas de los ultimos 12 meses (" + PW.fmt(u12) + ") creciendo " +
     PW.fmt(crecAnual) + " unidades/año (pendiente 24 meses), acumuladas sobre el parque estimado. " +
     "Demanda con " + PW.fmt(km) + " km/año y " + rend + " km/kWh (supuestos del cruce Demanda EV). " +
-    "Sin descuentos por bajas del parque: estimacion conservadora hacia arriba.";
+    "Sin descuentos por bajas del parque: estimación conservadora hacia arriba.";
 }
 
 document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
@@ -556,7 +556,7 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
     `</tbody></table></div>`;
   const solar = filas.find(f => f.tec === "Solar");
   SEM.pelp = {
-    nombre: "Planificacion: capacidad vs PELP",
+    nombre: "Planificación: capacidad vs PELP",
     hoy: solar ? "Solar " + PW.fmt(solar.real, 1) + " GW" : "—",
     objetivo: "Escenarios PELP 2020-2040",
     llegada: solar ? "va como '" + solar.escenario + "'" : "—",

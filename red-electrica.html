@@ -52,7 +52,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Red eléctrica y potencial renovable</h1>
   <p class="sub">La columna vertebral que alimenta la electromovilidad: subestaciones y líneas
   de transmisión (Ministerio de Energía + Coordinador), que tan lejos de la red esta cada
-  estacion de carga, y cuanto potencial renovable instalable tiene cada comuna.</p>
+  estación de carga, y cuanto potencial renovable instalable tiene cada comuna.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
@@ -79,7 +79,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="tarjeta">
       <h2 style="margin-top:0">Conexión de la red de carga por región</h2>
       <div id="t-conexion"></div>
-      <p class="nota">Distancia de cada estacion de carga a su subestación más cercana
+      <p class="nota">Distancia de cada estación de carga a su subestación más cercana
       (mediana regional y % de estaciones a menos de 1 y 5 km). Aproximación por exceso.</p>
     </div>
     <div class="tarjeta">
@@ -112,7 +112,7 @@ document.getElementById("nota").textContent = "Actualizado " + (D.generado || ""
 const K = D.kpis;
 document.getElementById("kpis").innerHTML = [
   [PW.fmt(K.subestaciones), "subestaciones", PW.fmt(K.mva_total) + " MVA de capacidad"],
-  [PW.fmt(K.lineas_coordinador), "lineas de transmision", K.km_lineas ? PW.fmt(K.km_lineas) + " km (trazados IDE)" : ""],
+  [PW.fmt(K.lineas_coordinador), "lineas de transmisión", K.km_lineas ? PW.fmt(K.km_lineas) + " km (trazados IDE)" : ""],
   [PW.fmt(K.dist_mediana_km, 1) + " km", "mediana cargador-subestacion", "toda la red de carga"],
   [PW.fmt(K.potencial_total_gw, 1) + " GW", "potencial renovable instalable", "estudio MinEnergia 2021"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
@@ -258,7 +258,7 @@ PW.leyendaMapa("ley-sub", [
   ["220 kV o mas (troncal)", PW.color("--s2")],
   ["66 a 220 kV", PW.color("--s1")],
   ["Menos de 66 kV", PW.color("--s3")],
-  ["Sin dato de tension", PW.color("--ink-3")],
+  ["Sin dato de tensión", PW.color("--ink-3")],
   ["Tamaño = capacidad (MVA)", PW.color("--ink-3")],
 ]);
 

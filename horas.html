@@ -91,7 +91,7 @@ if (!D.disponible) {
   document.getElementById("nota").textContent = "Sin historico de estados disponible todavia.";
 } else {
   document.getElementById("nota").textContent =
-    "Basado en " + D.dias_observados + " días de observacion. " + D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + ".";
+    "Basado en " + D.dias_observados + " días de observación. " + D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + ".";
 
   const horas = [...Array(24).keys()];
   // "ocupacion"/"disponible_pct" son % del pool operativo (disponible+ocupado, como siempre);

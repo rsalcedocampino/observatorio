@@ -164,7 +164,7 @@ function pintarMatriz() {
     const titulo = m ? [m.limite, m.nota, m.fuente].filter(Boolean).join(" — ") : "Sin información en la fuente";
     return `<span class="celda-cob ${clase}" title="${(titulo || "").replace(/"/g, "'")}">${v}</span>`;
   }
-  const nombreCob = c => c.replace(/_/g, " ").replace("bateria hv", "bateria alta tension");
+  const nombreCob = c => c.replace(/_/g, " ").replace("bateria hv", "bateria alta tensión");
   const html = `<table class="pw"><thead><tr><th>Producto</th><th>Aseguradora</th>` +
     cobIds.map(c => `<th title="${(cat[c] || "").replace(/"/g, "'")}">${nombreCob(c)}</th>`).join("") +
     `</tr></thead><tbody>` +

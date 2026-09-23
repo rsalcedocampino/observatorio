@@ -75,7 +75,7 @@ D.marcas.forEach(m => { const o = document.createElement("option"); o.value = m.
 function pintar() {
   const m = D.marcas.find(x => x.marca === sel.value) || D.marcas[0];
   document.getElementById("t-serie").textContent =
-    m.marca + " — lag de máxima correlacion: " + (m.lag_meses != null ? m.lag_meses + " meses (r=" + m.correlacion + ")" : "sin dato");
+    m.marca + " — lag de máxima correlación: " + (m.lag_meses != null ? m.lag_meses + " meses (r=" + m.correlacion + ")" : "sin dato");
   PW.lineas("g-serie", {
     labels: D.meses,
     series: [
