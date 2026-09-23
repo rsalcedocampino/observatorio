@@ -200,7 +200,16 @@ header.pw nav a.activo, header.pw nav a:hover { background: var(--plane); color:
     width: 100%;
     gap: 0;
   }
-  header.pw nav.abierto { display: flex; }
+  header.pw nav.abierto {
+    display: flex;
+    /* sin esto, en pantallas bajas los ultimos enlaces quedan fuera y no se alcanzan:
+       la cabecera es sticky, asi que desplazar la pagina no los sube. 100dvh descuenta
+       las barras del navegador movil; 100vh queda de respaldo para navegadores viejos. */
+    max-height: calc(100vh - 56px);
+    max-height: calc(100dvh - 56px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
   header.pw nav a { padding: 10px 6px; font-size: 14px; }
   .nav-grupo { width: 100%; }
   .nav-grupo > a { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 6px; }
@@ -587,3 +596,19 @@ footer.pw {
   padding: 7px 12px;
   margin: 0 0 14px;
 }
+
+/* aviso de datos nuevos (pestana abierta; ver comun.js) */
+.pw-aviso-datos {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 16px; z-index: 1200;
+  display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px);
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface-1); color: var(--ink-1); box-shadow: 0 6px 24px rgba(0,0,0,.18);
+  font-size: 13.5px;
+}
+.pw-aviso-datos button {
+  border: 1px solid var(--s1); background: transparent; color: var(--s1);
+  border-radius: 8px; padding: 5px 10px; font: inherit; cursor: pointer;
+}
+.pw-aviso-datos button:hover { background: var(--s1); color: var(--plane); }
+.pw-aviso-datos button.cerrar { border-color: var(--border); color: var(--ink-3); padding: 2px 8px; }
+@media (max-width: 560px) { .pw-aviso-datos { left: 16px; right: 16px; transform: none; } }

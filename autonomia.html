@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Brechas de autonomía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <style>
 @media (max-width: 768px) {
   .fila2 { grid-template-columns: 1fr !important; }
@@ -134,7 +134,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_autonomia.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 function initAut() {
   if (typeof PW === "undefined") {
@@ -153,7 +153,7 @@ document.getElementById("nota").textContent = "Actualizado " + (D.generado || ""
 
 const K = D.kpis;
 document.getElementById("kpis").innerHTML = [
-  [K.estaciones_dc, "estaciones con carga rapida <span class=\"kpi-info\" data-tooltip=\"Puntos de carga rápida: 50 kW o más\">ℹ</span>", "50 kW o mas"],
+  [K.estaciones_dc, "estaciones con carga rapida <span class=\"kpi-info\" data-tooltip=\"Puntos de carga rápida: 50 kW o más\">ℹ</span>", "50 kW o más"],
   [PW.fmt(K.autonomia_p50) + " km", "autonomia mediana del catalogo <span class=\"kpi-info\" data-tooltip=\"Percentil 50: la mitad de vehículos llega más lejos\">ℹ</span>", "p25: " + PW.fmt(K.autonomia_p25) + " km"],
   [PW.fmt(K.rango_util_p25) + " km", "rango util conservador <span class=\"kpi-info\" data-tooltip=\"70% del p25 para garantizar cobertura confiable incluso con envejecimiento de batería\">ℹ</span>", "70% de la autonomia p25"],
   [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada <span class=\"kpi-info\" data-tooltip=\"Distancia más grande sin cargadores rápidos en corredor norte-sur\">ℹ</span>", D.brechas.length ? D.brechas[0].desde : ""],
@@ -197,7 +197,7 @@ function filtrarPorRegion() {
   const brechaPrinc = brechasFiltr.length ? brechasFiltr[0] : null;
   const docKpis = document.getElementById("kpis");
   docKpis.innerHTML = [
-    [puntosFiltr.length, "estaciones en region", regSel || "nacional"],
+    [puntosFiltr.length, "estaciones en región", regSel || "nacional"],
     [puntosFiltr.length ? PW.fmt(brechasFiltr.length ? brechasFiltr[0].km : 0) + " km" : "—", "mayor brecha detectada", brechaPrinc ? brechaPrinc.desde.split("(")[0].trim().slice(-15) : ""],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 

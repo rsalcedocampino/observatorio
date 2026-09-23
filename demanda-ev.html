@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Demanda eléctrica del parque EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_demanda.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -65,7 +65,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("demanda-ev.html");
 const D = PW_DATA.c_demanda;
@@ -76,16 +76,16 @@ function refrescar() {
   const rend = +document.getElementById("f-rend").value || 5.4;
   const gwh = D.kpis.parque_ev * km / rend / 1e6;
   document.getElementById("kpis").innerHTML = [
-    [PW.fmt(D.kpis.parque_ev), "vehiculos electricos registrados", "INE 2024 (puede incluir hibridos)"],
+    [PW.fmt(D.kpis.parque_ev), "vehículos eléctricos registrados", "INE 2024 (puede incluir hibridos)"],
     [PW.fmt(gwh, 1) + " GWh", "consumo anual estimado", km / 1000 + " mil km x " + rend + " km/kWh"],
-    [PW.fmt(D.kpis.gwh_sen_anual) + " GWh", "generacion SEN anualizada", ""],
+    [PW.fmt(D.kpis.gwh_sen_anual) + " GWh", "generación SEN anualizada", ""],
     [PW.fmt(100 * gwh / D.kpis.gwh_sen_anual, 2) + "%", "del SEN es carga EV hoy", ""],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 
   PW.barras("g-reg", {
     items: D.regiones.slice(0, 14).map(r => ({
       nombre: r.region, valor: r.parque_ev * km / rend / 1e6,
-      extra: PW.fmt(r.parque_ev) + " vehiculos",
+      extra: PW.fmt(r.parque_ev) + " vehículos",
     })),
     fmtV: v => PW.fmt(v, 1) + " GWh",
   });

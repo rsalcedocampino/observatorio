@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Elasticidad bencina-EV — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <style>
   /* flex-wrap: a 360px los 5 botones median 587px en una fila de 320 y desbordaban la pagina
      entera (medido: scrollWidth 584 contra ventana 360). El color de esta barra no se toca. */
@@ -143,7 +143,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="tarjeta">
       <h2 style="margin-top:0">Correlacion: Tarifa Potencia vs Stock EV</h2>
       <p class="nota">¿A mayor tarifa de potencia, menos stock de EVs? Tabla muestra tarifa potencia ($/kW/mes) cruzada con
-      stock proyectado 2025 por region. Nota: Metropolitana domina cifras (<span id="pct-rm">—</span> del parque nacional).</p>
+      stock proyectado 2025 por región. Nota: Metropolitana domina cifras (<span id="pct-rm">—</span> del parque nacional).</p>
       <div id="t-ev-tarifas"></div>
     </div>
 
@@ -272,7 +272,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -297,7 +297,7 @@ const ultimaCaptura = n ? D.capturas_p93[n - 1].captura : null;
 document.getElementById("kpis").innerHTML = [
   [n, "capturas de precio acumuladas", primeraCaptura ? "del " + primeraCaptura + " al " + ultimaCaptura : "aún sin capturas"],
   [D.participacion.length ? PW.fmt(D.participacion[D.participacion.length - 1].pct, 1) + "%" : "—",
-    "participacion enchufable actual", D.participacion.length ? "mes " + D.participacion[D.participacion.length - 1].ym : ""],
+    "participación enchufable actual", D.participacion.length ? "mes " + D.participacion[D.participacion.length - 1].ym : ""],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
 document.getElementById("capturas-pie").textContent = n
   ? "Regresión participación~precio con rezagos (0-6 meses): aún no implementada. " + n +

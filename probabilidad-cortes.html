@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Probabilidad de cortes — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
@@ -85,7 +85,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_probcortes.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("probabilidad-cortes.html");
 const D = PW_DATA.c_probcortes;
@@ -141,7 +141,7 @@ function refrescar() {
   const est = expuestas.reduce((s, c) => s + c.est, 0);
   const carg = expuestas.reduce((s, c) => s + c.carg, 0);
   const con = expuestas.reduce((s, c) => s + c.con, 0);
-  const ambito = comunaUnica ? comunaUnica.comuna : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el pais");
+  const ambito = comunaUnica ? comunaUnica.comuna : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el país");
   document.getElementById("kpis").innerHTML = (comunaUnica ? [
     [PW.fmt(comunaUnica.prob[mes], 1) + "%", "probabilidad de corte en " + MESES[mes].toLowerCase(), comunaUnica.comuna],
     [PW.fmt(comunaUnica.evprom[mes], 1), "cortes promedio ese mes", "eventos 500+ clientes"],
@@ -164,7 +164,7 @@ function refrescar() {
     const reg = D.regiones.find(r => r.rcut === rcut);
     perfil = reg.pct_comunas;
     tituloPerfil = "% de comunas afectadas por mes — " + reg.region;
-    notaPerfil = "Promedio historico del porcentaje de comunas de la region con al menos un corte en el mes.";
+    notaPerfil = "Promedio histórico del porcentaje de comunas de la región con al menos un corte en el mes.";
   } else {
     // Ponderado por n_comunas y no promedio simple de regiones: el simple le da el mismo peso
     // a Aysen que a la Metropolitana, y el numero que sale NO es "el % de comunas del pais
@@ -204,7 +204,7 @@ function refrescar() {
     PW.barras("g-rank", {
       items: D.regiones.slice().sort((a, b) => b.pct_comunas[mes] - a.pct_comunas[mes]).map(r => ({
         nombre: r.region, valor: r.pct_comunas[mes],
-        extra: PW.fmt(r.carg) + " cargadores, " + PW.fmt(r.con) + " conectores en la region",
+        extra: PW.fmt(r.carg) + " cargadores, " + PW.fmt(r.con) + " conectores en la región",
         color: r.pct_comunas[mes] >= 50 ? PW.color("--critical") : PW.color("--s1"),
       })),
       fmtV: v => PW.fmt(v, 1) + "%",

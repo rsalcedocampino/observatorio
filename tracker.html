@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Meta 2035 — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <style>
 .semaforo td:first-child { font-weight: 600; }
 .sem-punto { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 7px; vertical-align: -1px; }
@@ -180,7 +180,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_pelp.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_normativa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("tracker.html");
 const D = PW_DATA.tracker;
@@ -291,7 +291,7 @@ function refrescarPart() {
 
   const creceReq = (meta - ult.v) / ((metaAnio + 11 / 12 - xUlt) || 1);
   document.getElementById("kpis").innerHTML = [
-    [PW.fmt(ult.v, 1) + "%", "participacion enchufable hoy", "mes " + ult.ym],
+    [PW.fmt(ult.v, 1) + "%", "participación enchufable hoy", "mes " + ult.ym],
     [PW.fmt(pendiente, 1) + " pts/año", "ritmo real (24 meses)", "se requieren " + PW.fmt(creceReq, 1)],
     [fmtAnio(llegadaLin), "llegada proyectada (lineal)", "meta " + meta + "% — objetivo " + metaAnio],
     [fmtAnio(llegadaLog), "llegada proyectada (curva S)", "ajuste logistico 36 meses"],
@@ -301,7 +301,7 @@ function refrescarPart() {
   const [, colorS, textoS] = estadoMeta(llegadaRef, metaAnio);
   const esOfP = OF && meta === 100 && metaAnio === 2035;
   SEM.part = {
-    nombre: "Ventas: participacion enchufable", hoy: PW.fmt(ult.v, 1) + "%",
+    nombre: "Ventas: participación enchufable", hoy: PW.fmt(ult.v, 1) + "%",
     objetivo: meta + "% en " + metaAnio +
       (esOfP ? " (oficial: declarativa, hito 20% en 2030)" : ""),
     llegada: fmtAnio(llegadaRef) + (llegadaLog != null ? " (curva S)" : " (lineal)"),
@@ -378,7 +378,7 @@ function refrescarInfra() {
   PW.lineas("g-infra", {
     labels: anios.map(String),
     series: [
-      { nombre: "Cargadores publicos", valores: real, area: true },
+      { nombre: "Cargadores públicos", valores: real, area: true },
       { nombre: "Requerida para la meta", valores: req, color: PW.color("--s2") },
       { nombre: "Si seguimos asi", valores: proy, color: PW.color("--s4"), dash: true },
     ],
@@ -390,7 +390,7 @@ function refrescarInfra() {
   const mesesFalt = Math.max(1, Math.round((metaAnio + 11 / 12 - xUlt) * 12));
   const ritmoReq = (meta - hoyCarg) / mesesFalt;
   document.getElementById("kpis-infra").innerHTML = [
-    [PW.fmt(hoyCarg), "cargadores publicos hoy", "red viva, cada 30 min"],
+    [PW.fmt(hoyCarg), "cargadores públicos hoy", "red viva, cada 30 min"],
     [PW.fmt(Math.round(ritmo)) + "/mes", "ritmo real (12 meses)", "se requieren " + PW.fmt(Math.round(ritmoReq)) + "/mes"],
     [fmtAnio(llegada), "llegada proyectada", "meta " + PW.fmt(meta) + " — objetivo " + metaAnio],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
@@ -403,7 +403,7 @@ function refrescarInfra() {
         PW.fmt(OF.cargadores_2035.valor) + " puntos (" + OF.cargadores_2035.vinculancia + ")."
       : "Meta editada manualmente (la oficial es " + PW.fmt(OF && OF.cargadores_2030 ? OF.cargadores_2030.valor : 6500) + " al 2030).";
     document.getElementById("nota-infra").textContent =
-      "Serie: SEC EcoCarga categoria publico hasta " + ult.ym + ". Red viva hoy (Cargadores y " +
+      "Serie: SEC EcoCarga categoría público hasta " + ult.ym + ". Red viva hoy (Cargadores y " +
       "Conectores, cada 30 min, acceso publico + privado/restringido): " +
       PW.fmt(D.red_viva.cargadores) + " cargadores y " + PW.fmt(D.red_viva.conectores) +
       " conectores en " + PW.fmt(D.red_viva.estaciones) + " estaciones" +
@@ -414,7 +414,7 @@ function refrescarInfra() {
   const [, colorS, textoS] = estadoMeta(llegada, metaAnio);
   const esOf = OF && OF.cargadores_2030 && meta === OF.cargadores_2030.valor && metaAnio === 2030;
   SEM.carg = {
-    nombre: "Red de carga: cargadores publicos", hoy: PW.fmt(hoyCarg),
+    nombre: "Red de carga: cargadores públicos", hoy: PW.fmt(hoyCarg),
     objetivo: PW.fmt(meta) + " en " + metaAnio + (esOf ? " (oficial: compromiso)" : " (editada)"),
     llegada: fmtAnio(llegada), color: colorS, texto: textoS,
   };
@@ -460,7 +460,7 @@ function refrescarParque() {
     [PW.fmt(parqueHoy), "parque enchufable estimado hoy", "INE 2024 + ventas desde 2025"],
     [PW.fmt(p2030), "parque proyectado 2030", "ritmo de ventas sostenido"],
     [PW.fmt(p2035), "parque proyectado 2035", ""],
-    [PW.fmt(gwh2035, 1) + " GWh", "demanda electrica 2035", PW.fmt(100 * gwh2035 / DEM.kpis.gwh_sen_anual, 1) + "% del SEN actual"],
+    [PW.fmt(gwh2035, 1) + " GWh", "demanda eléctrica 2035", PW.fmt(100 * gwh2035 / DEM.kpis.gwh_sen_anual, 1) + "% del SEN actual"],
     [PW.fmt(cargNec2035), "cargadores necesarios 2035", ratio + " EV por cargador"],
     [PW.fmt(Math.max(0, cargNec2035 - cargProy2035)), "cargadores que faltarian", "proyectados al ritmo actual: " + PW.fmt(cargProy2035)],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
@@ -490,7 +490,7 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
   const llegada = pendiente > 0.2 ? ymAnum(ultC.ym) + (80 - ultC.pct_renov) / pendiente : null;
   const mejor = base.reduce((a, b2) => b2.pct_renov > a.pct_renov ? b2 : a, base[0]);
   document.getElementById("kpis-gen").innerHTML = [
-    [PW.fmt(ult.pct_renov, 1) + "%", "renovable el ultimo mes",
+    [PW.fmt(ult.pct_renov, 1) + "%", "renovable el último mes",
      ult.ym + (ult.parcial ? " · mes parcial, " + ult.dias + " días" : "")],
     [PW.fmt(mejor.pct_renov, 1) + "%", "mejor mes cerrado", mejor.ym],
     [fmtAnio(llegada), "llegada a 80% (tendencia simple)", "referencia ilustrativa"],

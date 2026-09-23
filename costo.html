@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>La bencina vs el enchufe — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -82,7 +82,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script>document.write('<script src="data/costo.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("costo.html");
 
@@ -248,7 +248,7 @@ PW.montarNav("costo.html");
     if (verComb) partes.push(comb.length + " estaciones de combustible");
     // Cada punto es una ESTACION de carga (la capa `carga` de mapa.js va por estacion), no un
     // cargador: la suma de los tres grupos da las estaciones de la red viva. Decia "cargadores" y
-    // "cargador publico" sobre 651 estaciones, 115 de ellas de acceso restringido (revision del
+    // "cargador público" sobre 651 estaciones, 115 de ellas de acceso restringido (revision del
     // 2026-09-21). Las sin precio salen de M.carga, que trae `acc`: se dice cuantas son restringidas.
     const nRestrSinPrecio = evsin.filter(p => p.acc === "restringido").length;
     if (verAmbos) partes.push(ambos.length + " estaciones de carga en bencineras");
@@ -303,7 +303,7 @@ function refrescar() {
   const q = document.getElementById("busca").value.trim().toLowerCase();
 
   const sel = q ? D.comunas.find(c => c.comuna.toLowerCase() === q) : null;
-  const base = sel || { comuna: "Promedio pais", p93: D.nacional.p93, pkwh: D.nacional.pkwh };
+  const base = sel || { comuna: "Promedio país", p93: D.nacional.p93, pkwh: D.nacional.pkwh };
   const r = calc(base, kml, kmkwh);
   const ahorro = r.bencina != null && r.ev_publico != null
     ? Math.round(100 * (1 - r.ev_publico / r.bencina)) : null;
@@ -312,11 +312,11 @@ function refrescar() {
     [r.bencina != null ? PW.clp(r.bencina) : "—", "100 km en bencina 93", base.p93 != null ? "$" + PW.fmt(base.p93) + "/L en la comuna" : "sin estaciones con precio"],
     [r.ev_publico != null ? PW.clp(r.ev_publico) : "—", "100 km en EV (carga publica)", base.pkwh != null ? "$" + PW.fmt(base.pkwh) + "/kWh promedio local" : "sin precio publicado"],
     [PW.clp(r.ev_casa), "100 km en EV (casa, ref.)", "$" + TARIFA_CASA + "/kWh referencia BT1"],
-    [ahorro != null ? ahorro + "%" : "—", "ahorro EV publico vs bencina", ""],
+    [ahorro != null ? ahorro + "%" : "—", "ahorro EV público vs bencina", ""],
     [D.nacional.nudo_clp_kwh != null ? PW.clp(D.nacional.nudo_clp_kwh) : "—",
       "precio nudo energia (mayorista)",
       D.nacional.nudo_clp_kwh != null
-        ? "fijacion " + D.nacional.nudo_fijacion + " — spread bruto con carga publica: $" +
+        ? "fijacion " + D.nacional.nudo_fijacion + " — spread bruto con carga pública: $" +
           PW.fmt(Math.round(D.nacional.pkwh - D.nacional.nudo_clp_kwh)) + "/kWh (sin distribucion ni potencia)"
         : ""],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");

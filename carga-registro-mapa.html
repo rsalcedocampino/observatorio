@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Registro Oficial de Carga (SEC) — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -78,7 +78,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/carga_mapa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("carga-registro-mapa.html");
 const D = window.PW_DATA.carga_mapa || {};
@@ -96,7 +96,7 @@ const COLC = {
   "Publico": PW.color("--s2"),
   "Privado": PW.color("--s5"),
   "Electroterminal": PW.color("--s3"),
-  "Cargador de transporte publico": PW.color("--s4"),
+  "Cargador de transporte público": PW.color("--s4"),
   "Otros": PW.color("--s6"),
 };
 const colorCat = c => COLC[c] || PW.color("--s6");
@@ -143,7 +143,7 @@ function render() {
     [PW.fmt(pts.length), "estaciones", ambito],
     [PW.fmt(pts.reduce((s, p) => s + (p.ncar || 0), 0)), "cargadores", "suma"],
     [PW.fmt(pts.reduce((s, p) => s + (p.nc || 0), 0)), "conectores", "suma"],
-    [PW.fmt(pts.filter(p => p.ac === "Red publica").length), "de red pública", "acceso abierto"],
+    [PW.fmt(pts.filter(p => p.ac === "Red pública").length), "de red pública", "acceso abierto"],
   ].map(kpiHTML).join("");
 
   const capas = [{
@@ -183,7 +183,7 @@ PW.leyendaMapa("leyenda-mapa", [
   ["Pública", COLC["Publico"]],
   ["Privada", COLC["Privado"]],
   ["Electroterminal", COLC["Electroterminal"]],
-  ["Transporte público", COLC["Cargador de transporte publico"]],
+  ["Transporte público", COLC["Cargador de transporte público"]],
 ]);
 [selAc, selCat, selReg, selMet].forEach(s => s.addEventListener("input", render));
 // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y

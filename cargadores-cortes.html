@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Cargadores Públicos y Cortes de Energía — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -83,13 +83,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota" id="dist-head"></p>
     <div id="g-dist-grupo"></div>
     <h3 style="margin:14px 0 6px;font-size:14px">Comunas con más clientes afectados (top 20)</h3>
-    <div class="scroll-x"><table class="pw" id="t-dist-comuna"></table></div>
+    <div class="scroll-x"><div id="t-dist-comuna"></div></div>
   </div>
 </main>
 
 <script>document.write('<script src="data/cortes.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("cargadores-cortes.html");
 const D = window.PW_DATA.cortes;
@@ -125,7 +125,7 @@ const valoresCorte = {};
   else { const rc = cut.slice(0, 2); if (regCli[rc] != null) valoresCorte[cut] = regCli[rc]; }
 });
 // MAPA.carga es una lista de ESTACIONES, no de cargadores: 651 estaciones agrupan 1.619
-// cargadores y 2.242 conectores. El KPI decia "651 cargadores publicos" y erraba dos veces --
+// cargadores y 2.242 conectores. El KPI decia "651 cargadores públicos" y erraba dos veces --
 // ni son cargadores ni son todos publicos (115 estaciones son restringidas). Es la misma
 // confusion que costo el arreglo del "912 cargadores" de la portada. Solo cambia el texto y
 // se agrega el conteo de publicas: no se toca el mapa ni el tamaño de nada.

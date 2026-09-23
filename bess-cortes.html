@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Almacenamiento BESS y cortes — Energías Futuro</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260922a">
+<link rel="stylesheet" href="assets/estilo.css?v=260923a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -101,7 +101,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_besscortes.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/baterias.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_bess.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260922a"></script>
+<script src="assets/comun.js?v=260923a"></script>
 <script>
 PW.montarNav("bess-cortes.html");
 const D = PW_DATA.c_besscortes;
@@ -177,7 +177,7 @@ document.getElementById("nota").textContent = "Actualizado " + (D.generado || ""
     document.getElementById(id).addEventListener("input", pintar));
   pintar();
   PW.leyendaMapa("ley-bess", [
-    ["En operacion", PW.color("--good")],
+    ["En operación", PW.color("--good")],
     ["En construccion", PW.color("--s2")],
     ["Aprobado / pruebas", PW.color("--s1")],
     ["Otros estados", PW.color("--ink-3")],
@@ -192,12 +192,12 @@ document.getElementById("nota").textContent = "Actualizado " + (D.generado || ""
     const BDIA = PW.completarSerie(B.bess_diario, "fecha", "dia");   // completarSerie: los periodos ausentes se dibujan como "sin dato" y no se borran del eje.
     PW.lineas("g-bess-diario", {
       labels: BDIA.map(x => x.fecha),
-      series: [{ nombre: "GWh descargados por dia", valores: BDIA.map(x => x.gwh_dia), area: true, color: PW.color("--s3") }],
+      series: [{ nombre: "GWh descargados por día", valores: BDIA.map(x => x.gwh_dia), area: true, color: PW.color("--s3") }],
       fmtV: v => PW.fmt(v, 1) + " GWh", alto: 240,
     });
     const ult = B.bess_diario[B.bess_diario.length - 1];
     document.getElementById("nota-bess-diario").textContent =
-      "Operacion real del Coordinador. Acumulado " + ult.fecha.slice(0, 4) + ": " +
+      "Operación real del Coordinador. Acumulado " + ult.fecha.slice(0, 4) + ": " +
       PW.fmt(ult.gwh_anual) + " GWh al " + ult.fecha + ".";
   }
   if (B.bess_estado && B.bess_estado.length) {
@@ -235,7 +235,7 @@ PW.tabla("t-top", [
   { k: "region", titulo: "Región" },
   { k: "cliente_horas", titulo: "Cliente-horas", num: true, fmt: v => PW.fmt(v / 1e6, 1) + "M" },
   { k: "mwh_comuna", titulo: "MWh en la comuna", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
-  { k: "mwh_region", titulo: "MWh en la region", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
+  { k: "mwh_region", titulo: "MWh en la región", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
 ], D.top_comunas, { orden: "cliente_horas" });
 </script>
 </body>
