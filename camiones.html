@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0C4Z3N1KZJ');
+</script>
+<!-- End Google tag (gtag.js) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Camiones cero y baja emisión — Energías Futuro</title>
+<meta name="description" content="Cuántos camiones eléctricos y a gas natural licuado (GNL) circulan en Chile, en qué tramos de peso, y si la carga rápida pública les sirve. El transporte...">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260923d">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_conectred.js?v='+_pwv+'">')</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <h1>Camiones cero y baja emisión</h1>
+  <p class="sub">Cuántos camiones eléctricos y a gas natural licuado (GNL) circulan en Chile, en
+  qué tramos de peso, y si la carga rápida pública les sirve. El transporte de carga pesada es el
+  eslabón más difícil de electrificar, y aquí es donde se ve por qué.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por tramo de peso</h2>
+      <div id="t-tramo"></div>
+      <p class="nota" id="nota-tramo"></p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Año a año: eléctrico vs GNL</h2>
+      <div id="g-anio"></div>
+      <p class="nota">Las dos series son <b>inscripciones</b>, para que sean comparables entre sí.
+      La serie de <b>ventas</b>, que es la titular y la más fresca, va aparte en el gráfico de
+      abajo: ventas e inscripciones son métricas distintas y no se suman.</p>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">El eslabón pesado</h2>
+    <p id="hallazgo"></p>
+    <div id="g-ventas"></div>
+    <p class="nota">Serie mensual de <b>ventas</b> de camiones eléctricos (ANAC), acumulada por año.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">¿La red de carga rápida les sirve?</h2>
+    <div class="kpis" id="kpi-red"></div>
+    <div id="g-potencia"></div>
+    <ul id="lectura" class="nota"></ul>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Cómo leer estas cifras</h2>
+    <ul id="caveats" class="nota"></ul>
+    <p class="nota" id="fuentes"></p>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+<script>document.write('<script src="data/c_camiones.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=260923d"></script>
+<script>
+PW.montarNav("camiones.html");
+const D = (window.PW_DATA && PW_DATA.c_camiones) || {};
+const R = D.resumen || {}, RED = D.red_dc || {};
+const kpi = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`;
+
+document.getElementById("nota").textContent =
+  "Ventas hasta " + ((D.cobertura || {}).ventas_hasta || "—").slice(0, 7) +
+  " e inscripciones hasta " + ((D.cobertura || {}).inscripciones_hasta || "—").slice(0, 7) +
+  ". Generado el " + (D.generado || "—") + ".";
+
+document.getElementById("kpis").innerHTML = [
+  [PW.fmt(R.electrico_ventas_total || 0), "camiones eléctricos vendidos", "acumulado histórico (ventas)"],
+  [PW.fmt((D.por_tramo.find(t => /14.969/.test(t.tramo)) || {}).electrico || 0), "eléctricos pesados",
+   "más de 14.969 kg (inscripciones)"],
+  [PW.fmt(R.gnl_inscripciones_total || 0), "camiones a GNL", "todos pesados (inscripciones)"],
+  [PW.fmt(RED.dc_mayor_igual_350kw || 0), "conectores de 350 kW o más", "en toda la red pública"],
+].map(kpi).join("");
+
+PW.tabla("t-tramo", [
+  { k: "tramo", titulo: "Tramo de peso" },
+  { k: "electrico", titulo: "Eléctricos", num: true, fmt: v => PW.fmt(v) },
+  { k: "gnl", titulo: "GNL", num: true, fmt: v => PW.fmt(v) },
+], D.por_tramo || [], { buscador: false });
+document.getElementById("nota-tramo").textContent =
+  "Fuente del tramo: " + (D.tramo_fuente || "inscripciones") +
+  ". El GNL existe solo en el tramo pesado: no hay camiones livianos a GNL en el registro.";
+
+const anios = (D.por_anio || []).map(x => x.anio);
+PW.lineas("g-anio", {
+  labels: anios,
+  series: [
+    { nombre: "Eléctricos (inscripciones)", valores: (D.por_anio || []).map(x => x.electrico_inscripciones) },
+    { nombre: "GNL (inscripciones)", valores: (D.por_anio || []).map(x => x.gnl_inscripciones) },
+  ],
+  alto: 260, fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " camiones",
+});
+
+document.getElementById("hallazgo").textContent = R.hallazgo ||
+  "En camiones pesados el GNL supera al eléctrico.";
+
+// ventas por anio (metrica distinta: va en su propio grafico, no mezclada con inscripciones)
+const porAnioVentas = {};
+(D.serie_mensual || []).forEach(m => {
+  const a = String(m.ym).slice(0, 4);
+  porAnioVentas[a] = (porAnioVentas[a] || 0) + (m.unidades || 0);
+});
+const av = Object.keys(porAnioVentas).sort();
+PW.columnas("g-ventas", {
+  labels: av, valores: av.map(a => porAnioVentas[a]), alto: 220,
+  fmtV: v => PW.fmt(v) + " camiones", color: PW.color("--s1"),
+});
+
+document.getElementById("kpi-red").innerHTML = [
+  [PW.fmt(RED.publicos_dc || 0), "conectores DC públicos", "de " + PW.fmt(RED.publicos || 0) + " públicos"],
+  [PW.fmt(RED.dc_mayor_igual_150kw || 0), "de 150 kW o más", "lo mínimo para un camión"],
+  [PW.fmt(RED.dc_mayor_igual_350kw || 0), "de 350 kW o más", "lo que un pesado necesita"],
+].map(kpi).join("");
+
+const TRAMOS_KW = [["mayor_igual_350", "350 kW o más"], ["de_150_a_349", "150 a 349 kW"],
+                   ["de_100_a_149", "100 a 149 kW"], ["de_50_a_99", "50 a 99 kW"],
+                   ["menor_50", "menos de 50 kW"]];
+PW.barras("g-potencia", {
+  items: TRAMOS_KW.filter(([k]) => (RED.por_tramo_kw || {})[k] != null)
+    .map(([k, t]) => ({ nombre: t, valor: RED.por_tramo_kw[k] })),
+  fmtV: v => PW.fmt(v) + " conectores",
+});
+
+const lista = (id, arr) => {
+  document.getElementById(id).innerHTML = (arr || []).map(x => `<li>${PW.esc(x)}</li>`).join("");
+};
+lista("lectura", D.cruce_lectura);
+lista("caveats", D.caveats);
+document.getElementById("fuentes").textContent =
+  "Fuentes: " + Object.values(D.fuentes || {}).join(" | ") +
+  (RED.fuente ? " | Red de carga: " + RED.fuente : "");
+document.getElementById("fuente").textContent =
+  "Elaboración propia con datos de ANAC (ventas e inscripciones vía Observatorio Logístico) y de la red de carga pública en vivo.";
+</script>
+</body>
+</html>

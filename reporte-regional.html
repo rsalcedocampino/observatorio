@@ -28,7 +28,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Elige una región o una comuna y arma su dossier completo: parque enchufable, red de carga y brecha al 2035, energía y almacenamiento, resiliencia frente a...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260923c">
+<link rel="stylesheet" href="assets/estilo.css?v=260923d">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -152,7 +152,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <summary>Proyección de carga al 2035</summary>
       <p class="nota" id="proy-sub" style="margin:8px 0 6px"></p>
       <div id="g-proyeccion"></div>
-      <p class="nota" style="margin:6px 0 10px">Cargadores al ritmo actual de instalación frente a lo necesario para 2035 (parque proyectado ÷ objetivo de servicio). La línea horizontal punteada es la meta del territorio; la vertical marca hoy. El objetivo EV/cargador se ajusta en el ranking nacional, más abajo.</p>
+      <p class="nota" style="margin:6px 0 10px">Cargadores al ritmo actual de instalación frente a lo necesario para 2035 (parque proyectado ÷ 10, criterio oficial). La línea horizontal punteada es la meta del territorio; la vertical marca hoy.</p>
       <h3 style="margin:12px 0 2px; font-size:15px">Metas oficiales de carga (delta al territorio)</h3>
       <div class="kpis" id="kpis-meta" style="margin-top:8px"></div>
       <p class="nota" id="meta-sub" style="margin:8px 0 0"></p>
@@ -239,7 +239,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <summary>Ranking nacional de las 16 regiones (brecha de carga al 2035)</summary>
     <div class="filtros">
       <label>Región <select id="filtro-reg-tabla"><option value="">Todas</option></select></label>
-      <label>EV por cargador (objetivo de servicio) <input type="number" id="ratio-ev" value="20" min="5" step="5"></label>
+      <label>Escenario: EV por cargador <input type="number" id="ratio-ev" value="20" min="5" step="5"></label>
       <span class="pill" id="fuentes-reg">Cruce: INE + Censo + red viva + SEC, por región</span>
     </div>
     <div class="kpis" id="kpis-reg"></div>
@@ -269,10 +269,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/tracker.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/sitios.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260923c"></script>
+<script src="assets/comun.js?v=260923d"></script>
 <script>
 PW.montarNav("reporte-regional.html");
 const D = PW_DATA.tracker;
+// Horizonte y criterio unicos para todo "necesarios/faltan 2035" (decision del usuario,
+// 2026-09-23): 1 punto de carga oficial por cada 10 EV. El control "Escenario" (abajo) queda
+// aparte, para comparar contra un ratio de servicio distinto sin tocar la cifra principal.
+const ANIO_HOY = new Date().getFullYear();
+const ANIOS_A_2035 = Math.max(1, 2035 - ANIO_HOY);
+const RATIO_OFICIAL = 10;
 const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase();
 const MESES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
@@ -350,12 +356,13 @@ function refrescarRegiones(p2035Nac, ratio) {
   const regs = D.regiones;
   if (!regs || !regs.length) return;
   const parqueNacHoy = regs.reduce((s, r) => s + r.parque_ev, 0);
-  const aniosFalt = 2035 - 2025;
+  const aniosFalt = ANIOS_A_2035;
   const regSel = document.getElementById("filtro-reg-tabla").value;
   const filasTodas = regs.map(r => {
     const share = r.parque_ev / parqueNacHoy;
     const parque2035 = Math.round(p2035Nac * share);
-    const necesarios = Math.round(parque2035 / ratio);
+    const necesarios = Math.round(parque2035 / RATIO_OFICIAL);
+    const necesarios_esc = Math.round(parque2035 / ratio);
     const cargPub = r.cargadores_pub || 0;  // brecha sobre cargadores PUBLICOS (mismo universo que comuna)
     const faltan = Math.max(0, necesarios - cargPub);
     const ritmoReq = Math.round(faltan / Math.max(aniosFalt, 1));
@@ -364,7 +371,7 @@ function refrescarRegiones(p2035Nac, ratio) {
       rcut: r.rcut, region: r.region, parque_ev: r.parque_ev, parque_2035: parque2035,
       ev_1000hab: r.poblacion ? +(1000 * r.parque_ev / r.poblacion).toFixed(2) : null,
       cargadores_hoy: r.cargadores_hoy, cargadores_pub: r.cargadores_pub, ev_por_carg: evPorCarg,
-      necesarios_2035: necesarios, faltan, ritmo_actual: r.instalados_12m, ritmo_req: ritmoReq,
+      necesarios_2035: necesarios, necesarios_esc, faltan, ritmo_actual: r.instalados_12m, ritmo_req: ritmoReq,
       estado: r.instalados_12m >= ritmoReq ? "En ritmo" : "Bajo ritmo",
     };
   });
@@ -373,7 +380,7 @@ function refrescarRegiones(p2035Nac, ratio) {
   const enRitmo = filas.filter(f => f.estado === "En ritmo").length;
   const ambito = regSel ? filas[0].region : "pais";
   document.getElementById("kpis-reg").innerHTML = kpiHTML([
-    [PW.fmt(totalFaltan), "cargadores faltantes 2035 (" + ambito + ")", ratio + " EV por cargador"],
+    [PW.fmt(totalFaltan), "cargadores faltantes 2035 (" + ambito + ")", RATIO_OFICIAL + " EV por cargador (criterio oficial)"],
     [enRitmo + " de " + filas.length, (filas.length === 1 ? "region" : "regiones") + " al ritmo requerido", "últimos 12 meses SEC"],
     [filas[0] ? filas[0].region : "—", regSel ? "region seleccionada" : "región con más parque EV", filas[0] ? PW.fmt(filas[0].parque_ev) + " vehículos" : ""],
   ]);
@@ -385,8 +392,9 @@ function refrescarRegiones(p2035Nac, ratio) {
     { k: "parque_2035", titulo: th("Parque 2035 proy.", "Proyección nacional repartida por participación actual"), num: true, fmt: v => PW.fmt(v) },
     { k: "cargadores_pub", titulo: th("Cargadores públicos", "Cargadores de acceso publico (base de la brecha; excluye privado/restringido)"), num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
     { k: "ev_por_carg", titulo: th("EV por cargador", "Parque EV / cargadores publicos"), num: true, fmt: v => v == null ? "sin red" : PW.fmt(v, 1) },
-    { k: "necesarios_2035", titulo: th("Necesarios 2035", "Parque 2035 / ratio"), num: true, fmt: v => PW.fmt(v) },
-    { k: "faltan", titulo: th("Faltan a 2035", "Necesarios - cargadores públicos"), num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
+    { k: "necesarios_2035", titulo: th("Necesarios 2035", "Parque 2035 / 10 (criterio oficial)"), num: true, fmt: v => PW.fmt(v) },
+    { k: "necesarios_esc", titulo: th("Escenario (" + ratio + " EV/carg.)", "Parque 2035 / ratio editable arriba — no es la cifra oficial"), num: true, fmt: v => PW.fmt(v) },
+    { k: "faltan", titulo: th("Faltan a 2035", "Necesarios (criterio oficial) - cargadores públicos"), num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
     { k: "ritmo_actual", titulo: th("Ritmo real 12m", "Cargadores publicos nuevos ult. 12 meses (SEC)"), num: true, fmt: v => PW.fmt(v) },
     { k: "ritmo_req", titulo: th("Ritmo requerido/año", "Faltantes / años a 2035"), num: true, fmt: v => PW.fmt(v) },
     { k: "estado", titulo: "Estado", fmt: v => `<span class="${v === "En ritmo" ? "estado-ok" : "estado-mal"}">${v}</span>` },
@@ -394,7 +402,7 @@ function refrescarRegiones(p2035Nac, ratio) {
   if (tabReg) tabReg.actualizar(filas); else tabReg = PW.tabla("t-regiones", cols, filas, { orden: "faltan" });
   document.getElementById("nota-reg").textContent =
     "Pasa el mouse por cada titulo de columna para ver su fuente. Parque " + (D.anio_parque || "") +
-    " (INE). El ratio de servicio (" + ratio + " EV por cargador) se edita arriba y recalcula necesarios, faltantes y ritmos.";
+    " (INE). \"Necesarios/Faltan/Ritmo\" usan el criterio oficial (10 EV/cargador); la columna \"Escenario\" (" + ratio + " EV/cargador) se edita arriba y es solo de referencia.";
   PW.barras("g-faltantes", {
     items: filas.filter(f => f.faltan > 0).sort((a, b) => b.faltan - a.faltan).map(f => ({
       nombre: f.region, valor: f.faltan,
@@ -479,7 +487,7 @@ function renderResumenNacional() {
     [PW.fmt(rv.cargadores_publico), "cargadores de acceso público (red viva)", "abiertos a cualquiera · " + PW.fmt(rv.estaciones_publico ?? rv.estaciones) + " estaciones · de " + PW.fmt(rv.cargadores) + " totales"],
     [PW.fmt((rv.cargadores || 0) - (rv.cargadores_publico || 0)), "cargadores de acceso restringido", "flotas y estacionamientos con control de acceso · " + PW.fmt(rv.cargadores) + " totales en la red viva"],
     [PW.fmt(nuevos12), "cargadores públicos nuevos (12 meses)", "ritmo de instalación · SEC EcoCarga"],
-    [evCarg != null ? PW.fmt(evCarg, 1) : "—", "EV por cargador (nacional)", "objetivo de servicio: 20"],
+    [evCarg != null ? PW.fmt(evCarg, 1) : "—", "EV por cargador (nacional)", "criterio oficial 2035: 10 EV por cargador"],
   ]);
   document.getElementById("kpi-flota").innerHTML = kpiHTML([
     [PW.fmt(sumB("BEV")), "vehículos BEV registrados", "eléctricos puros · registros 2010-" + (VT.anios && VT.anios.length ? VT.anios[VT.anios.length - 1] : "")],
@@ -551,14 +559,14 @@ function cargarBundle() {
 }
 
 // indices por CUT/rcut (se arman tras el bundle)
-let CENSO_COM, CENSO_REG, VULN_COM, VULN_REG, RIESGO_COM, RIESGO_REG, PROB_COM, PROB_REG,
+let CENSO_COM, CENSO_REG, VULN_COM, VULN_REG, RIESGO_COM, RIESGO_REG, RIESGO_COM_PROM,
   POT_COM, RED_REG, VALOR_COM, CENSOELEC_COM, COSTO_COM, INFRA_REG, CONC_REG, BESS_REG, PERMISOS_REG,
   CARTERA_REG, CARTERA_COM, PARQUE_TERR, PELP_TERR, PELP_TRANS, POT_REG;
 let indicesListos = false;
 function byKey(arr, keyFn) { const o = {}; (arr || []).forEach(x => { const k = keyFn(x); if (k != null) o[k] = x; }); return o; }
 function construirIndices() {
   if (indicesListos) return;
-  const C = PW_DATA.censo || {}, V = PW_DATA.c_vulnerab || {}, RI = PW_DATA.riesgo || {}, PC = PW_DATA.c_probcortes || {},
+  const C = PW_DATA.censo || {}, V = PW_DATA.c_vulnerab || {}, RI = PW_DATA.riesgo || {},
     RE = PW_DATA.c_redelec || {}, VP = PW_DATA.c_valorparque || {}, CE = PW_DATA.c_censoelec || {}, CO = PW_DATA.costo || {},
     IN = PW_DATA.infraestructura || {}, CC = PW_DATA.c_concentracion || {}, BC = PW_DATA.c_besscortes || {}, PE = PW_DATA.permisos || {};
   CENSO_COM = byKey(C.comunas, c => String(c.cut));
@@ -577,8 +585,10 @@ function construirIndices() {
   });
   RIESGO_COM = byKey(RI.ranking, c => String(c.cut));
   RIESGO_REG = byKey(RI.regiones, r => String(r.rcut));
-  PROB_COM = byKey(PC.comunas, c => String(c.cut));
-  PROB_REG = byKey(PC.regiones, r => String(r.rcut));
+  // promedio comunal real de ch_por_hab (una vez): 109.0 vs el umbral fijo de 50 que antes
+  // marcaba 249 de 329 comunas "sobre el promedio" (mediana real 85.2).
+  const chVals = Object.values(RIESGO_COM).map(c => c.ch_por_hab).filter(v => v != null);
+  RIESGO_COM_PROM = chVals.length ? chVals.reduce((s, v) => s + v, 0) / chVals.length : null;
   POT_COM = byKey(RE.potencial, c => String(c.cut));
   RED_REG = byKey(RE.conexion_regiones, r => String(r.rcut));
   VALOR_COM = byKey(VP.comunas, c => String(c.cut));
@@ -598,9 +608,9 @@ function construirIndices() {
   POT_REG = {};
   (RE.potencial || []).forEach(c => {
     const rc = String(c.cut).padStart(5, "0").slice(0, 2);
-    const g = POT_REG[rc] || (POT_REG[rc] = { total: 0, solar: 0, eolico: 0, hidro: 0, csp: 0 });
+    const g = POT_REG[rc] || (POT_REG[rc] = { total: 0, solar: 0, eolico: 0, hidro: 0, csp: 0, bombeo: 0 });
     g.total += (c.total || 0); g.solar += (c.solar || 0); g.eolico += (c.eolico || 0);
-    g.hidro += (c.hidro || 0); g.csp += (c.csp || 0);
+    g.hidro += (c.hidro || 0); g.csp += (c.csp || 0); g.bombeo += (c.bombeo || 0);
   });
   indicesListos = true;
 }
@@ -679,7 +689,7 @@ function llenarEmov(ctx) {
   let rows;
   if (nivelComuna) {
     const p2035c = Math.round(REG_ESTADO.p2035Nac * (com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1)));
-    const nec = Math.round(p2035c / REG_ESTADO.ratio);
+    const nec = Math.round(p2035c / RATIO_OFICIAL);
     const faltan = Math.max(0, nec - (com.cargadores || 0));
     const val = VALOR_COM[ctx.cut];
     rows = [
@@ -695,7 +705,7 @@ function llenarEmov(ctx) {
       [PW.fmt(filaReg.parque_ev), "vehículos enchufables", "INE " + (D.anio_parque || "")],
       [PW.fmt(filaReg.cargadores_pub || 0), "cargadores de acceso público", PW.fmt(filaReg.cargadores_hoy - (filaReg.cargadores_pub || 0)) + " de acceso restringido · " + PW.fmt(filaReg.cargadores_hoy) + " totales" + (filaReg.ev_por_carg != null ? " · " + PW.fmt(filaReg.ev_por_carg, 1) + " EV/cargador" : "")],
       [PW.fmt(filaReg.parque_2035), "parque proyectado 2035", filaReg.estado],
-      [PW.fmt(filaReg.faltan), "cargadores faltantes 2035", REG_ESTADO.ratio + " EV por cargador"],
+      [PW.fmt(filaReg.faltan), "cargadores faltantes 2035", RATIO_OFICIAL + " EV por cargador (criterio oficial)"],
       [PW.fmt(filaReg.ritmo_actual) + "/año", "ritmo actual de instalación", "se requieren " + PW.fmt(filaReg.ritmo_req) + "/año"],
     ];
     const inf = INFRA_REG[rcut];
@@ -718,7 +728,7 @@ function llenarEnergia(ctx) {
     rows = [
       [PW.fmt(eC.solar_mw, 1) + " MW", "solar en la comuna", (eC.n_centrales || 0) + " centrales"],
       [PW.fmt(eC.bess_mwh) + " MWh", "almacenamiento (BESS)", "operando + pipeline"],
-      pot ? [PW.fmt(pot.total) + " MW", "potencial renovable instalable", "solar " + PW.fmt(pot.solar) + " · eólico " + PW.fmt(pot.eolico) + " · hidro " + PW.fmt(pot.hidro)] : null,
+      pot ? [PW.fmt(pot.total) + " MW", "potencial renovable instalable", "solar " + PW.fmt(pot.solar) + " · eólico " + PW.fmt(pot.eolico) + " · hidro " + PW.fmt(pot.hidro) + (pot.csp ? " · CSP " + PW.fmt(pot.csp) : "") + (pot.bombeo ? " · bombeo " + PW.fmt(pot.bombeo) : "")] : null,
       [PW.fmt(p2035c * km / rend / 1e6, 2) + " GWh", "demanda EV proyectada 2035", km + " km · " + rend + " km/kWh"],
     ];
   } else {
@@ -740,10 +750,11 @@ function llenarResiliencia(ctx) {
   let rows;
   if (nivelComuna) {
     const ri = RIESGO_COM[cut], ce = CENSOELEC_COM[cut];
-    const dist = (PW_DATA.cortes && PW_DATA.cortes.distribuidoras) || {};
-    const vivoCom = (dist.por_comuna || []).find(x => String(x.cut) === cut);
+    const cortes = PW_DATA.cortes || {};
+    const vivoCom = ((cortes.vivo && cortes.vivo.por_comuna) || []).find(x => String(x.cut) === cut);
+    const distCom = ((cortes.distribuidoras && cortes.distribuidoras.por_comuna) || []).find(x => String(x.cut) === cut);
     rows = [
-      vivoCom ? [PW.fmt(vivoCom.clientes), "clientes sin luz AHORA", (vivoCom.empresa || "") + (dist.capturado ? " · " + dist.capturado.slice(11, 16) : "")] : null,
+      vivoCom ? [PW.fmt(vivoCom.clientes), "clientes sin luz AHORA", (distCom && distCom.empresa ? distCom.empresa : "") + (cortes.hora_sec ? " · " + cortes.hora_sec.slice(11, 16) : "")] : null,
       ri ? [PW.fmt(Math.round((ri.cliente_horas || 0) / 1e3)) + "k", "cliente-horas sin luz (2017-2026)", PW.fmt(ri.ch_por_hab, 1) + " por habitante"] : ["—", "cliente-horas sin luz", "sin registro"],
       ri ? [PW.fmt(ri.peak_clientes), "peak de clientes afectados", PW.fmt(ri.horas_afectada) + " horas con corte"] : null,
       ce ? [PW.fmt(ce.pct_sin, 1) + "%", "viviendas sin electricidad", PW.fmt(ce.viviendas) + " viviendas"] : null,
@@ -978,20 +989,20 @@ function llenarVeredicto(ctx) {
     let cE = "ok", cF = "red de carga en objetivo";
     if (!com.cargadores && com.ev_parque > 0) { cE = "bad"; cF = "con vehículos EV y cero cargadores"; }
     else if (!com.cargadores) { cE = "warn"; cF = "sin red pública (bajo parque)"; }
-    else if (com.ev_por_cargador > ratio * 1.5) { cE = "bad"; cF = "red muy tensionada"; }
-    else if (com.ev_por_cargador > ratio) { cE = "warn"; cF = "red algo tensionada"; }
+    else if (com.ev_por_cargador > RATIO_OFICIAL * 1.5) { cE = "bad"; cF = "red muy tensionada"; }
+    else if (com.ev_por_cargador > RATIO_OFICIAL) { cE = "warn"; cF = "red algo tensionada"; }
     dims.push({ dim: "Carga", estado: cE, frase: cF, det: com.cargadores ? PW.fmt(com.ev_por_cargador, 1) + " EV/cargador" : "sin cargadores" });
 
     const ce = CENSOELEC_COM[cut], ric = RIESGO_COM[cut];
     let rE = "ok", rF = "cortes acotados";
     if (ce && ce.pct_sin > 3) { rE = "bad"; rF = PW.fmt(ce.pct_sin, 1) + "% de viviendas sin electricidad"; }
-    else if (ric && ric.ch_por_hab > 50) { rE = "warn"; rF = "exposición a cortes sobre el promedio"; }
+    else if (ric && RIESGO_COM_PROM != null && ric.ch_por_hab > RIESGO_COM_PROM) { rE = "warn"; rF = "exposición a cortes sobre el promedio comunal"; }
     dims.push({ dim: "Resiliencia", estado: rE, frase: rF, det: ric ? PW.fmt(ric.ch_por_hab, 1) + " cliente-horas/hab" : "sin registro" });
 
     const eC = (D.energia_com || {})[cut] || {};
     let enE = "warn", enF = "poca generación local";
-    if (eC.solar_mw > 5) { enE = "ok"; enF = PW.fmt(eC.solar_mw, 0) + " MW solares en la comuna"; }
-    dims.push({ dim: "Energía", estado: enE, frase: enF, det: PW.fmt(eC.solar_mw || 0, 1) + " MW solares · " + PW.fmt(eC.bess_mwh || 0) + " MWh BESS" });
+    if (eC.solar_op_mw > 5) { enE = "ok"; enF = PW.fmt(eC.solar_op_mw, 0) + " MW solares en la comuna"; }
+    dims.push({ dim: "Energía", estado: enE, frase: enF, det: PW.fmt(eC.solar_op_mw || 0, 1) + " MW solares operando · " + PW.fmt(eC.bess_op_mwh || 0) + " MWh BESS operando" });
 
     const v = VULN_COM[cut];
     if (v) dims.push({ dim: "Vulnerabilidad", estado: v.indice >= 60 ? "bad" : v.indice >= 45 ? "warn" : "ok", frase: v.indice >= 60 ? "vulnerabilidad alta" : v.indice >= 45 ? "vulnerabilidad media" : "vulnerabilidad baja", det: "índice " + PW.fmt(v.indice, 1) + "/100" });
@@ -1015,7 +1026,6 @@ function llenarVeredicto(ctx) {
 // ===================== proyeccion de carga al 2035 (trayectoria vs meta) =====================
 function llenarProyeccion(ctx) {
   const { nivelComuna, com, filaReg } = ctx;
-  const ratio = REG_ESTADO.ratio;
   let hoy, ritmoAct, ritmoReq, necesarios, parque2035;
   if (!nivelComuna) {
     hoy = filaReg.cargadores_pub || 0; ritmoAct = filaReg.ritmo_actual; ritmoReq = filaReg.ritmo_req;
@@ -1023,22 +1033,22 @@ function llenarProyeccion(ctx) {
   } else {
     hoy = com.cargadores || 0;
     parque2035 = Math.round(REG_ESTADO.p2035Nac * (com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1)));
-    necesarios = Math.round(parque2035 / ratio);
-    ritmoReq = Math.max(0, Math.round((necesarios - hoy) / 10));
+    necesarios = Math.round(parque2035 / RATIO_OFICIAL);
+    ritmoReq = Math.max(0, Math.round((necesarios - hoy) / ANIOS_A_2035));
     ritmoAct = null;
   }
-  const anios = []; for (let a = 2025; a <= 2035; a++) anios.push(a);
-  const series = [{ nombre: "Ritmo requerido", valores: anios.map(a => hoy + ritmoReq * (a - 2025)), color: PW.color("--s1"), dash: true }];
-  if (ritmoAct != null) series.unshift({ nombre: "A este ritmo", valores: anios.map(a => hoy + ritmoAct * (a - 2025)), color: PW.color(ritmoAct >= ritmoReq ? "--s3" : "--s2"), area: true });
+  const anios = []; for (let a = ANIO_HOY; a <= 2035; a++) anios.push(a);
+  const series = [{ nombre: "Ritmo requerido", valores: anios.map(a => hoy + ritmoReq * (a - ANIO_HOY)), color: PW.color("--s1"), dash: true }];
+  if (ritmoAct != null) series.unshift({ nombre: "A este ritmo", valores: anios.map(a => hoy + ritmoAct * (a - ANIO_HOY)), color: PW.color(ritmoAct >= ritmoReq ? "--s3" : "--s2"), area: true });
   PW.lineas("g-proyeccion", {
     labels: anios.map(String), series, alto: 240,
     lineaY: { v: necesarios, texto: "Necesarios 2035: " + PW.fmt(necesarios) },
     lineaX: { i: 0, texto: "Hoy" }, fmtY: v => PW.fmt(Math.round(v)),
   });
   const faltan = Math.max(0, necesarios - hoy);
-  const fin = ritmoAct != null ? Math.round(hoy + ritmoAct * 10) : null;
+  const fin = ritmoAct != null ? Math.round(hoy + ritmoAct * ANIOS_A_2035) : null;
   document.getElementById("proy-sub").innerHTML =
-    `Parque proyectado 2035: <b>${PW.fmt(parque2035)}</b> EV → se necesitan <b>${PW.fmt(necesarios)}</b> puntos de carga (objetivo ${ratio} EV/cargador). Hoy hay ${PW.fmt(hoy)}` +
+    `Parque proyectado 2035: <b>${PW.fmt(parque2035)}</b> EV → se necesitan <b>${PW.fmt(necesarios)}</b> puntos de carga (criterio oficial ${RATIO_OFICIAL} EV/cargador). Hoy hay ${PW.fmt(hoy)}` +
     (fin != null
       ? `; al ritmo actual (${PW.fmt(ritmoAct)}/año) llegarías a <b>${PW.fmt(fin)}</b> en 2035` + (fin < necesarios ? `, <span class="estado-mal">${PW.fmt(necesarios - fin)} bajo la meta</span>.` : `, <span class="estado-ok">sobre la meta</span>.`)
       : `; faltarían <b>${PW.fmt(faltan)}</b> (${PW.fmt(ritmoReq)}/año).`);
@@ -1196,9 +1206,9 @@ function filasHeadroomCosto(ctx) {
     const mwFlota = demGwh * 1000 / (8760 * CF_PLANTA);
     const veces = mwFlota > 0 ? pot.total / mwFlota : 0;
     // el potencial total ya se muestra en la rama COMUNA de llenarEnergia; a nivel region no -> agregarlo alli
-    if (!nivelComuna) rows.push([PW.fmt(pot.total, 0) + " MW", "potencial renovable instalable (región)", "techo físico (estudio MinEnergía)"]);
+    if (!nivelComuna) rows.push([PW.fmt(pot.total, 0) + " MW", "potencial renovable instalable (región)", "techo físico (estudio MinEnergía), incluye bombeo marino"]);
     rows.push([veces >= 1000 ? "×" + PW.fmt(Math.round(veces / 1000)) + "k" : "×" + PW.fmt(Math.round(veces)),
-      "veces que el potencial cubre la flota 2035", "la carga EV usa una fracción ínfima (factor de planta " + CF_PLANTA + ")"]);
+      "veces que el potencial TOTAL cubre la flota 2035", "sobre el potencial técnico total (incluye bombeo marino) · factor de planta " + CF_PLANTA]);
   }
   if (nivelComuna) {
     const co = COSTO_COM[cut];
@@ -1216,7 +1226,11 @@ function llenarMapa(ctx) {
   const comName = ctx.com ? ctx.com.comuna : null;
   const M = PW_DATA.mapa || {};
   const filtro = p => p.rcut === rcut && (!comName || norm(p.com) === norm(comName));
-  const cargaTerr = (M.carga || []).filter(filtro);
+  // Universo publico (igual que los KPI de la pagina): publico + publico_restringido + mixto.
+  // Las 113 estaciones "restringido" puro no cuentan en ningun otro KPI de este reporte; el
+  // popup (PW.popupEstacion) ya distingue el matiz de acceso restringido / mixto en las que si entran.
+  const ACCESO_PUB = new Set(["publico", "publico_restringido", "mixto"]);
+  const cargaTerr = (M.carga || []).filter(filtro).filter(p => ACCESO_PUB.has(p.acc));
   const pts = cargaTerr.map(p => ({
     lat: p.lat, lon: p.lon, r: 7.5, color: (p.kw || 0) >= 50 ? PW.color("--s2") : PW.color("--s1"), popup: PW.popupEstacion(p),
   }));
@@ -1242,14 +1256,13 @@ function llenarMapa(ctx) {
     ], centro: [-35.5, -71.5], zoom: 6, alto: 540, foco,
   };
   // [REDES] líneas de transmisión (geo_lineas) como capa conmutable, acotadas al territorio
+  // por CUT exacto (PW.lineaEnTerritorio, comun.js) y no por el rectangulo de la caja del mapa:
+  // la caja de una comuna alargada cruza comunas vecinas y las incluia sin pertenecer al
+  // territorio elegido.
   const geoL = PW_DATA.geo_lineas;
   if (geoL && geoL.features) {
-    const bnd = PW.boundsComunas(foco);
-    const bounds = bnd ? bnd.pad(0.15) : null;
-    const dentro = coords => coords.some(pt => Array.isArray(pt[0]) ? dentro(pt) : (!bounds || bounds.contains([pt[1], pt[0]])));
-    const feats = bounds
-      ? geoL.features.filter(f => f.geometry && f.geometry.coordinates && dentro(f.geometry.coordinates))
-      : geoL.features;
+    const filtroTerr = nivelComuna ? { cut: String(cut) } : { rcut };
+    const feats = geoL.features.filter(f => PW.lineaEnTerritorio(f, filtroTerr));
     if (feats.length) {
       cfg.lineas = [{
         nombre: "Redes eléctricas (transmisión)",
@@ -1313,17 +1326,17 @@ function construirRecos(ctx) {
   const { rcut, nivelComuna, com } = ctx;
   const km = PW_DATA.c_demanda ? PW_DATA.c_demanda.supuestos.km_anuales : 15000;
   if (nivelComuna) {
-    const cut = ctx.cut, ratio = REG_ESTADO.ratio;
+    const cut = ctx.cut;
     const p2035c = Math.round(REG_ESTADO.p2035Nac * (com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1)));
-    const nec = Math.round(p2035c / ratio), faltan = Math.max(0, nec - (com.cargadores || 0));
+    const nec = Math.round(p2035c / RATIO_OFICIAL), faltan = Math.max(0, nec - (com.cargadores || 0));
     const eC = (D.energia_com || {})[cut] || {};
     if (!com.cargadores && com.ev_parque > 0)
       recos.push(`<b>${PW.esc(com.comuna)} no tiene ningún cargador público</b> pese a registrar ${PW.fmt(com.ev_parque)} vehículos eléctricos: primera prioridad de instalación.`);
-    else if (com.ev_por_cargador > ratio)
-      recos.push(`Hay <b>${PW.fmt(com.ev_por_cargador, 1)} EV por cargador</b>, sobre el objetivo de servicio (${ratio}): la red local ya está bajo presión.`);
+    else if (com.ev_por_cargador > RATIO_OFICIAL)
+      recos.push(`Hay <b>${PW.fmt(com.ev_por_cargador, 1)} EV por cargador</b>, sobre el criterio oficial (${RATIO_OFICIAL}): la red local ya está bajo presión.`);
     recos.push(`Con el parque proyectado 2035 (${PW.fmt(p2035c)}), la comuna requeriría del orden de <b>${PW.fmt(nec)} cargadores públicos</b>; hoy tiene ${PW.fmt(com.cargadores || 0)} (faltarían ~${PW.fmt(faltan)}).`);
     const dc = com.conectores_dc || 0;
-    if (com.estaciones && dc / Math.max(com.estaciones, 1) < 0.25)
+    if (com.conectores && dc / Math.max(com.conectores, 1) < 0.25)
       recos.push(`Solo ${PW.fmt(dc)} de ${PW.fmt(com.conectores)} conectores son de carga rápida (DC): priorizar potencia para corredores y flotas.`);
     const co = COSTO_COM[cut];
     if (co && co.pkwh != null && co.pkwh_max != null && co.pkwh >= co.pkwh_max * 0.95)
