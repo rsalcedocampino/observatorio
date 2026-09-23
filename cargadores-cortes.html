@@ -59,6 +59,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa en vivo: cargadores y cortes</h2>
     <p class="nota" id="nota-mapa"></p>
+    <p class="nota" style="font-size:12px; opacity:0.85">💡 <b>Tip:</b> Alterna entre "Zonas con corte" (colores azul/amarillo por comuna) y "Red de carga" (puntos individuales de cargadores). Haz clic en un punto para ver detalles completos.</p>
     <div id="filtros-cortes" class="filtros"></div>
     <div id="panel-capas-cortes" class="capas-panel"></div>
     <div id="mapa-cortes"></div>
@@ -66,11 +67,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <span class="nota" style="margin:0">Estado por comuna:</span>
       <div id="leyenda-mapa" class="leyenda" style="margin:0"></div>
     </div>
-    <p class="nota">En <b>azul</b> las comunas <b>sin luz ahora</b> (más intenso = más clientes sin luz,
-    según el detalle por comuna de la SEC); en <b>amarillo claro</b> las que <b>tienen luz</b>. Los puntos
-    son la red de carga mapeada (clic para operador, conector, potencia y estado). Las estaciones en
-    <span style="color:var(--critical);font-weight:600">rojo</span> están en comunas con corte
-    confirmado por la distribuidora (posiblemente sin servicio).</p>
+    <p class="nota"><b>Modo "Zonas con corte":</b> En <b>azul</b> las comunas <b>sin luz ahora</b> (más intenso = más clientes sin luz,
+    según la SEC); en <b>amarillo claro</b> las que <b>tienen luz</b>. <b>Modo "Red de carga":</b> Los puntos de color verde son estaciones de carga (clic para ver detalles: operador, conectores, potencia, estado, horario, pago, etc.). Las estaciones en
+    <span style="color:var(--critical);font-weight:600">rojo</span> están en comunas con corte confirmado por la distribuidora (posiblemente sin servicio).</p>
   </div>
 
   <div class="tarjeta">
@@ -274,15 +273,16 @@ document.getElementById("nota-mapa").textContent =
       (nCargAfect ? " " + PW.fmt(nCargAfect) + " estaciones están en comunas con corte confirmado por la distribuidora." : "")
     : "Sin cortes relevantes ahora (SEC " + D.hora_sec + "): el mapa muestra la red de carga sobre el territorio.";
 const CAP_CORTES = [
-  { k: "cortes", nombre: "Cortes en vivo", col: "--seq-400", on: true },
-  { k: "carga", nombre: "Cargadores", col: "--s3", on: true },
+  { k: "cortes", nombre: "Zonas con corte (mapa de calor)", col: "--seq-400", on: true },
+  { k: "carga", nombre: "Red de carga (puntos)", col: "--s3", on: true },
 ];
 const onCap = k => (CAP_CORTES.find(c => c.k === k) || {}).on;
 let mapaCortes = null;
 function popupCargaCorte(p) {
   const afx = afectadas.has(_norm(p.com));
   return PW.popupEstacion(p) +
-    (afx ? `<div class="pop-detalle" style="color:var(--critical);font-weight:600">Corte activo en ${PW.esc(p.com)}: posiblemente sin servicio.</div>` : "");
+    (afx ? `<div class="pop-detalle" style="color:var(--critical);font-weight:600">⚠️ Corte activo en ${PW.esc(p.com)}: posiblemente sin servicio.</div>` : "") +
+    `<div class="pop-detalle" style="opacity:0.75; font-size:12px; margin-top:6px;">Datos actualizados: ${D.generado}</div>`;
 }
 // [FILTRO TERRITORIAL] los selectores Region/Comuna filtran los cargadores del mapa y hacen zoom
 // al territorio (patron 161: poligonos via PW.boundsComunas; limpiar vuelve a Chile).
