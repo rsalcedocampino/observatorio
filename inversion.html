@@ -60,6 +60,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <label>Ámbito <select id="f-amb"><option value="">Todos</option></select></label>
     <label>Estado <select id="f-est"><option value="">Todos</option><option value="act">Activos</option><option value="cer">Cerrados</option></select></label>
     <label>Verificación <select id="f-ver"><option value="">Todas</option></select></label>
+    <label>Moneda <select id="f-mon"><option value="">Todas</option></select></label>
     <span class="pill" id="contador"></span>
   </div>
 
@@ -117,26 +118,63 @@ const cols = [
   { k: "que_financia", titulo: "Qué financia" },
   { k: "vigencia", titulo: "Estado", fmt: (v, r) => estadoBadge(r) + " " + (v || "") },
   { k: "verif_tier", titulo: "Verificación", fmt: (v, r) => verBadge(r) },
+  { k: "_ordmonto", titulo: "Monto", fmt: (v, r) => montoTexto(r) },
   { k: "fuente", titulo: "Fuente", fmt: v => fuenteLink(v) },
 ];
+
+// El monto se muestra en SU moneda y sin convertir: 9 de 94 instrumentos declaran una cifra
+// unica y hay 5 monedas distintas, asi que sumar o comparar entre monedas daria una cifra
+// inventada. Sin monto declarado va un guion (rango, tramos o umbral: el detalle esta en las
+// condiciones). Si el instrumento opera en varias monedas, se listan todas.
+// Clave de orden: primero la MONEDA y despues la cifra. Ordenar por el numero pelado
+// mezclaba monedas y ponia "CLP 101.000.000.000" arriba de "USD 530.000.000", sugiriendo que
+// el primero es mayor. Agrupando por moneda, el orden dentro de cada una es real y entre
+// monedas no se insinua una comparacion que no existe. Sin monto va al final.
+function claveMonto(r) {
+  if (r.monto == null) return "zzz";
+  return (r.moneda && r.moneda[0] ? r.moneda[0] : "zz") + "|" +
+    String(Math.round(r.monto)).padStart(15, "0");
+}
+
+function montoTexto(r) {
+  const monedas = r.moneda || [];
+  if (r.monto == null) return monedas.length ? `<span class="nota">— (${PW.esc(monedas.join(", "))})</span>` : "—";
+  const m = monedas[0] || "";
+  const cifra = m === "CLP" ? PW.clp(r.monto) : PW.fmt(r.monto);
+  return `<b>${PW.esc(m)} ${cifra}</b>` + (monedas.length > 1
+    ? ` <span class="nota">(+ ${PW.esc(monedas.slice(1).join(", "))})</span>` : "");
+}
 
 let tab = null;
 function refrescar() {
   const q = norm(g("busca").value.trim());
   const cat = g("f-cat").value, ori = g("f-ori").value, amb = g("f-amb").value;
-  const est = g("f-est").value, ver = g("f-ver").value;
+  const est = g("f-est").value, ver = g("f-ver").value, mon = g("f-mon").value;
   const filas = INV.filter(x =>
     (!cat || x.categoria === cat) &&
     (!ori || x.origen === ori) &&
     (!amb || x.ambito === amb) &&
     (!ver || x.verif_tier === ver) &&
+    (!mon || (x.moneda || []).includes(mon)) &&
     (est === "" || (est === "act" ? x.activo : !x.activo)) &&
-    (!q || norm(x.instrumento + " " + x.institucion + " " + (x.que_financia || "")).includes(q)));
-  g("contador").textContent = filas.length + " instrumentos";
+    (!q || norm(x.instrumento + " " + x.institucion + " " + (x.que_financia || "")).includes(q)))
+    .map(x => Object.assign({ _ordmonto: claveMonto(x) }, x));
+  const conMonto = filas.filter(x => x.monto != null).length;
+  g("contador").textContent = filas.length + " instrumentos" +
+    (conMonto ? " · " + conMonto + " con monto declarado" : "");
   if (tab) tab.actualizar(filas);
   else tab = PW.tabla("t-inv", cols, filas, { orden: "instrumento", asc: true, max: 200, buscador: false });
 }
-["busca", "f-cat", "f-ori", "f-amb", "f-est", "f-ver"].forEach(id => g(id).addEventListener("input", refrescar));
+// poblar el filtro de moneda con las que existen en el dato (no una lista fija)
+{
+  const sel = g("f-mon");
+  [...new Set(INV.flatMap(x => x.moneda || []))].sort().forEach(m => {
+    const o = document.createElement("option");
+    o.value = m; o.textContent = m;
+    sel.appendChild(o);
+  });
+}
+["busca", "f-cat", "f-ori", "f-amb", "f-est", "f-ver", "f-mon"].forEach(id => g(id).addEventListener("input", refrescar));
 refrescar();
 g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
 </script>
