@@ -164,7 +164,7 @@ document.getElementById("nota").textContent = "Actualizado " + (D.generado || ""
     const mwhTot = conMwh.reduce((a, p) => a + p.mwh, 0);
     document.getElementById("cont-bess").textContent =
       pts.length + " proyectos mostrados de " + puntos.length + " — " +
-      PW.fmt(Math.round(mwhTot)) + " MWh acumulados en la seleccion" +
+      PW.fmt(Math.round(mwhTot)) + " MWh acumulados en la selección" +
       (sinMwh ? " (" + sinMwh + " proyecto" + (sinMwh === 1 ? "" : "s") + " sin capacidad MWh informada, no incluido" + (sinMwh === 1 ? "" : "s") + " en el acumulado)" : "") + ".";
   }
 

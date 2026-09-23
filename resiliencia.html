@@ -65,7 +65,7 @@ document.getElementById("nota").textContent = "Ventana desde " + D.desde + ". Ac
 
 document.getElementById("kpis").innerHTML = [
   [D.eventos_analizados, "cortes analizados", "peak 1.000+ clientes, en comunas con cargadores"],
-  [D.eventos_con_degradacion, "con degradacion de la carga", "delta > 5 puntos"],
+  [D.eventos_con_degradacion, "con degradación de la carga", "delta > 5 puntos"],
   [D.eventos_analizados ? Math.round(100 * D.eventos_con_degradacion / D.eventos_analizados) + "%" : "—",
     "tasa de contagio corte-carga", "preliminar"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
