@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -55,13 +55,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <option value="no_disponible_pct">No disponible</option>
         <option value="desconocido_pct">Desconocido</option>
       </select></label>
+      <label>Día de semana <select id="dia-sel">
+        <option value="">Todos</option>
+      </select></label>
+      <label>Semana <select id="semana-sel">
+        <option value="">Todas</option>
+      </select></label>
+      <label>Mes <select id="mes-sel">
+        <option value="">Todos</option>
+      </select></label>
     </div>
     <div id="g-nacional"></div>
     <p class="nota" id="nota-estado"></p>
+    <p class="nota" id="nota-filtros"></p>
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Por operador (los 5 con más observaciones)</h2>
+    <h2 style="margin-top:0">Por operador</h2>
+    <div class="filtros">
+      <label>Operador <select id="operador-sel">
+        <option value="">Los 5 con más observaciones</option>
+      </select></label>
+    </div>
     <p class="nota" id="nota-operadores"></p>
     <div id="g-operadores"></div>
   </div>
@@ -105,11 +120,36 @@ if (!D.disponible) {
     desconocido_pct: { label: "desconocido", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos) -- la fuente no informó el estado real." },
   };
   const selEstado = document.getElementById("estado-sel");
+  const selDia = document.getElementById("dia-sel");
+  const selSemana = document.getElementById("semana-sel");
+  const selMes = document.getElementById("mes-sel");
+
+  // Dia/semana/mes son desgloses NACIONALES (no cruzados entre si ni con operador): elegir uno
+  // resetea los otros dos, para no insinuar un cruce que los datos no tienen (p.ej. "lunes de
+  // la semana 37" no existe como agregado propio).
+  const DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+  DIAS_SEMANA.forEach((nombre, i) => {
+    const o = document.createElement("option"); o.value = String(i); o.textContent = nombre; selDia.appendChild(o);
+  });
+  (D.semanas_disponibles || []).forEach(sw => {
+    const o = document.createElement("option"); o.value = sw; o.textContent = sw; selSemana.appendChild(o);
+  });
+  (D.meses_disponibles || []).forEach(ym => {
+    const o = document.createElement("option"); o.value = ym; o.textContent = ym; selMes.appendChild(o);
+  });
+
+  function baseNacional() {
+    if (selDia.value !== "") return (D.por_dia_semana || {})[selDia.value] || D.nacional;
+    if (selSemana.value !== "") return (D.por_semana || {})[selSemana.value] || D.nacional;
+    if (selMes.value !== "") return (D.por_mes || {})[selMes.value] || D.nacional;
+    return D.nacional;
+  }
   function pintarNacional() {
     const campo = selEstado.value;
     const info = ESTADOS[campo];
+    const base = baseNacional();
     const nac = horas.map(h => {
-      const r = D.nacional.find(x => x.hora === h);
+      const r = base.find(x => x.hora === h);
       return r ? r[campo] : null;
     });
     PW.columnas("g-nacional", {
@@ -120,8 +160,12 @@ if (!D.disponible) {
       alto: 260,
     });
     document.getElementById("nota-estado").textContent = info.nota;
+    document.getElementById("nota-filtros").textContent = D.nota_filtros || "";
   }
   selEstado.addEventListener("input", pintarNacional);
+  selDia.addEventListener("input", () => { selSemana.value = ""; selMes.value = ""; pintarNacional(); });
+  selSemana.addEventListener("input", () => { selDia.value = ""; selMes.value = ""; pintarNacional(); });
+  selMes.addEventListener("input", () => { selDia.value = ""; selSemana.value = ""; pintarNacional(); });
   pintarNacional();
 
   // El operador viene homologado al canonico del kit (antes "Copec" y "COPEC S.A." eran dos
@@ -136,19 +180,31 @@ if (!D.disponible) {
       + "permite reconocerlas: "
       + (D.operadores_sin_homologar || []).join(", ") + ".";
   }
-  PW.lineas("g-operadores", {
-    labels: horas.map(h => String(h).padStart(2, "0")),
-    series: Object.entries(D.por_operador).map(([op, serie]) => ({
-      nombre: op.length > 26 ? op.slice(0, 25) + "…" : op,
-      valores: horas.map(h => {
-        const r = serie.find(x => x.hora === h);
-        return r ? r.ocupacion : null;
-      }),
-    })),
-    fmtV: v => PW.fmt(v, 1) + "%",
-    fmtY: v => Math.round(v) + "%",
-    alto: 300,
+  // Select de operador: por defecto los 5 con mas observaciones (comportamiento de siempre);
+  // elegir uno muestra solo esa curva. Orden alfabetico para navegar el listado completo.
+  const selOp = document.getElementById("operador-sel");
+  Object.keys(D.por_operador || {}).sort((a, b) => a.localeCompare(b)).forEach(op => {
+    const o = document.createElement("option"); o.value = op; o.textContent = op; selOp.appendChild(o);
   });
+  function pintarOperadores() {
+    const ops = selOp.value ? [selOp.value] : (D.operadores_top5 || Object.keys(D.por_operador));
+    PW.lineas("g-operadores", {
+      labels: horas.map(h => String(h).padStart(2, "0")),
+      series: ops.filter(op => D.por_operador[op]).map(op => ({
+        nombre: op.length > 26 ? op.slice(0, 25) + "…" : op,
+        valores: horas.map(h => {
+          const serie = D.por_operador[op];
+          const r = serie.find(x => x.hora === h);
+          return r ? r.ocupacion : null;
+        }),
+      })),
+      fmtV: v => PW.fmt(v, 1) + "%",
+      fmtY: v => Math.round(v) + "%",
+      alto: 300,
+    });
+  }
+  selOp.addEventListener("input", pintarOperadores);
+  pintarOperadores();
 
   // La hora verde: % solar PELP vs % ocupacion real
   const HV = window.PW_DATA.c_horaverde;
