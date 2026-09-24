@@ -297,8 +297,9 @@ function renderMapaCortes(fit) {
     puntos: (MAPA.carga || []).filter(enTerr).map(p => {
       const afx = afectadas.has(_norm(p.com));
       return {
-        lat: p.lat, lon: p.lon, r: 5,
+        lat: p.lat, lon: p.lon, r: 8,
         color: afx ? PW.color("--critical") : PW.color("--s3"),
+        weight: 2, fillOpacity: 0.95,
         tip: (p.n || (p.op ? "Estación " + p.op : "Cargador")) + (afx ? " — corte activo" : ""),
         popup: popupCargaCorte(p),
       };
