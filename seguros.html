@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -114,93 +109,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_seguros.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("seguros.html");
-const D = PW_DATA.c_seguros;
-// El texto decia 58 y la suma de los depositos que grafica la propia pagina da 68.
+PW.montarNav("seguros.html"); const D = PW_DATA.c_seguros; // El texto decia 58 y la suma de los depositos que grafica la propia pagina da 68.
 {
-  const _e = document.getElementById("n-depos");
-  if (_e && D.depositos) _e.textContent = PW.fmt(D.depositos.reduce((s, d) => s + (d.n || 0), 0));
-}
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-
-const conEV = D.aseguradoras.filter(a => a.oferta_ev).length;
-const matEV = D.matriz.filter(m => D.coberturas_ev[m.cobertura]);
-const cubiertas = matEV.filter(m => m.incluida === "si").length;
-// El denominador tiene que ser la grilla que la tabla efectivamente pinta (productos x
+  const _e = document.getElementById("n-depos"); if (_e && D.depositos) _e.textContent = PW.fmt(D.depositos.reduce((s, d) => s + (d.n || 0), 0)); }
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const conEV = D.aseguradoras.filter(a => a.oferta_ev).length; const matEV = D.matriz.filter(m => D.coberturas_ev[m.cobertura]); const cubiertas = matEV.filter(m => m.incluida === "si").length; // El denominador tiene que ser la grilla que la tabla efectivamente pinta (productos x
 // coberturas EV), no matEV.length. matEV son las filas que EXISTEN en la matriz, y hoy son 8:
 // las de un unico producto. El KPI decia "3 de 8" con el subtitulo "el resto: no, opcional o
 // S/I", dando a entender que 8 era el universo, cuando abajo se ven 208 celdas y 200 de ellas
 // ni siquiera tienen fila en la fuente.
-const celdasEV = D.productos.length * Object.keys(D.coberturas_ev).length;
-const prodConEV = new Set(matEV.map(m => m.producto)).size;
-document.getElementById("kpis").innerHTML = [
+const celdasEV = D.productos.length * Object.keys(D.coberturas_ev).length; const prodConEV = new Set(matEV.map(m => m.producto)).size; document.getElementById("kpis").innerHTML = [
   [D.aseguradoras.length, "aseguradoras analizadas", conEV + " con oferta EV especifica"],
   [D.productos.length, "productos y planes", "condicionados POL/CAD citados"],
   ["8", "coberturas EV canonicas", "del catalogo del proyecto"],
   [cubiertas + " de " + celdasEV, "celdas EV con cobertura confirmada",
    "solo " + prodConEV + " de " + D.productos.length + " productos declara cobertura EV"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-// selector de aseguradoras
-const selA = document.getElementById("f-aseg");
-D.aseguradoras.forEach(a => {
-  const o = document.createElement("option"); o.value = a.id; o.textContent = a.nombre; selA.appendChild(o);
-});
-
-// matriz producto x cobertura
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // selector de aseguradoras
+const selA = document.getElementById("f-aseg"); D.aseguradoras.forEach(a => {
+  const o = document.createElement("option"); o.value = a.id; o.textContent = a.nombre; selA.appendChild(o); }); // matriz producto x cobertura
 function pintarMatriz() {
-  const asegSel = selA.value;
-  const tipo = document.getElementById("f-tipo").value;
-  const cat = tipo === "ev" ? D.coberturas_ev : D.coberturas_base;
-  const cobIds = Object.keys(cat);
-  const productos = D.productos.filter(p => !asegSel || p.aseg_id === asegSel);
-  const idx = {};
-  D.matriz.forEach(m => { idx[m.producto + "|" + m.cobertura] = m; });
-
-  function celda(p, c) {
-    const m = idx[p.id + "|" + c];
-    const v = m ? m.incluida : "S/I";
-    const clase = v === "si" ? "cob-si" : v === "no" ? "cob-no" : v === "opcional" ? "cob-opcional" : "cob-si1";
-    const titulo = m ? [m.limite, m.nota, m.fuente].filter(Boolean).join(" — ") : "Sin información en la fuente";
-    return `<span class="celda-cob ${clase}" title="${(titulo || "").replace(/"/g, "'")}">${v}</span>`;
-  }
-  const nombreCob = c => c.replace(/_/g, " ").replace("bateria hv", "bateria alta tensión");
-  const html = `<table class="pw"><thead><tr><th>Producto</th><th>Aseguradora</th>` +
+  const asegSel = selA.value; const tipo = document.getElementById("f-tipo").value; const cat = tipo === "ev" ? D.coberturas_ev : D.coberturas_base; const cobIds = Object.keys(cat); const productos = D.productos.filter(p => !asegSel || p.aseg_id === asegSel); const idx = {}; D.matriz.forEach(m => { idx[m.producto + "|" + m.cobertura] = m; }); function celda(p, c) {
+    const m = idx[p.id + "|" + c]; const v = m ? m.incluida : "S/I"; const clase = v === "si" ? "cob-si" : v === "no" ? "cob-no" : v === "opcional" ? "cob-opcional" : "cob-si1"; const titulo = m ? [m.limite, m.nota, m.fuente].filter(Boolean).join(" — ") : "Sin información en la fuente"; return `<span class="celda-cob ${clase}" title="${(titulo || "").replace(/"/g, "'")}">${v}</span>`; }
+  const nombreCob = c => c.replace(/_/g, " ").replace("bateria hv", "bateria alta tensión"); const html = `<table class="pw"><thead><tr><th>Producto</th><th>Aseguradora</th>` +
     cobIds.map(c => `<th title="${(cat[c] || "").replace(/"/g, "'")}">${nombreCob(c)}</th>`).join("") +
     `</tr></thead><tbody>` +
     productos.map(p => `<tr><td>${p.nombre}</td><td>${p.aseguradora}</td>` +
       cobIds.map(c => `<td style="text-align:center">${celda(p, c)}</td>`).join("") + `</tr>`).join("") +
-    `</tbody></table>`;
-  document.getElementById("t-matriz").innerHTML = html;
-}
-selA.addEventListener("input", pintarMatriz);
-document.getElementById("f-tipo").addEventListener("input", pintarMatriz);
-pintarMatriz();
-
-// Faltaban 7 de 14 anios: 2018 quedaba pegado a 2025 y se perdian de vista los seis anios sin
+    `</tbody></table>`; document.getElementById("t-matriz").innerHTML = html; }
+selA.addEventListener("input", pintarMatriz); document.getElementById("f-tipo").addEventListener("input", pintarMatriz); pintarMatriz(); // Faltaban 7 de 14 anios: 2018 quedaba pegado a 2025 y se perdian de vista los seis anios sin
 // ningun deposito, que son justamente lo que vuelve significativa la renovacion 2025-2026.
-const DEPOS = PW.completarSerie(D.depositos, "anio", "anio", { n: 0 });
-PW.columnas("g-depositos", {
+const DEPOS = PW.completarSerie(D.depositos, "anio", "anio", { n: 0 }); PW.columnas("g-depositos", {
   labels: DEPOS.map(d => String(d.anio)),
   valores: DEPOS.map(d => d.n),
   fmtV: v => PW.fmt(v) + " depositos",
-});
-
-PW.tabla("t-primas-int", [
+}); PW.tabla("t-primas-int", [
   { k: "pais", titulo: "Pais" },
   { k: "concepto", titulo: "Concepto" },
   { k: "min", titulo: "Valor", num: true, fmt: (v, f) => v == null ? "—" : PW.fmt(v) + (f.max ? " - " + PW.fmt(f.max) : "") + " " + f.moneda },
   { k: "entidad", titulo: "Fuente" },
-], D.primas_int, {});
-
-PW.tabla("t-productos", [
+], D.primas_int, {}); PW.tabla("t-productos", [
   { k: "aseguradora", titulo: "Aseguradora" },
   { k: "nombre", titulo: "Producto" },
   { k: "tipo", titulo: "Tipo de plan" },
   { k: "pol_cad", titulo: "Condicionado (CMF)" },
   { k: "prima_ref", titulo: "Prima ref." },
   { k: "deducibles", titulo: "Deducibles (UF)" },
-], D.productos, { orden: "aseguradora", asc: true });
-</script>
+], D.productos, { orden: "aseguradora", asc: true }); </script>
 </body>
 </html>

@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -68,11 +63,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("combustible.html");
-const D = PW_DATA.combustible;
-const EST = D.estaciones, T = D.totales;
-
-function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
+PW.montarNav("combustible.html"); const D = PW_DATA.combustible; const EST = D.estaciones, T = D.totales; function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
 function g(id) { return document.getElementById(id); }
 function pesos(v) { return (v || v === 0) ? "$" + PW.fmt(v) : "—"; }
 
@@ -81,17 +72,9 @@ g("kpis").innerHTML = [
   ["$" + PW.fmt(T.p93_prom), "bencina 93 promedio", "por litro, país"],
   ["$" + PW.fmt(T.p93_min), "la 93 más barata", "del catálogo"],
   ["$" + PW.fmt(T.p93_max), "la 93 más cara", "brecha de $" + PW.fmt(T.p93_max - T.p93_min)],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-function llenar(id, valores, etiqueta) {
-  const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es"));
-  g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join("");
-}
-llenar("f-reg", EST.map(x => x.region), "Todas");
-llenar("f-marca", EST.map(x => x.marca).filter(v => v && v !== "—"), "Todas");
-llenar("f-grupo", EST.map(x => x.grupo).filter(v => v && v !== "—"), "Todos");
-
-const cols = [
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); function llenar(id, valores, etiqueta) {
+  const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es")); g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join(""); }
+llenar("f-reg", EST.map(x => x.region), "Todas"); llenar("f-marca", EST.map(x => x.marca).filter(v => v && v !== "—"), "Todas"); llenar("f-grupo", EST.map(x => x.grupo).filter(v => v && v !== "—"), "Todos"); const cols = [
   { k: "estacion", titulo: "Estación", fmt: v => `<b>${v}</b>` },
   { k: "marca", titulo: "Marca", fmt: v => (v && v !== "—") ? `<span class="pill">${v}</span>` : "—" },
   { k: "grupo", titulo: "Grupo/Dueño", fmt: v => (v && v !== "—") ? PW.esc(v) : "—" },
@@ -101,24 +84,12 @@ const cols = [
   { k: "p95", titulo: "95", fmt: pesos },
   { k: "p97", titulo: "97", fmt: pesos },
   { k: "pdi", titulo: "Diésel", fmt: pesos },
-];
-
-let tab = null;
-function refrescar() {
-  const q = norm(g("busca").value.trim());
-  const reg = g("f-reg").value, mk = g("f-marca").value, gr = g("f-grupo").value;
-  const filas = EST.filter(x =>
+]; let tab = null; function refrescar() {
+  const q = norm(g("busca").value.trim()); const reg = g("f-reg").value, mk = g("f-marca").value, gr = g("f-grupo").value; const filas = EST.filter(x =>
     (!reg || x.region === reg) &&
     (!mk || x.marca === mk) &&
     (!gr || x.grupo === gr) &&
-    (!q || norm(x.estacion + " " + x.comuna).includes(q)));
-  g("contador").textContent = filas.length + " estaciones";
-  if (tab) tab.actualizar(filas);
-  else tab = PW.tabla("t-comb", cols, filas, { orden: "p93", asc: true, max: 300, buscador: false });
-}
-["busca", "f-reg", "f-marca", "f-grupo"].forEach(id => g(id).addEventListener("input", refrescar));
-refrescar();
-g("fuente").textContent = "Precios actualizados al " + (T.fecha || "s/f") + ". " + D.nota;
-</script>
+    (!q || norm(x.estacion + " " + x.comuna).includes(q))); g("contador").textContent = filas.length + " estaciones"; if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comb", cols, filas, { orden: "p93", asc: true, max: 300, buscador: false }); }
+["busca", "f-reg", "f-marca", "f-grupo"].forEach(id => g(id).addEventListener("input", refrescar)); refrescar(); g("fuente").textContent = "Precios actualizados al " + (T.fecha || "s/f") + ". " + D.nota; </script>
 </body>
 </html>

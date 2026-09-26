@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -100,17 +95,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_horaverde.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("horas.html");
-const D = PW_DATA.horas;
-if (!D.disponible) {
-  document.getElementById("nota").textContent = "Sin historico de estados disponible todavia.";
-} else {
+PW.montarNav("horas.html"); const D = PW_DATA.horas; if (!D.disponible) {
+  document.getElementById("nota").textContent = "Sin historico de estados disponible todavia."; } else {
   document.getElementById("nota").textContent =
-    "Basado en " + D.dias_observados + " días de observación. " + D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + ".";
-
-  const horas = [...Array(24).keys()];
-  // "ocupacion"/"disponible_pct" son % del pool operativo (disponible+ocupado, como siempre);
-  // los otros 3 son % del total de observaciones esa hora (los 5 estados) -- no encajan en esa
+    "Basado en " + D.dias_observados + " días de observación. " + D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + "."; const horas = [...Array(24).keys()]; // "ocupacion"/"disponible_pct" son % del pool operativo (disponible+ocupado, como siempre); // los otros 3 son % del total de observaciones esa hora (los 5 estados) -- no encajan en esa
   // dicotomia. Cada opcion trae su propia nota para que quede claro cual base usa.
   const ESTADOS = {
     ocupacion: { label: "ocupado", nota: 'Filtro: % del pool operativo ("disponible" + "ocupado"). Los otros 3 estados posibles (fuera de servicio / no disponible / desconocido) quedan fuera de esta base -- no ocupan ni desocupan, simplemente no se cuentan.' },
@@ -118,114 +106,54 @@ if (!D.disponible) {
     fuera_de_servicio_pct: { label: "fuera de servicio", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos), no del pool operativo -- \"fuera de servicio\" no es ni disponible ni ocupado." },
     no_disponible_pct: { label: "no disponible", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos), no del pool operativo." },
     desconocido_pct: { label: "desconocido", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos) -- la fuente no informó el estado real." },
-  };
-  const selEstado = document.getElementById("estado-sel");
-  const selDia = document.getElementById("dia-sel");
-  const selSemana = document.getElementById("semana-sel");
-  const selMes = document.getElementById("mes-sel");
-
-  // Dia/semana/mes son desgloses NACIONALES (no cruzados entre si ni con operador): elegir uno
+  }; const selEstado = document.getElementById("estado-sel"); const selDia = document.getElementById("dia-sel"); const selSemana = document.getElementById("semana-sel"); const selMes = document.getElementById("mes-sel"); // Dia/semana/mes son desgloses NACIONALES (no cruzados entre si ni con operador): elegir uno
   // resetea los otros dos, para no insinuar un cruce que los datos no tienen (p.ej. "lunes de
   // la semana 37" no existe como agregado propio).
-  const DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-  DIAS_SEMANA.forEach((nombre, i) => {
-    const o = document.createElement("option"); o.value = String(i); o.textContent = nombre; selDia.appendChild(o);
-  });
-  (D.semanas_disponibles || []).forEach(sw => {
-    const o = document.createElement("option"); o.value = sw; o.textContent = sw; selSemana.appendChild(o);
-  });
-  (D.meses_disponibles || []).forEach(ym => {
-    const o = document.createElement("option"); o.value = ym; o.textContent = ym; selMes.appendChild(o);
-  });
-
-  function baseNacional() {
-    if (selDia.value !== "") return (D.por_dia_semana || {})[selDia.value] || D.nacional;
-    if (selSemana.value !== "") return (D.por_semana || {})[selSemana.value] || D.nacional;
-    if (selMes.value !== "") return (D.por_mes || {})[selMes.value] || D.nacional;
-    return D.nacional;
-  }
+  const DIAS_SEMANA = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]; DIAS_SEMANA.forEach((nombre, i) => {
+    const o = document.createElement("option"); o.value = String(i); o.textContent = nombre; selDia.appendChild(o); }); (D.semanas_disponibles || []).forEach(sw => {
+    const o = document.createElement("option"); o.value = sw; o.textContent = sw; selSemana.appendChild(o); }); (D.meses_disponibles || []).forEach(ym => {
+    const o = document.createElement("option"); o.value = ym; o.textContent = ym; selMes.appendChild(o); }); function baseNacional() {
+    if (selDia.value !== "") return (D.por_dia_semana || {})[selDia.value] || D.nacional; if (selSemana.value !== "") return (D.por_semana || {})[selSemana.value] || D.nacional; if (selMes.value !== "") return (D.por_mes || {})[selMes.value] || D.nacional; return D.nacional; }
   function pintarNacional() {
-    const campo = selEstado.value;
-    const info = ESTADOS[campo];
-    const base = baseNacional();
-    const nac = horas.map(h => {
-      const r = base.find(x => x.hora === h);
-      return r ? r[campo] : null;
-    });
-    PW.columnas("g-nacional", {
+    const campo = selEstado.value; const info = ESTADOS[campo]; const base = baseNacional(); const nac = horas.map(h => {
+      const r = base.find(x => x.hora === h); return r ? r[campo] : null; }); PW.columnas("g-nacional", {
       labels: horas.map(h => String(h).padStart(2, "0") + ":00"),
       valores: nac,
       fmtV: v => PW.fmt(v, 1) + "% " + info.label,
       fmtY: v => Math.round(v) + "%",
       alto: 260,
-    });
-    document.getElementById("nota-estado").textContent = info.nota;
-    document.getElementById("nota-filtros").textContent = D.nota_filtros || "";
-  }
-  selEstado.addEventListener("input", pintarNacional);
-  selDia.addEventListener("input", () => { selSemana.value = ""; selMes.value = ""; pintarNacional(); });
-  selSemana.addEventListener("input", () => { selDia.value = ""; selMes.value = ""; pintarNacional(); });
-  selMes.addEventListener("input", () => { selDia.value = ""; selSemana.value = ""; pintarNacional(); });
-  pintarNacional();
-
-  // El operador viene homologado al canonico del kit (antes "Copec" y "COPEC S.A." eran dos
+    }); document.getElementById("nota-estado").textContent = info.nota; document.getElementById("nota-filtros").textContent = D.nota_filtros || ""; }
+  selEstado.addEventListener("input", pintarNacional); selDia.addEventListener("input", () => { selSemana.value = ""; selMes.value = ""; pintarNacional(); }); selSemana.addEventListener("input", () => { selDia.value = ""; selMes.value = ""; pintarNacional(); }); selMes.addEventListener("input", () => { selDia.value = ""; selSemana.value = ""; pintarNacional(); }); pintarNacional(); // El operador viene homologado al canonico del kit (antes "Copec" y "COPEC S.A." eran dos
   // series distintas). Lo que no mapea a un operador_id queda fuera del ranking, igual que en
   // el modulo de operadores; se declara cuanto es para que la exclusion no sea muda.
-  const nOp = document.getElementById("nota-operadores");
-  if (D.obs_sin_homologar) {
+  const nOp = document.getElementById("nota-operadores"); if (D.obs_sin_homologar) {
     nOp.textContent = "Operador homologado al catálogo canónico. Quedan fuera "
       + PW.fmt(D.obs_sin_homologar) + " de " + PW.fmt(D.obs_operadores_total) + " observaciones ("
       + PW.fmt(100 * D.obs_sin_homologar / D.obs_operadores_total, 1)
       + "%) cuya grafía del histórico no aparece en el catálogo de conectores, que es lo que "
       + "permite reconocerlas: "
-      + (D.operadores_sin_homologar || []).join(", ") + ".";
-  }
-  // Select de operador: por defecto los 5 con mas observaciones (comportamiento de siempre);
-  // elegir uno muestra solo esa curva. Orden alfabetico para navegar el listado completo.
-  const selOp = document.getElementById("operador-sel");
-  Object.keys(D.por_operador || {}).sort((a, b) => a.localeCompare(b)).forEach(op => {
-    const o = document.createElement("option"); o.value = op; o.textContent = op; selOp.appendChild(o);
-  });
-  function pintarOperadores() {
-    const ops = selOp.value ? [selOp.value] : (D.operadores_top5 || Object.keys(D.por_operador));
-    PW.lineas("g-operadores", {
+      + (D.operadores_sin_homologar || []).join(", ") + "."; }
+  // Select de operador: por defecto los 5 con mas observaciones (comportamiento de siempre); // elegir uno muestra solo esa curva. Orden alfabetico para navegar el listado completo.
+  const selOp = document.getElementById("operador-sel"); Object.keys(D.por_operador || {}).sort((a, b) => a.localeCompare(b)).forEach(op => {
+    const o = document.createElement("option"); o.value = op; o.textContent = op; selOp.appendChild(o); }); function pintarOperadores() {
+    const ops = selOp.value ? [selOp.value] : (D.operadores_top5 || Object.keys(D.por_operador)); PW.lineas("g-operadores", {
       labels: horas.map(h => String(h).padStart(2, "0")),
       series: ops.filter(op => D.por_operador[op]).map(op => ({
         nombre: op.length > 26 ? op.slice(0, 25) + "…" : op,
         valores: horas.map(h => {
-          const serie = D.por_operador[op];
-          const r = serie.find(x => x.hora === h);
-          return r ? r.ocupacion : null;
-        }),
+          const serie = D.por_operador[op]; const r = serie.find(x => x.hora === h); return r ? r.ocupacion : null; }),
       })),
       fmtV: v => PW.fmt(v, 1) + "%",
       fmtY: v => Math.round(v) + "%",
       alto: 300,
-    });
-  }
-  selOp.addEventListener("input", pintarOperadores);
-  pintarOperadores();
-
-  // La hora verde: % solar PELP vs % ocupacion real
-  const HV = window.PW_DATA.c_horaverde;
-  if (HV) {
-    const selEsc = document.getElementById("hv-esc");
-    const selAnio = document.getElementById("hv-anio");
-    Object.keys(HV.perfiles).forEach(e => {
-      const o = document.createElement("option"); o.value = e; o.textContent = e; selEsc.appendChild(o);
-    });
-    HV.anios.forEach(a => {
-      const o = document.createElement("option"); o.value = a; o.textContent = a; selAnio.appendChild(o);
-    });
-    if (HV.perfiles["Carbono Neutralidad"]) selEsc.value = "Carbono Neutralidad";
-    const ocup = horas.map(h => {
-      const r = D.nacional.find(x => x.hora === h);
-      return r ? r.ocupacion : null;
-    });
-    function pintarHV() {
-      const p = (HV.perfiles[selEsc.value] || {})[selAnio.value];
-      if (!p) return;
-      PW.lineas("g-horaverde", {
+    }); }
+  selOp.addEventListener("input", pintarOperadores); pintarOperadores(); // La hora verde: % solar PELP vs % ocupacion real
+  const HV = window.PW_DATA.c_horaverde; if (HV) {
+    const selEsc = document.getElementById("hv-esc"); const selAnio = document.getElementById("hv-anio"); Object.keys(HV.perfiles).forEach(e => {
+      const o = document.createElement("option"); o.value = e; o.textContent = e; selEsc.appendChild(o); }); HV.anios.forEach(a => {
+      const o = document.createElement("option"); o.value = a; o.textContent = a; selAnio.appendChild(o); }); if (HV.perfiles["Carbono Neutralidad"]) selEsc.value = "Carbono Neutralidad"; const ocup = horas.map(h => {
+      const r = D.nacional.find(x => x.hora === h); return r ? r.ocupacion : null; }); function pintarHV() {
+      const p = (HV.perfiles[selEsc.value] || {})[selAnio.value]; if (!p) return; PW.lineas("g-horaverde", {
         labels: horas.map(h => String(h).padStart(2, "0") + ":00"),
         series: [
           { nombre: "% solar en el mix (PELP " + selAnio.value + ")", valores: p.pct_solar, color: PW.color("--s4"), area: true },
@@ -233,12 +161,8 @@ if (!D.disponible) {
         ],
         fmtV: v => PW.fmt(v, 1) + "%", fmtY: v => Math.round(v) + "%",
         max: 100, alto: 300,
-      });
-    }
-    selEsc.addEventListener("input", pintarHV);
-    selAnio.addEventListener("input", pintarHV);
-    pintarHV();
-  }
+      }); }
+    selEsc.addEventListener("input", pintarHV); selAnio.addEventListener("input", pintarHV); pintarHV(); }
 }
 </script>
 </body>

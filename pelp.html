@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -71,88 +66,56 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tarjeta">
     <h2 style="margin-top:0">Diagnóstico 2026 por tecnología (GW)</h2>
     <div id="t-diag"></div>
-    <p class="nota">Los escenarios PELP parten en 2020 y son capacidad de expansión acumulada;
-    el punto real y el escenario no siempre comparten base exacta, por eso la lectura correcta
+    <p class="nota">Los escenarios PELP parten en 2020 y son capacidad de expansión acumulada; el punto real y el escenario no siempre comparten base exacta, por eso la lectura correcta
     es la PENDIENTE (que trayectoria sigue Chile), no la resta simple.</p>
   </div>
 </main>
 <script>document.write('<script src="data/c_pelp.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("pelp.html");
-const D = PW_DATA.c_pelp;
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-
-const tecs = Object.keys(D.real);
-const sel = document.getElementById("f-tec");
-tecs.forEach(t => { const o = document.createElement("option"); o.value = t; o.textContent = t; sel.appendChild(o); });
-if (tecs.includes("Solar")) sel.value = "Solar";
-
-function pintar() {
-  const t = sel.value;
-  // eje comun: union de años reales y PELP
+PW.montarNav("pelp.html"); const D = PW_DATA.c_pelp; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const tecs = Object.keys(D.real); const sel = document.getElementById("f-tec"); tecs.forEach(t => { const o = document.createElement("option"); o.value = t; o.textContent = t; sel.appendChild(o); }); if (tecs.includes("Solar")) sel.value = "Solar"; function pintar() {
+  const t = sel.value; // eje comun: union de años reales y PELP
   const anios = [...new Set([...D.anios_real, ...D.anios_pelp])].sort((a, b) => a - b)
-    .filter(a => a >= 2015 && a <= 2035);
-  const serieReal = anios.map(a => {
-    const i = D.anios_real.indexOf(a);
-    return i >= 0 ? D.real[t][i] : null;
-  });
-  const series = [{ nombre: "Real (Coordinador)", valores: serieReal }];
-  Object.entries(D.escenarios).forEach(([esc, tecmap], i) => {
-    if (!tecmap[t]) return;
-    series.push({
+    .filter(a => a >= 2015 && a <= 2035); const serieReal = anios.map(a => {
+    const i = D.anios_real.indexOf(a); return i >= 0 ? D.real[t][i] : null; }); const series = [{ nombre: "Real (Coordinador)", valores: serieReal }]; Object.entries(D.escenarios).forEach(([esc, tecmap], i) => {
+    if (!tecmap[t]) return; series.push({
       nombre: esc,
       valores: anios.map(a => {
-        const j = D.anios_pelp.indexOf(a);
-        return j >= 0 ? tecmap[t][j] : null;
-      }),
-    });
-  });
-  PW.lineas("g-tec", {
+        const j = D.anios_pelp.indexOf(a); return j >= 0 ? tecmap[t][j] : null; }),
+    }); }); PW.lineas("g-tec", {
     labels: anios.map(String), series,
     fmtV: v => PW.fmt(v, 1) + " GW", fmtY: v => PW.fmt(v, 1), alto: 320,
-  });
-}
-sel.addEventListener("input", pintar);
-pintar();
-
-// Emisiones y consumo electrico historico
+  }); }
+sel.addEventListener("input", pintar); pintar(); // Emisiones y consumo electrico historico
 if (D.emisiones) {
   // La PELP modela anio a anio hasta 2035 y despues cada 5 anios. El eje es equiespaciado por
   // indice, asi que el tramo 2035-2060 (25 anios) ocupa lo mismo que 2030-2035 (5 anios) y las
   // trayectorias de largo plazo se leen mucho mas empinadas de lo que son. NO se rellena con
   // nulos: no es dato faltante sino una cadencia mas gruesa, y ademas PW.lineas corta el trazo
   // en los nulos, lo que dejaria la proyeccion en puntos sueltos. Se advierte el cambio de paso.
-  const aE = D.anios_emisiones;
-  const iSalto = aE.findIndex((a, i) => i > 0 && a - aE[i - 1] > 1);
-  PW.lineas("g-emisiones", {
+  const aE = D.anios_emisiones; const iSalto = aE.findIndex((a, i) => i > 0 && a - aE[i - 1] > 1); PW.lineas("g-emisiones", {
     labels: D.anios_emisiones.map(String),
     series: Object.entries(D.emisiones).map(([esc, v]) => ({ nombre: esc, valores: v })),
     fmtV: v => PW.fmt(v, 1) + " Mt", alto: 260,
     lineaX: iSalto > 0 ? { i: iSalto - 1, texto: "desde aquí, cada 5 años" } : null,
-  });
-  document.getElementById("nota-emisiones").textContent = iSalto > 0
+  }); document.getElementById("nota-emisiones").textContent = iSalto > 0
     ? "Ojo con el eje: la PELP modela año a año hasta " + aE[iSalto - 1] + " y desde ahí cada 5 años, "
       + "pero los puntos se dibujan equiespaciados. Cada paso del tramo final vale 5 años y cada uno "
       + "del inicial vale 1, así que los últimos " + (aE[aE.length - 1] - aE[iSalto - 1])
       + " años ocupan el ancho de " + (aE.length - iSalto) + ": la pendiente de la derecha se ve "
       + "unas cinco veces más empinada de lo que es y no es comparable con la de la izquierda."
-    : "";
-}
+    : ""; }
 if (D.consumo_electricidad) {
   PW.lineas("g-consumo", {
     labels: D.consumo_electricidad.map(x => String(x.anio)),
     series: [{ nombre: "Consumo final electricidad", valores: D.consumo_electricidad.map(x => x.gwh), area: true }],
     fmtV: v => PW.fmt(v) + " GWh", fmtY: v => PW.fmt(v / 1000, 0) + "k", alto: 260,
-  });
-}
+  }); }
 
-const escNombres = Object.keys(D.escenarios);
-PW.tabla("t-diag", [
+const escNombres = Object.keys(D.escenarios); PW.tabla("t-diag", [
   { k: "tecnologia", titulo: "Tecnología" },
   { k: "real_2026_gw", titulo: "Real 2026", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
   ...escNombres.map(e => ({ k: e, titulo: e, num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) })),
-], D.diagnostico_2026, {});
-</script>
+], D.diagnostico_2026, {}); </script>
 </body>
 </html>

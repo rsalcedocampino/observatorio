@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -86,53 +81,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/radar.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("radar.html");
-const D = PW_DATA.radar;
-document.getElementById("nota").textContent =
-  "Último mes publicado por la fuente: " + D.ultimo_mes + ". " + D.nota;
-
-const selC = document.getElementById("f-cat");
-D.categorias.forEach(c => {
-  const o = document.createElement("option"); o.value = c; o.textContent = c; selC.appendChild(o);
-});
-selC.value = "Livianos y Medianos";
-
-let tDebuts = null;
-function refrescar() {
-  const G = D.por_categoria[selC.value];
-  const desde = D.meses.findIndex(m => m >= "2020-01");
-  const meses = D.meses.slice(desde);
-  PW.lineas("g-serie", {
+PW.montarNav("radar.html"); const D = PW_DATA.radar; document.getElementById("nota").textContent =
+  "Último mes publicado por la fuente: " + D.ultimo_mes + ". " + D.nota; const selC = document.getElementById("f-cat"); D.categorias.forEach(c => {
+  const o = document.createElement("option"); o.value = c; o.textContent = c; selC.appendChild(o); }); selC.value = "Livianos y Medianos"; let tDebuts = null; function refrescar() {
+  const G = D.por_categoria[selC.value]; const desde = D.meses.findIndex(m => m >= "2020-01"); const meses = D.meses.slice(desde); PW.lineas("g-serie", {
     labels: meses,
     series: Object.entries(G.series).map(([k, v]) => ({ nombre: k, valores: v.slice(desde) })),
     fmtV: v => PW.fmt(v) + " unid.",
     alto: 280,
-  });
-  PW.barras("g-marcas", {
+  }); PW.barras("g-marcas", {
     items: G.top_marcas_12m.slice(0, 15).map(m => ({
       nombre: m.marca, valor: m.unidades,
       extra: "CIF unitario: US$" + PW.fmt(m.cif_unitario),
     })),
-  });
-  PW.barras("g-paises", { items: G.paises_12m.map(p => ({ nombre: p.pais, valor: p.unidades })), color: PW.color("--s2") });
-  PW.barras("g-importadores", {
+  }); PW.barras("g-paises", { items: G.paises_12m.map(p => ({ nombre: p.pais, valor: p.unidades })), color: PW.color("--s2") }); PW.barras("g-importadores", {
     items: (G.top_importadores_12m || []).map(i => ({
       nombre: i.importador, valor: i.unidades, extra: "CIF: US$" + PW.fmt(i.cif_usd),
     })),
     color: PW.color("--s4"),
-  });
-
-  const colsD = [
+  }); const colsD = [
     { k: "debut", titulo: "Debut" },
     { k: "marca", titulo: "Marca" },
     { k: "modelo", titulo: "Modelo" },
     { k: "propulsion", titulo: "Propulsion", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
     { k: "unidades", titulo: "Unidades a la fecha", num: true, fmt: v => PW.fmt(v) },
-  ];
-  if (tDebuts) tDebuts.actualizar(G.debuts_6m); else tDebuts = PW.tabla("t-debuts", colsD, G.debuts_6m, { orden: "debut" });
-}
-selC.addEventListener("input", refrescar);
-refrescar();
-</script>
+  ]; if (tDebuts) tDebuts.actualizar(G.debuts_6m); else tDebuts = PW.tabla("t-debuts", colsD, G.debuts_6m, { orden: "debut" }); }
+selC.addEventListener("input", refrescar); refrescar(); </script>
 </body>
 </html>

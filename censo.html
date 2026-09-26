@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -103,8 +98,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="crec-wrap"><div id="mapa-crec"></div></div>
     <div id="ley-crec" class="leyenda"></div>
     <p class="nota">Variación de la población censada por comuna entre el Censo 2017 y el Censo 2024.
-    <b style="color:var(--ink-baja)">Rojo = disminución</b>, <b style="color:var(--ink-alza)">verde = aumento</b>;
-    gris = sin comparación 2017. Respeta el filtro de <b>Región</b>. Pasa el mouse por una comuna
+    <b style="color:var(--ink-baja)">Rojo = disminución</b>, <b style="color:var(--ink-alza)">verde = aumento</b>; gris = sin comparación 2017. Respeta el filtro de <b>Región</b>. Pasa el mouse por una comuna
     para ver su población en ambos censos.</p>
     <div class="fila2">
       <div><h3 style="margin:10px 0 4px">Más crecen</h3><div id="g-crecen"></div></div>
@@ -135,151 +129,70 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/censo.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("censo.html");
-const D = window.PW_DATA.censo;
-
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
-document.getElementById("fuente").textContent = D.nota;
-
-// ---------- indices + helpers ----------
-const comByCut = Object.fromEntries(D.comunas.map(c => [c.cut, c]));
-const cutByComuna = Object.fromEntries(D.comunas.map(c => [c.comuna, c.cut]));
-const regByName = Object.fromEntries(D.regiones.map(r => [r.region, r]));
-const VAR = D.variacion || {};
-const serieCensada = (D.serie_nacional || []).filter(x => x.tipo === "censado");
-const serieByAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x.poblacion]));
-const serieRowAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x]));  // fila completa (var_pct, crec_anual)
+PW.montarNav("censo.html"); const D = window.PW_DATA.censo; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; document.getElementById("fuente").textContent = D.nota; // ---------- indices + helpers ----------
+const comByCut = Object.fromEntries(D.comunas.map(c => [c.cut, c])); const cutByComuna = Object.fromEntries(D.comunas.map(c => [c.comuna, c.cut])); const regByName = Object.fromEntries(D.regiones.map(r => [r.region, r])); const VAR = D.variacion || {}; const serieCensada = (D.serie_nacional || []).filter(x => x.tipo === "censado"); const serieByAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x.poblacion])); const serieRowAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x])); // fila completa (var_pct, crec_anual)
 
 // indicadores del mapa: 2 especiales que dependen del AÑO (poblacion / variacion) + los del Censo 2024
 const ESPECIALES = {
   __pob: { k: "__pob", label: "Población (Censo del año elegido)", dec: 0, suf: "", grupo: "Población" },
   __var: { k: "__var", label: "Variación de población 2017 a 2024 (%)", dec: 1, suf: "%", grupo: "Población" },
-};
-function indMeta(k) { return ESPECIALES[k] || D.indicadores.find(i => i.k === k) || D.indicadores[0]; }
+}; function indMeta(k) { return ESPECIALES[k] || D.indicadores.find(i => i.k === k) || D.indicadores[0]; }
 function fmtInd(m, v) { return v == null ? "—" : PW.fmt(v, m.dec) + m.suf; }
 function valorInd(c, k, ano) {
   if (k === "__pob") {
-    if (ano === "2002") return null;
-    if (ano === "2017") { const p = (VAR[c.cut] || {}).pob_2017; return p != null ? p : null; }
-    return c.poblacion;
-  }
+    if (ano === "2002") return null; if (ano === "2017") { const p = (VAR[c.cut] || {}).pob_2017; return p != null ? p : null; }
+    return c.poblacion; }
   if (k === "__var") { const v = (VAR[c.cut] || {}).var; return v != null ? v : null; }
-  return c[k];
-}
+  return c[k]; }
 function poblacionTerritorio(ano, reg, com) {
   if (com) {
-    const cut = cutByComuna[com];
-    if (ano === "2024") return comByCut[cut].poblacion;
-    if (ano === "2017") { const p = (VAR[cut] || {}).pob_2017; return p != null ? p : null; }
-    return null;
-  }
+    const cut = cutByComuna[com]; if (ano === "2024") return comByCut[cut].poblacion; if (ano === "2017") { const p = (VAR[cut] || {}).pob_2017; return p != null ? p : null; }
+    return null; }
   if (reg) {
-    if (ano === "2024") return regByName[reg].poblacion;
-    if (ano === "2017") {
-      let s = 0, any = false;
-      D.comunas.filter(c => c.region === reg).forEach(c => { const p = (VAR[c.cut] || {}).pob_2017; if (p != null) { s += p; any = true; } });
-      return any ? s : null;
-    }
-    return null;
-  }
-  return serieByAno[ano] != null ? serieByAno[ano] : null;
-}
+    if (ano === "2024") return regByName[reg].poblacion; if (ano === "2017") {
+      let s = 0, any = false; D.comunas.filter(c => c.region === reg).forEach(c => { const p = (VAR[c.cut] || {}).pob_2017; if (p != null) { s += p; any = true; } }); return any ? s : null; }
+    return null; }
+  return serieByAno[ano] != null ? serieByAno[ano] : null; }
 function varTerritorio(reg, com) {  // variacion de poblacion 2017 -> 2024 (%) del territorio
   if (com) { const v = (VAR[cutByComuna[com]] || {}).var; return v != null ? v : null; }
   if (reg) {
-    let s17 = 0, s24 = 0, any = false;
-    D.comunas.filter(c => c.region === reg).forEach(c => {
-      const v = VAR[c.cut];
-      if (v && v.pob_2017 != null && v.pob_2024 != null) { s17 += v.pob_2017; s24 += v.pob_2024; any = true; }
-    });
-    return (any && s17 > 0) ? Math.round((s24 / s17 - 1) * 1000) / 10 : null;
-  }
-  const r = serieRowAno["2024"];
-  return r && r.var_pct != null ? r.var_pct : null;
-}
+    let s17 = 0, s24 = 0, any = false; D.comunas.filter(c => c.region === reg).forEach(c => {
+      const v = VAR[c.cut]; if (v && v.pob_2017 != null && v.pob_2024 != null) { s17 += v.pob_2017; s24 += v.pob_2024; any = true; }
+    }); return (any && s17 > 0) ? Math.round((s24 / s17 - 1) * 1000) / 10 : null; }
+  const r = serieRowAno["2024"]; return r && r.var_pct != null ? r.var_pct : null; }
 function edadItems(reg, com) {
-  const row = com ? comByCut[cutByComuna[com]] : reg ? regByName[reg] : null;
-  if (!row || row.pct_0_14 == null || row.pct_65_mas == null) return D.edad.map(e => ({ nombre: e.grupo, valor: e.pct }));
-  const p0 = row.pct_0_14, p65 = row.pct_65_mas;
-  return [
+  const row = com ? comByCut[cutByComuna[com]] : reg ? regByName[reg] : null; if (!row || row.pct_0_14 == null || row.pct_65_mas == null) return D.edad.map(e => ({ nombre: e.grupo, valor: e.pct })); const p0 = row.pct_0_14, p65 = row.pct_65_mas; return [
     { nombre: "0 a 14 años", valor: p0 },
     { nombre: "15 a 64 años", valor: Math.max(0, Math.round((100 - p0 - p65) * 10) / 10) },
     { nombre: "65 años y más", valor: p65 },
-  ];
-}
+  ]; }
 
 // ---------- controles (filtros globales arriba + selectores del mapa) ----------
-const selAno = document.getElementById("f-ano");
-const selR = document.getElementById("f-region");
-const selC = document.getElementById("f-comuna");
-const selInd = document.getElementById("f-ind");
-const selInd2 = document.getElementById("f-ind2");
-
-[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => selR.appendChild(new Option(r, r)));
-function poblarComunas() {
-  const reg = selR.value, prev = selC.value;
-  const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort();
-  selC.innerHTML = '<option value="">Todas</option>' + coms.map(c => `<option>${c}</option>`).join("");
-  if (reg && coms.indexOf(prev) >= 0) selC.value = prev;  // conserva la comuna si sigue en la region
-  selC.disabled = !reg;
-}
+const selAno = document.getElementById("f-ano"); const selR = document.getElementById("f-region"); const selC = document.getElementById("f-comuna"); const selInd = document.getElementById("f-ind"); const selInd2 = document.getElementById("f-ind2"); [...new Set(D.comunas.map(c => c.region))].sort().forEach(r => selR.appendChild(new Option(r, r))); function poblarComunas() {
+  const reg = selR.value, prev = selC.value; const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort(); selC.innerHTML = '<option value="">Todas</option>' + coms.map(c => `<option>${c}</option>`).join(""); if (reg && coms.indexOf(prev) >= 0) selC.value = prev; // conserva la comuna si sigue en la region
+  selC.disabled = !reg; }
 // poblar indicador: SOLO los grupos Vivienda / Energia en el hogar / Movilidad (pedido del usuario
 // 2026-08-18) + los especiales "Población por año" (solo en Indicador: los usa el filtro de Año).
-let IND_DEFAULT = "__pob";
-(function () {
-  const ogP = document.createElement("optgroup"); ogP.label = "Población (por año)";
-  ogP.appendChild(new Option(ESPECIALES.__pob.label, "__pob"));
-  ogP.appendChild(new Option(ESPECIALES.__var.label, "__var"));
-  selInd.appendChild(ogP);
-  const GRUPOS_IND = ["Vivienda", "Energía en el hogar", "Movilidad"];
-  let og = null, gn = null;
-  D.indicadores.filter(i => GRUPOS_IND.indexOf(i.grupo) >= 0).forEach(i => {
+let IND_DEFAULT = "__pob"; (function () {
+  const ogP = document.createElement("optgroup"); ogP.label = "Población (por año)"; ogP.appendChild(new Option(ESPECIALES.__pob.label, "__pob")); ogP.appendChild(new Option(ESPECIALES.__var.label, "__var")); selInd.appendChild(ogP); const GRUPOS_IND = ["Vivienda", "Energía en el hogar", "Movilidad"]; let og = null, gn = null; D.indicadores.filter(i => GRUPOS_IND.indexOf(i.grupo) >= 0).forEach(i => {
     if (i.grupo !== gn) { og = document.createElement("optgroup"); og.label = i.grupo; selInd.appendChild(og); gn = i.grupo; }
-    og.appendChild(new Option(i.label, i.k));
-  });
-  const primero = D.indicadores.find(i => GRUPOS_IND.indexOf(i.grupo) >= 0);
-  if (primero) IND_DEFAULT = primero.k;
-  selInd.value = IND_DEFAULT;
-  // "Cruzar con": estrictamente los 3 grupos (sin los especiales de poblacion)
+    og.appendChild(new Option(i.label, i.k)); }); const primero = D.indicadores.find(i => GRUPOS_IND.indexOf(i.grupo) >= 0); if (primero) IND_DEFAULT = primero.k; selInd.value = IND_DEFAULT; // "Cruzar con": estrictamente los 3 grupos (sin los especiales de poblacion)
   selInd2.innerHTML = '<option value="">— (ninguno)</option>' +
-    Array.from(selInd.querySelectorAll("optgroup")).slice(1).map(g => g.outerHTML).join("");
-})();
-
-function colsCon(base) {
-  return base.concat(D.indicadores.map(i => ({ k: i.k, titulo: i.label, num: true, fmt: v => fmtInd(i, v) })));
-}
+    Array.from(selInd.querySelectorAll("optgroup")).slice(1).map(g => g.outerHTML).join(""); })(); function colsCon(base) {
+  return base.concat(D.indicadores.map(i => ({ k: i.k, titulo: i.label, num: true, fmt: v => fmtInd(i, v) }))); }
 // tabla region: fija (no depende de los filtros)
-PW.tabla("t-regiones", colsCon([{ k: "region", titulo: "Región" }]), D.regiones, { orden: "poblacion", buscador: false });
-
-let tab = null;
-function pintarMapa(mk, ano, foco, resaltar) {
-  const m = indMeta(mk);
-  document.getElementById("mapa-wrap").innerHTML = '<div id="mapa"></div>';
-  PW.choropleth("mapa", {
+PW.tabla("t-regiones", colsCon([{ k: "region", titulo: "Región" }]), D.regiones, { orden: "poblacion", buscador: false }); let tab = null; function pintarMapa(mk, ano, foco, resaltar) {
+  const m = indMeta(mk); document.getElementById("mapa-wrap").innerHTML = '<div id="mapa"></div>'; PW.choropleth("mapa", {
     valores: Object.fromEntries(D.comunas.map(c => [c.cut, valorInd(c, mk, ano)])),
     fmt: v => fmtInd(m, v), alto: 520,
     foco: foco, focoPad: foco ? 0.05 : 0.15, focoMaxZoom: 11,  // [#2] zoom mas ajustado por region/comuna
     resaltar: resaltar,                                        // [#3] borde rojo en la comuna elegida
-  });
-}
+  }); }
 
 // [#1 CRUCE] scatter page-local: comunas por (indicador A, B) + correlacion de Pearson. SVG theme-aware.
 function scatterCruce(cont, cfg) {
-  const el = document.getElementById(cont);
-  const pts = cfg.puntos.filter(p => p.x != null && p.y != null && !Number.isNaN(p.x) && !Number.isNaN(p.y));
-  if (pts.length < 3) { el.innerHTML = '<p class="nota">Se necesitan al menos 3 comunas con dato en ambos indicadores.</p>'; return null; }
-  const W = 720, H = 380, mL = 60, mR = 14, mT = 12, mB = 46;
-  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
-  const xmin = Math.min(...xs), xmax = Math.max(...xs), ymin = Math.min(...ys), ymax = Math.max(...ys);
-  const px = v => mL + (xmax === xmin ? 0.5 : (v - xmin) / (xmax - xmin)) * (W - mL - mR);
-  const py = v => H - mB - (ymax === ymin ? 0.5 : (v - ymin) / (ymax - ymin)) * (H - mT - mB);
-  const n = pts.length, mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;
-  let sxy = 0, sxx = 0, syy = 0;
-  pts.forEach(p => { const dx = p.x - mx, dy = p.y - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; });
-  const r = (sxx > 0 && syy > 0) ? sxy / Math.sqrt(sxx * syy) : null;
-  const E = PW.esc, ax = "var(--border)", tx = "var(--ink-3)", dot = PW.color("--s2");
-  const dots = pts.map(p => `<circle cx="${px(p.x).toFixed(1)}" cy="${py(p.y).toFixed(1)}" r="3.6" fill="${dot}" fill-opacity="0.55"><title>${E(p.nombre)}: ${E(cfg.fmtX(p.x))} · ${E(cfg.fmtY(p.y))}</title></circle>`).join("");
-  el.innerHTML = `<div class="scroll-x"><svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;font:12px system-ui,sans-serif">
+  const el = document.getElementById(cont); const pts = cfg.puntos.filter(p => p.x != null && p.y != null && !Number.isNaN(p.x) && !Number.isNaN(p.y)); if (pts.length < 3) { el.innerHTML = '<p class="nota">Se necesitan al menos 3 comunas con dato en ambos indicadores.</p>'; return null; }
+  const W = 720, H = 380, mL = 60, mR = 14, mT = 12, mB = 46; const xs = pts.map(p => p.x), ys = pts.map(p => p.y); const xmin = Math.min(...xs), xmax = Math.max(...xs), ymin = Math.min(...ys), ymax = Math.max(...ys); const px = v => mL + (xmax === xmin ? 0.5 : (v - xmin) / (xmax - xmin)) * (W - mL - mR); const py = v => H - mB - (ymax === ymin ? 0.5 : (v - ymin) / (ymax - ymin)) * (H - mT - mB); const n = pts.length, mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n; let sxy = 0, sxx = 0, syy = 0; pts.forEach(p => { const dx = p.x - mx, dy = p.y - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }); const r = (sxx > 0 && syy > 0) ? sxy / Math.sqrt(sxx * syy) : null; const E = PW.esc, ax = "var(--border)", tx = "var(--ink-3)", dot = PW.color("--s2"); const dots = pts.map(p => `<circle cx="${px(p.x).toFixed(1)}" cy="${py(p.y).toFixed(1)}" r="3.6" fill="${dot}" fill-opacity="0.55"><title>${E(p.nombre)}: ${E(cfg.fmtX(p.x))} · ${E(cfg.fmtY(p.y))}</title></circle>`).join(""); el.innerHTML = `<div class="scroll-x"><svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;height:auto;font:12px system-ui,sans-serif">
     <line x1="${mL}" y1="${H - mB}" x2="${W - mR}" y2="${H - mB}" stroke="${ax}"/>
     <line x1="${mL}" y1="${mT}" x2="${mL}" y2="${H - mB}" stroke="${ax}"/>
     <text x="${mL}" y="${H - mB + 16}" fill="${tx}">${E(cfg.fmtX(xmin))}</text>
@@ -289,251 +202,124 @@ function scatterCruce(cont, cfg) {
     <text x="${(mL + W - mR) / 2}" y="${H - 6}" fill="${tx}" text-anchor="middle">${E(cfg.xlab)}</text>
     <text transform="translate(15,${(mT + H - mB) / 2}) rotate(-90)" fill="${tx}" text-anchor="middle">${E(cfg.ylab)}</text>
     ${dots}
-  </svg></div>`;
-  return r;
-}
+  </svg></div>`; return r; }
 // ---------- aplicar: TODA la pagina reacciona al estado {ano, reg, com, ind, ind2} ----------
 function aplicar() {
-  const ano = selAno.value, reg = selR.value, com = selC.value;
-  const mk = selInd.value, m = indMeta(mk);
-  const terr = com ? (com + ", " + reg) : reg ? reg : "Chile (346 comunas)";
-  const row = com ? comByCut[cutByComuna[com]] : reg ? regByName[reg] : null;
-
-  document.getElementById("ctx").innerHTML =
+  const ano = selAno.value, reg = selR.value, com = selC.value; const mk = selInd.value, m = indMeta(mk); const terr = com ? (com + ", " + reg) : reg ? reg : "Chile (346 comunas)"; const row = com ? comByCut[cutByComuna[com]] : reg ? regByName[reg] : null; document.getElementById("ctx").innerHTML =
     ano === "2024"
       ? "Mostrando <b>" + PW.esc(terr) + "</b> · <b>Censo 2024</b> (población + indicadores detallados)."
       : ano === "2017"
       ? "Mostrando <b>" + PW.esc(terr) + "</b> · <b>Censo 2017</b>: población y variación 2017→2024 por " +
         "región/comuna. Los indicadores detallados (edad, escolaridad…) solo se midieron con este desglose en el Censo 2024."
       : "Mostrando <b>Censo 2002</b>: solo el total nacional es homologable (los códigos comunales de 2002 " +
-        "no calzan con el CUT actual) — el mapa y el top comunal quedan sin dato para este año.";
-
-  // KPIs POR AÑO: cada año muestra lo que ese censo tiene (nunca se inventa)
-  const pob = poblacionTerritorio(ano, reg, com);
-  const kpis = [];
-  if (ano === "2024") {
-    kpis.push([PW.fmt(pob), "habitantes", "Censo 2024 · " + terr]);
-    if (row) {
-      kpis.push([PW.fmt(row.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]);
-      kpis.push([PW.fmt(row.escolaridad_prom_18mas, 1) + " años", "escolaridad (18+)", "Censo 2024"]);
-      kpis.push([PW.fmt(row.pct_65_mas, 1) + "%", "65 años o más", "Censo 2024"]);
-      kpis.push([PW.fmt(row.indice_envejecimiento, 0), "índice de envejecimiento", "Censo 2024"]);
-    } else {
-      kpis.push([PW.fmt(D.nacional.hogares), "hogares", "Censo 2024"]);
-      kpis.push([PW.fmt(D.nacional.viviendas), "viviendas ocupadas", "Censo 2024"]);
-      kpis.push([PW.fmt(D.nacional.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]);
-      kpis.push([PW.fmt(D.nacional.escolaridad, 1) + " años", "escolaridad (18+)", "Censo 2024"]);
-    }
+        "no calzan con el CUT actual) — el mapa y el top comunal quedan sin dato para este año."; // KPIs POR AÑO: cada año muestra lo que ese censo tiene (nunca se inventa)
+  const pob = poblacionTerritorio(ano, reg, com); const kpis = []; if (ano === "2024") {
+    kpis.push([PW.fmt(pob), "habitantes", "Censo 2024 · " + terr]); if (row) {
+      kpis.push([PW.fmt(row.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]); kpis.push([PW.fmt(row.escolaridad_prom_18mas, 1) + " años", "escolaridad (18+)", "Censo 2024"]); kpis.push([PW.fmt(row.pct_65_mas, 1) + "%", "65 años o más", "Censo 2024"]); kpis.push([PW.fmt(row.indice_envejecimiento, 0), "índice de envejecimiento", "Censo 2024"]); } else {
+      kpis.push([PW.fmt(D.nacional.hogares), "hogares", "Censo 2024"]); kpis.push([PW.fmt(D.nacional.viviendas), "viviendas ocupadas", "Censo 2024"]); kpis.push([PW.fmt(D.nacional.edad_promedio, 1) + " años", "edad promedio", "Censo 2024"]); kpis.push([PW.fmt(D.nacional.escolaridad, 1) + " años", "escolaridad (18+)", "Censo 2024"]); }
   } else if (ano === "2017") {
-    kpis.push([pob != null ? PW.fmt(pob) : "—", "habitantes", "Censo 2017 · " + terr]);
-    const v = varTerritorio(reg, com);
-    if (v != null) kpis.push([(v > 0 ? "+" : "") + PW.fmt(v, 1) + "%", "variación 2017 → 2024", terr]);
-    if ((reg || com) && pob != null && serieByAno["2017"])
-      kpis.push([PW.fmt(100 * pob / serieByAno["2017"], 1) + "%", "del país en 2017", "participación"]);
-    const r17 = serieRowAno["2017"];
-    if (r17 && r17.var_pct != null)
+    kpis.push([pob != null ? PW.fmt(pob) : "—", "habitantes", "Censo 2017 · " + terr]); const v = varTerritorio(reg, com); if (v != null) kpis.push([(v > 0 ? "+" : "") + PW.fmt(v, 1) + "%", "variación 2017 → 2024", terr]); if ((reg || com) && pob != null && serieByAno["2017"])
+      kpis.push([PW.fmt(100 * pob / serieByAno["2017"], 1) + "%", "del país en 2017", "participación"]); const r17 = serieRowAno["2017"]; if (r17 && r17.var_pct != null)
       kpis.push([(r17.var_pct > 0 ? "+" : "") + PW.fmt(r17.var_pct, 1) + "%", "variación 2002 → 2017 (país)",
-                 r17.crec_anual != null ? "crecimiento anual " + PW.fmt(r17.crec_anual, 1) + "%" : ""]);
-  } else {  // 2002 — solo el dato de ESE censo (sin tarjetas de otros años, que confundían)
-    const r02 = serieRowAno["2002"] || {};
-    kpis.push([PW.fmt(serieByAno["2002"]), "habitantes (país)", "Censo 2002" + ((reg || com) ? " · sin dato comunal homologable" : "")]);
-    if (r02.var_pct != null)
+                 r17.crec_anual != null ? "crecimiento anual " + PW.fmt(r17.crec_anual, 1) + "%" : ""]); } else {  // 2002 — solo el dato de ESE censo (sin tarjetas de otros años, que confundían)
+    const r02 = serieRowAno["2002"] || {}; kpis.push([PW.fmt(serieByAno["2002"]), "habitantes (país)", "Censo 2002" + ((reg || com) ? " · sin dato comunal homologable" : "")]); if (r02.var_pct != null)
       kpis.push([(r02.var_pct > 0 ? "+" : "") + PW.fmt(r02.var_pct, 1) + "%", "variación 1992 → 2002 (país)",
-                 r02.crec_anual != null ? "crecimiento anual " + PW.fmt(r02.crec_anual, 1) + "%" : ""]);
-  }
+                 r02.crec_anual != null ? "crecimiento anual " + PW.fmt(r02.crec_anual, 1) + "%" : ""]); }
   document.getElementById("kpis").innerHTML = kpis.map(d =>
-    `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-  // Edad: el desglose por tramo solo existe homologado para el Censo 2024
+    `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Edad: el desglose por tramo solo existe homologado para el Censo 2024
   if (ano === "2024") {
-    PW.barras("g-edad", { items: edadItems(reg, com), fmtV: v => PW.fmt(v, 1) + "%" });
-    document.getElementById("nota-edad").textContent =
-      "Distribución de la población por tramo de edad — " + (row ? terr : "país") + " (Censo 2024).";
-  } else {
+    PW.barras("g-edad", { items: edadItems(reg, com), fmtV: v => PW.fmt(v, 1) + "%" }); document.getElementById("nota-edad").textContent =
+      "Distribución de la población por tramo de edad — " + (row ? terr : "país") + " (Censo 2024)."; } else {
     document.getElementById("g-edad").innerHTML =
       '<p class="nota">El desglose de edad por tramo está homologado en el sitio solo para el <b>Censo 2024</b>. ' +
-      'Elige "Censo 2024" en el filtro de Año para verlo.</p>';
-    document.getElementById("nota-edad").textContent =
-      "El Censo " + ano + " no está integrado con este desglose (dato homologado disponible: Censo 2024).";
-  }
+      'Elige "Censo 2024" en el filtro de Año para verlo.</p>'; document.getElementById("nota-edad").textContent =
+      "El Censo " + ano + " no está integrado con este desglose (dato homologado disponible: Censo 2024)."; }
 
   // Mapa: comuna => contexto de su region (no colapsa a 1 resultado) + resaltado rojo; region => zoom; nada => Chile
-  const scopeReg = com ? (comByCut[cutByComuna[com]] || {}).region : reg;
-  const foco = scopeReg ? D.comunas.filter(c => c.region === scopeReg).map(c => c.cut) : null;
-  const resaltar = com ? cutByComuna[com] : null;
-  pintarMapa(mk, ano, foco, resaltar);
-
-  // Top-20 (region de contexto o todas) + tabla de comunas (detalle: filtra por comuna si hay)
-  const baseReg = D.comunas.filter(c => !scopeReg || c.region === scopeReg);
-  const topItems = baseReg.map(c => ({ nombre: c.comuna, valor: valorInd(c, mk, ano), extra: c.region }))
-    .filter(x => x.valor != null).sort((a, b) => b.valor - a.valor).slice(0, 20);
-  if (topItems.length) PW.barras("g-top", { items: topItems, fmtV: v => fmtInd(m, v) });
-  else document.getElementById("g-top").innerHTML =
-    '<p class="nota">Sin dato comunal para el Censo ' + ano + ' con este indicador.</p>';
-  const filasTabla = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
-  if (tab) tab.actualizar(filasTabla);
-  else tab = PW.tabla("t-comunas",
+  const scopeReg = com ? (comByCut[cutByComuna[com]] || {}).region : reg; const foco = scopeReg ? D.comunas.filter(c => c.region === scopeReg).map(c => c.cut) : null; const resaltar = com ? cutByComuna[com] : null; pintarMapa(mk, ano, foco, resaltar); // Top-20 (region de contexto o todas) + tabla de comunas (detalle: filtra por comuna si hay)
+  const baseReg = D.comunas.filter(c => !scopeReg || c.region === scopeReg); const topItems = baseReg.map(c => ({ nombre: c.comuna, valor: valorInd(c, mk, ano), extra: c.region }))
+    .filter(x => x.valor != null).sort((a, b) => b.valor - a.valor).slice(0, 20); if (topItems.length) PW.barras("g-top", { items: topItems, fmtV: v => fmtInd(m, v) }); else document.getElementById("g-top").innerHTML =
+    '<p class="nota">Sin dato comunal para el Censo ' + ano + ' con este indicador.</p>'; const filasTabla = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com)); if (tab) tab.actualizar(filasTabla); else tab = PW.tabla("t-comunas",
     colsCon([{ k: "comuna", titulo: "Comuna" }, { k: "region", titulo: "Región" }]),
-    filasTabla, { orden: "poblacion", max: 400 });
-
-  // [#1] cruce: scatter A (mapa) vs B (2o selector), sobre la region de contexto (o todas)
-  const k2 = selInd2.value, card = document.getElementById("card-cruce");
-  if (k2 && k2 === mk) {
+    filasTabla, { orden: "poblacion", max: 400 }); // [#1] cruce: scatter A (mapa) vs B (2o selector), sobre la region de contexto (o todas)
+  const k2 = selInd2.value, card = document.getElementById("card-cruce"); if (k2 && k2 === mk) {
     // mismo indicador en el mapa y en "Cruzar con": avisar en vez de ocultar en silencio
-    card.style.display = "";
-    document.getElementById("g-cruce").innerHTML = "";
-    document.getElementById("exp-cruce").innerHTML = "";
-    document.getElementById("nota-cruce").textContent =
+    card.style.display = ""; document.getElementById("g-cruce").innerHTML = ""; document.getElementById("exp-cruce").innerHTML = ""; document.getElementById("nota-cruce").textContent =
       "Elegiste el mismo indicador en el mapa y en \"Cruzar con\" (" + m.label + "). " +
-      "Elige un indicador distinto para ver el cruce entre ambos.";
-  } else if (k2) {
-    const m2 = indMeta(k2);
-    const pts = baseReg.map(c => ({ x: valorInd(c, mk, ano), y: valorInd(c, k2, ano), nombre: c.comuna }))
-      .filter(p => p.x != null && p.y != null);
-    const r = scatterCruce("g-cruce", { puntos: pts, xlab: m.label, ylab: m2.label,
-      fmtX: v => fmtInd(m, v), fmtY: v => fmtInd(m2, v) });
-    const ar = r == null ? 0 : Math.abs(r);
-    const fuerza = r == null ? "" : (ar >= 0.7 ? " (correlación fuerte)" : ar >= 0.4 ? " (moderada)" :
-      ar >= 0.2 ? " (débil)" : " (casi nula)");
-    // [EXPLICACION] lectura automatica del cruce elegido, en lenguaje simple
-    const E = PW.esc;
-    let lectura;
-    if (r == null || ar < 0.05) {
+      "Elige un indicador distinto para ver el cruce entre ambos."; } else if (k2) {
+    const m2 = indMeta(k2); const pts = baseReg.map(c => ({ x: valorInd(c, mk, ano), y: valorInd(c, k2, ano), nombre: c.comuna }))
+      .filter(p => p.x != null && p.y != null); const r = scatterCruce("g-cruce", { puntos: pts, xlab: m.label, ylab: m2.label,
+      fmtX: v => fmtInd(m, v), fmtY: v => fmtInd(m2, v) }); const ar = r == null ? 0 : Math.abs(r); const fuerza = r == null ? "" : (ar >= 0.7 ? " (correlación fuerte)" : ar >= 0.4 ? " (moderada)" :
+      ar >= 0.2 ? " (débil)" : " (casi nula)"); // [EXPLICACION] lectura automatica del cruce elegido, en lenguaje simple
+    const E = PW.esc; let lectura; if (r == null || ar < 0.05) {
       lectura = "no se observa relación entre ambos: saber el nivel de <b>" + E(m.label) +
-        "</b> de una comuna no dice nada sobre su <b>" + E(m2.label) + "</b>.";
-    } else {
+        "</b> de una comuna no dice nada sobre su <b>" + E(m2.label) + "</b>."; } else {
       lectura = (r > 0
         ? "las comunas con más <b>" + E(m.label) + "</b> tienden también a tener más <b>" + E(m2.label) + "</b>"
         : "las comunas con más <b>" + E(m.label) + "</b> tienden a tener menos <b>" + E(m2.label) + "</b>") +
         (ar >= 0.7 ? " — relación fuerte y consistente."
          : ar >= 0.4 ? " — relación moderada (con excepciones)."
-         : " — relación débil: la tendencia existe, pero hay muchas excepciones.");
-    }
+         : " — relación débil: la tendencia existe, pero hay muchas excepciones."); }
     document.getElementById("exp-cruce").innerHTML =
       "<b>Qué estás viendo:</b> cada punto es una comuna" + (scopeReg ? " de " + E(scopeReg) : " de Chile") +
       "; su posición horizontal es su <b>" + E(m.label) + "</b> y la vertical su <b>" + E(m2.label) + "</b>. " +
       "Si los puntos suben en diagonal, ambos indicadores crecen juntos; si bajan, se mueven al revés. " +
       "<b>Lectura de este cruce:</b> " + lectura +
-      " <span style='opacity:.75'>Ojo: es una asociación entre comunas, no una relación causa-efecto.</span>";
-    document.getElementById("nota-cruce").textContent =
+      " <span style='opacity:.75'>Ojo: es una asociación entre comunas, no una relación causa-efecto.</span>"; document.getElementById("nota-cruce").textContent =
       pts.length + " comunas" + (scopeReg ? " de " + scopeReg : "") + ". Pearson r = " +
       (r == null ? "—" : PW.fmt(r, 2)) + fuerza + ". Eje X = " + m.label + ", eje Y = " + m2.label +
-      ". Pasa el mouse por un punto para ver la comuna.";
-    card.style.display = "";
-  } else {
-    card.style.display = "none";
-  }
+      ". Pasa el mouse por un punto para ver la comuna."; card.style.display = ""; } else {
+    card.style.display = "none"; }
 
   // Crecimiento 2017→2024 (respeta el filtro de region; resalta la comuna elegida)
   // crecimiento: la tarjeta esta plegada por defecto -> solo se dibuja cuando esta abierta
   // (Leaflet no puede medir un contenedor oculto); al abrirla, el toggle re-dibuja con estos args
-  crecArgs = [scopeReg, resaltar];
-  if (document.getElementById("card-crec").open) pintarCrecimiento(scopeReg, resaltar);
-  sincronizarFiltrosMapa();
-}
-let crecArgs = [null, null];
-document.getElementById("card-crec").addEventListener("toggle", e => {
-  if (e.target.open) pintarCrecimiento(crecArgs[0], crecArgs[1]);
-});
-
-// [FILTRO EN EL MAPA] Region/Comuna tambien en la tarjeta del Mapa comunal (pedido 2026-08-18).
+  crecArgs = [scopeReg, resaltar]; if (document.getElementById("card-crec").open) pintarCrecimiento(scopeReg, resaltar); sincronizarFiltrosMapa(); }
+let crecArgs = [null, null]; document.getElementById("card-crec").addEventListener("toggle", e => {
+  if (e.target.open) pintarCrecimiento(crecArgs[0], crecArgs[1]); }); // [FILTRO EN EL MAPA] Region/Comuna tambien en la tarjeta del Mapa comunal (pedido 2026-08-18).
 // Son PROXIES del filtro global: cambiar cualquiera de los dos actualiza el mismo estado (toda la
 // pagina reacciona), y aplicar() los mantiene espejados.
-const selRM = document.getElementById("f-region-mapa");
-const selCM = document.getElementById("f-comuna-mapa");
-selRM.innerHTML = selR.innerHTML;
-function sincronizarFiltrosMapa() {
-  if (!selRM) return;
-  selRM.value = selR.value;
-  selCM.innerHTML = selC.innerHTML;
-  selCM.value = selC.value;
-  selCM.disabled = selC.disabled;
-}
-selRM.addEventListener("input", () => { selR.value = selRM.value; selR.dispatchEvent(new Event("input", { bubbles: true })); });
-selCM.addEventListener("input", () => { selC.value = selCM.value; selC.dispatchEvent(new Event("input", { bubbles: true })); });
-
-// [CRECIMIENTO 2017→2024] choropleth DIVERGENTE page-local (PW.choropleth es secuencial):
+const selRM = document.getElementById("f-region-mapa"); const selCM = document.getElementById("f-comuna-mapa"); selRM.innerHTML = selR.innerHTML; function sincronizarFiltrosMapa() {
+  if (!selRM) return; selRM.value = selR.value; selCM.innerHTML = selC.innerHTML; selCM.value = selC.value; selCM.disabled = selC.disabled; }
+selRM.addEventListener("input", () => { selR.value = selRM.value; selR.dispatchEvent(new Event("input", { bubbles: true })); }); selCM.addEventListener("input", () => { selC.value = selCM.value; selC.dispatchEvent(new Event("input", { bubbles: true })); }); // [CRECIMIENTO 2017→2024] choropleth DIVERGENTE page-local (PW.choropleth es secuencial):
 // rojo = disminución, verde = aumento, gris = sin comparación 2017. Cortes fijos alineados a la
 // distribución real (p10 ≈ -4,4 / mediana ≈ 4,8 / p90 ≈ 16). Nunca se inventa: sin pob_2017 => gris.
 // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) recien
 // al abrir esta tarjeta (por defecto plegada), no en cada carga de la pagina.
 async function pintarCrecimiento(scopeReg, resaltar) {
-  const wrap = document.getElementById("crec-wrap");
-  const geo = (await PW.cargarGeoComunas()) ? window.PW_DATA.geo_comunas : null;
-  if (!geo || typeof L === "undefined") { wrap.innerHTML = '<p class="nota">Mapa no disponible (falta la cartografía).</p>'; return; }
-  wrap.innerHTML = '<div id="mapa-crec"></div>';
-  const el = document.getElementById("mapa-crec");
-  el.classList.add("pw-mapa"); el.style.height = "480px";
-  const raiz = document.documentElement;
-  const oscuro = raiz.dataset.theme === "dark" ||
-    (raiz.dataset.theme !== "light" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const m = L.map(el, { zoomSnap: 0.5 }).setView([-35.5, -71.3], 4.5);
-  PW.acotarAChile(m);  // zoom minimo = todo Chile + paneo acotado (homologado 2026-08-18)
+  const wrap = document.getElementById("crec-wrap"); const geo = (await PW.cargarGeoComunas()) ? window.PW_DATA.geo_comunas : null; if (!geo || typeof L === "undefined") { wrap.innerHTML = '<p class="nota">Mapa no disponible (falta la cartografía).</p>'; return; }
+  wrap.innerHTML = '<div id="mapa-crec"></div>'; const el = document.getElementById("mapa-crec"); el.classList.add("pw-mapa"); el.style.height = "480px"; const raiz = document.documentElement; const oscuro = raiz.dataset.theme === "dark" ||
+    (raiz.dataset.theme !== "light" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches); const m = L.map(el, { zoomSnap: 0.5 }).setView([-35.5, -71.3], 4.5); PW.acotarAChile(m); // zoom minimo = todo Chile + paneo acotado (homologado 2026-08-18)
   // base "Calles" (OSM), homologada con el resto de los mapas del sitio (default 2026-08-18)
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    { attribution: "&copy; OpenStreetMap", maxZoom: 19 }).addTo(m);
-  const CLS = [
+    { attribution: "&copy; OpenStreetMap", maxZoom: 19 }).addTo(m); const CLS = [
     ["disminuye más de 5%", "#b91c1c", v => v < -5],
     ["disminuye hasta 5%", "#f87171", v => v < 0],
     ["crece hasta 5%", "#86efac", v => v < 5],
     ["crece 5 a 15%", "#22c55e", v => v < 15],
     ["crece más de 15%", "#15803d", () => true],
-  ];
-  const SIN = oscuro ? "#2c2c2a" : "#e8e7e2";
-  const colorDe = v => { if (v == null) return SIN; for (const [, c, f] of CLS) if (f(v)) return c; return SIN; };
-  const borde = oscuro ? "#0d0d0d" : "#ffffff";
-  L.geoJSON(geo, {
+  ]; const SIN = oscuro ? "#2c2c2a" : "#e8e7e2"; const colorDe = v => { if (v == null) return SIN; for (const [, c, f] of CLS) if (f(v)) return c; return SIN; }; const borde = oscuro ? "#0d0d0d" : "#ffffff"; L.geoJSON(geo, {
     style: f => ({ fillColor: colorDe((VAR[f.properties.cut] || {}).var ?? null), fillOpacity: 0.8, color: borde, weight: 0.6 }),
     onEachFeature: (f, ly) => {
-      const v = VAR[f.properties.cut] || {};
-      const txt = v.var != null
+      const v = VAR[f.properties.cut] || {}; const txt = v.var != null
         ? PW.fmt(v.pob_2017) + " → " + PW.fmt(v.pob_2024) + " · " + (v.var > 0 ? "+" : "") + PW.fmt(v.var, 1) + "%"
-        : "sin comparación 2017";
-      ly.bindTooltip(f.properties.comuna + ": " + txt, { sticky: true });
-      ly.on("mouseover", () => { ly.setStyle({ weight: 2, color: PW.color("--ink-1") }); ly.bringToFront(); });
-      ly.on("mouseout", () => ly.setStyle({ weight: 0.6, color: borde }));
-    },
-  }).addTo(m);
-  if (resaltar) {
-    const ft = geo.features.filter(f => f.properties.cut === resaltar);
-    if (ft.length) L.geoJSON({ type: "FeatureCollection", features: ft },
-      { style: { color: "#e11d48", weight: 3, opacity: 1, fill: false } }).addTo(m);
-  }
+        : "sin comparación 2017"; ly.bindTooltip(f.properties.comuna + ": " + txt, { sticky: true }); ly.on("mouseover", () => { ly.setStyle({ weight: 2, color: PW.color("--ink-1") }); ly.bringToFront(); }); ly.on("mouseout", () => ly.setStyle({ weight: 0.6, color: borde })); },
+  }).addTo(m); if (resaltar) {
+    const ft = geo.features.filter(f => f.properties.cut === resaltar); if (ft.length) L.geoJSON({ type: "FeatureCollection", features: ft },
+      { style: { color: "#e11d48", weight: 3, opacity: 1, fill: false } }).addTo(m); }
   if (scopeReg) {
-    const b = PW.boundsComunas(D.comunas.filter(c => c.region === scopeReg).map(c => c.cut));
-    if (b) m.fitBounds(b.pad(0.05), { animate: false, maxZoom: 11 });
-  }
-  PW.leyendaMapa("ley-crec", CLS.map(([t, c]) => [t, c]).concat([["sin comparación 2017", SIN]]));
-  // rankings dentro del ambito (region de contexto o pais)
+    const b = PW.boundsComunas(D.comunas.filter(c => c.region === scopeReg).map(c => c.cut)); if (b) m.fitBounds(b.pad(0.05), { animate: false, maxZoom: 11 }); }
+  PW.leyendaMapa("ley-crec", CLS.map(([t, c]) => [t, c]).concat([["sin comparación 2017", SIN]])); // rankings dentro del ambito (region de contexto o pais)
   const filas = D.comunas.filter(c => !scopeReg || c.region === scopeReg)
-    .map(c => ({ nombre: c.comuna, v: (VAR[c.cut] || {}).var, extra: c.region })).filter(x => x.v != null);
-  const arriba = filas.slice().sort((a, b) => b.v - a.v).slice(0, 10);
-  const abajo = filas.slice().sort((a, b) => a.v - b.v).filter(x => x.v < 0).slice(0, 10);
-  PW.barras("g-crecen", { items: arriba.map(x => ({ nombre: x.nombre, valor: x.v, extra: x.extra })),
-    fmtV: v => "+" + PW.fmt(v, 1) + "%", color: "#15803d" });
-  if (abajo.length) PW.barras("g-decrecen", { items: abajo.map(x => ({ nombre: x.nombre, valor: Math.abs(x.v), extra: x.extra })),
-    fmtV: v => "-" + PW.fmt(v, 1) + "%", color: "#b91c1c" });
-  else document.getElementById("g-decrecen").innerHTML = '<p class="nota">Ninguna comuna decrece en este ámbito.</p>';
-}
+    .map(c => ({ nombre: c.comuna, v: (VAR[c.cut] || {}).var, extra: c.region })).filter(x => x.v != null); const arriba = filas.slice().sort((a, b) => b.v - a.v).slice(0, 10); const abajo = filas.slice().sort((a, b) => a.v - b.v).filter(x => x.v < 0).slice(0, 10); PW.barras("g-crecen", { items: arriba.map(x => ({ nombre: x.nombre, valor: x.v, extra: x.extra })),
+    fmtV: v => "+" + PW.fmt(v, 1) + "%", color: "#15803d" }); if (abajo.length) PW.barras("g-decrecen", { items: abajo.map(x => ({ nombre: x.nombre, valor: Math.abs(x.v), extra: x.extra })),
+    fmtV: v => "-" + PW.fmt(v, 1) + "%", color: "#b91c1c" }); else document.getElementById("g-decrecen").innerHTML = '<p class="nota">Ninguna comuna decrece en este ámbito.</p>'; }
 
 selAno.addEventListener("input", () => {
   // al salir de 2024 con un indicador que solo existe en 2024, el mapa pasa a "Población (del año)"
-  if (selAno.value !== "2024" && !ESPECIALES[selInd.value]) selInd.value = "__pob";
-  aplicar();
-});
-selR.addEventListener("input", () => { poblarComunas(); aplicar(); });
-selC.addEventListener("input", aplicar);
-selInd.addEventListener("input", aplicar);
-selInd2.addEventListener("input", aplicar);
-document.getElementById("f-limpiar").addEventListener("click", () => {
-  selAno.value = "2024"; selR.value = ""; poblarComunas(); selC.value = "";
-  selInd.value = IND_DEFAULT; selInd2.value = "";
-  aplicar();
-});
-// geo_comunas.js (~4 MB) ya no se carga fijo: el mapa principal (PW.choropleth) lo necesita, asi
-// que la primera pintada espera a que este disponible bajo demanda (comun.js:cargarGeoComunas);
-// los refrescos por filtro ya lo tienen cacheado.
-PW.cargarGeoComunas().then(aplicar);
-</script>
+  if (selAno.value !== "2024" && !ESPECIALES[selInd.value]) selInd.value = "__pob"; aplicar(); }); selR.addEventListener("input", () => { poblarComunas(); aplicar(); }); selC.addEventListener("input", aplicar); selInd.addEventListener("input", aplicar); selInd2.addEventListener("input", aplicar); document.getElementById("f-limpiar").addEventListener("click", () => {
+  selAno.value = "2024"; selR.value = ""; poblarComunas(); selC.value = ""; selInd.value = IND_DEFAULT; selInd2.value = ""; aplicar(); }); // geo_comunas.js (~4 MB) ya no se carga fijo: el mapa principal (PW.choropleth) lo necesita, asi
+// que la primera pintada espera a que este disponible bajo demanda (comun.js:cargarGeoComunas); // los refrescos por filtro ya lo tienen cacheado.
+PW.cargarGeoComunas().then(aplicar); </script>
 </body>
 </html>

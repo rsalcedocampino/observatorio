@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -183,101 +178,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_normativa.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("tracker.html");
-const D = PW_DATA.tracker;
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-
-// Metas OFICIALES desde la biblioteca normativa (Documentos de Gobierno)
-const OF = (window.PW_DATA.c_normativa || {}).oficiales || null;
-if (OF && OF.cargadores_2030 && OF.cargadores_2030.valor) {
-  document.getElementById("meta-carg").value = OF.cargadores_2030.valor;
-  document.getElementById("meta-carg-anio").value = 2030;
-}
+PW.montarNav("tracker.html"); const D = PW_DATA.tracker; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; // Metas OFICIALES desde la biblioteca normativa (Documentos de Gobierno)
+const OF = (window.PW_DATA.c_normativa || {}).oficiales || null; if (OF && OF.cargadores_2030 && OF.cargadores_2030.valor) {
+  document.getElementById("meta-carg").value = OF.cargadores_2030.valor; document.getElementById("meta-carg-anio").value = 2030; }
 
 // ---------- utilidades de proyeccion
 function ymAnum(ym) { const [a, m] = ym.split("-").map(Number); return a + (m - 1) / 12; }
 function numAym(x) {
-  const a = Math.floor(x), m = Math.round((x - a) * 12) + 1;
-  return m > 12 ? (a + 1) + "-01" : a + "-" + String(m).padStart(2, "0");
-}
+  const a = Math.floor(x), m = Math.round((x - a) * 12) + 1; return m > 12 ? (a + 1) + "-01" : a + "-" + String(m).padStart(2, "0"); }
 function ajusteLineal(pares) { // [[x,y],...] -> {a, b} de y = a + b x
-  const n = pares.length;
-  const sx = pares.reduce((s, p) => s + p[0], 0), sy = pares.reduce((s, p) => s + p[1], 0);
-  const sxx = pares.reduce((s, p) => s + p[0] * p[0], 0), sxy = pares.reduce((s, p) => s + p[0] * p[1], 0);
-  const b = (n * sxy - sx * sy) / (n * sxx - sx * sx || 1);
-  return { a: (sy - b * sx) / n, b };
-}
-const logit = p => Math.log(p / (100 - p));
-const invLogit = z => 100 / (1 + Math.exp(-z));
-function fmtAnio(x) { return x == null ? "no llega al ritmo actual" : (x > 2100 ? "despues de 2100" : "~" + Math.round(x)); }
+  const n = pares.length; const sx = pares.reduce((s, p) => s + p[0], 0), sy = pares.reduce((s, p) => s + p[1], 0); const sxx = pares.reduce((s, p) => s + p[0] * p[0], 0), sxy = pares.reduce((s, p) => s + p[0] * p[1], 0); const b = (n * sxy - sx * sy) / (n * sxx - sx * sx || 1); return { a: (sy - b * sx) / n, b }; }
+const logit = p => Math.log(p / (100 - p)); const invLogit = z => 100 / (1 + Math.exp(-z)); function fmtAnio(x) { return x == null ? "no llega al ritmo actual" : (x > 2100 ? "despues de 2100" : "~" + Math.round(x)); }
 function estadoMeta(llegada, anioMeta) {
-  if (llegada == null || llegada > anioMeta + 5) return ["rojo", "var(--critical)", "Lejos de la meta"];
-  if (llegada > anioMeta) return ["amarillo", "var(--warning)", "Atrasado"];
-  return ["verde", "var(--good)", "En trayectoria"];
-}
+  if (llegada == null || llegada > anioMeta + 5) return ["rojo", "var(--critical)", "Lejos de la meta"]; if (llegada > anioMeta) return ["amarillo", "var(--warning)", "Atrasado"]; return ["verde", "var(--good)", "En trayectoria"]; }
 
 // ---------- estado compartido para el semaforo
-const SEM = {};
-function pintarSemaforo() {
-  const filas = [SEM.part, SEM.carg, SEM.renov, SEM.pelp].filter(Boolean);
-  document.getElementById("semaforo").innerHTML = filas.map(f =>
+const SEM = {}; function pintarSemaforo() {
+  const filas = [SEM.part, SEM.carg, SEM.renov, SEM.pelp].filter(Boolean); document.getElementById("semaforo").innerHTML = filas.map(f =>
     `<tr><td>${f.nombre}</td><td class="num">${f.hoy}</td><td>${f.objetivo}</td><td>${f.llegada}</td>` +
-    `<td><span class="sem-punto" style="background:${f.color}"></span>${f.texto}</td></tr>`).join("");
-}
+    `<td><span class="sem-punto" style="background:${f.color}"></span>${f.texto}</td></tr>`).join(""); }
 
 // ---------- 1. participacion: real + requerida + proyecciones
-const part = D.participacion.map(p => ({ ym: p.ym.slice(0, 7), v: p.enchufables }));
-function refrescarPart() {
-  const meta = +document.getElementById("meta-pct").value || 100;
-  const metaAnio = +document.getElementById("meta-anio").value || 2035;
-  const ult = part[part.length - 1];
-  const xUlt = ymAnum(ult.ym);
-
-  // lineal: pendiente 24 meses
-  const hace24 = part[Math.max(0, part.length - 25)];
-  const pendiente = (ult.v - hace24.v) / (xUlt - ymAnum(hace24.ym) || 1); // pts/año
-  const llegadaLin = pendiente > 0.05 ? xUlt + (meta - ult.v) / pendiente : null;
-
-  // logistica: ajuste sobre ultimos 36 meses en espacio logit
-  const base36 = part.slice(-36).filter(p => p.v > 0.15 && p.v < 99);
-  let llegadaLog = null, proyLogFn = null;
-  if (base36.length >= 12) {
-    const fit = ajusteLineal(base36.map(p => [ymAnum(p.ym), logit(p.v)]));
-    if (fit.b > 0.001) {
-      proyLogFn = x => invLogit(fit.a + fit.b * x);
-      llegadaLog = (logit(Math.min(meta, 99.5)) - fit.a) / fit.b;
-    }
+const part = D.participacion.map(p => ({ ym: p.ym.slice(0, 7), v: p.enchufables })); function refrescarPart() {
+  const meta = +document.getElementById("meta-pct").value || 100; const metaAnio = +document.getElementById("meta-anio").value || 2035; const ult = part[part.length - 1]; const xUlt = ymAnum(ult.ym); // lineal: pendiente 24 meses
+  const hace24 = part[Math.max(0, part.length - 25)]; const pendiente = (ult.v - hace24.v) / (xUlt - ymAnum(hace24.ym) || 1); // pts/año
+  const llegadaLin = pendiente > 0.05 ? xUlt + (meta - ult.v) / pendiente : null; // logistica: ajuste sobre ultimos 36 meses en espacio logit
+  const base36 = part.slice(-36).filter(p => p.v > 0.15 && p.v < 99); let llegadaLog = null, proyLogFn = null; if (base36.length >= 12) {
+    const fit = ajusteLineal(base36.map(p => [ymAnum(p.ym), logit(p.v)])); if (fit.b > 0.001) {
+      proyLogFn = x => invLogit(fit.a + fit.b * x); llegadaLog = (logit(Math.min(meta, 99.5)) - fit.a) / fit.b; }
   }
 
   // Vista ANUAL: un punto por año, historia hasta hoy y proyeccion hasta el año meta
-  const anioIni = 2019;
-  const anioHoy = Math.floor(xUlt);
-  const anios = [];
-  for (let a = anioIni; a <= metaAnio; a++) anios.push(a);
-
-  // promedio anual de la serie real
-  const porAnio = {};
-  part.forEach(p => {
-    const a = +p.ym.slice(0, 4);
-    (porAnio[a] = porAnio[a] || []).push(p.v);
-  });
-  const real = anios.map(a => porAnio[a]
-    ? +(porAnio[a].reduce((s, x) => s + x, 0) / porAnio[a].length).toFixed(2) : null);
-
-  // requerida: recta desde hoy a la meta; proyeccion: curva S evaluada por año
+  const anioIni = 2019; const anioHoy = Math.floor(xUlt); const anios = []; for (let a = anioIni; a <= metaAnio; a++) anios.push(a); // promedio anual de la serie real
+  const porAnio = {}; part.forEach(p => {
+    const a = +p.ym.slice(0, 4); (porAnio[a] = porAnio[a] || []).push(p.v); }); const real = anios.map(a => porAnio[a]
+    ? +(porAnio[a].reduce((s, x) => s + x, 0) / porAnio[a].length).toFixed(2) : null); // requerida: recta desde hoy a la meta; proyeccion: curva S evaluada por año
   const req = anios.map(a => {
-    if (a < anioHoy) return null;
-    if (a === anioHoy) return ult.v;
-    return +(Math.min(meta, ult.v + (meta - ult.v) * (a - anioHoy) / Math.max(metaAnio - anioHoy, 1))).toFixed(1);
-  });
-  const proy = anios.map(a => {
-    if (a < anioHoy) return null;
-    if (a === anioHoy) return ult.v;
-    return proyLogFn ? +proyLogFn(a + 0.5).toFixed(1)
-      : (pendiente > 0 ? +Math.min(100, ult.v + pendiente * (a - xUlt)).toFixed(1) : null);
-  });
-
-  PW.lineas("g-part", {
+    if (a < anioHoy) return null; if (a === anioHoy) return ult.v; return +(Math.min(meta, ult.v + (meta - ult.v) * (a - anioHoy) / Math.max(metaAnio - anioHoy, 1))).toFixed(1); }); const proy = anios.map(a => {
+    if (a < anioHoy) return null; if (a === anioHoy) return ult.v; return proyLogFn ? +proyLogFn(a + 0.5).toFixed(1)
+      : (pendiente > 0 ? +Math.min(100, ult.v + pendiente * (a - xUlt)).toFixed(1) : null); }); PW.lineas("g-part", {
     labels: anios.map(String),
     series: [
       { nombre: "Real (promedio anual)", valores: real, area: true },
@@ -288,95 +227,41 @@ function refrescarPart() {
     lineaY: { v: meta, texto: "Meta " + meta + "%" },
     fmtV: v => PW.fmt(v, 1) + "%", fmtY: v => Math.round(v) + "%",
     max: Math.max(meta, 20), alto: 320,
-  });
-
-  const creceReq = (meta - ult.v) / ((metaAnio + 11 / 12 - xUlt) || 1);
-  document.getElementById("kpis").innerHTML = [
+  }); const creceReq = (meta - ult.v) / ((metaAnio + 11 / 12 - xUlt) || 1); document.getElementById("kpis").innerHTML = [
     [PW.fmt(ult.v, 1) + "%", "participación enchufable hoy", "mes " + ult.ym],
     [PW.fmt(pendiente, 1) + " pts/año", "ritmo real (24 meses)", "se requieren " + PW.fmt(creceReq, 1)],
     [fmtAnio(llegadaLin), "llegada proyectada (lineal)", "meta " + meta + "% — objetivo " + metaAnio],
     [fmtAnio(llegadaLog), "llegada proyectada (curva S)", "ajuste logistico 36 meses"],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-  const llegadaRef = llegadaLog != null ? llegadaLog : llegadaLin;
-  const [, colorS, textoS] = estadoMeta(llegadaRef, metaAnio);
-  const esOfP = OF && meta === 100 && metaAnio === 2035;
-  SEM.part = {
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const llegadaRef = llegadaLog != null ? llegadaLog : llegadaLin; const [, colorS, textoS] = estadoMeta(llegadaRef, metaAnio); const esOfP = OF && meta === 100 && metaAnio === 2035; SEM.part = {
     nombre: "Ventas: participación enchufable", hoy: PW.fmt(ult.v, 1) + "%",
     objetivo: meta + "% en " + metaAnio +
       (esOfP ? " (oficial: declarativa, hito 20% en 2030)" : ""),
     llegada: fmtAnio(llegadaRef) + (llegadaLog != null ? " (curva S)" : " (lineal)"),
     color: colorS, texto: textoS,
-  };
-  pintarSemaforo();
-  refrescarParque();
-}
+  }; pintarSemaforo(); refrescarParque(); }
 
 // ---------- ventas por tecnologia (año en curso anualizado)
 (function () {
-  const T = D.ventas_tecnologia;
-  const ultYmVenta = D.ventas_enchufables[D.ventas_enchufables.length - 1].ym.slice(0, 7);
-  const mesesCurso = +ultYmVenta.split("-")[1];
-  const anioCurso = +ultYmVenta.split("-")[0];
-  const labels = T.anios.map(a => a === anioCurso ? a + "*" : String(a));
-  const factor = a => (a === anioCurso && mesesCurso < 12) ? 12 / mesesCurso : 1;
-  // 4 buckets principales + el resto agrupado en "Otros"
+  const T = D.ventas_tecnologia; const ultYmVenta = D.ventas_enchufables[D.ventas_enchufables.length - 1].ym.slice(0, 7); const mesesCurso = +ultYmVenta.split("-")[1]; const anioCurso = +ultYmVenta.split("-")[0]; const labels = T.anios.map(a => a === anioCurso ? a + "*" : String(a)); const factor = a => (a === anioCurso && mesesCurso < 12) ? 12 / mesesCurso : 1; // 4 buckets principales + el resto agrupado en "Otros"
   const orden = Object.entries(T.buckets)
     .map(([b, v]) => [b, v.reduce((s, x) => s + x, 0), v])
-    .sort((a, b) => b[1] - a[1]);
-  const principales = orden.slice(0, 4);
-  const resto = orden.slice(4);
-  const series = principales.map(([b, , v]) =>
-    ({ nombre: b, valores: v.map((x, i) => Math.round(x * factor(T.anios[i]))) }));
-  if (resto.length) {
+    .sort((a, b) => b[1] - a[1]); const principales = orden.slice(0, 4); const resto = orden.slice(4); const series = principales.map(([b, , v]) =>
+    ({ nombre: b, valores: v.map((x, i) => Math.round(x * factor(T.anios[i]))) })); if (resto.length) {
     const suma = T.anios.map((a, i) =>
-      Math.round(resto.reduce((s, [, , v]) => s + v[i], 0) * factor(a)));
-    series.push({ nombre: "Otros (" + resto.map(([b]) => b).join(", ") + ")", valores: suma });
-  }
-  PW.lineas("g-tecnologia", { labels, series, fmtV: v => PW.fmt(v) + " unid.", alto: 300 });
-  document.getElementById("nota-tec").textContent =
+      Math.round(resto.reduce((s, [, , v]) => s + v[i], 0) * factor(a))); series.push({ nombre: "Otros (" + resto.map(([b]) => b).join(", ") + ")", valores: suma }); }
+  PW.lineas("g-tecnologia", { labels, series, fmtV: v => PW.fmt(v) + " unid.", alto: 300 }); document.getElementById("nota-tec").textContent =
     "* " + anioCurso + " anualizado con " + mesesCurso + " meses de datos. Se muestran las 4 " +
-    "tecnologias principales; el resto va agrupado en Otros.";
-})();
-
-const vMes = D.ventas_enchufables.map(x => ({ ym: x.ym.slice(0, 7), u: x.unidades }));
-const desdeV = vMes.findIndex(x => x.ym >= "2020-01");
-PW.columnas("g-ventas", {
+    "tecnologias principales; el resto va agrupado en Otros."; })(); const vMes = D.ventas_enchufables.map(x => ({ ym: x.ym.slice(0, 7), u: x.unidades })); const desdeV = vMes.findIndex(x => x.ym >= "2020-01"); PW.columnas("g-ventas", {
   labels: vMes.slice(desdeV).map(x => x.ym),
   valores: vMes.slice(desdeV).map(x => x.u),
   fmtV: x => PW.fmt(x) + " unid.",
-});
-
-// ---------- 2. infraestructura: real + requerida + proyeccion
+}); // ---------- 2. infraestructura: real + requerida + proyeccion
 function refrescarInfra() {
-  const meta = +document.getElementById("meta-carg").value || 10000;
-  const metaAnio = +document.getElementById("meta-carg-anio").value || 2030;
-  const serie = D.infraestructura;
-  const ult = serie[serie.length - 1];
-  const hoyCarg = D.red_viva ? (D.red_viva.cargadores_publico ?? D.red_viva.cargadores) : ult.cargadores_acum;
-  const xUlt = ymAnum(ult.ym);
-
-  const hace12 = serie[Math.max(0, serie.length - 13)];
-  const ritmo = (ult.cargadores_acum - hace12.cargadores_acum) / 12; // por mes
-  const llegada = ritmo > 0.5 ? xUlt + (meta - ult.cargadores_acum) / ritmo / 12 : null;
-
-  // Vista ANUAL: cierre de cada año (ultimo mes disponible del año)
-  const anioHoy = Math.floor(xUlt);
-  const anios = [];
-  for (let a = 2019; a <= metaAnio; a++) anios.push(a);
-  const cierre = {};
-  serie.forEach(x => { cierre[+x.ym.slice(0, 4)] = x.cargadores_acum; });
-  const real = anios.map(a => cierre[a] != null ? cierre[a] : null);
-  const req = anios.map(a => {
-    if (a < anioHoy) return null;
-    if (a === anioHoy) return ult.cargadores_acum;
-    return Math.round(ult.cargadores_acum + (meta - ult.cargadores_acum) * (a - anioHoy) / Math.max(metaAnio - anioHoy, 1));
-  });
-  const proy = anios.map(a => {
-    if (a < anioHoy) return null;
-    return Math.round(ult.cargadores_acum + ritmo * 12 * (a - xUlt < 0 ? 0 : a - xUlt));
-  });
-  PW.lineas("g-infra", {
+  const meta = +document.getElementById("meta-carg").value || 10000; const metaAnio = +document.getElementById("meta-carg-anio").value || 2030; const serie = D.infraestructura; const ult = serie[serie.length - 1]; const hoyCarg = D.red_viva ? (D.red_viva.cargadores_publico ?? D.red_viva.cargadores) : ult.cargadores_acum; const xUlt = ymAnum(ult.ym); const hace12 = serie[Math.max(0, serie.length - 13)]; const ritmo = (ult.cargadores_acum - hace12.cargadores_acum) / 12; // por mes
+  const llegada = ritmo > 0.5 ? xUlt + (meta - ult.cargadores_acum) / ritmo / 12 : null; // Vista ANUAL: cierre de cada año (ultimo mes disponible del año)
+  const anioHoy = Math.floor(xUlt); const anios = []; for (let a = 2019; a <= metaAnio; a++) anios.push(a); const cierre = {}; serie.forEach(x => { cierre[+x.ym.slice(0, 4)] = x.cargadores_acum; }); const real = anios.map(a => cierre[a] != null ? cierre[a] : null); const req = anios.map(a => {
+    if (a < anioHoy) return null; if (a === anioHoy) return ult.cargadores_acum; return Math.round(ult.cargadores_acum + (meta - ult.cargadores_acum) * (a - anioHoy) / Math.max(metaAnio - anioHoy, 1)); }); const proy = anios.map(a => {
+    if (a < anioHoy) return null; return Math.round(ult.cargadores_acum + ritmo * 12 * (a - xUlt < 0 ? 0 : a - xUlt)); }); PW.lineas("g-infra", {
     labels: anios.map(String),
     series: [
       { nombre: "Cargadores públicos", valores: real, area: true },
@@ -386,189 +271,102 @@ function refrescarInfra() {
     lineaX: { i: anios.indexOf(anioHoy), texto: "Hoy" },
     lineaY: { v: meta, texto: "Meta " + PW.fmt(meta) },
     fmtV: x => PW.fmt(Math.round(x)), alto: 320,
-  });
-
-  const mesesFalt = Math.max(1, Math.round((metaAnio + 11 / 12 - xUlt) * 12));
-  const ritmoReq = (meta - hoyCarg) / mesesFalt;
-  document.getElementById("kpis-infra").innerHTML = [
+  }); const mesesFalt = Math.max(1, Math.round((metaAnio + 11 / 12 - xUlt) * 12)); const ritmoReq = (meta - hoyCarg) / mesesFalt; document.getElementById("kpis-infra").innerHTML = [
     [PW.fmt(hoyCarg), "cargadores públicos hoy", "red viva, cada 30 min"],
     [PW.fmt(Math.round(ritmo)) + "/mes", "ritmo real (12 meses)", "se requieren " + PW.fmt(Math.round(ritmoReq)) + "/mes"],
     [fmtAnio(llegada), "llegada proyectada", "meta " + PW.fmt(meta) + " — objetivo " + metaAnio],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-  if (D.red_viva) {
-    const esOficial = OF && OF.cargadores_2030 && meta === OF.cargadores_2030.valor && metaAnio === 2030;
-    const fraseMeta = esOficial
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); if (D.red_viva) {
+    const esOficial = OF && OF.cargadores_2030 && meta === OF.cargadores_2030.valor && metaAnio === 2030; const fraseMeta = esOficial
       ? "Meta OFICIAL: " + PW.fmt(meta) + " puntos publicos al 2030 (" +
         OF.cargadores_2030.vinculancia + "). Al 2035 la referencia oficial es " +
         PW.fmt(OF.cargadores_2035.valor) + " puntos (" + OF.cargadores_2035.vinculancia + ")."
-      : "Meta editada manualmente (la oficial es " + PW.fmt(OF && OF.cargadores_2030 ? OF.cargadores_2030.valor : 6500) + " al 2030).";
-    document.getElementById("nota-infra").textContent =
+      : "Meta editada manualmente (la oficial es " + PW.fmt(OF && OF.cargadores_2030 ? OF.cargadores_2030.valor : 6500) + " al 2030)."; document.getElementById("nota-infra").textContent =
       "Serie: SEC EcoCarga categoría público hasta " + ult.ym + ". Red viva hoy (Cargadores y " +
       "Conectores, cada 30 min, acceso publico + privado/restringido): " +
       PW.fmt(D.red_viva.cargadores) + " cargadores y " + PW.fmt(D.red_viva.conectores) +
       " conectores en " + PW.fmt(D.red_viva.estaciones) + " estaciones" +
       (D.red_viva.cargadores_publico ? " (" + PW.fmt(D.red_viva.cargadores_publico) +
        " cargadores de acceso publico)" : "") +
-      ". Proyeccion = ritmo de los ultimos 12 meses sostenido. " + fraseMeta;
-  }
-  const [, colorS, textoS] = estadoMeta(llegada, metaAnio);
-  const esOf = OF && OF.cargadores_2030 && meta === OF.cargadores_2030.valor && metaAnio === 2030;
-  SEM.carg = {
+      ". Proyeccion = ritmo de los ultimos 12 meses sostenido. " + fraseMeta; }
+  const [, colorS, textoS] = estadoMeta(llegada, metaAnio); const esOf = OF && OF.cargadores_2030 && meta === OF.cargadores_2030.valor && metaAnio === 2030; SEM.carg = {
     nombre: "Red de carga: cargadores públicos", hoy: PW.fmt(hoyCarg),
     objetivo: PW.fmt(meta) + " en " + metaAnio + (esOf ? " (oficial: compromiso)" : " (editada)"),
     llegada: fmtAnio(llegada), color: colorS, texto: textoS,
-  };
-  pintarSemaforo();
-  refrescarParque();
-}
+  }; pintarSemaforo(); refrescarParque(); }
 
 // ---------- 2b. parque proyectado y lo que exigira
 function refrescarParque() {
-  const DEM = window.PW_DATA.c_demanda;
-  if (!DEM) return;
-  const ratio = +document.getElementById("ratio-ev").value || 20;
-  const km = DEM.supuestos.km_anuales, rend = DEM.supuestos.rendimiento_km_kwh;
-
-  // parque estimado hoy = INE 2024 + ventas enchufables desde 2025
-  const desde25 = vMes.filter(x => x.ym >= "2025-01").reduce((s, x) => s + x.u, 0);
-  const parqueHoy = DEM.kpis.parque_ev + desde25;
-  // ventas anuales proyectadas: nivel 12m + pendiente 24m sostenida
-  const u12 = vMes.slice(-12).reduce((s, x) => s + x.u, 0);
-  const u24a12 = vMes.slice(-24, -12).reduce((s, x) => s + x.u, 0);
-  const crecAnual = u12 - u24a12; // unidades adicionales por año
-  const xHoy = ymAnum(vMes[vMes.length - 1].ym);
-  function parqueEn(anio) {
-    let p = parqueHoy, ventas = u12;
-    for (let a = Math.ceil(xHoy); a <= anio; a++) {
-      ventas = Math.max(0, ventas + crecAnual);
-      p += ventas;
-    }
-    return Math.round(p);
-  }
-  const p2030 = parqueEn(2030), p2035 = parqueEn(2035);
-  const gwh2035 = p2035 * km / rend / 1e6;
-  const cargNec2035 = Math.round(p2035 / ratio);
-
-  // cargadores proyectados a 2035 al ritmo actual (de la seccion infra)
-  const serie = D.infraestructura;
-  const ult = serie[serie.length - 1];
-  const ritmo = (ult.cargadores_acum - serie[Math.max(0, serie.length - 13)].cargadores_acum) / 12;
-  const meses2035 = Math.max(0, Math.round((2035 + 11 / 12 - ymAnum(ult.ym)) * 12));
-  const cargProy2035 = Math.round(ult.cargadores_acum + ritmo * meses2035);
-
-  document.getElementById("kpis-parque").innerHTML = [
+  const DEM = window.PW_DATA.c_demanda; if (!DEM) return; const ratio = +document.getElementById("ratio-ev").value || 20; const km = DEM.supuestos.km_anuales, rend = DEM.supuestos.rendimiento_km_kwh; // parque estimado hoy = INE 2024 + ventas enchufables desde 2025
+  const desde25 = vMes.filter(x => x.ym >= "2025-01").reduce((s, x) => s + x.u, 0); const parqueHoy = DEM.kpis.parque_ev + desde25; // ventas anuales proyectadas: nivel 12m + pendiente 24m sostenida
+  const u12 = vMes.slice(-12).reduce((s, x) => s + x.u, 0); const u24a12 = vMes.slice(-24, -12).reduce((s, x) => s + x.u, 0); const crecAnual = u12 - u24a12; // unidades adicionales por año
+  const xHoy = ymAnum(vMes[vMes.length - 1].ym); function parqueEn(anio) {
+    let p = parqueHoy, ventas = u12; for (let a = Math.ceil(xHoy); a <= anio; a++) {
+      ventas = Math.max(0, ventas + crecAnual); p += ventas; }
+    return Math.round(p); }
+  const p2030 = parqueEn(2030), p2035 = parqueEn(2035); const gwh2035 = p2035 * km / rend / 1e6; const cargNec2035 = Math.round(p2035 / ratio); // cargadores proyectados a 2035 al ritmo actual (de la seccion infra)
+  const serie = D.infraestructura; const ult = serie[serie.length - 1]; const ritmo = (ult.cargadores_acum - serie[Math.max(0, serie.length - 13)].cargadores_acum) / 12; const meses2035 = Math.max(0, Math.round((2035 + 11 / 12 - ymAnum(ult.ym)) * 12)); const cargProy2035 = Math.round(ult.cargadores_acum + ritmo * meses2035); document.getElementById("kpis-parque").innerHTML = [
     [PW.fmt(parqueHoy), "parque enchufable estimado hoy", "INE 2024 + ventas desde 2025"],
     [PW.fmt(p2030), "parque proyectado 2030", "ritmo de ventas sostenido"],
     [PW.fmt(p2035), "parque proyectado 2035", ""],
     [PW.fmt(gwh2035, 1) + " GWh", "demanda eléctrica 2035", PW.fmt(100 * gwh2035 / DEM.kpis.gwh_sen_anual, 1) + "% del SEN actual"],
     [PW.fmt(cargNec2035), "cargadores necesarios 2035", ratio + " EV por cargador"],
     [PW.fmt(Math.max(0, cargNec2035 - cargProy2035)), "cargadores que faltarian", "proyectados al ritmo actual: " + PW.fmt(cargProy2035)],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-  document.getElementById("nota-parque").textContent =
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota-parque").textContent =
     "Proyeccion de parque: ventas de los ultimos 12 meses (" + PW.fmt(u12) + ") creciendo " +
     PW.fmt(crecAnual) + " unidades/año (pendiente 24 meses), acumuladas sobre el parque estimado. " +
     "Demanda con " + PW.fmt(km) + " km/año y " + rend + " km/kWh (supuestos del cruce Demanda EV). " +
-    "Sin descuentos por bajas del parque: estimación conservadora hacia arriba.";
-}
+    "Sin descuentos por bajas del parque: estimación conservadora hacia arriba."; }
 
-document.getElementById("ratio-ev").addEventListener("input", refrescarParque);
-
-// ---------- 3. generacion renovable
+document.getElementById("ratio-ev").addEventListener("input", refrescarParque); // ---------- 3. generacion renovable
 (function () {
-  const G = D.generacion_mensual;
-  if (!G || !G.length) return;
-  const ult = G[G.length - 1];
-  // Los meses INCOMPLETOS no compiten ni marcan tendencia: el ultimo suele ir a medio andar y
+  const G = D.generacion_mensual; if (!G || !G.length) return; const ult = G[G.length - 1]; // Los meses INCOMPLETOS no compiten ni marcan tendencia: el ultimo suele ir a medio andar y
   // su % renovable no es comparable con un mes cerrado. Hoy 2026-09 daba 73,0% con 18 dias y se
   // publicaba como "mejor mes"; el mejor mes cerrado es 67,8%. Mismo criterio que la
   // estacionalidad de cortes. El ultimo mes se sigue mostrando, pero rotulado como parcial.
-  const cerrados = G.filter(x => !x.parcial);
-  const base = cerrados.length ? cerrados : G;
-  const ultC = base[base.length - 1];
-  const primC = base[0];
-  const pendiente = (ultC.pct_renov - primC.pct_renov) / Math.max((ymAnum(ultC.ym) - ymAnum(primC.ym)), 0.5);
-  const llegada = pendiente > 0.2 ? ymAnum(ultC.ym) + (80 - ultC.pct_renov) / pendiente : null;
-  const mejor = base.reduce((a, b2) => b2.pct_renov > a.pct_renov ? b2 : a, base[0]);
-  document.getElementById("kpis-gen").innerHTML = [
+  const cerrados = G.filter(x => !x.parcial); const base = cerrados.length ? cerrados : G; const ultC = base[base.length - 1]; const primC = base[0]; const pendiente = (ultC.pct_renov - primC.pct_renov) / Math.max((ymAnum(ultC.ym) - ymAnum(primC.ym)), 0.5); const llegada = pendiente > 0.2 ? ymAnum(ultC.ym) + (80 - ultC.pct_renov) / pendiente : null; const mejor = base.reduce((a, b2) => b2.pct_renov > a.pct_renov ? b2 : a, base[0]); document.getElementById("kpis-gen").innerHTML = [
     [PW.fmt(ult.pct_renov, 1) + "%", "renovable el último mes",
      ult.ym + (ult.parcial ? " · mes parcial, " + ult.dias + " días" : "")],
     [PW.fmt(mejor.pct_renov, 1) + "%", "mejor mes cerrado", mejor.ym],
     [fmtAnio(llegada), "llegada a 80% (tendencia simple)", "referencia ilustrativa"],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-  PW.lineas("g-renov", {
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); PW.lineas("g-renov", {
     labels: G.map(x => x.ym + (x.parcial ? " (parcial)" : "")),
     series: [{ nombre: "% renovable", valores: G.map(x => x.pct_renov), color: PW.color("--s3"), area: true }],
     lineaY: { v: 80, texto: "Referencia 80%" },
     fmtV: v => PW.fmt(v, 1) + "%", fmtY: v => Math.round(v) + "%", max: 100, alto: 260,
-  });
-  const [, colorS, textoS] = estadoMeta(llegada, 2035);
-  SEM.renov = {
+  }); const [, colorS, textoS] = estadoMeta(llegada, 2035); SEM.renov = {
     // El semaforo compara contra la meta, asi que usa el ultimo mes CERRADO: con el parcial
     // publicaba 73,0% (18 dias) como el valor de hoy contra el 80% objetivo, cuando el ultimo
     // mes completo da 67,7%. El KPI de arriba si muestra el parcial, pero rotulado como tal.
     nombre: "Energía: generación renovable", hoy: PW.fmt(ultC.pct_renov, 1) + "%",
     objetivo: "80% (referencial)",
     llegada: fmtAnio(llegada), color: colorS, texto: textoS,
-  };
-  pintarSemaforo();
-})();
-
-// ---------- 4. metas comprometidas y propuestas (biblioteca normativa)
+  }; pintarSemaforo(); })(); // ---------- 4. metas comprometidas y propuestas (biblioteca normativa)
 (function () {
-  const N = window.PW_DATA.c_normativa;
-  if (!N) return;
-  // cronologia por año objetivo
-  const porAnio = {};
-  N.metas.forEach(m => {
-    const a = String(m.Año_Objetivo || "").split("-")[0].trim();
-    if (!/^\d{4}$/.test(a)) return;
-    (porAnio[a] = porAnio[a] || []).push(m);
-  });
-  document.getElementById("cronologia-metas").innerHTML =
+  const N = window.PW_DATA.c_normativa; if (!N) return; // cronologia por año objetivo
+  const porAnio = {}; N.metas.forEach(m => {
+    const a = String(m.Año_Objetivo || "").split("-")[0].trim(); if (!/^\d{4}$/.test(a)) return; (porAnio[a] = porAnio[a] || []).push(m); }); document.getElementById("cronologia-metas").innerHTML =
     Object.keys(porAnio).sort().map(a =>
       `<div class="crono-anio"><div class="anio">${a}</div><ul>` +
       porAnio[a].map(m =>
         `<li>${m.Meta}${m.Valor != null ? ": <b>" + PW.fmt(+m.Valor) + (m.Unidad ? " " + m.Unidad : "") + "</b>" : ""}` +
         `<span class="vin vin-${m.clase}">${m.clase}</span></li>`).join("") +
-      `</ul></div>`).join("");
-  // Las propuestas por actor y las 32 normas con actualización propuesta se trasladaron
+      `</ul></div>`).join(""); // Las propuestas por actor y las 32 normas con actualización propuesta se trasladaron
   // a normativa.html (biblioteca normativa completa). Aquí queda solo la cronología de metas.
-})();
-
-// ---------- 5. veredicto PELP
+})(); // ---------- 5. veredicto PELP
 (function () {
-  const P = window.PW_DATA.c_pelp;
-  if (!P) return;
-  const escN = Object.keys(P.escenarios);
-  const filas = P.diagnostico_2026.map(d => {
-    let mejor = null, dist = Infinity;
-    escN.forEach(e => {
+  const P = window.PW_DATA.c_pelp; if (!P) return; const escN = Object.keys(P.escenarios); const filas = P.diagnostico_2026.map(d => {
+    let mejor = null, dist = Infinity; escN.forEach(e => {
       if (d[e] != null && Math.abs(d[e] - d.real_2026_gw) < dist) {
-        dist = Math.abs(d[e] - d.real_2026_gw); mejor = e;
-      }
-    });
-    return { tec: d.tecnologia, real: d.real_2026_gw, escenario: mejor };
-  }).filter(f => f.escenario);
-  document.getElementById("veredicto-pelp").innerHTML =
+        dist = Math.abs(d[e] - d.real_2026_gw); mejor = e; }
+    }); return { tec: d.tecnologia, real: d.real_2026_gw, escenario: mejor }; }).filter(f => f.escenario); document.getElementById("veredicto-pelp").innerHTML =
     `<div class="scroll-x"><table class="pw"><thead><tr><th>Tecnología</th><th class="num">Real 2026 (GW)</th><th>Trayectoria mas cercana</th></tr></thead><tbody>` +
     filas.map(f => `<tr><td>${f.tec}</td><td class="num">${PW.fmt(f.real, 1)}</td><td><span class="pill">${f.escenario}</span></td></tr>`).join("") +
-    `</tbody></table></div>`;
-  const solar = filas.find(f => f.tec === "Solar");
-  SEM.pelp = {
+    `</tbody></table></div>`; const solar = filas.find(f => f.tec === "Solar"); SEM.pelp = {
     nombre: "Planificación: capacidad vs PELP",
     hoy: solar ? "Solar " + PW.fmt(solar.real, 1) + " GW" : "—",
     objetivo: "Escenarios PELP 2020-2040",
     llegada: solar ? "va como '" + solar.escenario + "'" : "—",
     color: "var(--s1)", texto: "Ver detalle",
-  };
-  pintarSemaforo();
-})();
-
-["meta-pct", "meta-anio"].forEach(id => document.getElementById(id).addEventListener("input", refrescarPart));
-["meta-carg", "meta-carg-anio"].forEach(id => document.getElementById(id).addEventListener("input", refrescarInfra));
-refrescarPart();
-refrescarInfra();
-</script>
+  }; pintarSemaforo(); })(); ["meta-pct", "meta-anio"].forEach(id => document.getElementById(id).addEventListener("input", refrescarPart)); ["meta-carg", "meta-carg-anio"].forEach(id => document.getElementById(id).addEventListener("input", refrescarInfra)); refrescarPart(); refrescarInfra(); </script>
 </body>
 </html>

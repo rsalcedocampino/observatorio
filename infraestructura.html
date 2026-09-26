@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -93,10 +88,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/infraestructura.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("infraestructura.html");
-const D = window.PW_DATA.infraestructura;
-
-// Declarar el desvio contra la vista georreferenciada del MISMO registro: esta pagina publica
+PW.montarNav("infraestructura.html"); const D = window.PW_DATA.infraestructura; // Declarar el desvio contra la vista georreferenciada del MISMO registro: esta pagina publica
 // el total oficial de EcoCarga y el mapa publica lo que pudo ubicar, y las dos cifras conviven
 // en el sitio sin que nada dijera por que difieren. Dos instalaciones vigentes no traen
 // coordenada; el resto del desvio no esta conciliado aguas arriba, y decirlo es mas honesto
@@ -105,68 +97,47 @@ document.getElementById("nota").textContent =
   "Actualización SEC: " + D.actualizacion + ". Estas son las cifras del registro oficial "
   + "completo. La vista georreferenciada del mismo registro (mapa del catastro SEC) muestra "
   + "menos, porque solo puede ubicar las instalaciones con coordenada: esa diferencia no está "
-  + "conciliada en la fuente y por eso los dos módulos no dan el mismo total.";
-
-document.getElementById("kpis").innerHTML = [
+  + "conciliada en la fuente y por eso los dos módulos no dan el mismo total."; document.getElementById("kpis").innerHTML = [
   [PW.fmt(D.kpis.instalaciones), "instalaciones", "puntos de carga declarados"],
   [PW.fmt(D.kpis.cargadores), "cargadores", "equipos de carga"],
   [PW.fmt(D.kpis.conectores), "conectores", "tomas de carga"],
   [PW.fmt(D.kpis.mw, 1) + " MW", "potencia instalada", "capacidad declarada"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-// Serie ACUMULADA ("aditiva desde 2018"): el unico mes ausente (2019-10) no es un hueco de
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Serie ACUMULADA ("aditiva desde 2018"): el unico mes ausente (2019-10) no es un hueco de
 // medicion, es un mes sin altas, asi que el stock vale lo mismo que el mes anterior. Marcarlo
 // "sin dato" declaraba ignorancia sobre un mes que el registro SI cubre.
-const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar");
-PW.lineas("g-serie", {
+const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar"); PW.lineas("g-serie", {
   labels: SERIE.map(x => x.ym),
   series: [
     { nombre: "Conectores", valores: SERIE.map(x => x.conectores), area: true },
     { nombre: "Cargadores", valores: SERIE.map(x => x.cargadores), color: PW.color("--s2") },
   ],
   fmtV: v => PW.fmt(v), alto: 300,
-});
-
-PW.tabla("t-cat", [
+}); PW.tabla("t-cat", [
   { k: "cat", titulo: "Categoría de uso" },
   { k: "instalaciones", titulo: "Instalaciones", num: true, fmt: v => PW.fmt(v) },
   { k: "cargadores", titulo: "Cargadores", num: true, fmt: v => PW.fmt(v) },
   { k: "conectores", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
   { k: "mw", titulo: "Potencia (MW)", num: true, fmt: v => PW.fmt(v, 1) },
-], D.categorias, { orden: "conectores", buscador: false });
-
-const catMW = D.categorias.slice().sort((a, b) => b.mw - a.mw)[0];
-document.getElementById("nota-cat").textContent =
+], D.categorias, { orden: "conectores", buscador: false }); const catMW = D.categorias.slice().sort((a, b) => b.mw - a.mw)[0]; document.getElementById("nota-cat").textContent =
   "El uso privado concentra la mayor cantidad de conectores, pero " + catMW.cat.toLowerCase() +
-  " concentra la potencia (" + PW.fmt(catMW.mw, 1) + " MW): los buses eléctricos cargan a alta potencia.";
-
-PW.barras("g-zona", {
+  " concentra la potencia (" + PW.fmt(catMW.mw, 1) + " MW): los buses eléctricos cargan a alta potencia."; PW.barras("g-zona", {
   items: D.zonas.map(z => ({
     nombre: z.zona, valor: z.conectores,
     extra: PW.fmt(z.cargadores) + " cargadores · " + PW.fmt(z.mw, 1) + " MW",
   })),
   fmtV: v => PW.fmt(v),
-});
-
-PW.barras("g-region", {
+}); PW.barras("g-region", {
   items: D.regiones.filter(r => r.conectores > 0).map(r => ({
     nombre: r.region, valor: r.conectores,
     extra: PW.fmt(r.cargadores) + " cargadores",
   })),
   fmtV: v => PW.fmt(v),
-});
-
-PW.barras("g-pot", {
+}); PW.barras("g-pot", {
   items: D.por_potencia.map(p => ({ nombre: p.clase, valor: p.n })),
   fmtV: v => PW.fmt(v),
-});
-
-PW.barras("g-con", {
+}); PW.barras("g-con", {
   items: D.por_conector.map(c => ({ nombre: c.tipo, valor: c.n })),
   fmtV: v => PW.fmt(v),
-});
-
-document.getElementById("fuente").textContent = D.nota;
-</script>
+}); document.getElementById("fuente").textContent = D.nota; </script>
 </body>
 </html>

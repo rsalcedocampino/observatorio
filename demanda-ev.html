@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -68,42 +63,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("demanda-ev.html");
-const D = PW_DATA.c_demanda;
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-
-function refrescar() {
-  const km = +document.getElementById("f-km").value || 15000;
-  const rend = +document.getElementById("f-rend").value || 5.4;
-  const gwh = D.kpis.parque_ev * km / rend / 1e6;
-  document.getElementById("kpis").innerHTML = [
+PW.montarNav("demanda-ev.html"); const D = PW_DATA.c_demanda; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; function refrescar() {
+  const km = +document.getElementById("f-km").value || 15000; const rend = +document.getElementById("f-rend").value || 5.4; const gwh = D.kpis.parque_ev * km / rend / 1e6; document.getElementById("kpis").innerHTML = [
     [PW.fmt(D.kpis.parque_ev), "vehículos eléctricos registrados", "INE 2024 (puede incluir hibridos)"],
     [PW.fmt(gwh, 1) + " GWh", "consumo anual estimado", km / 1000 + " mil km x " + rend + " km/kWh"],
     [PW.fmt(D.kpis.gwh_sen_anual) + " GWh", "generación SEN anualizada", ""],
     [PW.fmt(100 * gwh / D.kpis.gwh_sen_anual, 2) + "%", "del SEN es carga EV hoy", ""],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-  PW.barras("g-reg", {
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); PW.barras("g-reg", {
     items: D.regiones.slice(0, 14).map(r => ({
       nombre: r.region, valor: r.parque_ev * km / rend / 1e6,
       extra: PW.fmt(r.parque_ev) + " vehículos",
     })),
     fmtV: v => PW.fmt(v, 1) + " GWh",
-  });
-
-  const filas = [2, 5, 10, 20].map(f => ({
+  }); const filas = [2, 5, 10, 20].map(f => ({
     escenario: "Parque x" + f,
     vehiculos: D.kpis.parque_ev * f,
     gwh: Math.round(gwh * f),
     pct: Math.round(1000 * gwh * f / D.kpis.gwh_sen_anual) / 10,
-  }));
-  document.getElementById("t-esc").innerHTML =
+  })); document.getElementById("t-esc").innerHTML =
     `<div class="scroll-x"><table class="pw"><thead><tr><th>Escenario</th><th class="num">Vehiculos</th><th class="num">GWh/año</th><th class="num">% del SEN</th></tr></thead><tbody>` +
     filas.map(f => `<tr><td>${f.escenario}</td><td class="num">${PW.fmt(f.vehiculos)}</td><td class="num">${PW.fmt(f.gwh)}</td><td class="num">${PW.fmt(f.pct, 1)}%</td></tr>`).join("") +
-    `</tbody></table></div>`;
-}
-["f-km", "f-rend"].forEach(id => document.getElementById(id).addEventListener("input", refrescar));
-refrescar();
-</script>
+    `</tbody></table></div>`; }
+["f-km", "f-rend"].forEach(id => document.getElementById(id).addEventListener("input", refrescar)); refrescar(); </script>
 </body>
 </html>

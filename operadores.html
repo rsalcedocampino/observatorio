@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -103,48 +98,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("operadores.html");
-
-// Mapa: estaciones coloreadas por estado en tiempo real, con filtros
+PW.montarNav("operadores.html"); // Mapa: estaciones coloreadas por estado en tiempo real, con filtros
 (function () {
   const EST_COLOR = {
     disponible: PW.color("--good"),
     ocupado: PW.color("--s1"),
     fuera_de_servicio: PW.color("--critical"),
     no_disponible: PW.color("--ink-3"),
-  };
-  const datos = PW_DATA.mapa_carga.carga;  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
-  const operadoresU = [...new Set(datos.map(p => p.op).filter(Boolean))].sort();
-  let filtroTerr = { rcut: null, com: null };
-  let mapaRed = null;
-
-  const popup = p => PW.popupEstacion(p);
-
-  function pintar() {
-    const est = document.getElementById("f-estado").value;
-    const op = document.getElementById("f-operador").value;
-    const kwMin = +document.getElementById("f-kw").value || 0;
-    const soloOfi = document.getElementById("f-oficial").checked;
-    const sel = datos.filter(p =>
+  }; const datos = PW_DATA.mapa_carga.carga; // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
+  const operadoresU = [...new Set(datos.map(p => p.op).filter(Boolean))].sort(); let filtroTerr = { rcut: null, com: null }; let mapaRed = null; const popup = p => PW.popupEstacion(p); function pintar() {
+    const est = document.getElementById("f-estado").value; const op = document.getElementById("f-operador").value; const kwMin = +document.getElementById("f-kw").value || 0; const soloOfi = document.getElementById("f-oficial").checked; const sel = datos.filter(p =>
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com) &&
       (!est || (est === "sin_dato" ? !p.est : p.est === est)) &&
       (!op || p.op === op) &&
       ((p.kw || 0) >= kwMin) &&
-      (!soloOfi || p.ofi));
-    const pts = sel.map(p => ({
+      (!soloOfi || p.ofi)); const pts = sel.map(p => ({
       lat: p.lat, lon: p.lon, r: 7.5,
       color: EST_COLOR[p.est] || PW.color("--ink-3"),
       popup: popup(p),
-    }));
-    if (mapaRed) { mapaRed.remove(); mapaRed = null; }
-    mapaRed = PW.mapa("mapa-red", { capas: [{ nombre: "Estaciones", puntos: pts }], centro: [-35.5, -71.5], zoom: 5 });
-    if (mapaRed && pts.length && (filtroTerr.rcut || filtroTerr.com)) {
-      mapaRed.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.2), { animate: false });
-    }
+    })); if (mapaRed) { mapaRed.remove(); mapaRed = null; }
+    mapaRed = PW.mapa("mapa-red", { capas: [{ nombre: "Estaciones", puntos: pts }], centro: [-35.5, -71.5], zoom: 5 }); if (mapaRed && pts.length && (filtroTerr.rcut || filtroTerr.com)) {
+      mapaRed.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lon])).pad(0.2), { animate: false }); }
     document.getElementById("cont-mapa").textContent =
-      pts.length + " estaciones mostradas de " + datos.length + ".";
-  }
+      pts.length + " estaciones mostradas de " + datos.length + "."; }
 
   PW.filtrosTerritorio("filtros-mapa", datos, f => { filtroTerr = f; pintar(); },
     `<label>Estado <select id="f-estado"><option value="">Todos</option>
@@ -154,23 +131,15 @@ PW.montarNav("operadores.html");
     <label>Operador <select id="f-operador"><option value="">Todos</option>` +
     operadoresU.map(o => `<option>${o}</option>`).join("") + `</select></label>
     <label>Potencia min (kW) <input type="number" id="f-kw" value="0" min="0" step="10" style="width:70px"></label>
-    <label>Solo registro oficial <input type="checkbox" id="f-oficial"></label>`);
-  ["f-estado", "f-operador", "f-kw", "f-oficial"].forEach(id =>
-    document.getElementById(id).addEventListener("input", pintar));
-  pintar();
-  PW.leyendaMapa("ley-red", [
+    <label>Solo registro oficial <input type="checkbox" id="f-oficial"></label>`); ["f-estado", "f-operador", "f-kw", "f-oficial"].forEach(id =>
+    document.getElementById(id).addEventListener("input", pintar)); pintar(); PW.leyendaMapa("ley-red", [
     ["Disponible", PW.color("--good")],
     ["Ocupado", PW.color("--s1")],
     ["Fuera de servicio", PW.color("--critical")],
     ["Sin dato / no disponible", PW.color("--ink-3")],
-  ]);
-})();
-const D = PW_DATA.operadores;
-document.getElementById("nota").textContent =
+  ]); })(); const D = PW_DATA.operadores; document.getElementById("nota").textContent =
   "Ventana observada (UTC): " + (D.rango_historico_utc ? D.rango_historico_utc.join(" a ") : "sin histórico") +
-  ". Actualizado " + (D.generado || "").slice(0, 10) + ".";
-
-const cols = [
+  ". Actualizado " + (D.generado || "").slice(0, 10) + "."; const cols = [
   { k: "operador", titulo: "Operador" },
   { k: "grupo", titulo: "Grupo", fmt: v => v ? `<span class="pill">${v}</span>` : "" },
   { k: "estaciones", titulo: "Estaciones", num: true, fmt: v => PW.fmt(v) },
@@ -181,39 +150,23 @@ const cols = [
   { k: "conectores_cronicos", titulo: "Cronicos", num: true, fmt: v => v == null ? "—" : (v > 0 ? `<span class="estado-mal">${v}</span>` : "0") },
   { k: "precio_prom_clp_kwh", titulo: "$/kWh prom.", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
   { k: "obs", titulo: "Observaciones", num: true, fmt: v => PW.fmt(v) },
-];
-
-let tab = null;
-function refrescar() {
-  const filas = D.operadores;
-  const conMed = filas.filter(o => o.pct_operativo != null && o.obs >= 200)
-    .sort((a, b) => b.pct_operativo - a.pct_operativo);
-  PW.barras("g-operativo", {
+]; let tab = null; function refrescar() {
+  const filas = D.operadores; const conMed = filas.filter(o => o.pct_operativo != null && o.obs >= 200)
+    .sort((a, b) => b.pct_operativo - a.pct_operativo); PW.barras("g-operativo", {
     items: conMed.map(o => ({
       nombre: o.operador, valor: o.pct_operativo,
       extra: PW.fmt(o.conectores) + " conectores, " + PW.fmt(o.obs) + " obs.",
       color: o.pct_operativo >= 90 ? PW.color("--s3") : (o.pct_operativo < 75 ? PW.color("--s2") : PW.color("--s1")),
     })),
     fmtV: v => PW.pct(v),
-  });
-  if (tab) tab.actualizar(filas);
-  else tab = PW.tabla("t-operadores", cols, filas, { orden: "conectores" });
-}
-refrescar();
-
-// Marcas de cargador homologadas con su propio kit (Homologacion Marcas Cargador).
+  }); if (tab) tab.actualizar(filas); else tab = PW.tabla("t-operadores", cols, filas, { orden: "conectores" }); }
+refrescar(); // Marcas de cargador homologadas con su propio kit (Homologacion Marcas Cargador).
 // Se separan los FABRICANTES del equipo (ABB, Etrel, Infypower...) de la marca comercial
 // de un operador de red (Enel X pone su marca sobre equipos de terceros): son cosas
 // distintas y compararlas en el mismo ranking induce a error.
 (function () {
-  const marcas = D.marcas_cargador || [];
-  if (!marcas.length) { document.getElementById("g-marcas").textContent = "Sin dato de marca."; return; }
-  const total = marcas.reduce((a, m) => a + m.cargadores, 0);
-  const fabricantes = marcas.filter(m => m.tipo !== "marca_operador");
-  const deOperador = marcas.filter(m => m.tipo === "marca_operador");
-  const base = fabricantes.length ? fabricantes : marcas;
-  const totalFab = base.reduce((a, m) => a + m.cargadores, 0);
-  PW.barras("g-marcas", {
+  const marcas = D.marcas_cargador || []; if (!marcas.length) { document.getElementById("g-marcas").textContent = "Sin dato de marca."; return; }
+  const total = marcas.reduce((a, m) => a + m.cargadores, 0); const fabricantes = marcas.filter(m => m.tipo !== "marca_operador"); const deOperador = marcas.filter(m => m.tipo === "marca_operador"); const base = fabricantes.length ? fabricantes : marcas; const totalFab = base.reduce((a, m) => a + m.cargadores, 0); PW.barras("g-marcas", {
     items: base.slice(0, 12).map(m => ({
       nombre: m.marca, valor: m.cargadores,
       extra: PW.pct(100 * m.cargadores / totalFab) + " de los equipos de fabricante" +
@@ -221,32 +174,15 @@ refrescar();
       color: PW.color("--s1"),
     })),
     fmtV: v => PW.fmt(v),
-  });
-  const nota = [
+  }); const nota = [
     base.length + " fabricantes de equipo. " + PW.fmt(totalFab) + " cargadores únicos con fabricante identificado.",
-  ];
-  if (deOperador.length) {
+  ]; if (deOperador.length) {
     nota.push("Aparte, " + PW.fmt(deOperador.reduce((a, m) => a + m.cargadores, 0)) +
       " cargadores llevan la marca comercial de un operador (" +
-      deOperador.map(m => m.marca).join(", ") + "): el equipo lo fabrica un tercero.");
-  }
-  nota.push("Total con marca identificada: " + PW.fmt(total) + ".");
-  document.getElementById("nota-marcas").textContent = nota.join(" ");
-})();
-
-// ========== Datos de sitios (Top 20 comunas + Todas las comunas) ==========
-const DS = PW_DATA.sitios;
-const selR = document.createElement("select");
-selR.id = "f-region-sitios";
-selR.innerHTML = `<option value="">Todas</option>`;
-[...new Set(DS.comunas.map(c => c.region))].sort().forEach(r => {
-  const o = document.createElement("option");
-  o.value = r;
-  o.textContent = r;
-  selR.appendChild(o);
-});
-
-const colsSitios = [
+      deOperador.map(m => m.marca).join(", ") + "): el equipo lo fabrica un tercero."); }
+  nota.push("Total con marca identificada: " + PW.fmt(total) + "."); document.getElementById("nota-marcas").textContent = nota.join(" "); })(); // ========== Datos de sitios (Top 20 comunas + Todas las comunas) ==========
+const DS = PW_DATA.sitios; const selR = document.createElement("select"); selR.id = "f-region-sitios"; selR.innerHTML = `<option value="">Todas</option>`; [...new Set(DS.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o); }); const colsSitios = [
   { k: "score", titulo: "Puntaje", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
   { k: "comuna", titulo: "Comuna" },
   { k: "region", titulo: "Región" },
@@ -257,31 +193,18 @@ const colsSitios = [
   { k: "ev_por_conector", titulo: "EV por conector", num: true, fmt: v => v == null ? "sin oferta" : PW.fmt(v, 1) },
   { k: "cliente_horas_cortes", titulo: "Cliente-horas cortes", num: true, fmt: v => PW.fmt(v) },
   { k: "p93", titulo: "$/L 93", num: true, fmt: v => v == null ? "—" : PW.clp(v) },
-];
-
-let tabSitios = null;
-function refrescarSitios() {
-  const reg = selR.value;
-  const pobMin = 0;
-  const soloCero = false;
-  let filas = DS.comunas.filter(c =>
+]; let tabSitios = null; function refrescarSitios() {
+  const reg = selR.value; const pobMin = 0; const soloCero = false; let filas = DS.comunas.filter(c =>
     (!reg || c.region === reg) &&
     (c.poblacion || 0) >= pobMin &&
-    (!soloCero || c.conectores === 0));
-  filas = filas.slice().sort((a, b) => b.score - a.score);
-  PW.barras("g-top", {
+    (!soloCero || c.conectores === 0)); filas = filas.slice().sort((a, b) => b.score - a.score); PW.barras("g-top", {
     items: filas.slice(0, 20).map(c => ({
       nombre: c.comuna, valor: c.score,
       extra: PW.fmt(c.ev_parque) + " EV registrados, " + c.conectores + " conectores, " +
         PW.fmt(c.poblacion) + " hab.",
     })),
     fmtV: v => PW.fmt(v, 1),
-  });
-  if (tabSitios) tabSitios.actualizar(filas);
-  else tabSitios = PW.tabla("t-comunas", colsSitios, filas, { orden: "score", max: 400 });
-}
-selR.addEventListener("input", refrescarSitios);
-refrescarSitios();
-</script>
+  }); if (tabSitios) tabSitios.actualizar(filas); else tabSitios = PW.tabla("t-comunas", colsSitios, filas, { orden: "score", max: 400 }); }
+selR.addEventListener("input", refrescarSitios); refrescarSitios(); </script>
 </body>
 </html>

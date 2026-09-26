@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -117,11 +112,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_gd.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("generacion.html");
-const D = PW_DATA.generacion;
-const GEN = D.centrales, T = D.totales;
-
-function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
+PW.montarNav("generacion.html"); const D = PW_DATA.generacion; const GEN = D.centrales, T = D.totales; function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
 function g(id) { return document.getElementById(id); }
 
 g("kpis").innerHTML = [
@@ -129,21 +120,10 @@ g("kpis").innerHTML = [
   [PW.fmt(T.capacidad_operando_mw) + " MW", "capacidad en operación", "potencia instalada del SEN"],
   [PW.fmt(T.pct_renovable, 1) + "%", "renovable", "solar, eólica e hidro sobre lo operando"],
   [PW.fmt(T.almacenamiento_mwh) + " MWh", "en almacenamiento", "capacidad BESS catalogada"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-function llenar(id, valores, etiqueta) {
-  const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es"));
-  g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join("");
-}
-llenar("f-tec", GEN.map(x => x.tecnologia), "Todas");
-llenar("f-fase", GEN.map(x => x.fase), "Todas");
-llenar("f-reg", GEN.map(x => x.region), "Todas");
-
-const COLOR_FASE = { "En operación": "--s3", "En construcción": "--s2", "En desarrollo": "--ink-3" };
-function faseBadge(x) {
-  const col = PW.color(COLOR_FASE[x.fase] || "--ink-3");
-  return `<span class="badge-fase" style="background:color-mix(in srgb, ${col} 20%, transparent);color:${col}">${x.fase}</span>`;
-}
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); function llenar(id, valores, etiqueta) {
+  const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es")); g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join(""); }
+llenar("f-tec", GEN.map(x => x.tecnologia), "Todas"); llenar("f-fase", GEN.map(x => x.fase), "Todas"); llenar("f-reg", GEN.map(x => x.region), "Todas"); const COLOR_FASE = { "En operación": "--s3", "En construcción": "--s2", "En desarrollo": "--ink-3" }; function faseBadge(x) {
+  const col = PW.color(COLOR_FASE[x.fase] || "--ink-3"); return `<span class="badge-fase" style="background:color-mix(in srgb, ${col} 20%, transparent);color:${col}">${x.fase}</span>`; }
 
 const cols = [
   { k: "nombre", titulo: "Central", fmt: v => `<b>${v}</b>` },
@@ -153,138 +133,63 @@ const cols = [
   { k: "region", titulo: "Región" },
   { k: "propietario", titulo: "Propietario" },
   { k: "almacenamiento_mwh", titulo: "Almac. (MWh)", fmt: v => v ? PW.fmt(v) : "—" },
-];
-
-let tab = null;
-function refrescar() {
-  const q = norm(g("busca").value.trim());
-  const tec = g("f-tec").value, fase = g("f-fase").value, reg = g("f-reg").value;
-  const filas = GEN.filter(x =>
+]; let tab = null; function refrescar() {
+  const q = norm(g("busca").value.trim()); const tec = g("f-tec").value, fase = g("f-fase").value, reg = g("f-reg").value; const filas = GEN.filter(x =>
     (!tec || x.tecnologia === tec) &&
     (!fase || x.fase === fase) &&
     (!reg || x.region === reg) &&
-    (!q || norm(x.nombre + " " + (x.propietario || "")).includes(q)));
-  const mw = filas.reduce((a, x) => a + (x.potencia_mw || 0), 0);
-  g("contador").textContent = filas.length + " centrales · " + PW.fmt(Math.round(mw)) + " MW";
-  if (tab) tab.actualizar(filas);
-  else tab = PW.tabla("t-gen", cols, filas, { orden: "potencia_mw", asc: false, max: 300, buscador: false });
-}
-["busca", "f-tec", "f-fase", "f-reg"].forEach(id => g(id).addEventListener("input", refrescar));
-refrescar();
-
-// Capacidad instalada (en operación) por tecnología y por región — desde GEN, sin dato nuevo.
+    (!q || norm(x.nombre + " " + (x.propietario || "")).includes(q))); const mw = filas.reduce((a, x) => a + (x.potencia_mw || 0), 0); g("contador").textContent = filas.length + " centrales · " + PW.fmt(Math.round(mw)) + " MW"; if (tab) tab.actualizar(filas); else tab = PW.tabla("t-gen", cols, filas, { orden: "potencia_mw", asc: false, max: 300, buscador: false }); }
+["busca", "f-tec", "f-fase", "f-reg"].forEach(id => g(id).addEventListener("input", refrescar)); refrescar(); // Capacidad instalada (en operación) por tecnología y por región — desde GEN, sin dato nuevo.
 // El campo `region` viene en 2 grafías (mezcla de fuentes): se colapsa a las 16 canónicas.
 (function () {
-  const oper = GEN.filter(x => (x.fase || "").toLowerCase().indexOf("opera") >= 0);
-  function canonReg(r) {
-    const u = norm(r);
-    if (u.includes("ARICA")) return "Arica y Parinacota";
-    if (u.includes("TARAPACA")) return "Tarapacá";
-    if (u.includes("ANTOFAGASTA")) return "Antofagasta";
-    if (u.includes("ATACAMA")) return "Atacama";
-    if (u.includes("COQUIMBO")) return "Coquimbo";
-    if (u.includes("VALPARAISO")) return "Valparaíso";
-    if (u.includes("METROPOLITANA")) return "Metropolitana";
-    if (u.includes("HIGGINS") || u.includes("LIBERTADOR")) return "O'Higgins";
-    if (u.includes("MAULE")) return "Maule";
-    if (u.includes("NUBLE")) return "Ñuble";
-    if (u.includes("BIOBIO")) return "Biobío";
-    if (u.includes("ARAUCANIA")) return "La Araucanía";
-    if (u.includes("LOS RIOS")) return "Los Ríos";
-    if (u.includes("LOS LAGOS")) return "Los Lagos";
-    if (u.includes("AYSEN")) return "Aysén";
-    if (u.includes("MAGALLANES")) return "Magallanes";
-    return (r && r.trim()) ? r : "(sin región)";
-  }
+  const oper = GEN.filter(x => (x.fase || "").toLowerCase().indexOf("opera") >= 0); function canonReg(r) {
+    const u = norm(r); if (u.includes("ARICA")) return "Arica y Parinacota"; if (u.includes("TARAPACA")) return "Tarapacá"; if (u.includes("ANTOFAGASTA")) return "Antofagasta"; if (u.includes("ATACAMA")) return "Atacama"; if (u.includes("COQUIMBO")) return "Coquimbo"; if (u.includes("VALPARAISO")) return "Valparaíso"; if (u.includes("METROPOLITANA")) return "Metropolitana"; if (u.includes("HIGGINS") || u.includes("LIBERTADOR")) return "O'Higgins"; if (u.includes("MAULE")) return "Maule"; if (u.includes("NUBLE")) return "Ñuble"; if (u.includes("BIOBIO")) return "Biobío"; if (u.includes("ARAUCANIA")) return "La Araucanía"; if (u.includes("LOS RIOS")) return "Los Ríos"; if (u.includes("LOS LAGOS")) return "Los Lagos"; if (u.includes("AYSEN")) return "Aysén"; if (u.includes("MAGALLANES")) return "Magallanes"; return (r && r.trim()) ? r : "(sin región)"; }
   const suma = keyFn => {
-    const m = {};
-    oper.forEach(x => { const k = keyFn(x) || "—"; m[k] = (m[k] || 0) + (x.potencia_mw || 0); });
-    return Object.entries(m).map(([nombre, valor]) => ({ nombre, valor })).sort((a, b) => b.valor - a.valor);
-  };
-  const fmtMW = v => PW.fmt(Math.round(v)) + " MW";
-  PW.barras("g-cap-tec", { items: suma(x => x.tecnologia || "—"), color: PW.color("--s6"), fmtV: fmtMW });
-  PW.barras("g-cap-reg", { items: suma(x => canonReg(x.region)), color: PW.color("--s4"), fmtV: fmtMW });
-})();
-
-// Mix de generación por tecnología en el tiempo (GWh) — desde c_genmix.js
+    const m = {}; oper.forEach(x => { const k = keyFn(x) || "—"; m[k] = (m[k] || 0) + (x.potencia_mw || 0); }); return Object.entries(m).map(([nombre, valor]) => ({ nombre, valor })).sort((a, b) => b.valor - a.valor); }; const fmtMW = v => PW.fmt(Math.round(v)) + " MW"; PW.barras("g-cap-tec", { items: suma(x => x.tecnologia || "—"), color: PW.color("--s6"), fmtV: fmtMW }); PW.barras("g-cap-reg", { items: suma(x => canonReg(x.region)), color: PW.color("--s4"), fmtV: fmtMW }); })(); // Mix de generación por tecnología en el tiempo (GWh) — desde c_genmix.js
 (function () {
-  const MX = window.PW_DATA.c_genmix;
-  if (!MX || !MX.series || !MX.series.length) return;
-  const COL = {
+  const MX = window.PW_DATA.c_genmix; if (!MX || !MX.series || !MX.series.length) return; const COL = {
     "Solar FV + CSP": "--s4", "Eólica": "--s3", "Hidroelectricidad": "--s1",
     "Gas Natural": "--s2", "Carbón": "--ink-2", "Petróleo": "--critical",
     "Bioenergía": "--s6", "Geotérmica": "--s5", "Cogeneración": "--ink-3",
-  };
-  const col = t => PW.color(COL[t] || "--ink-3");
-  PW.lineas("g-genmix", {
+  }; const col = t => PW.color(COL[t] || "--ink-3"); PW.lineas("g-genmix", {
     labels: MX.anios.map(String),
     series: MX.series.map(s => ({ nombre: s.nombre, valores: s.valores, color: col(s.nombre) })),
     alto: 300, fmtV: v => PW.fmt(Math.round(v)) + " GWh",
     fmtY: v => PW.fmt(Math.round(v / 1000)) + "k",
-  });
-  g("leg-genmix").innerHTML = MX.series.map(s =>
+  }); g("leg-genmix").innerHTML = MX.series.map(s =>
     `<span style="white-space:nowrap;margin-right:12px;font-size:12px">` +
     `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${col(s.nombre)};margin-right:5px;vertical-align:middle"></span>${s.nombre}</span>`
-  ).join("");
-  const pct = MX.renovable_pct || [], ult = MX.anios.length - 1;
-  const i0 = pct.findIndex(v => v != null);
-  if (i0 >= 0) g("nota-genmix").innerHTML =
+  ).join(""); const pct = MX.renovable_pct || [], ult = MX.anios.length - 1; const i0 = pct.findIndex(v => v != null); if (i0 >= 0) g("nota-genmix").innerHTML =
     `Renovable: ${pct[i0]}% (${MX.anios[i0]}) → <b>${pct[ult]}%</b> (${MX.anios[ult]}). ` +
-    `Total ${MX.anios[ult]}: ${PW.fmt(Math.round(MX.total[ult]))} GWh.`;
-})();
-
-// Factor de emisión de CO2 por sistema en el tiempo — desde c_co2.js
+    `Total ${MX.anios[ult]}: ${PW.fmt(Math.round(MX.total[ult]))} GWh.`; })(); // Factor de emisión de CO2 por sistema en el tiempo — desde c_co2.js
 (function () {
-  const CO = window.PW_DATA.c_co2;
-  if (!CO || !CO.series || !CO.series.length) return;
-  const COL = { "SEN": "--s2", "SIC": "--s1", "SING": "--critical" };
-  const col = s => PW.color(COL[s] || "--ink-3");
-  PW.lineas("g-co2", {
+  const CO = window.PW_DATA.c_co2; if (!CO || !CO.series || !CO.series.length) return; const COL = { "SEN": "--s2", "SIC": "--s1", "SING": "--critical" }; const col = s => PW.color(COL[s] || "--ink-3"); PW.lineas("g-co2", {
     labels: CO.anios.map(String),
     series: CO.series.map(s => ({ nombre: s.sistema, valores: s.valores, color: col(s.sistema) })),
     alto: 260, min: 0,
     fmtV: v => PW.fmt(v, 3) + " tCO2/MWh",
     fmtY: v => PW.fmt(v, 2),
-  });
-  g("leg-co2").innerHTML = CO.series.map(s =>
+  }); g("leg-co2").innerHTML = CO.series.map(s =>
     `<span style="white-space:nowrap;margin-right:14px;font-size:12px">` +
     `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${col(s.sistema)};margin-right:5px;vertical-align:middle"></span>${s.sistema}</span>`
-  ).join("");
-  const sen = CO.series.find(s => s.sistema === "SEN");
-  if (sen) {
-    const v = sen.valores, ai = CO.anios;
-    const i0 = v.findIndex(x => x != null);
-    const i1 = v.length - 1 - [...v].reverse().findIndex(x => x != null);
-    if (i0 >= 0) g("nota-co2").innerHTML =
-      `SEN: <b>${PW.fmt(v[i0], 3)}</b> tCO2/MWh (${ai[i0]}) → <b>${PW.fmt(v[i1], 3)}</b> (${ai[i1]}).`;
-  }
-})();
-
-// Generación distribuida (net billing) — desde c_gd.js
+  ).join(""); const sen = CO.series.find(s => s.sistema === "SEN"); if (sen) {
+    const v = sen.valores, ai = CO.anios; const i0 = v.findIndex(x => x != null); const i1 = v.length - 1 - [...v].reverse().findIndex(x => x != null); if (i0 >= 0) g("nota-co2").innerHTML =
+      `SEN: <b>${PW.fmt(v[i0], 3)}</b> tCO2/MWh (${ai[i0]}) → <b>${PW.fmt(v[i1], 3)}</b> (${ai[i1]}).`; }
+})(); // Generación distribuida (net billing) — desde c_gd.js
 (function () {
-  const GD = window.PW_DATA.c_gd;
-  if (!GD || !GD.por_anio || !GD.por_anio.length) return;
-  const amber = PW.color("--s4");
-  if (GD.total) g("nota-gd").innerHTML =
+  const GD = window.PW_DATA.c_gd; if (!GD || !GD.por_anio || !GD.por_anio.length) return; const amber = PW.color("--s4"); if (GD.total) g("nota-gd").innerHTML =
     `Autogeneración con Net Billing (Ley 21.118): techos solares y similares que inyectan a la red. ` +
     `<b>${PW.fmt(GD.total.n_instalaciones)}</b> instalaciones, <b>${PW.fmt(Math.round(GD.total.potencia_kw / 1000))}</b> MW, ` +
-    `${PW.fmt(GD.total.pct_solar, 1)}% solar. Fuente: SEC.`;
-  PW.lineas("g-gd-anio", {
+    `${PW.fmt(GD.total.pct_solar, 1)}% solar. Fuente: SEC.`; PW.lineas("g-gd-anio", {
     labels: GD.por_anio.map(x => String(x.anio)),
     series: [{ nombre: "Capacidad acumulada", valores: GD.por_anio.map(x => x.kw_acum / 1000), color: amber }],
     alto: 240, min: 0, fmtV: v => PW.fmt(v, 0) + " MW", fmtY: v => PW.fmt(v, 0),
-  });
-  PW.barras("g-gd-reg", {
+  }); PW.barras("g-gd-reg", {
     items: GD.por_region.filter(r => r.region !== "(sin región)").map(r => ({ nombre: r.region, valor: r.kw / 1000 })),
     color: amber, fmtV: v => PW.fmt(v, 1) + " MW",
-  });
-  PW.barras("g-gd-dest", {
+  }); PW.barras("g-gd-dest", {
     items: GD.por_destino.map(d => ({ nombre: d.destino, valor: d.kw / 1000 })),
     color: PW.color("--s3"), fmtV: v => PW.fmt(v, 1) + " MW",
-  });
-})();
-
-g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-</script>
+  }); })(); g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; </script>
 </body>
 </html>

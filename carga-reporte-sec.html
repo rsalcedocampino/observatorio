@@ -2,22 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://*.doubleclick.net https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -72,44 +68,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="data/reporte_sec.js"></script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("carga-reporte-sec.html");
-const D = window.PW_DATA.reporte_sec || {};
-document.getElementById("nota").textContent = "Fuente: " + (D.fuente || "SEC") + ". Datos " + (D.periodo || "2018-2025") + ". Generado " + (D.generado || "—") + ".";
-
-const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`;
-
-// --- Fiscalizacion ---
-const F = D.fiscalizacion || {};
-document.getElementById("kpi-fisc").innerHTML = [
+PW.montarNav("carga-reporte-sec.html"); const D = window.PW_DATA.reporte_sec || {}; document.getElementById("nota").textContent = "Fuente: " + (D.fuente || "SEC") + ". Datos " + (D.periodo || "2018-2025") + ". Generado " + (D.generado || "—") + "."; const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; // --- Fiscalizacion ---
+const F = D.fiscalizacion || {}; document.getElementById("kpi-fisc").innerHTML = [
   [PW.fmt(F.total_instalaciones || 0), "instalaciones fiscalizadas", "en 2025"],
   [(F.por_macrozona || []).length, "macrozonas", "+ RM"],
-].map(kpiHTML).join("");
-if (window.PW && PW.barras) {
-  PW.barras("g-fisc", { items: (F.por_macrozona || []).map(m => ({ nombre: m.macrozona, valor: m.operatividad_pct })), fmtV: v => PW.fmt(v, 1) + "%" });
-}
+].map(kpiHTML).join(""); if (window.PW && PW.barras) {
+  PW.barras("g-fisc", { items: (F.por_macrozona || []).map(m => ({ nombre: m.macrozona, valor: m.operatividad_pct })), fmtV: v => PW.fmt(v, 1) + "%" }); }
 PW.tabla("t-fisc", [
   { k: "macrozona", titulo: "Macrozona" },
   { k: "instalaciones", titulo: "Instalaciones", num: true, fmt: v => PW.fmt(v) },
   { k: "operatividad_pct", titulo: "Operatividad", num: true,
     fmt: v => v == null ? "—" : PW.fmt(v, 1) + "%" },
-], F.por_macrozona || [], { orden: "instalaciones" });
-
-// --- Transporte publico ---
-const T = D.transporte_publico || {};
-const cctp = T.cctp || {}, elt = T.electroterminales || {}, bus = T.flota_buses_red || {};
-document.getElementById("kpi-tp").innerHTML = [
+], F.por_macrozona || [], { orden: "instalaciones" }); // --- Transporte publico ---
+const T = D.transporte_publico || {}; const cctp = T.cctp || {}, elt = T.electroterminales || {}, bus = T.flota_buses_red || {}; document.getElementById("kpi-tp").innerHTML = [
   [PW.fmt(cctp.cantidad_actual || 0), "centros de carga transporte público", (cctp.potencia_instalada_mw || 0) + " MW instalados"],
   [PW.fmt(elt.cantidad_actual || 0), "electroterminales", (elt.potencia_instalada_mw || 0) + " MW"],
   [PW.fmt(bus["2025"] || 0), "buses eléctricos RED (2025)", "desde 2 en 2017"],
   ["+" + PW.fmt(cctp.cantidad_proyectada_2026_2027 || 0), "CCTP proyectados 2026-27", "+" + (cctp.potencia_proyectada_mw_2026_2027 || 0) + " MW"],
-].map(kpiHTML).join("");
-document.getElementById("nota-tp").innerHTML =
+].map(kpiHTML).join(""); document.getElementById("nota-tp").innerHTML =
   "Flota RED proyectada a <b>" + PW.fmt(bus.proyectado_2026 || 0) + "</b> buses en 2026 (crecimiento ~" + (bus.crecimiento_anual_prom_pct || 0) + "%/año). " +
-  (T.datos_clave || []).join(" ");
-
-// --- Compatibilidad ---
-const C = D.compatibilidad || {};
-PW.tabla("t-compat", [
+  (T.datos_clave || []).join(" "); // --- Compatibilidad ---
+const C = D.compatibilidad || {}; PW.tabla("t-compat", [
   { k: "estandar", titulo: "Estándar" },
   { k: "mercado_automotriz_pct", titulo: "Mercado automotriz", num: true,
     fmt: v => v == null ? "—" : PW.fmt(v, 2) + "%" },
@@ -117,10 +96,6 @@ PW.tabla("t-compat", [
     fmt: v => v == null ? "—" : PW.fmt(v, 2) + "%" },
   { k: "instalaciones_publicas_rapida_ultra_pct", titulo: "En instalaciones (rápida/ultra)", num: true,
     fmt: v => v == null ? "—" : PW.fmt(v, 2) + "%" },
-], C.conector || [], { orden: "mercado_automotriz_pct" });
-document.getElementById("nota-compat").innerHTML = (C.datos_clave || []).join(" ");
-
-document.getElementById("fuente").textContent = "Fuente: " + (D.fuente || "SEC") + ".";
-</script>
+], C.conector || [], { orden: "mercado_automotriz_pct" }); document.getElementById("nota-compat").innerHTML = (C.datos_clave || []).join(" "); document.getElementById("fuente").textContent = "Fuente: " + (D.fuente || "SEC") + "."; </script>
 </body>
 </html>

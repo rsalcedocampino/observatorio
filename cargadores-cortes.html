@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -91,48 +86,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("cargadores-cortes.html");
-const D = window.PW_DATA.cortes;
-const V = D.vivo, K = D.kpis;
-
-document.getElementById("nota").textContent = "Fuente: SEC - Actualizado al " + D.generado + ".";
-
-// geo_comunas.js (~4 MB) ya no se carga fijo: esta pagina lo necesita para el choropleth, el hover
+PW.montarNav("cargadores-cortes.html"); const D = window.PW_DATA.cortes; const V = D.vivo, K = D.kpis; document.getElementById("nota").textContent = "Fuente: SEC - Actualizado al " + D.generado + "."; // geo_comunas.js (~4 MB) ya no se carga fijo: esta pagina lo necesita para el choropleth, el hover
 // por comuna Y los propios filtros de region/comuna (salen de sus poligonos), asi que todo el resto
 // del script espera a que este disponible bajo demanda (comun.js:cargarGeoComunas) antes de correr.
 PW.cargarGeoComunas().then(() => {
 
 // ===== Mapa en vivo: choropleth de cortes por region + red de carga =====
-const MAPA = window.PW_DATA.mapa_carga || {};  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
-const _norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim();
-// Corte confirmado por distribuidora, a nivel COMUNA (preciso pero parcial): resalta cargadores.
-const DIST = (D.distribuidoras && D.distribuidoras.por_comuna) || [];
-const afectadas = new Set(DIST.map(c => _norm(c.comuna)));
-// Choropleth por REGION (la SEC publica el vivo por region): cada comuna toma el total de su region.
-const regCli = {};
-(V.por_region || []).forEach(r => { if ((r.clientes || 0) > 0) regCli[r.rcut] = r.clientes; });
-const GEO = window.PW_DATA.geo_comunas;
-// [DEMARCACIÓN PRECISA] colorear por COMUNA real (afectados SEC de vivo.por_comuna): pinta SOLO las
+const MAPA = window.PW_DATA.mapa_carga || {}; // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
+const _norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim(); // Corte confirmado por distribuidora, a nivel COMUNA (preciso pero parcial): resalta cargadores.
+const DIST = (D.distribuidoras && D.distribuidoras.por_comuna) || []; const afectadas = new Set(DIST.map(c => _norm(c.comuna))); // Choropleth por REGION (la SEC publica el vivo por region): cada comuna toma el total de su region.
+const regCli = {}; (V.por_region || []).forEach(r => { if ((r.clientes || 0) > 0) regCli[r.rcut] = r.clientes; }); const GEO = window.PW_DATA.geo_comunas; // [DEMARCACIÓN PRECISA] colorear por COMUNA real (afectados SEC de vivo.por_comuna): pinta SOLO las
 // comunas efectivamente con corte, no toda la región (antes se teñía el país entero). Fallback a
 // región solo si la fuente no trae el detalle por comuna.
-const comCli = {};
-((V.por_comuna) || []).forEach(c => { if (c.cut && (c.clientes || 0) > 0) comCli[String(c.cut).padStart(5, "0")] = c.clientes; });
-const usarComuna = Object.keys(comCli).length > 0;
-const valoresCorte = {};
-(GEO && GEO.features ? GEO.features : []).forEach(f => {
-  const cut = String(f.properties.cut).padStart(5, "0");
-  if (usarComuna) { if (comCli[cut] != null) valoresCorte[cut] = comCli[cut]; }
+const comCli = {}; ((V.por_comuna) || []).forEach(c => { if (c.cut && (c.clientes || 0) > 0) comCli[String(c.cut).padStart(5, "0")] = c.clientes; }); const usarComuna = Object.keys(comCli).length > 0; const valoresCorte = {}; (GEO && GEO.features ? GEO.features : []).forEach(f => {
+  const cut = String(f.properties.cut).padStart(5, "0"); if (usarComuna) { if (comCli[cut] != null) valoresCorte[cut] = comCli[cut]; }
   else { const rc = cut.slice(0, 2); if (regCli[rc] != null) valoresCorte[cut] = regCli[rc]; }
-});
-// MAPA.carga es una lista de ESTACIONES, no de cargadores: 651 estaciones agrupan 1.619
+}); // MAPA.carga es una lista de ESTACIONES, no de cargadores: 651 estaciones agrupan 1.619
 // cargadores y 2.242 conectores. El KPI decia "651 cargadores públicos" y erraba dos veces --
 // ni son cargadores ni son todos publicos (115 estaciones son restringidas). Es la misma
 // confusion que costo el arreglo del "912 cargadores" de la portada. Solo cambia el texto y
 // se agrega el conteo de publicas: no se toca el mapa ni el tamaño de nada.
-const nCarga = (MAPA.carga || []).length;
-const nCargaPub = (MAPA.carga || []).filter(p => p.acc !== "restringido").length;
-const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length;
-// Universo del MAPA: las mismas comunas que se pintan de azul (SEC vivo por comuna). El KPI
+const nCarga = (MAPA.carga || []).length; const nCargaPub = (MAPA.carga || []).filter(p => p.acc !== "restringido").length; const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length; // Universo del MAPA: las mismas comunas que se pintan de azul (SEC vivo por comuna). El KPI
 // contaba solo las confirmadas por distribuidora, que es un subconjunto estricto: al medirlo
 // el 2026-09-19 eran 20 de 153 comunas, y el KPI anunciaba 37 cargadores sobre un mapa donde
 // 432 de 651 caian en comuna con corte activo. (Ese feed se actualiza cada 30 min, asi que
@@ -141,123 +115,65 @@ const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).l
 // Si la SEC no publica el detalle por comuna (el generador declara que puede venir vacio),
 // el mapa cae a pintar por region pero el KPI se quedaba en 0 con el subtitulo diciendo 37.
 // Sin detalle comunal no hay universo que contar: se marca como sin dato.
-const hayComunal = ((V.por_comuna) || []).some(c => (c.clientes || 0) > 0);
-const afectadasVivo = new Set(((V.por_comuna) || [])
-  .filter(c => (c.clientes || 0) > 0).map(c => _norm(c.comuna)));
-const nCargAfectVivo = (MAPA.carga || []).filter(p => afectadasVivo.has(_norm(p.com))).length;
-
-// ===== Tooltip por comuna: cortes activos + % (cuando la fuente lo provea) + cortes 12 meses =====
-const HIST12 = D.hist12m_comuna || {};                 // {cut: {ev12,peak12,ch12,h12}} historico
-const DIST_CUT = {};                                   // corte activo confirmado por distribuidora (parcial)
-DIST.forEach(c => { if (c.cut) DIST_CUT[String(c.cut).padStart(5, "0")] = c; });
-const VIVO_CUT = {};                                   // vivo por comuna (afectados+totales+pct) si la SEC lo expone
-((V && V.por_comuna) || []).forEach(c => { if (c.cut) VIVO_CUT[String(c.cut).padStart(5, "0")] = c; });
-// regiones donde la SEC SI detalla comunas: ahi, una comuna AUSENTE del detalle = sin corte (CON LUZ);
-// si la region no trae detalle comunal, el estado de la comuna es desconocido (no se inventa).
-const REG_DETALLE = {};
-Object.keys(VIVO_CUT).forEach(c => { REG_DETALLE[c.slice(0, 2)] = true; });
-function tipComuna(cut, comuna, _valReg) {
-  cut = String(cut).padStart(5, "0");
-  const rc = cut.slice(0, 2);
-  const vc = VIVO_CUT[cut], dc = DIST_CUT[cut], h = HIST12[cut];
-  const L = [`<b>${PW.esc(comuna)}</b>`];
-  // 1) VEREDICTO explicito de la comuna (alineado con el color del mapa: azul=sin luz / amarillo=con luz)
+const hayComunal = ((V.por_comuna) || []).some(c => (c.clientes || 0) > 0); const afectadasVivo = new Set(((V.por_comuna) || [])
+  .filter(c => (c.clientes || 0) > 0).map(c => _norm(c.comuna))); const nCargAfectVivo = (MAPA.carga || []).filter(p => afectadasVivo.has(_norm(p.com))).length; // ===== Tooltip por comuna: cortes activos + % (cuando la fuente lo provea) + cortes 12 meses =====
+const HIST12 = D.hist12m_comuna || {}; // {cut: {ev12,peak12,ch12,h12}} historico
+const DIST_CUT = {}; // corte activo confirmado por distribuidora (parcial)
+DIST.forEach(c => { if (c.cut) DIST_CUT[String(c.cut).padStart(5, "0")] = c; }); const VIVO_CUT = {}; // vivo por comuna (afectados+totales+pct) si la SEC lo expone
+((V && V.por_comuna) || []).forEach(c => { if (c.cut) VIVO_CUT[String(c.cut).padStart(5, "0")] = c; }); // regiones donde la SEC SI detalla comunas: ahi, una comuna AUSENTE del detalle = sin corte (CON LUZ); // si la region no trae detalle comunal, el estado de la comuna es desconocido (no se inventa).
+const REG_DETALLE = {}; Object.keys(VIVO_CUT).forEach(c => { REG_DETALLE[c.slice(0, 2)] = true; }); function tipComuna(cut, comuna, _valReg) {
+  cut = String(cut).padStart(5, "0"); const rc = cut.slice(0, 2); const vc = VIVO_CUT[cut], dc = DIST_CUT[cut], h = HIST12[cut]; const L = [`<b>${PW.esc(comuna)}</b>`]; // 1) VEREDICTO explicito de la comuna (alineado con el color del mapa: azul=sin luz / amarillo=con luz)
   if (vc && (vc.clientes || 0) > 0) {
     const pctTxt = vc.pct == null ? null
-      : (vc.pct >= 0.05 ? PW.fmt(vc.pct, 1) : (vc.pct > 0 ? "<0,1" : "0"));
-    L.push(`<b style="color:var(--critical)">SIN LUZ</b> · <b>${PW.fmt(vc.clientes)}</b> clientes sin suministro` +
-           (pctTxt != null ? ` (<b>${pctTxt}%</b> de la comuna)` : ""));
-  } else if (dc && (dc.clientes || 0) > 0) {
+      : (vc.pct >= 0.05 ? PW.fmt(vc.pct, 1) : (vc.pct > 0 ? "<0,1" : "0")); L.push(`<b style="color:var(--critical)">SIN LUZ</b> · <b>${PW.fmt(vc.clientes)}</b> clientes sin suministro` +
+           (pctTxt != null ? ` (<b>${pctTxt}%</b> de la comuna)` : "")); } else if (dc && (dc.clientes || 0) > 0) {
     L.push(`<b style="color:var(--critical)">SIN LUZ</b> · corte activo: <b>${PW.fmt(dc.clientes)}</b> clientes` +
            (dc.outages ? ` · ${PW.fmt(dc.outages)} falla${dc.outages === 1 ? "" : "s"}` : "") +
-           (dc.empresa ? ` (${PW.esc(dc.empresa)})` : ""));
-  } else if (regCli[rc] && REG_DETALLE[rc]) {
-    L.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado en esta comuna`);
-    L.push(`<span style="opacity:.75">Su región registra ${PW.fmt(regCli[rc])} clientes sin luz en otras comunas</span>`);
-  } else if (regCli[rc]) {
-    L.push(`<b style="color:var(--warning)">SIN DETALLE COMUNAL</b> · la SEC reporta ${PW.fmt(regCli[rc])} sin luz en la región, sin desglosar comunas (podría incluir esta)`);
-  } else {
-    L.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado ahora`);
-  }
+           (dc.empresa ? ` (${PW.esc(dc.empresa)})` : "")); } else if (regCli[rc] && REG_DETALLE[rc]) {
+    L.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado en esta comuna`); L.push(`<span style="opacity:.75">Su región registra ${PW.fmt(regCli[rc])} clientes sin luz en otras comunas</span>`); } else if (regCli[rc]) {
+    L.push(`<b style="color:var(--warning)">SIN DETALLE COMUNAL</b> · la SEC reporta ${PW.fmt(regCli[rc])} sin luz en la región, sin desglosar comunas (podría incluir esta)`); } else {
+    L.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado ahora`); }
   // 2) Historico: cortes en los ultimos 12 meses
   if (h && h.ev12 != null) {
     L.push(`Últimos 12 meses: <b>${PW.fmt(h.ev12)}</b> corte${h.ev12 === 1 ? "" : "s"}` +
-           (h.peak12 ? ` · peak ${PW.fmt(h.peak12)} clientes` : ""));
-  } else {
-    L.push(`Últimos 12 meses: sin cortes registrados`);
-  }
-  return L.join("<br>");
-}
+           (h.peak12 ? ` · peak ${PW.fmt(h.peak12)} clientes` : "")); } else {
+    L.push(`Últimos 12 meses: sin cortes registrados`); }
+  return L.join("<br>"); }
 
 // ===== Hover por comuna =====
 // La coroplética se dibuja en CANVAS (preferCanvas) en un pane bajo el canvas de puntos, que
 // intercepta el mouse -> el tooltip por-feature de Leaflet nunca llega a la comuna. Solucion
 // independiente del z-order: un handler mousemove a nivel de MAPA (los eventos suben al contenedor)
 // + point-in-polygon sobre geo_comunas, mostrando tipComuna() en un tooltip que sigue el cursor.
-const COM_IDX = [];
-(GEO && GEO.features ? GEO.features : []).forEach(f => {
-  const g = f.geometry; if (!g) return;
-  const polys = g.type === "MultiPolygon" ? g.coordinates : (g.type === "Polygon" ? [g.coordinates] : []);
-  let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
-  polys.forEach(poly => poly.forEach(ring => ring.forEach(pt => {
-    if (pt[0] < minx) minx = pt[0]; if (pt[0] > maxx) maxx = pt[0];
-    if (pt[1] < miny) miny = pt[1]; if (pt[1] > maxy) maxy = pt[1];
-  })));
-  if (minx < Infinity) COM_IDX.push({
+const COM_IDX = []; (GEO && GEO.features ? GEO.features : []).forEach(f => {
+  const g = f.geometry; if (!g) return; const polys = g.type === "MultiPolygon" ? g.coordinates : (g.type === "Polygon" ? [g.coordinates] : []); let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity; polys.forEach(poly => poly.forEach(ring => ring.forEach(pt => {
+    if (pt[0] < minx) minx = pt[0]; if (pt[0] > maxx) maxx = pt[0]; if (pt[1] < miny) miny = pt[1]; if (pt[1] > maxy) maxy = pt[1]; }))); if (minx < Infinity) COM_IDX.push({
     cut: String(f.properties.cut).padStart(5, "0"), comuna: f.properties.comuna,
     bbox: [minx, miny, maxx, maxy], polys,
-  });
-});
-function _inRing(x, y, ring) {
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
-    if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
-  }
-  return inside;
-}
+  }); }); function _inRing(x, y, ring) {
+  let inside = false; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1]; if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside; }
+  return inside; }
 function comunaEn(latlng) {
-  const x = latlng.lng, y = latlng.lat;
-  for (const c of COM_IDX) {
-    const b = c.bbox;
-    if (x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue;
-    for (const poly of c.polys) {                 // poly = [anillo exterior, huecos...]
-      if (!_inRing(x, y, poly[0])) continue;
-      let enHueco = false;
-      for (let k = 1; k < poly.length; k++) if (_inRing(x, y, poly[k])) { enHueco = true; break; }
-      if (!enHueco) return c;
-    }
+  const x = latlng.lng, y = latlng.lat; for (const c of COM_IDX) {
+    const b = c.bbox; if (x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue; for (const poly of c.polys) {                 // poly = [anillo exterior, huecos...]
+      if (!_inRing(x, y, poly[0])) continue; let enHueco = false; for (let k = 1; k < poly.length; k++) if (_inRing(x, y, poly[k])) { enHueco = true; break; }
+      if (!enHueco) return c; }
   }
-  return null;
-}
+  return null; }
 function attachHoverComuna(map) {
   // Eventos NATIVOS del contenedor (no el 'mousemove'/'mouseout' de Leaflet): el mousemove nativo sube
   // desde cualquier canvas hijo (funciona con la capa de cargadores ENCIMA) y 'mouseleave' solo dispara al
   // salir de verdad del mapa (no en transiciones a hijos). point-in-polygon con prefiltro bbox -> barato.
   // La card es un DIV propio (no L.tooltip standalone, cuyo removeLayer/closeTooltip no la quita) -> el
   // mostrar/ocultar es fiable y la SUPRESIÓN anti-solape sobre cargadores funciona con certeza.
-  const cont = map.getContainer();
-  const card = document.createElement("div");
-  card.className = "leaflet-tooltip leaflet-tooltip-top pw-tip-comuna";
-  card.style.cssText = "position:absolute; z-index:700; pointer-events:none; display:none; white-space:nowrap;";
-  cont.appendChild(card);
-  const ocultar = () => { card.style.display = "none"; };
-  cont.addEventListener("mousemove", ev => {
+  const cont = map.getContainer(); const card = document.createElement("div"); card.className = "leaflet-tooltip leaflet-tooltip-top pw-tip-comuna"; card.style.cssText = "position:absolute; z-index:700; pointer-events:none; display:none; white-space:nowrap;"; cont.appendChild(card); const ocultar = () => { card.style.display = "none"; }; cont.addEventListener("mousemove", ev => {
     // [ANTI-SOLAPE] si Leaflet ya muestra la card de un cargador (hover real sobre un punto, según su
     // hit-detection) O un popup está abierto, no superponer la de la comuna. Robusto a cualquier zoom/densidad
     // (a diferencia de un radio fijo en píxeles, que a zoom bajo -país completo- taparía casi todo).
     if (document.querySelector(".leaflet-tooltip:not(.pw-tip-comuna)") || document.querySelector(".leaflet-popup")) { ocultar(); return; }
-    const c = comunaEn(map.mouseEventToLatLng(ev));
-    if (!c) { ocultar(); return; }
-    const p = map.mouseEventToContainerPoint(ev);
-    card.innerHTML = tipComuna(c.cut, c.comuna, valoresCorte[c.cut]);
-    card.style.left = p.x + "px";
-    card.style.top = p.y + "px";
-    card.style.transform = "translate(-50%, calc(-100% - 12px))";
-    card.style.display = "";
-  });
-  cont.addEventListener("mouseleave", ocultar);
-}
+    const c = comunaEn(map.mouseEventToLatLng(ev)); if (!c) { ocultar(); return; }
+    const p = map.mouseEventToContainerPoint(ev); card.innerHTML = tipComuna(c.cut, c.comuna, valoresCorte[c.cut]); card.style.left = p.x + "px"; card.style.top = p.y + "px"; card.style.transform = "translate(-50%, calc(-100% - 12px))"; card.style.display = ""; }); cont.addEventListener("mouseleave", ocultar); }
 
 document.getElementById("kpis").innerHTML = [
   [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + D.hora_sec],
@@ -265,164 +181,99 @@ document.getElementById("kpis").innerHTML = [
   [PW.fmt(nCarga), "estaciones de carga", PW.fmt(nCargaPub) + " de acceso público"],
   [hayComunal ? PW.fmt(nCargAfectVivo) : "s/d", "estaciones en zona de corte",
    "en comuna sin luz según la SEC · " + PW.fmt(nCargAfect) + " con corte confirmado por la distribuidora"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-document.getElementById("nota-mapa").textContent =
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota-mapa").textContent =
   V.clientes > 0
     ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
       (nCargAfect ? " " + PW.fmt(nCargAfect) + " estaciones están en comunas con corte confirmado por la distribuidora." : "")
-    : "Sin cortes relevantes ahora (SEC " + D.hora_sec + "): el mapa muestra la red de carga sobre el territorio.";
-const CAP_CORTES = [
+    : "Sin cortes relevantes ahora (SEC " + D.hora_sec + "): el mapa muestra la red de carga sobre el territorio."; const CAP_CORTES = [
   { k: "cortes", nombre: "Zonas con corte (mapa de calor)", col: "--seq-400", on: true },
   { k: "carga", nombre: "Red de carga (puntos)", col: "--s3", on: true },
-];
-const onCap = k => (CAP_CORTES.find(c => c.k === k) || {}).on;
-let mapaCortes = null;
-function popupCargaCorte(p) {
-  const afx = afectadas.has(_norm(p.com));
-  return PW.popupEstacion(p) +
+]; const onCap = k => (CAP_CORTES.find(c => c.k === k) || {}).on; let mapaCortes = null; function popupCargaCorte(p) {
+  const afx = afectadas.has(_norm(p.com)); return PW.popupEstacion(p) +
     (afx ? `<div class="pop-detalle" style="color:var(--critical);font-weight:600">⚠️ Corte activo en ${PW.esc(p.com)}: posiblemente sin servicio.</div>` : "") +
-    `<div class="pop-detalle" style="opacity:0.75; font-size:12px; margin-top:6px;">Datos actualizados: ${D.generado}</div>`;
-}
+    `<div class="pop-detalle" style="opacity:0.75; font-size:12px; margin-top:6px;">Datos actualizados: ${D.generado}</div>`; }
 // [FILTRO TERRITORIAL] los selectores Region/Comuna filtran los cargadores del mapa y hacen zoom
 // al territorio (patron 161: poligonos via PW.boundsComunas; limpiar vuelve a Chile).
 function enTerr(p) {
-  if (filtroTerr.com) return _norm(p.com) === _norm(filtroTerr.com);
-  if (filtroTerr.rcut) { const c = CUT_COMUNA[_norm(p.com)]; return !!c && c.slice(0, 2) === filtroTerr.rcut; }
-  return true;
-}
+  if (filtroTerr.com) return _norm(p.com) === _norm(filtroTerr.com); if (filtroTerr.rcut) { const c = CUT_COMUNA[_norm(p.com)]; return !!c && c.slice(0, 2) === filtroTerr.rcut; }
+  return true; }
 function renderMapaCortes(fit) {
   const capas = onCap("carga") ? [{
     nombre: "Cargadores", visible: true, color: PW.color("--s3"),
     puntos: (MAPA.carga || []).filter(enTerr).map(p => {
-      const afx = afectadas.has(_norm(p.com));
-      return {
+      const afx = afectadas.has(_norm(p.com)); return {
         lat: p.lat, lon: p.lon, r: 8,
         color: afx ? PW.color("--critical") : PW.color("--s3"),
         weight: 2, fillOpacity: 0.95,
         tip: (p.n || (p.op ? "Estación " + p.op : "Cargador")) + (afx ? " — corte activo" : ""),
         popup: popupCargaCorte(p),
-      };
-    }),
-  }] : [];
-  const comunas = { nombre: "Clientes sin luz ahora", visible: onCap("cortes"),
+      }; }),
+  }] : []; const comunas = { nombre: "Clientes sin luz ahora", visible: onCap("cortes"),
                     fmt: v => v == null ? "con luz" : PW.fmt(v) + " sin luz",
-                    colorNulo: COLOR_CONLUZ, tip: tipComuna, valores: valoresCorte };
-  const prev = mapaCortes ? { c: mapaCortes.getCenter(), z: mapaCortes.getZoom() } : null;
-  if (mapaCortes) { mapaCortes.remove(); mapaCortes = null; }
+                    colorNulo: COLOR_CONLUZ, tip: tipComuna, valores: valoresCorte }; const prev = mapaCortes ? { c: mapaCortes.getCenter(), z: mapaCortes.getZoom() } : null; if (mapaCortes) { mapaCortes.remove(); mapaCortes = null; }
   mapaCortes = PW.mapa("mapa-cortes", {
     // cluster por zoom en los cargadores (912 pts >= umbral 250): agrupados de lejos, sueltos al acercar
     capas, comunas, sinSelector: true, alto: 560,
     centro: prev ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3],
     zoom: prev ? prev.z : 5,
-  });
-  // [FOCO CHILE] encuadre inicial a Chile + no paear fuera + zoom mínimo = Chile completo.
-  const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]);
-  if (!prev) mapaCortes.fitBounds(CHILE, { animate: false });
-  // [ZOOM AL TERRITORIO] al cambiar el filtro: encuadrar la region/comuna elegida; limpiar => Chile
+  }); // [FOCO CHILE] encuadre inicial a Chile + no paear fuera + zoom mínimo = Chile completo.
+  const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]); if (!prev) mapaCortes.fitBounds(CHILE, { animate: false }); // [ZOOM AL TERRITORIO] al cambiar el filtro: encuadrar la region/comuna elegida; limpiar => Chile
   if (fit) {
-    let cuts = [];
-    if (filtroTerr.com && CUT_COMUNA[_norm(filtroTerr.com)]) cuts = [CUT_COMUNA[_norm(filtroTerr.com)]];
-    else if (filtroTerr.rcut) cuts = (GEO && GEO.features ? GEO.features : [])
+    let cuts = []; if (filtroTerr.com && CUT_COMUNA[_norm(filtroTerr.com)]) cuts = [CUT_COMUNA[_norm(filtroTerr.com)]]; else if (filtroTerr.rcut) cuts = (GEO && GEO.features ? GEO.features : [])
       .map(f => f.properties.cut).filter(c => c.slice(0, 2) === filtroTerr.rcut)
-      .filter(c => c !== "05104" && c !== "05201");  // islas del Pacifico no estiran el encuadre regional
-    const b = cuts.length ? PW.boundsComunas(cuts) : null;
-    if (b) mapaCortes.fitBounds(b.pad(filtroTerr.com ? 0.15 : 0.05), { animate: false, maxZoom: filtroTerr.com ? 12 : 11 });
-    else mapaCortes.fitBounds(CHILE, { animate: false });
-  }
-  mapaCortes.setMaxBounds(CHILE.pad(0.12));
-  mapaCortes.options.maxBoundsViscosity = 1.0;
-  mapaCortes.setMinZoom(mapaCortes.getBoundsZoom(CHILE));   // no se puede alejar más allá de "todo Chile"
+      .filter(c => c !== "05104" && c !== "05201"); // islas del Pacifico no estiran el encuadre regional
+    const b = cuts.length ? PW.boundsComunas(cuts) : null; if (b) mapaCortes.fitBounds(b.pad(filtroTerr.com ? 0.15 : 0.05), { animate: false, maxZoom: filtroTerr.com ? 12 : 11 }); else mapaCortes.fitBounds(CHILE, { animate: false }); }
+  mapaCortes.setMaxBounds(CHILE.pad(0.12)); mapaCortes.options.maxBoundsViscosity = 1.0; mapaCortes.setMinZoom(mapaCortes.getBoundsZoom(CHILE)); // no se puede alejar más allá de "todo Chile"
   // Hover por comuna (independiente del z-order de los canvas): activo mientras la capa de cortes lo esté.
-  if (onCap("cortes") && mapaCortes) attachHoverComuna(mapaCortes);
-  pintarLeyenda();
-}
+  if (onCap("cortes") && mapaCortes) attachHoverComuna(mapaCortes); pintarLeyenda(); }
 const COLOR_CONLUZ = "#f7ebb0"; // amarillo claro = con luz (sin corte)
 // Misma escala que PW.choropleth: desde los tokens, que se invierten en modo oscuro.
 const SEQ_LEY = ["#cde2fb", "#9ec5f4", "#5598e7", "#256abf", "#0d366b"]
-  .map((hex, i) => { const t = PW.color("--seq-" + (i + 1)); return t.charAt(0) === "#" ? t : hex; });
-function pintarLeyenda() {
-  const wrap = document.getElementById("leyenda-wrap");
-  if (!wrap) return;
-  const vals = Object.values(valoresCorte).filter(v => v != null && !Number.isNaN(v)).sort((a, b) => a - b);
-  if (!onCap("cortes") || !vals.length) { wrap.style.display = "none"; return; }
-  const qn = p => vals[Math.min(vals.length - 1, Math.floor(p * vals.length))];
-  const c = [qn(0.2), qn(0.4), qn(0.6), qn(0.8)];
-  const f = v => PW.fmt(Math.round(v));
-  PW.leyendaMapa("leyenda-mapa", [
+  .map((hex, i) => { const t = PW.color("--seq-" + (i + 1)); return t.charAt(0) === "#" ? t : hex; }); function pintarLeyenda() {
+  const wrap = document.getElementById("leyenda-wrap"); if (!wrap) return; const vals = Object.values(valoresCorte).filter(v => v != null && !Number.isNaN(v)).sort((a, b) => a - b); if (!onCap("cortes") || !vals.length) { wrap.style.display = "none"; return; }
+  const qn = p => vals[Math.min(vals.length - 1, Math.floor(p * vals.length))]; const c = [qn(0.2), qn(0.4), qn(0.6), qn(0.8)]; const f = v => PW.fmt(Math.round(v)); PW.leyendaMapa("leyenda-mapa", [
     ["Con luz", COLOR_CONLUZ],
     ["hasta " + f(c[0]), SEQ_LEY[0]],
     [f(c[0]) + " - " + f(c[1]), SEQ_LEY[1]],
     [f(c[1]) + " - " + f(c[2]), SEQ_LEY[2]],
     [f(c[2]) + " - " + f(c[3]), SEQ_LEY[3]],
     ["sobre " + f(c[3]), SEQ_LEY[4]],
-  ]);
-  wrap.style.display = "flex";
-}
+  ]); wrap.style.display = "flex"; }
 function pintarToggleCortes() {
-  const el = document.getElementById("panel-capas-cortes");
-  el.innerHTML = CAP_CORTES.map(c =>
-    `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${PW.color(c.col)}"><span class="dot"></span>${c.nombre}</span>`).join("");
-  el.querySelectorAll(".capa-chip").forEach(ch => ch.addEventListener("click", () => {
-    const c = CAP_CORTES.find(x => x.k === ch.dataset.k); c.on = !c.on;
-    renderMapaCortes(); pintarToggleCortes();
-  }));
-}
+  const el = document.getElementById("panel-capas-cortes"); el.innerHTML = CAP_CORTES.map(c =>
+    `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${PW.color(c.col)}"><span class="dot"></span>${c.nombre}</span>`).join(""); el.querySelectorAll(".capa-chip").forEach(ch => ch.addEventListener("click", () => {
+    const c = CAP_CORTES.find(x => x.k === ch.dataset.k); c.on = !c.on; renderMapaCortes(); pintarToggleCortes(); })); }
 // [FILTROS] Region y Comuna (pedido del usuario 2026-08-18): pueblan desde geo_comunas (346) con
 // nombres de region del vivo SEC; al cambiar, se filtran los cargadores y se hace zoom al territorio.
-const NOMBRE_REG = {};
-(V.por_region || []).forEach(r => { if (r.rcut) NOMBRE_REG[String(r.rcut).padStart(2, "0")] = r.region || ("Región " + r.rcut); });
-const CUT_COMUNA = {};
-(GEO && GEO.features ? GEO.features : []).forEach(f => { CUT_COMUNA[_norm(f.properties.comuna)] = String(f.properties.cut).padStart(5, "0"); });
-let filtroTerr = {};
-// nombres de comuna en Title Case (geo_comunas viene en MAYUSCULAS)
+const NOMBRE_REG = {}; (V.por_region || []).forEach(r => { if (r.rcut) NOMBRE_REG[String(r.rcut).padStart(2, "0")] = r.region || ("Región " + r.rcut); }); const CUT_COMUNA = {}; (GEO && GEO.features ? GEO.features : []).forEach(f => { CUT_COMUNA[_norm(f.properties.comuna)] = String(f.properties.cut).padStart(5, "0"); }); let filtroTerr = {}; // nombres de comuna en Title Case (geo_comunas viene en MAYUSCULAS)
 const _title = s => (s || "").toLowerCase()
   .replace(/(^|[\s'’(])(\p{L})/gu, (m, a, b) => a + b.toUpperCase())
-  .replace(/ (De|Del|La|Las|Los|Y) /g, m => m.toLowerCase());
-const territorioCortes = (GEO && GEO.features ? GEO.features : []).map(f => {
-  const cut = String(f.properties.cut).padStart(5, "0");
-  return { rcut: cut.slice(0, 2), reg: NOMBRE_REG[cut.slice(0, 2)] || ("Región " + cut.slice(0, 2)), com: _title(f.properties.comuna) };
-});
-PW.filtrosTerritorio("filtros-cortes", territorioCortes, f => { filtroTerr = f; renderMapaCortes(true); });
-
-pintarToggleCortes();
-renderMapaCortes();
-
-PW.barras("g-vivo", {
+  .replace(/ (De|Del|La|Las|Los|Y) /g, m => m.toLowerCase()); const territorioCortes = (GEO && GEO.features ? GEO.features : []).map(f => {
+  const cut = String(f.properties.cut).padStart(5, "0"); return { rcut: cut.slice(0, 2), reg: NOMBRE_REG[cut.slice(0, 2)] || ("Región " + cut.slice(0, 2)), com: _title(f.properties.comuna) }; }); PW.filtrosTerritorio("filtros-cortes", territorioCortes, f => { filtroTerr = f; renderMapaCortes(true); }); pintarToggleCortes(); renderMapaCortes(); PW.barras("g-vivo", {
   items: V.por_region.filter(r => r.clientes > 0).map(r => ({
     nombre: r.region, valor: r.clientes,
   })),
   fmtV: v => PW.fmt(v),
-});
-document.getElementById("nota-vivo").textContent =
+}); document.getElementById("nota-vivo").textContent =
   V.clientes > 0
     ? PW.fmt(V.clientes) + " clientes sin luz en " + PW.fmt(V.n_comunas) + " comunas al momento de la última lectura de la SEC (" + D.hora_sec + ")."
-    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + D.hora_sec + ").";
-
-// Por empresa distribuidora (en vivo, best-effort: puede faltar el bloque)
-const DI = D.distribuidoras;
-if (DI && (DI.por_grupo || []).length) {
-  document.getElementById("card-dist").style.display = "";
-  const cap = DI.capturado ? DI.capturado.slice(0, 16).replace("T", " ") : "s/f";
-  document.getElementById("dist-head").textContent =
+    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + D.hora_sec + ")."; // Por empresa distribuidora (en vivo, best-effort: puede faltar el bloque)
+const DI = D.distribuidoras; if (DI && (DI.por_grupo || []).length) {
+  document.getElementById("card-dist").style.display = ""; const cap = DI.capturado ? DI.capturado.slice(0, 16).replace("T", " ") : "s/f"; document.getElementById("dist-head").textContent =
     "Snapshot " + cap + " · " + (DI.cobertura || "") + " · " +
-    PW.fmt(DI.n_reales) + " fallas reales / " + PW.fmt(DI.clientes_reales) + " clientes.";
-  PW.barras("g-dist-grupo", {
+    PW.fmt(DI.n_reales) + " fallas reales / " + PW.fmt(DI.clientes_reales) + " clientes."; PW.barras("g-dist-grupo", {
     items: (DI.por_grupo || []).map(g => ({
       nombre: g.grupo, valor: g.clientes, extra: PW.fmt(g.outages) + " fallas",
     })),
     fmtV: v => PW.fmt(v),
-  });
-  PW.tabla("t-dist-comuna", [
+  }); PW.tabla("t-dist-comuna", [
     { k: "comuna", titulo: "Comuna" },
     { k: "region", titulo: "Región" },
     { k: "empresa", titulo: "Empresa", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
     { k: "clientes", titulo: "Clientes", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
     { k: "outages", titulo: "Fallas", num: true, fmt: v => PW.fmt(v) },
-  ], DI.por_comuna || [], { orden: "clientes", buscador: false });
-}
+  ], DI.por_comuna || [], { orden: "clientes", buscador: false }); }
 
-});
-</script>
+}); </script>
 </body>
 </html>

@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -163,72 +158,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("riesgo.html");
-const D = PW_DATA.riesgo;
-const DC = window.PW_DATA.cortes || null;
-const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`;
-
-// ============================================================
+PW.montarNav("riesgo.html"); const D = PW_DATA.riesgo; const DC = window.PW_DATA.cortes || null; const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; // ============================================================
 // PARTE 1 — EN VIVO (cortes.js: foto SEC del momento)
 // ============================================================
 (function vivo() {
-  const estado = document.getElementById("vivo-estado");
-  if (!DC || !DC.vivo) {
-    estado.textContent = "sin datos en vivo";
-    document.getElementById("nota-vivo-head").textContent =
-      "La foto en vivo de la SEC no está disponible en este momento.";
-    document.getElementById("kpis-vivo").style.display = "none";
-    return;
-  }
-  const V = DC.vivo;
-  const hayCorte = (V.clientes || 0) > 0;
-  estado.textContent = hayCorte ? PW.fmt(V.clientes) + " sin luz" : "sin cortes relevantes";
-  estado.style.color = hayCorte ? "var(--critical)" : "var(--good)";
-  estado.style.borderColor = hayCorte ? "var(--critical)" : "var(--good)";
-  estado.style.fontWeight = "600";
-
-  document.getElementById("nota-vivo-head").textContent =
+  const estado = document.getElementById("vivo-estado"); if (!DC || !DC.vivo) {
+    estado.textContent = "sin datos en vivo"; document.getElementById("nota-vivo-head").textContent =
+      "La foto en vivo de la SEC no está disponible en este momento."; document.getElementById("kpis-vivo").style.display = "none"; return; }
+  const V = DC.vivo; const hayCorte = (V.clientes || 0) > 0; estado.textContent = hayCorte ? PW.fmt(V.clientes) + " sin luz" : "sin cortes relevantes"; estado.style.color = hayCorte ? "var(--critical)" : "var(--good)"; estado.style.borderColor = hayCorte ? "var(--critical)" : "var(--good)"; estado.style.fontWeight = "600"; document.getElementById("nota-vivo-head").textContent =
     "Fuente: " + (DC.fuente || "SEC") + " · lectura en vivo " + (DC.hora_sec || "—") +
-    " · generado " + (DC.generado || "—") + ".";
-
-  document.getElementById("kpis-vivo").innerHTML = [
+    " · generado " + (DC.generado || "—") + "."; document.getElementById("kpis-vivo").innerHTML = [
     [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + (DC.hora_sec || "")],
     [PW.fmt(V.pct_pais, 2) + "%", "del país sin suministro", ""],
     [PW.fmt(V.n_comunas), "comunas con corte ahora", "de 346 en el país"],
-  ].map(kpiHTML).join("");
-
-  const conCorte = (V.por_region || []).filter(r => (r.clientes || 0) > 0)
-    .sort((a, b) => b.clientes - a.clientes);
-  PW.barras("g-vivo", {
+  ].map(kpiHTML).join(""); const conCorte = (V.por_region || []).filter(r => (r.clientes || 0) > 0)
+    .sort((a, b) => b.clientes - a.clientes); PW.barras("g-vivo", {
     items: conCorte.map(r => ({ nombre: r.region, valor: r.clientes, color: PW.color("--critical") })),
     fmtV: v => PW.fmt(v),
-  });
-  document.getElementById("nota-vivo").textContent = hayCorte
+  }); document.getElementById("nota-vivo").textContent = hayCorte
     ? PW.fmt(V.clientes) + " clientes sin luz en " + PW.fmt(V.n_comunas) + " comunas al momento de la última lectura de la SEC (" + DC.hora_sec + ")."
-    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + (DC.hora_sec || "—") + ").";
-
-  // Por empresa distribuidora (best-effort: el bloque puede faltar)
-  const DI = DC.distribuidoras;
-  if (DI && (DI.por_grupo || []).length) {
-    document.getElementById("card-dist").style.display = "";
-    const cap = DI.capturado ? DI.capturado.slice(0, 16).replace("T", " ") : "s/f";
-    document.getElementById("dist-head").textContent =
+    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + (DC.hora_sec || "—") + ")."; // Por empresa distribuidora (best-effort: el bloque puede faltar)
+  const DI = DC.distribuidoras; if (DI && (DI.por_grupo || []).length) {
+    document.getElementById("card-dist").style.display = ""; const cap = DI.capturado ? DI.capturado.slice(0, 16).replace("T", " ") : "s/f"; document.getElementById("dist-head").textContent =
       "Snapshot " + cap + " · " + (DI.cobertura || "") + " · " +
-      PW.fmt(DI.n_reales) + " fallas reales / " + PW.fmt(DI.clientes_reales) + " clientes.";
-    PW.barras("g-dist-grupo", {
+      PW.fmt(DI.n_reales) + " fallas reales / " + PW.fmt(DI.clientes_reales) + " clientes."; PW.barras("g-dist-grupo", {
       items: (DI.por_grupo || []).map(g => ({
         nombre: g.grupo, valor: g.clientes, extra: PW.fmt(g.outages) + " fallas",
       })),
       fmtV: v => PW.fmt(v),
-    });
-    PW.tabla("t-dist-comuna", [
+    }); PW.tabla("t-dist-comuna", [
       { k: "comuna", titulo: "Comuna" },
       { k: "region", titulo: "Región" },
       { k: "empresa", titulo: "Empresa", fmt: v => v ? `<span class="pill">${PW.esc(v)}</span>` : "—" },
       { k: "clientes", titulo: "Clientes", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
       { k: "outages", titulo: "Fallas", num: true, fmt: v => PW.fmt(v) },
-    ], DI.por_comuna || [], { orden: "clientes", buscador: false });
-    document.getElementById("dist-caveats").innerHTML =
+    ], DI.por_comuna || [], { orden: "clientes", buscador: false }); document.getElementById("dist-caveats").innerHTML =
       "<b>Cómo se arma:</b> la SEC entrega el corte por comuna <b>sin empresa</b>; esta atribución se " +
       "construye con los feeds de fallas de las propias distribuidoras. " +
       "<b>Cobertura parcial:</b> SAESA, CGE, Edelmag y Enel; falta Chilquinta (su feed responde 403) y las " +
@@ -237,11 +201,8 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
       "histórico sigue sin empresa (la atribución se acumula hacia adelante). " +
       "<b>No cuadra con el total SEC:</b> son fuentes y horas de captura distintas (feed por empresa vs. SEC " +
       "agregado por comuna); no es una reconciliación del total nacional. Las fallas hipotéticas de SAESA " +
-      "(predicciones) están excluidas de los conteos.";
-  }
-})();
-
-// ============================================================
+      "(predicciones) están excluidas de los conteos."; }
+})(); // ============================================================
 // PARTE 1b — MAPA EN VIVO (mismo mapa de "Cargadores Públicos y Cortes": choropleth de cortes por
 // región + red de carga + tooltip por comuna anti-solape + foco Chile + zoom mínimo Chile). Usa DC
 // (cortes.js). IIFE autocontenido; degrada si falta Leaflet / geo_comunas / datos.
@@ -249,30 +210,15 @@ const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l
 // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) antes
 // de intentar pintar este mapa (antes era funcion autoejecutada; ahora se llama tras la promesa).
 function mapaVivo() {
-  const cardMapa = document.getElementById("card-mapa");
-  const GEO = window.PW_DATA && window.PW_DATA.geo_comunas;
-  if (typeof L === "undefined" || !GEO || !DC || !DC.vivo) { if (cardMapa) cardMapa.style.display = "none"; return; }
-  const V = DC.vivo;
-  const MAPA = window.PW_DATA.mapa_carga || {};  // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
-  const _norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim();
-  const DIST = (DC.distribuidoras && DC.distribuidoras.por_comuna) || [];
-  const afectadas = new Set(DIST.map(c => _norm(c.comuna)));
-  const regCli = {};
-  (V.por_region || []).forEach(r => { if ((r.clientes || 0) > 0) regCli[r.rcut] = r.clientes; });
-  // [DEMARCACIÓN PRECISA] colorear por COMUNA real (afectados SEC de vivo.por_comuna): pinta SOLO las
+  const cardMapa = document.getElementById("card-mapa"); const GEO = window.PW_DATA && window.PW_DATA.geo_comunas; if (typeof L === "undefined" || !GEO || !DC || !DC.vivo) { if (cardMapa) cardMapa.style.display = "none"; return; }
+  const V = DC.vivo; const MAPA = window.PW_DATA.mapa_carga || {}; // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
+  const _norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase().trim(); const DIST = (DC.distribuidoras && DC.distribuidoras.por_comuna) || []; const afectadas = new Set(DIST.map(c => _norm(c.comuna))); const regCli = {}; (V.por_region || []).forEach(r => { if ((r.clientes || 0) > 0) regCli[r.rcut] = r.clientes; }); // [DEMARCACIÓN PRECISA] colorear por COMUNA real (afectados SEC de vivo.por_comuna): pinta SOLO las
   // comunas efectivamente con corte, no toda la región (antes se teñía el país entero). Fallback a
   // región solo si la fuente no trae el detalle por comuna.
-  const comCli = {};
-  ((V.por_comuna) || []).forEach(c => { if (c.cut && (c.clientes || 0) > 0) comCli[String(c.cut).padStart(5, "0")] = c.clientes; });
-  const usarComuna = Object.keys(comCli).length > 0;
-  const valoresCorte = {};
-  (GEO.features || []).forEach(f => {
-    const cut = String(f.properties.cut).padStart(5, "0");
-    if (usarComuna) { if (comCli[cut] != null) valoresCorte[cut] = comCli[cut]; }
+  const comCli = {}; ((V.por_comuna) || []).forEach(c => { if (c.cut && (c.clientes || 0) > 0) comCli[String(c.cut).padStart(5, "0")] = c.clientes; }); const usarComuna = Object.keys(comCli).length > 0; const valoresCorte = {}; (GEO.features || []).forEach(f => {
+    const cut = String(f.properties.cut).padStart(5, "0"); if (usarComuna) { if (comCli[cut] != null) valoresCorte[cut] = comCli[cut]; }
     else { const rc = cut.slice(0, 2); if (regCli[rc] != null) valoresCorte[cut] = regCli[rc]; }
-  });
-  const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length;
-  // Universo del MAPA: las mismas comunas que se pintan de azul (SEC vivo por comuna). El KPI
+  }); const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length; // Universo del MAPA: las mismas comunas que se pintan de azul (SEC vivo por comuna). El KPI
   // contaba solo las confirmadas por distribuidora, que es un subconjunto estricto: al medirlo
   // el 2026-09-19 eran 20 de 153 comunas, y el KPI anunciaba 37 cargadores sobre un mapa donde
   // 432 de 651 caian en comuna con corte activo. (Ese feed se actualiza cada 30 min, asi que
@@ -281,287 +227,133 @@ function mapaVivo() {
   // Si la SEC no publica el detalle por comuna (el generador declara que puede venir vacio),
   // el mapa cae a pintar por region pero el KPI se quedaba en 0 con el subtitulo diciendo 37.
   // Sin detalle comunal no hay universo que contar: se marca como sin dato.
-  const hayComunal = ((V.por_comuna) || []).some(c => (c.clientes || 0) > 0);
-  const afectadasVivo = new Set(((V.por_comuna) || [])
-    .filter(c => (c.clientes || 0) > 0).map(c => _norm(c.comuna)));
-  const nCargAfectVivo = (MAPA.carga || []).filter(p => afectadasVivo.has(_norm(p.com))).length;
-
-  // Tooltip por comuna: cortes activos + % (si la fuente lo provee) + cortes de los últimos 12 meses.
-  const HIST12 = DC.hist12m_comuna || {};
-  const DIST_CUT = {};
-  DIST.forEach(c => { if (c.cut) DIST_CUT[String(c.cut).padStart(5, "0")] = c; });
-  const VIVO_CUT = {};
-  ((V && V.por_comuna) || []).forEach(c => { if (c.cut) VIVO_CUT[String(c.cut).padStart(5, "0")] = c; });
-  // regiones donde la SEC SI detalla comunas: comuna ausente del detalle = sin corte (CON LUZ);
-  // region sin detalle comunal = estado desconocido (no se inventa).
-  const REG_DETALLE = {};
-  Object.keys(VIVO_CUT).forEach(c => { REG_DETALLE[c.slice(0, 2)] = true; });
-  function tipComuna(cut, comuna) {
-    cut = String(cut).padStart(5, "0");
-    const rc = cut.slice(0, 2);
-    const vc = VIVO_CUT[cut], dc = DIST_CUT[cut], h = HIST12[cut];
-    const Lc = [`<b>${PW.esc(comuna)}</b>`];
-    // VEREDICTO explicito (alineado con el color del mapa: azul=sin luz / amarillo=con luz)
+  const hayComunal = ((V.por_comuna) || []).some(c => (c.clientes || 0) > 0); const afectadasVivo = new Set(((V.por_comuna) || [])
+    .filter(c => (c.clientes || 0) > 0).map(c => _norm(c.comuna))); const nCargAfectVivo = (MAPA.carga || []).filter(p => afectadasVivo.has(_norm(p.com))).length; // Tooltip por comuna: cortes activos + % (si la fuente lo provee) + cortes de los últimos 12 meses.
+  const HIST12 = DC.hist12m_comuna || {}; const DIST_CUT = {}; DIST.forEach(c => { if (c.cut) DIST_CUT[String(c.cut).padStart(5, "0")] = c; }); const VIVO_CUT = {}; ((V && V.por_comuna) || []).forEach(c => { if (c.cut) VIVO_CUT[String(c.cut).padStart(5, "0")] = c; }); // regiones donde la SEC SI detalla comunas: comuna ausente del detalle = sin corte (CON LUZ); // region sin detalle comunal = estado desconocido (no se inventa).
+  const REG_DETALLE = {}; Object.keys(VIVO_CUT).forEach(c => { REG_DETALLE[c.slice(0, 2)] = true; }); function tipComuna(cut, comuna) {
+    cut = String(cut).padStart(5, "0"); const rc = cut.slice(0, 2); const vc = VIVO_CUT[cut], dc = DIST_CUT[cut], h = HIST12[cut]; const Lc = [`<b>${PW.esc(comuna)}</b>`]; // VEREDICTO explicito (alineado con el color del mapa: azul=sin luz / amarillo=con luz)
     if (vc && (vc.clientes || 0) > 0) {
-      const pctTxt = vc.pct == null ? null : (vc.pct >= 0.05 ? PW.fmt(vc.pct, 1) : (vc.pct > 0 ? "<0,1" : "0"));
-      Lc.push(`<b style="color:var(--critical)">SIN LUZ</b> · <b>${PW.fmt(vc.clientes)}</b> clientes sin suministro` + (pctTxt != null ? ` (<b>${pctTxt}%</b> de la comuna)` : ""));
-    } else if (dc && (dc.clientes || 0) > 0) {
-      Lc.push(`<b style="color:var(--critical)">SIN LUZ</b> · corte activo: <b>${PW.fmt(dc.clientes)}</b> clientes` + (dc.outages ? ` · ${PW.fmt(dc.outages)} falla${dc.outages === 1 ? "" : "s"}` : "") + (dc.empresa ? ` (${PW.esc(dc.empresa)})` : ""));
-    } else if (regCli[rc] && REG_DETALLE[rc]) {
-      Lc.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado en esta comuna`);
-      Lc.push(`<span style="opacity:.75">Su región registra ${PW.fmt(regCli[rc])} clientes sin luz en otras comunas</span>`);
-    } else if (regCli[rc]) {
-      Lc.push(`<b style="color:var(--warning)">SIN DETALLE COMUNAL</b> · la SEC reporta ${PW.fmt(regCli[rc])} sin luz en la región, sin desglosar comunas (podría incluir esta)`);
-    } else {
-      Lc.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado ahora`);
-    }
+      const pctTxt = vc.pct == null ? null : (vc.pct >= 0.05 ? PW.fmt(vc.pct, 1) : (vc.pct > 0 ? "<0,1" : "0")); Lc.push(`<b style="color:var(--critical)">SIN LUZ</b> · <b>${PW.fmt(vc.clientes)}</b> clientes sin suministro` + (pctTxt != null ? ` (<b>${pctTxt}%</b> de la comuna)` : "")); } else if (dc && (dc.clientes || 0) > 0) {
+      Lc.push(`<b style="color:var(--critical)">SIN LUZ</b> · corte activo: <b>${PW.fmt(dc.clientes)}</b> clientes` + (dc.outages ? ` · ${PW.fmt(dc.outages)} falla${dc.outages === 1 ? "" : "s"}` : "") + (dc.empresa ? ` (${PW.esc(dc.empresa)})` : "")); } else if (regCli[rc] && REG_DETALLE[rc]) {
+      Lc.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado en esta comuna`); Lc.push(`<span style="opacity:.75">Su región registra ${PW.fmt(regCli[rc])} clientes sin luz en otras comunas</span>`); } else if (regCli[rc]) {
+      Lc.push(`<b style="color:var(--warning)">SIN DETALLE COMUNAL</b> · la SEC reporta ${PW.fmt(regCli[rc])} sin luz en la región, sin desglosar comunas (podría incluir esta)`); } else {
+      Lc.push(`<b style="color:var(--good)">CON LUZ</b> · sin corte reportado ahora`); }
     if (h && h.ev12 != null) {
-      Lc.push(`Últimos 12 meses: <b>${PW.fmt(h.ev12)}</b> corte${h.ev12 === 1 ? "" : "s"}` + (h.peak12 ? ` · peak ${PW.fmt(h.peak12)} clientes` : ""));
-    } else {
-      Lc.push(`Últimos 12 meses: sin cortes registrados`);
-    }
-    return Lc.join("<br>");
-  }
+      Lc.push(`Últimos 12 meses: <b>${PW.fmt(h.ev12)}</b> corte${h.ev12 === 1 ? "" : "s"}` + (h.peak12 ? ` · peak ${PW.fmt(h.peak12)} clientes` : "")); } else {
+      Lc.push(`Últimos 12 meses: sin cortes registrados`); }
+    return Lc.join("<br>"); }
 
   // Índice geométrico (bbox por comuna) para point-in-polygon del hover.
-  const COM_IDX = [];
-  (GEO.features || []).forEach(f => {
-    const g = f.geometry; if (!g) return;
-    const polys = g.type === "MultiPolygon" ? g.coordinates : (g.type === "Polygon" ? [g.coordinates] : []);
-    let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity;
-    polys.forEach(poly => poly.forEach(ring => ring.forEach(pt => {
-      if (pt[0] < minx) minx = pt[0]; if (pt[0] > maxx) maxx = pt[0];
-      if (pt[1] < miny) miny = pt[1]; if (pt[1] > maxy) maxy = pt[1];
-    })));
-    if (minx < Infinity) COM_IDX.push({ cut: String(f.properties.cut).padStart(5, "0"), comuna: f.properties.comuna, bbox: [minx, miny, maxx, maxy], polys });
-  });
-  function _inRing(x, y, ring) {
-    let inside = false;
-    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-      const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
-      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
-    }
-    return inside;
-  }
+  const COM_IDX = []; (GEO.features || []).forEach(f => {
+    const g = f.geometry; if (!g) return; const polys = g.type === "MultiPolygon" ? g.coordinates : (g.type === "Polygon" ? [g.coordinates] : []); let minx = Infinity, miny = Infinity, maxx = -Infinity, maxy = -Infinity; polys.forEach(poly => poly.forEach(ring => ring.forEach(pt => {
+      if (pt[0] < minx) minx = pt[0]; if (pt[0] > maxx) maxx = pt[0]; if (pt[1] < miny) miny = pt[1]; if (pt[1] > maxy) maxy = pt[1]; }))); if (minx < Infinity) COM_IDX.push({ cut: String(f.properties.cut).padStart(5, "0"), comuna: f.properties.comuna, bbox: [minx, miny, maxx, maxy], polys }); }); function _inRing(x, y, ring) {
+    let inside = false; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1]; if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside; }
+    return inside; }
   function comunaEn(latlng) {
-    const x = latlng.lng, y = latlng.lat;
-    for (const c of COM_IDX) {
-      const b = c.bbox;
-      if (x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue;
-      for (const poly of c.polys) {
-        if (!_inRing(x, y, poly[0])) continue;
-        let enHueco = false;
-        for (let k = 1; k < poly.length; k++) if (_inRing(x, y, poly[k])) { enHueco = true; break; }
-        if (!enHueco) return c;
-      }
+    const x = latlng.lng, y = latlng.lat; for (const c of COM_IDX) {
+      const b = c.bbox; if (x < b[0] || x > b[2] || y < b[1] || y > b[3]) continue; for (const poly of c.polys) {
+        if (!_inRing(x, y, poly[0])) continue; let enHueco = false; for (let k = 1; k < poly.length; k++) if (_inRing(x, y, poly[k])) { enHueco = true; break; }
+        if (!enHueco) return c; }
     }
-    return null;
-  }
+    return null; }
   // Hover por comuna: DIV propio (no L.tooltip standalone), se oculta cuando Leaflet ya muestra la card
   // de un cargador (anti-solape) — robusto a cualquier zoom. mousemove/mouseleave nativos del contenedor.
   function attachHoverComuna(map) {
-    const cont = map.getContainer();
-    const card = document.createElement("div");
-    card.className = "leaflet-tooltip leaflet-tooltip-top pw-tip-comuna";
-    card.style.cssText = "position:absolute; z-index:700; pointer-events:none; display:none; white-space:nowrap;";
-    cont.appendChild(card);
-    const ocultar = () => { card.style.display = "none"; };
-    cont.addEventListener("mousemove", ev => {
+    const cont = map.getContainer(); const card = document.createElement("div"); card.className = "leaflet-tooltip leaflet-tooltip-top pw-tip-comuna"; card.style.cssText = "position:absolute; z-index:700; pointer-events:none; display:none; white-space:nowrap;"; cont.appendChild(card); const ocultar = () => { card.style.display = "none"; }; cont.addEventListener("mousemove", ev => {
       if (document.querySelector(".leaflet-tooltip:not(.pw-tip-comuna)")) { ocultar(); return; }
-      const c = comunaEn(map.mouseEventToLatLng(ev));
-      if (!c) { ocultar(); return; }
-      const p = map.mouseEventToContainerPoint(ev);
-      card.innerHTML = tipComuna(c.cut, c.comuna);
-      card.style.left = p.x + "px";
-      card.style.top = p.y + "px";
-      card.style.transform = "translate(-50%, calc(-100% - 12px))";
-      card.style.display = "";
-    });
-    cont.addEventListener("mouseleave", ocultar);
-  }
+      const c = comunaEn(map.mouseEventToLatLng(ev)); if (!c) { ocultar(); return; }
+      const p = map.mouseEventToContainerPoint(ev); card.innerHTML = tipComuna(c.cut, c.comuna); card.style.left = p.x + "px"; card.style.top = p.y + "px"; card.style.transform = "translate(-50%, calc(-100% - 12px))"; card.style.display = ""; }); cont.addEventListener("mouseleave", ocultar); }
 
   document.getElementById("nota-mapa").textContent =
     V.clientes > 0
       ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
         (nCargAfectVivo ? " " + PW.fmt(nCargAfectVivo) + " estaciones de carga están en comunas sin luz según la SEC, de las cuales "
           + PW.fmt(nCargAfect) + " en comunas con corte confirmado por la distribuidora." : "")
-      : "Sin cortes relevantes ahora (SEC " + (DC.hora_sec || "—") + "): el mapa muestra la red de carga sobre el territorio.";
-
-  const CAP_CORTES = [
+      : "Sin cortes relevantes ahora (SEC " + (DC.hora_sec || "—") + "): el mapa muestra la red de carga sobre el territorio."; const CAP_CORTES = [
     { k: "cortes", nombre: "Cortes en vivo", col: "--seq-400", on: true },
     { k: "carga", nombre: "Cargadores", col: "--s3", on: true },
-  ];
-  const onCap = k => (CAP_CORTES.find(c => c.k === k) || {}).on;
-  let mapaCortes = null;
-  function popupCargaCorte(p) {
-    const afx = afectadas.has(_norm(p.com));
-    return PW.popupEstacion(p) + (afx ? `<div class="pop-detalle" style="color:var(--critical);font-weight:600">Corte activo en ${PW.esc(p.com)}: posiblemente sin servicio.</div>` : "");
-  }
+  ]; const onCap = k => (CAP_CORTES.find(c => c.k === k) || {}).on; let mapaCortes = null; function popupCargaCorte(p) {
+    const afx = afectadas.has(_norm(p.com)); return PW.popupEstacion(p) + (afx ? `<div class="pop-detalle" style="color:var(--critical);font-weight:600">Corte activo en ${PW.esc(p.com)}: posiblemente sin servicio.</div>` : ""); }
   function renderMapaCortes() {
     const capas = onCap("carga") ? [{
       nombre: "Cargadores", visible: true, color: PW.color("--s3"),
       puntos: (MAPA.carga || []).map(p => {
-        const afx = afectadas.has(_norm(p.com));
-        return { lat: p.lat, lon: p.lon, r: 5, color: afx ? PW.color("--critical") : PW.color("--s3"),
-          tip: (p.n || (p.op ? "Estación " + p.op : "Cargador")) + (afx ? " — corte activo" : ""), popup: popupCargaCorte(p) };
-      }),
-    }] : [];
-    const comunas = { nombre: "Clientes sin luz ahora", visible: onCap("cortes"),
+        const afx = afectadas.has(_norm(p.com)); return { lat: p.lat, lon: p.lon, r: 5, color: afx ? PW.color("--critical") : PW.color("--s3"),
+          tip: (p.n || (p.op ? "Estación " + p.op : "Cargador")) + (afx ? " — corte activo" : ""), popup: popupCargaCorte(p) }; }),
+    }] : []; const comunas = { nombre: "Clientes sin luz ahora", visible: onCap("cortes"),
       fmt: v => v == null ? "con luz" : PW.fmt(v) + " sin luz",
-      colorNulo: COLOR_CONLUZ, valores: valoresCorte };
-    const prev = mapaCortes ? { c: mapaCortes.getCenter(), z: mapaCortes.getZoom() } : null;
-    if (mapaCortes) { mapaCortes.remove(); mapaCortes = null; }
+      colorNulo: COLOR_CONLUZ, valores: valoresCorte }; const prev = mapaCortes ? { c: mapaCortes.getCenter(), z: mapaCortes.getZoom() } : null; if (mapaCortes) { mapaCortes.remove(); mapaCortes = null; }
     mapaCortes = PW.mapa("mapa-cortes", {
       capas, comunas, sinSelector: true, sinCluster: true, alto: 560,
       centro: prev ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3], zoom: prev ? prev.z : 5,
-    });
-    // [FOCO CHILE] encuadre inicial + no paear fuera + zoom mínimo = Chile completo.
-    const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]);
-    if (!prev) mapaCortes.fitBounds(CHILE, { animate: false });
-    mapaCortes.setMaxBounds(CHILE.pad(0.12));
-    mapaCortes.options.maxBoundsViscosity = 1.0;
-    mapaCortes.setMinZoom(mapaCortes.getBoundsZoom(CHILE));
-    if (onCap("cortes") && mapaCortes) attachHoverComuna(mapaCortes);
-    pintarLeyenda();
-  }
+    }); // [FOCO CHILE] encuadre inicial + no paear fuera + zoom mínimo = Chile completo.
+    const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]); if (!prev) mapaCortes.fitBounds(CHILE, { animate: false }); mapaCortes.setMaxBounds(CHILE.pad(0.12)); mapaCortes.options.maxBoundsViscosity = 1.0; mapaCortes.setMinZoom(mapaCortes.getBoundsZoom(CHILE)); if (onCap("cortes") && mapaCortes) attachHoverComuna(mapaCortes); pintarLeyenda(); }
   const COLOR_CONLUZ = "#f7ebb0"; // amarillo claro = con luz (sin corte)
   // Misma escala que PW.choropleth: desde los tokens, que se invierten en modo oscuro.
   const SEQ_LEY = ["#cde2fb", "#9ec5f4", "#5598e7", "#256abf", "#0d366b"]
-    .map((hex, i) => { const t = PW.color("--seq-" + (i + 1)); return t.charAt(0) === "#" ? t : hex; });
-  function pintarLeyenda() {
-    const wrap = document.getElementById("leyenda-wrap");
-    if (!wrap) return;
-    const vals = Object.values(valoresCorte).filter(v => v != null && !Number.isNaN(v)).sort((a, b) => a - b);
-    if (!onCap("cortes") || !vals.length) { wrap.style.display = "none"; return; }
-    const qn = p => vals[Math.min(vals.length - 1, Math.floor(p * vals.length))];
-    const c = [qn(0.2), qn(0.4), qn(0.6), qn(0.8)];
-    const f = v => PW.fmt(Math.round(v));
-    PW.leyendaMapa("leyenda-mapa", [
+    .map((hex, i) => { const t = PW.color("--seq-" + (i + 1)); return t.charAt(0) === "#" ? t : hex; }); function pintarLeyenda() {
+    const wrap = document.getElementById("leyenda-wrap"); if (!wrap) return; const vals = Object.values(valoresCorte).filter(v => v != null && !Number.isNaN(v)).sort((a, b) => a - b); if (!onCap("cortes") || !vals.length) { wrap.style.display = "none"; return; }
+    const qn = p => vals[Math.min(vals.length - 1, Math.floor(p * vals.length))]; const c = [qn(0.2), qn(0.4), qn(0.6), qn(0.8)]; const f = v => PW.fmt(Math.round(v)); PW.leyendaMapa("leyenda-mapa", [
       ["Con luz", COLOR_CONLUZ],
       ["hasta " + f(c[0]), SEQ_LEY[0]],
       [f(c[0]) + " - " + f(c[1]), SEQ_LEY[1]],
       [f(c[1]) + " - " + f(c[2]), SEQ_LEY[2]],
       [f(c[2]) + " - " + f(c[3]), SEQ_LEY[3]],
       ["sobre " + f(c[3]), SEQ_LEY[4]],
-    ]);
-    wrap.style.display = "flex";
-  }
+    ]); wrap.style.display = "flex"; }
   function pintarToggleCortes() {
-    const el = document.getElementById("panel-capas-cortes");
-    el.innerHTML = CAP_CORTES.map(c => `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${PW.color(c.col)}"><span class="dot"></span>${c.nombre}</span>`).join("");
-    el.querySelectorAll(".capa-chip").forEach(ch => ch.addEventListener("click", () => {
-      const c = CAP_CORTES.find(x => x.k === ch.dataset.k); c.on = !c.on;
-      renderMapaCortes(); pintarToggleCortes();
-    }));
-  }
-  pintarToggleCortes();
-  renderMapaCortes();
-  // [BATCH 3] auto-encuadre al territorio al cambiar región/comuna. Listener propio que
-  // cierra sobre la VARIABLE mapaCortes (siempre viva tras cada rebuild por toggle de capas);
-  // pasar la instancia a un helper la dejaría muerta al primer renderMapaCortes().
+    const el = document.getElementById("panel-capas-cortes"); el.innerHTML = CAP_CORTES.map(c => `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${PW.color(c.col)}"><span class="dot"></span>${c.nombre}</span>`).join(""); el.querySelectorAll(".capa-chip").forEach(ch => ch.addEventListener("click", () => {
+      const c = CAP_CORTES.find(x => x.k === ch.dataset.k); c.on = !c.on; renderMapaCortes(); pintarToggleCortes(); })); }
+  pintarToggleCortes(); renderMapaCortes(); // [BATCH 3] auto-encuadre al territorio al cambiar región/comuna. Listener propio que
+  // cierra sobre la VARIABLE mapaCortes (siempre viva tras cada rebuild por toggle de capas); // pasar la instancia a un helper la dejaría muerta al primer renderMapaCortes().
   ["f-region", "f-comuna"].forEach(id => {
-    const s = document.getElementById(id);
-    if (s) s.addEventListener("change", () => {
-      const rcut = document.getElementById("f-region").value || null;
-      const com = document.getElementById("f-comuna").value || null;
-      if (mapaCortes && (rcut || com)) PW.fitTerritorio(mapaCortes, { rcut: rcut, com: com });
-    });
-  });
-}
-PW.cargarGeoComunas().then(mapaVivo);
-
-// ============================================================
+    const s = document.getElementById(id); if (s) s.addEventListener("change", () => {
+      const rcut = document.getElementById("f-region").value || null; const com = document.getElementById("f-comuna").value || null; if (mapaCortes && (rcut || com)) PW.fitTerritorio(mapaCortes, { rcut: rcut, com: com }); }); }); }
+PW.cargarGeoComunas().then(mapaVivo); // ============================================================
 // PARTE 2 — HISTÓRICO (riesgo.js)
 // ============================================================
 document.getElementById("nota").textContent =
-  "Fuente actualizada " + (D.actualizado_fuente || "—") + ". " + D.nota;
-
-// KPIs históricos nacionales (el "sin luz ahora" vive arriba, en la parte en vivo)
-const K = D.kpis || {};
-document.getElementById("kpis").innerHTML = [
+  "Fuente actualizada " + (D.actualizado_fuente || "—") + ". " + D.nota; // KPIs históricos nacionales (el "sin luz ahora" vive arriba, en la parte en vivo)
+const K = D.kpis || {}; document.getElementById("kpis").innerHTML = [
   [PW.fmt((K.cliente_horas_total || 0) / 1e6, 1) + "M", "cliente-horas acumuladas (país)", "2017 a hoy"],
   [PW.fmt(K.eventos_totales), "eventos registrados", "umbral 500 clientes"],
   [K.peak_historico ? PW.fmt(K.peak_historico.clientes) : "—", "peak histórico de clientes",
     K.peak_historico ? (K.peak_historico.evento || K.peak_historico.cuando) : ""],
-].map(kpiHTML).join("");
-
-// Filtros region -> comuna
-const selR = document.getElementById("f-region");
-const selC = document.getElementById("f-comuna");
-D.regiones.slice().sort((a, b) => a.region.localeCompare(b.region)).forEach(r => {
-  const o = document.createElement("option"); o.value = r.rcut; o.textContent = r.region; selR.appendChild(o);
-});
-const selY = document.getElementById("f-anho");
-selY.innerHTML = `<option value="">Todos los años (acumulado)</option>` +
-  (D.anhos || []).slice().sort((a, b) => b - a).map(y => `<option value="${y}">${y}</option>`).join("");
-function poblarComunas() {
-  const rcut = selR.value;
-  const coms = D.ranking.filter(c => !rcut || c.cod_region === rcut)
-    .map(c => c.comuna).sort();
-  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
-  selC.disabled = !rcut;
-}
-poblarComunas();
-
-function refrescar() {
-  const rcut = selR.value;
-  const com = selC.value;
-  const anho = selY.value;
-  const fuente = anho ? D.ranking_anual.filter(c => String(c.anho) === anho) : D.ranking;
-  const periodo = anho ? ("año " + anho) : "acumulado 2017-hoy";
-  const ambito = com ? com : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el país");
-  document.getElementById("ambito").textContent = "Mostrando: " + ambito + " · " + periodo;
-  document.getElementById("nota-anho").textContent = anho
+].map(kpiHTML).join(""); // Filtros region -> comuna
+const selR = document.getElementById("f-region"); const selC = document.getElementById("f-comuna"); D.regiones.slice().sort((a, b) => a.region.localeCompare(b.region)).forEach(r => {
+  const o = document.createElement("option"); o.value = r.rcut; o.textContent = r.region; selR.appendChild(o); }); const selY = document.getElementById("f-anho"); selY.innerHTML = `<option value="">Todos los años (acumulado)</option>` +
+  (D.anhos || []).slice().sort((a, b) => b - a).map(y => `<option value="${y}">${y}</option>`).join(""); function poblarComunas() {
+  const rcut = selR.value; const coms = D.ranking.filter(c => !rcut || c.cod_region === rcut)
+    .map(c => c.comuna).sort(); selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join(""); selC.disabled = !rcut; }
+poblarComunas(); function refrescar() {
+  const rcut = selR.value; const com = selC.value; const anho = selY.value; const fuente = anho ? D.ranking_anual.filter(c => String(c.anho) === anho) : D.ranking; const periodo = anho ? ("año " + anho) : "acumulado 2017-hoy"; const ambito = com ? com : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el país"); document.getElementById("ambito").textContent = "Mostrando: " + ambito + " · " + periodo; document.getElementById("nota-anho").textContent = anho
     ? "Datos comunales de " + anho + ": registro de eventos significativos (500+ clientes). Elige 'Todos los años' para el acumulado completo."
-    : "Acumulado 2017 a hoy: incluye además los cortes menores de la serie horaria. Elige un año para ver ese periodo.";
-
-  // filas comunales de la seleccion (fuente segun el año elegido)
-  const comunas = fuente.filter(c => (!rcut || c.cod_region === rcut) && (!com || c.comuna === com));
-
-  // totales de la seleccion
-  const totClientes = comunas.reduce((s, c) => s + c.peak_clientes, 0);
-  const totHoras = comunas.reduce((s, c) => s + c.horas_afectada, 0);
-  const totCH = comunas.reduce((s, c) => s + c.cliente_horas, 0);
-
-  document.getElementById("h-clientes").textContent = "Clientes sin energía — " + periodo;
-  document.getElementById("h-horas").textContent = "Horas sin energía — " + periodo;
-
-  document.getElementById("kpis-clientes").innerHTML = [
+    : "Acumulado 2017 a hoy: incluye además los cortes menores de la serie horaria. Elige un año para ver ese periodo."; // filas comunales de la seleccion (fuente segun el año elegido)
+  const comunas = fuente.filter(c => (!rcut || c.cod_region === rcut) && (!com || c.comuna === com)); // totales de la seleccion
+  const totClientes = comunas.reduce((s, c) => s + c.peak_clientes, 0); const totHoras = comunas.reduce((s, c) => s + c.horas_afectada, 0); const totCH = comunas.reduce((s, c) => s + c.cliente_horas, 0); document.getElementById("h-clientes").textContent = "Clientes sin energía — " + periodo; document.getElementById("h-horas").textContent = "Horas sin energía — " + periodo; document.getElementById("kpis-clientes").innerHTML = [
     [PW.fmt(totClientes), com ? "peak de clientes sin energía" : "clientes sin energia (peak sumado)", ambito],
     [comunas.length, com ? "comuna" : "comunas con registro", periodo],
-  ].map(kpiHTML).join("");
-
-  document.getElementById("kpis-horas").innerHTML = [
+  ].map(kpiHTML).join(""); document.getElementById("kpis-horas").innerHTML = [
     [PW.fmt(totHoras), com ? "horas con corte" : "horas-comuna sin energía", ambito],
     [PW.fmt(totCH / 1e6, 1) + "M", "cliente-horas de la seleccion", periodo],
-  ].map(kpiHTML).join("");
-
-  // graficos: ranking de comunas de la seleccion (peak de clientes / horas afectadas)
-  const ordClientes = comunas.slice().sort((a, b) => b.peak_clientes - a.peak_clientes).slice(0, 15);
-  PW.barras("g-clientes", {
+  ].map(kpiHTML).join(""); // graficos: ranking de comunas de la seleccion (peak de clientes / horas afectadas)
+  const ordClientes = comunas.slice().sort((a, b) => b.peak_clientes - a.peak_clientes).slice(0, 15); PW.barras("g-clientes", {
     items: ordClientes.map(c => ({
       nombre: c.comuna, valor: c.peak_clientes,
       extra: c.region + " — " + PW.fmt(c.horas_afectada) + " h sin energia",
       color: PW.color("--critical"),
     })),
     fmtV: v => PW.fmt(v),
-  });
-  const ordHoras = comunas.slice().sort((a, b) => b.horas_afectada - a.horas_afectada).slice(0, 15);
-  PW.barras("g-horas", {
+  }); const ordHoras = comunas.slice().sort((a, b) => b.horas_afectada - a.horas_afectada).slice(0, 15); PW.barras("g-horas", {
     items: ordHoras.map(c => ({
       nombre: c.comuna, valor: c.horas_afectada,
       extra: c.region + " — " + PW.fmt(c.peak_clientes) + " clientes en el peak",
       color: PW.color("--s2"),
     })),
     fmtV: v => PW.fmt(v) + " h",
-  });
-
-  document.getElementById("titulo-tabla").textContent =
-    "Detalle territorial: " + ambito + " · " + periodo + " (" + comunas.length + (comunas.length === 1 ? " comuna)" : " comunas)");
-  if (tab) tab.actualizar(comunas); else tab = PW.tabla("t-rank", cols, comunas, { orden: "cliente_horas", max: 400 });
-
-  dibujarNacional(anho);
-}
+  }); document.getElementById("titulo-tabla").textContent =
+    "Detalle territorial: " + ambito + " · " + periodo + " (" + comunas.length + (comunas.length === 1 ? " comuna)" : " comunas)"); if (tab) tab.actualizar(comunas); else tab = PW.tabla("t-rank", cols, comunas, { orden: "cliente_horas", max: 400 }); dibujarNacional(anho); }
 
 const cols = [
   { k: "comuna", titulo: "Comuna" },
@@ -571,66 +363,42 @@ const cols = [
   { k: "cliente_horas", titulo: "Cliente-horas", num: true, fmt: v => PW.fmt(v) },
   { k: "ch_por_hab", titulo: "Cliente-h / hab", num: true, fmt: v => PW.fmt(v, 1) },
   { k: "poblacion", titulo: "Poblacion 2024", num: true, fmt: v => PW.fmt(v) },
-];
-let tab = null;
-
-selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
-selC.addEventListener("input", refrescar);
-selY.addEventListener("input", refrescar);
-
-// Series nacionales: la anual resalta el año elegido; la estacional muestra ESE año (o el promedio historico)
-const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-function dibujarNacional(anho) {
+]; let tab = null; selR.addEventListener("input", () => { poblarComunas(); refrescar(); }); selC.addEventListener("input", refrescar); selY.addEventListener("input", refrescar); // Series nacionales: la anual resalta el año elegido; la estacional muestra ESE año (o el promedio historico)
+const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]; function dibujarNacional(anho) {
   // "hueco" viene del backend por año (cualquier año con >=1 mes en huecos_datos, no solo 2019):
   // un año con meses de fuente ausentes tiene el total anual incompleto, no "cero cortes" ahí.
   // Si dos años de hueco son consecutivos (ej. 2018-2019), el texto va una sola vez, en el
   // primero, para que las etiquetas no se superpongan; la linea punteada igual marca cada año.
-  const aniosHueco = new Set(D.anual.filter(a => a.hueco).map(a => a.anho));
-  const anot = [
+  const aniosHueco = new Set(D.anual.filter(a => a.hueco).map(a => a.anho)); const anot = [
     { i: D.anual.findIndex(a => a.anho === 2025), texto: "Apagon nacional 25-feb" },
     ...D.anual.map((a, i) => !a.hueco ? null :
       { i, texto: aniosHueco.has(a.anho - 1) ? "" : "Hueco de fuente" }).filter(Boolean),
-  ].filter(a => a.i >= 0);
-  if (anho) {
-    const iSel = D.anual.findIndex(a => String(a.anho) === anho);
-    if (iSel >= 0) anot.push({ i: iSel, texto: "año elegido" });
-  }
+  ].filter(a => a.i >= 0); if (anho) {
+    const iSel = D.anual.findIndex(a => String(a.anho) === anho); if (iSel >= 0) anot.push({ i: iSel, texto: "año elegido" }); }
   PW.columnas("g-anual", {
     labels: D.anual.map(a => String(a.anho)),
     valores: D.anual.map(a => a.cliente_horas),
     fmtV: v => PW.fmt(v) + " cliente-horas",
     fmtY: v => PW.fmt(v / 1e6, 1) + "M",
     anotaciones: anot,
-  });
-  const hEst = document.getElementById("h-estacional");
-  const nEst = document.getElementById("nota-estacional");
-  if (anho) {
-    const meses = (D.mensual || []).filter(m => m.ym.slice(0, 4) === anho);
-    hEst.textContent = "Cliente-horas por mes — " + anho;
-    nEst.textContent = "Serie nacional mensual de " + anho + ". Los meses sin dato de fuente quedan marcados en ámbar, no en cero.";
-    PW.columnas("g-estacional", {
+  }); const hEst = document.getElementById("h-estacional"); const nEst = document.getElementById("nota-estacional"); if (anho) {
+    const meses = (D.mensual || []).filter(m => m.ym.slice(0, 4) === anho); hEst.textContent = "Cliente-horas por mes — " + anho; nEst.textContent = "Serie nacional mensual de " + anho + ". Los meses sin dato de fuente quedan marcados en ámbar, no en cero."; PW.columnas("g-estacional", {
       labels: meses.map(m => MESES[+m.ym.slice(5, 7) - 1]),
       valores: meses.map(m => m.hueco ? null : m.cliente_horas),
       color: PW.color("--s2"),
       fmtV: v => PW.fmt(v) + " cliente-horas",
       fmtY: v => PW.fmt(v / 1e6, 1) + "M",
-    });
-  } else {
-    hEst.textContent = "Estacionalidad (promedio mensual histórico)";
-    nEst.textContent = "Serie nacional. Los huecos de fuente (nov-2018 a jun-2019) están excluidos.";
-    PW.columnas("g-estacional", {
+    }); } else {
+    hEst.textContent = "Estacionalidad (promedio mensual histórico)"; nEst.textContent = "Serie nacional. Los huecos de fuente (nov-2018 a jun-2019) están excluidos."; PW.columnas("g-estacional", {
       labels: D.estacionalidad.map(e => MESES[+e.mes - 1]),
       valores: D.estacionalidad.map(e => e.cliente_horas_prom),
       color: PW.color("--s2"),
       fmtV: v => PW.fmt(v) + " cliente-horas prom.",
       fmtY: v => PW.fmt(v / 1e6, 1) + "M",
-    });
-  }
+    }); }
 }
 
-refrescar();
-
-// Registro historico de grandes apagones (datos de cortes.js)
+refrescar(); // Registro historico de grandes apagones (datos de cortes.js)
 if (DC) {
   PW.tabla("t-eventos", [
     { k: "comuna", titulo: "Comuna" },
@@ -638,16 +406,13 @@ if (DC) {
     { k: "inicio", titulo: "Inicio" },
     { k: "duracion_h", titulo: "Duración (h)", num: true, fmt: v => PW.fmt(v) },
     { k: "peak", titulo: "Peak clientes", num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
-  ], DC.top_eventos || [], { orden: "peak", buscador: false });
-
-  PW.barras("g-dias", {
+  ], DC.top_eventos || [], { orden: "peak", buscador: false }); PW.barras("g-dias", {
     items: (DC.peores_dias || []).map(x => ({
       nombre: x.fecha, valor: x.peak,
       extra: PW.fmt(x.cliente_horas) + " cliente-horas",
     })),
     fmtV: v => PW.fmt(v),
-  });
-}
+  }); }
 </script>
 </body>
 </html>
