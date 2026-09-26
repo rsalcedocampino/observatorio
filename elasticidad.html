@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -258,19 +253,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   // abajo. Son dos cosas distintas y me equivoque de concepto. La cifra correcta sale de
   // EV2025Data: RM 45.034 sobre 69.596 = 64,7%. (El 64,8% escrito a mano que habia antes
   // tampoco cuadraba: el propio hallazgo de c_ev_2025 dice 64,8% y sus numeros dan 64,71%.)
-  const P = window.PW_DATA && window.PW_DATA.c_ev_proyeccion;
-  const R = (P && P.regiones) || [];
-  const el = document.getElementById("pct-rm");
-  if (!el || !R.length) return;
-  const tot = (P.totales && P.totales.p2025) || R.reduce((s, x) => s + (x.p2025 || 0), 0);
-  const rm = R.find(x => /etropolitana/.test(x.region || ""));
-  // sin PW.fmt: este bloque corre ANTES de comun.js (linea 287) y PW todavia no existe --
+  const P = window.PW_DATA && window.PW_DATA.c_ev_proyeccion; const R = (P && P.regiones) || []; const el = document.getElementById("pct-rm"); if (!el || !R.length) return; const tot = (P.totales && P.totales.p2025) || R.reduce((s, x) => s + (x.p2025 || 0), 0); const rm = R.find(x => /etropolitana/.test(x.region || "")); // sin PW.fmt: este bloque corre ANTES de comun.js (linea 287) y PW todavia no existe --
   // usarlo lanzaba y el span se quedaba en el guion, en silencio (verificado en vivo).
   if (tot && rm) {
-    el.textContent = (100 * rm.p2025 / tot).toFixed(1).replace(".", ",") + "%";
-  }
-})();
-</script>
+    el.textContent = (100 * rm.p2025 / tot).toFixed(1).replace(".", ",") + "%"; }
+})(); </script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
@@ -278,117 +265,53 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", function() {
-    const tab = this.getAttribute("data-tab");
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("activo"));
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("activo"));
-    this.classList.add("activo");
-    document.getElementById("tab-" + tab).classList.add("activo");
-  });
-});
-
-PW.montarNav("elasticidad.html");
-
-// TAB 1: Bencina
-const D = PW_DATA.c_elasticidad;
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-
-const n = D.capturas_p93.length;
-const primeraCaptura = n ? D.capturas_p93[0].captura : null;
-const ultimaCaptura = n ? D.capturas_p93[n - 1].captura : null;
-document.getElementById("kpis").innerHTML = [
+    const tab = this.getAttribute("data-tab"); document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("activo")); document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("activo")); this.classList.add("activo"); document.getElementById("tab-" + tab).classList.add("activo"); }); }); PW.montarNav("elasticidad.html"); // TAB 1: Bencina
+const D = PW_DATA.c_elasticidad; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const n = D.capturas_p93.length; const primeraCaptura = n ? D.capturas_p93[0].captura : null; const ultimaCaptura = n ? D.capturas_p93[n - 1].captura : null; document.getElementById("kpis").innerHTML = [
   [n, "capturas de precio acumuladas", primeraCaptura ? "del " + primeraCaptura + " al " + ultimaCaptura : "aún sin capturas"],
   [D.participacion.length ? PW.fmt(D.participacion[D.participacion.length - 1].pct, 1) + "%" : "—",
     "participación enchufable actual", D.participacion.length ? "mes " + D.participacion[D.participacion.length - 1].ym : ""],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-document.getElementById("capturas-pie").textContent = n
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("capturas-pie").textContent = n
   ? "Regresión participación~precio con rezagos (0-6 meses): aún no implementada. " + n +
     " capturas acumuladas del " + primeraCaptura + " al " + ultimaCaptura + "."
-  : "Regresión participación~precio con rezagos (0-6 meses): aún no implementada. Sin capturas propias todavía.";
-
-PW.tabla("t-capturas", [
+  : "Regresión participación~precio con rezagos (0-6 meses): aún no implementada. Sin capturas propias todavía."; PW.tabla("t-capturas", [
   { k: "captura", titulo: "Fecha de captura" },
   { k: "p93", titulo: "Bencina 93 promedio pais", num: true, fmt: v => PW.clp(v) + "/L" },
-], D.capturas_p93, {});
-
-// TAB 1b: buscador de la 93 por region/comuna/fecha (CAMBIOS 217).
+], D.capturas_p93, {}); // TAB 1b: buscador de la 93 por region/comuna/fecha (CAMBIOS 217).
 // Dos fuentes con roles distintos, por eso conviven:
 //   combustible.js       = FOTO de hoy, estacion por estacion (permite la tabla con marca/direccion)
 //   c_bencina93_serie.js = SERIE por fecha, ya agregada a {n,min,prom,max} por region y comuna
 // Degrada con gracia: sin la serie el buscador queda solo con el precio de hoy.
 (function () {
   const EST = (window.PW_DATA && PW_DATA.combustible && PW_DATA.combustible.estaciones || [])
-    .filter(e => e.p93 != null);
-  const S = window.PW_DATA && PW_DATA.c_bencina93_serie;
-  const cont = document.getElementById("b93-filtros");
-  if (!EST.length && !S) { cont.parentElement.style.display = "none"; return; }
+    .filter(e => e.p93 != null); const S = window.PW_DATA && PW_DATA.c_bencina93_serie; const cont = document.getElementById("b93-filtros"); if (!EST.length && !S) { cont.parentElement.style.display = "none"; return; }
 
-  const selReg = document.getElementById("b93-reg");
-  const selCom = document.getElementById("b93-com");
-  const selFecha = document.getElementById("b93-fecha");
-
-  // Indice comuna -> entrada de la serie (la serie keyea por CUT; la foto de hoy, por nombre).
-  const porComuna = (S && S.por_comuna) || {};
-  const cutDeComuna = {};
-  Object.entries(porComuna).forEach(([cut, v]) => { if (v && v.comuna) cutDeComuna[v.comuna] = cut; });
-
-  const regiones = [...new Set(EST.map(e => e.region).filter(Boolean))].sort();
-  regiones.forEach(r => { const o = document.createElement("option"); o.value = r; o.textContent = r; selReg.appendChild(o); });
-  ((S && S.fechas) || []).slice().reverse().forEach(f => {
-    const o = document.createElement("option"); o.value = f; o.textContent = f; selFecha.appendChild(o);
-  });
-
-  function poblarComunas() {
-    const r = selReg.value;
-    const coms = [...new Set(EST.filter(e => !r || e.region === r).map(e => e.comuna).filter(Boolean))].sort();
-    selCom.innerHTML = '<option value="">Todas</option>' +
-      coms.map(c => `<option value="${PW.esc(c)}">${PW.esc(c)}</option>`).join("");
-  }
+  const selReg = document.getElementById("b93-reg"); const selCom = document.getElementById("b93-com"); const selFecha = document.getElementById("b93-fecha"); // Indice comuna -> entrada de la serie (la serie keyea por CUT; la foto de hoy, por nombre).
+  const porComuna = (S && S.por_comuna) || {}; const cutDeComuna = {}; Object.entries(porComuna).forEach(([cut, v]) => { if (v && v.comuna) cutDeComuna[v.comuna] = cut; }); const regiones = [...new Set(EST.map(e => e.region).filter(Boolean))].sort(); regiones.forEach(r => { const o = document.createElement("option"); o.value = r; o.textContent = r; selReg.appendChild(o); }); ((S && S.fechas) || []).slice().reverse().forEach(f => {
+    const o = document.createElement("option"); o.value = f; o.textContent = f; selFecha.appendChild(o); }); function poblarComunas() {
+    const r = selReg.value; const coms = [...new Set(EST.filter(e => !r || e.region === r).map(e => e.comuna).filter(Boolean))].sort(); selCom.innerHTML = '<option value="">Todas</option>' +
+      coms.map(c => `<option value="${PW.esc(c)}">${PW.esc(c)}</option>`).join(""); }
 
   // Estadistica del ambito elegido: de la SERIE si hay fecha, si no de la foto de hoy.
   function stats() {
-    const r = selReg.value, c = selCom.value, f = selFecha.value;
-    if (f && S) {
-      const nodo = c ? (porComuna[cutDeComuna[c]] || {}).serie : (r ? (S.por_region || {})[r] : null);
-      if (nodo && nodo[f]) return Object.assign({}, nodo[f], { fuente: "serie" });
-      if (!r && !c) {  // pais: agrega las regiones de esa fecha ponderando por n
-        const ns = Object.values(S.por_region || {}).map(x => x[f]).filter(Boolean);
-        if (!ns.length) return null;
-        const n = ns.reduce((a, x) => a + x.n, 0);
-        return { n: n, min: Math.min(...ns.map(x => x.min)), max: Math.max(...ns.map(x => x.max)),
-                 prom: Math.round(ns.reduce((a, x) => a + x.prom * x.n, 0) / (n || 1)), fuente: "serie" };
-      }
-      return null;
-    }
-    const v = EST.filter(e => (!r || e.region === r) && (!c || e.comuna === c)).map(e => e.p93);
-    if (!v.length) return null;
-    return { n: v.length, min: Math.min(...v), max: Math.max(...v),
-             prom: Math.round(v.reduce((a, b) => a + b, 0) / v.length), fuente: "hoy" };
-  }
+    const r = selReg.value, c = selCom.value, f = selFecha.value; if (f && S) {
+      const nodo = c ? (porComuna[cutDeComuna[c]] || {}).serie : (r ? (S.por_region || {})[r] : null); if (nodo && nodo[f]) return Object.assign({}, nodo[f], { fuente: "serie" }); if (!r && !c) {  // pais: agrega las regiones de esa fecha ponderando por n
+        const ns = Object.values(S.por_region || {}).map(x => x[f]).filter(Boolean); if (!ns.length) return null; const n = ns.reduce((a, x) => a + x.n, 0); return { n: n, min: Math.min(...ns.map(x => x.min)), max: Math.max(...ns.map(x => x.max)),
+                 prom: Math.round(ns.reduce((a, x) => a + x.prom * x.n, 0) / (n || 1)), fuente: "serie" }; }
+      return null; }
+    const v = EST.filter(e => (!r || e.region === r) && (!c || e.comuna === c)).map(e => e.p93); if (!v.length) return null; return { n: v.length, min: Math.min(...v), max: Math.max(...v),
+             prom: Math.round(v.reduce((a, b) => a + b, 0) / v.length), fuente: "hoy" }; }
 
   function pintar() {
-    const r = selReg.value, c = selCom.value, f = selFecha.value;
-    const ambito = c || r || "todo el país";
-    const st = stats();
-    const cuando = f ? "captura del " + f : "precio de hoy";
-
-    document.getElementById("b93-kpis").innerHTML = st ? [
+    const r = selReg.value, c = selCom.value, f = selFecha.value; const ambito = c || r || "todo el país"; const st = stats(); const cuando = f ? "captura del " + f : "precio de hoy"; document.getElementById("b93-kpis").innerHTML = st ? [
       [PW.clp(st.prom) + "/L", "precio promedio", ambito + " · " + cuando],
       [PW.clp(st.min) + "/L", "la más barata", st.n + (st.n === 1 ? " estación" : " estaciones")],
       [PW.clp(st.max) + "/L", "la más cara", "diferencia de " + PW.clp(st.max - st.min) + "/L"],
     ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${PW.esc(d[2])}</div></div>`).join("")
-      : `<p class="nota">Sin dato de bencina 93 para ${PW.esc(ambito)}${f ? " en la captura del " + f : ""}.</p>`;
-
-    // Evolucion en el tiempo del ambito elegido (siempre la serie completa, no una fecha).
-    const nodo = S && (c ? (porComuna[cutDeComuna[c]] || {}).serie : (r ? (S.por_region || {})[r] : null));
-    const gr = document.getElementById("b93-grafico");
-    if (nodo && S.fechas && S.fechas.length > 1) {
-      const vals = S.fechas.map(x => nodo[x] || null);
-      // Eje acotado al rango real con 5% de aire: con base 0 la variacion mensual
+      : `<p class="nota">Sin dato de bencina 93 para ${PW.esc(ambito)}${f ? " en la captura del " + f : ""}.</p>`; // Evolucion en el tiempo del ambito elegido (siempre la serie completa, no una fecha).
+    const nodo = S && (c ? (porComuna[cutDeComuna[c]] || {}).serie : (r ? (S.por_region || {})[r] : null)); const gr = document.getElementById("b93-grafico"); if (nodo && S.fechas && S.fechas.length > 1) {
+      const vals = S.fechas.map(x => nodo[x] || null); // Eje acotado al rango real con 5% de aire: con base 0 la variacion mensual
       // (decenas de pesos sobre ~1.400) se aplana y el grafico no dice nada.
-      const todos = vals.filter(Boolean).flatMap(v => [v.min, v.max]);
-      const lo = Math.min(...todos), hi = Math.max(...todos);
-      const aire = Math.max(20, (hi - lo) * 0.05);
-      PW.lineas("b93-grafico", {
+      const todos = vals.filter(Boolean).flatMap(v => [v.min, v.max]); const lo = Math.min(...todos), hi = Math.max(...todos); const aire = Math.max(20, (hi - lo) * 0.05); PW.lineas("b93-grafico", {
         labels: S.fechas,
         series: [
           { nombre: "Máximo", valores: vals.map(v => v && v.max), color: PW.color("--critical") },
@@ -399,100 +322,45 @@ PW.tabla("t-capturas", [
         // y el eje mostraba "1.099" en vez de "$1.099".
         alto: 240, min: Math.floor(lo - aire), max: Math.ceil(hi + aire),
         fmtY: v => PW.clp(v), fmtV: v => PW.clp(v),
-      });
-      document.getElementById("b93-pie").textContent =
+      }); document.getElementById("b93-pie").textContent =
         "Evolución en " + ambito + ": " + S.fechas.length + " capturas entre " +
-        S.fechas[0] + " y " + S.fechas[S.fechas.length - 1] + ".";
-    } else {
-      gr.innerHTML = "";
-      document.getElementById("b93-pie").textContent = S
+        S.fechas[0] + " y " + S.fechas[S.fechas.length - 1] + "."; } else {
+      gr.innerHTML = ""; document.getElementById("b93-pie").textContent = S
         ? "Elige una región o comuna para ver su evolución en el tiempo."
-        : "";
-    }
+        : ""; }
 
     // Estacion por estacion: solo tiene sentido con la foto de hoy (la serie viene agregada).
-    const tb = document.getElementById("b93-tabla");
-    if (!f && (r || c)) {
+    const tb = document.getElementById("b93-tabla"); if (!f && (r || c)) {
       const filas = EST.filter(e => (!r || e.region === r) && (!c || e.comuna === c))
-        .map(e => ({ estacion: e.estacion, marca: e.marca, comuna: e.comuna, p93: e.p93 }));
-      PW.tabla("b93-tabla", [
+        .map(e => ({ estacion: e.estacion, marca: e.marca, comuna: e.comuna, p93: e.p93 })); PW.tabla("b93-tabla", [
         { k: "estacion", titulo: "Estación" },
         { k: "marca", titulo: "Marca" },
         { k: "comuna", titulo: "Comuna" },
         { k: "p93", titulo: "Bencina 93", num: true, fmt: v => PW.clp(v) + "/L" },
-      ], filas, { orden: "p93", asc: true });
-    } else {
-      tb.innerHTML = "";
-    }
+      ], filas, { orden: "p93", asc: true }); } else {
+      tb.innerHTML = ""; }
   }
 
-  selReg.addEventListener("input", () => { poblarComunas(); pintar(); });
-  [selCom, selFecha].forEach(s => s.addEventListener("input", pintar));
-  poblarComunas();
-  pintar();
-})();
-
-// TAB 3: Precios Nudo por Subestación
+  selReg.addEventListener("input", () => { poblarComunas(); pintar(); }); [selCom, selFecha].forEach(s => s.addEventListener("input", pintar)); poblarComunas(); pintar(); })(); // TAB 3: Precios Nudo por Subestación
 if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
-  const DPNP = PW_DATA.c_elasticidad_tarifas_pnp;
-
-  // Actualizar nota
-  document.getElementById("nota-pnp").textContent = "Actualizado " + (DPNP.generado || "").slice(0, 10) + ". " + DPNP.nota;
-
-  // Llenar dropdown regiones
-  const selRegion = document.getElementById("sel-region");
-  DPNP.regiones.forEach(r => {
-    const opt = document.createElement("option");
-    opt.value = r.cut;
-    opt.textContent = r.cut + " - " + r.nombre;
-    selRegion.appendChild(opt);
-  });
-
-  // Evento: cambio región
+  const DPNP = PW_DATA.c_elasticidad_tarifas_pnp; // Actualizar nota
+  document.getElementById("nota-pnp").textContent = "Actualizado " + (DPNP.generado || "").slice(0, 10) + ". " + DPNP.nota; // Llenar dropdown regiones
+  const selRegion = document.getElementById("sel-region"); DPNP.regiones.forEach(r => {
+    const opt = document.createElement("option"); opt.value = r.cut; opt.textContent = r.cut + " - " + r.nombre; selRegion.appendChild(opt); }); // Evento: cambio región
   selRegion.addEventListener("change", function() {
-    const region = this.value;
-    const distContainer = document.getElementById("dist-container");
-    const selDist = document.getElementById("sel-distribuidor");
-    const tablaPnp = document.getElementById("tabla-pnp");
-
-    if (!region) {
-      distContainer.style.display = "none";
-      tablaPnp.innerHTML = "";
-      return;
-    }
+    const region = this.value; const distContainer = document.getElementById("dist-container"); const selDist = document.getElementById("sel-distribuidor"); const tablaPnp = document.getElementById("tabla-pnp"); if (!region) {
+      distContainer.style.display = "none"; tablaPnp.innerHTML = ""; return; }
 
     // Llenar dropdown distribuidores
-    selDist.innerHTML = '<option value="">-- Selecciona distribuidor --</option>';
-    const dists = Object.keys(DPNP.subestaciones_por_region_dist[region] || {});
-    dists.forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d;
-      opt.textContent = d.toUpperCase();
-      selDist.appendChild(opt);
-    });
-
-    distContainer.style.display = "block";
-    tablaPnp.innerHTML = "";
-  });
-
-  // Evento: cambio distribuidor
+    selDist.innerHTML = '<option value="">-- Selecciona distribuidor --</option>'; const dists = Object.keys(DPNP.subestaciones_por_region_dist[region] || {}); dists.forEach(d => {
+      const opt = document.createElement("option"); opt.value = d; opt.textContent = d.toUpperCase(); selDist.appendChild(opt); }); distContainer.style.display = "block"; tablaPnp.innerHTML = ""; }); // Evento: cambio distribuidor
   document.getElementById("sel-distribuidor").addEventListener("change", function() {
-    const region = document.getElementById("sel-region").value;
-    const dist = this.value;
-    const tablaPnp = document.getElementById("tabla-pnp");
-
-    if (!region || !dist) {
-      tablaPnp.innerHTML = "";
-      return;
-    }
+    const region = document.getElementById("sel-region").value; const dist = this.value; const tablaPnp = document.getElementById("tabla-pnp"); if (!region || !dist) {
+      tablaPnp.innerHTML = ""; return; }
 
     // Obtener subestaciones
-    const subs = DPNP.subestaciones_por_region_dist[region][dist] || [];
-
-    if (subs.length === 0) {
-      tablaPnp.innerHTML = "<p style='color:var(--ink-2);'>Sin datos para esta combinación.</p>";
-      return;
-    }
+    const subs = DPNP.subestaciones_por_region_dist[region][dist] || []; if (subs.length === 0) {
+      tablaPnp.innerHTML = "<p style='color:var(--ink-2);'>Sin datos para esta combinación.</p>"; return; }
 
     // Construir tabla
     const filas = subs.map(s => ({
@@ -500,27 +368,18 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
       tension: s.tension_kv + " kV",
       energia: s.energia_kwh,
       potencia: s.potencia_kw,
-    }));
-
-    PW.tabla("tabla-pnp", [
+    })); PW.tabla("tabla-pnp", [
       { k: "subestacion", titulo: "Subestación", num: false },
       { k: "tension", titulo: "Tensión", num: false },
       { k: "energia", titulo: "Energía ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
       { k: "potencia", titulo: "Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 0) },
-    ], filas, {});
-  });
-}
+    ], filas, {}); }); }
 
 // TAB 4: Tarifa Final (PNP + VAD)
 if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
-  const DTD = PW_DATA.c_elasticidad_tarifas_detallado;
-
-  // Actualizar nota
-  document.getElementById("nota-tarifa-detalle").textContent = "Actualizado " + (DTD.generado || "").slice(0, 10) + ". " + DTD.nota;
-
-  // Llenar dropdown regiones
-  const selRegionDet = document.getElementById("sel-region-det");
-  const regionesMapeo = {
+  const DTD = PW_DATA.c_elasticidad_tarifas_detallado; // Actualizar nota
+  document.getElementById("nota-tarifa-detalle").textContent = "Actualizado " + (DTD.generado || "").slice(0, 10) + ". " + DTD.nota; // Llenar dropdown regiones
+  const selRegionDet = document.getElementById("sel-region-det"); const regionesMapeo = {
     "01": "Tarapacá",
     "02": "Antofagasta",
     "03": "Atacama",
@@ -528,79 +387,26 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
     "05": "Valparaíso",
     "06": "O'Higgins",
     "13": "Metropolitana"
-  };
-
-  Object.keys(DTD.tarifas || {}).sort().forEach(region => {
-    const opt = document.createElement("option");
-    opt.value = region;
-    opt.textContent = region + " - " + (regionesMapeo[region] || "");
-    selRegionDet.appendChild(opt);
-  });
-
-  // Evento: cambio región
+  }; Object.keys(DTD.tarifas || {}).sort().forEach(region => {
+    const opt = document.createElement("option"); opt.value = region; opt.textContent = region + " - " + (regionesMapeo[region] || ""); selRegionDet.appendChild(opt); }); // Evento: cambio región
   selRegionDet.addEventListener("change", function() {
-    const region = this.value;
-    const distDetContainer = document.getElementById("dist-det-container");
-    const segDetContainer = document.getElementById("seg-det-container");
-    const selDistDet = document.getElementById("sel-distribuidor-det");
-    const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle");
-
-    if (!region) {
-      distDetContainer.style.display = "none";
-      segDetContainer.style.display = "none";
-      tablaTarifaDet.innerHTML = "";
-      return;
-    }
+    const region = this.value; const distDetContainer = document.getElementById("dist-det-container"); const segDetContainer = document.getElementById("seg-det-container"); const selDistDet = document.getElementById("sel-distribuidor-det"); const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle"); if (!region) {
+      distDetContainer.style.display = "none"; segDetContainer.style.display = "none"; tablaTarifaDet.innerHTML = ""; return; }
 
     // Llenar dropdown distribuidores
-    selDistDet.innerHTML = '<option value="">-- Selecciona distribuidor --</option>';
-    const dists = Object.keys(DTD.tarifas[region] || {});
-    dists.forEach(d => {
-      const opt = document.createElement("option");
-      opt.value = d;
-      opt.textContent = d.toUpperCase();
-      selDistDet.appendChild(opt);
-    });
-
-    distDetContainer.style.display = "block";
-    segDetContainer.style.display = "none";
-    tablaTarifaDet.innerHTML = "";
-  });
-
-  // Evento: cambio distribuidor
+    selDistDet.innerHTML = '<option value="">-- Selecciona distribuidor --</option>'; const dists = Object.keys(DTD.tarifas[region] || {}); dists.forEach(d => {
+      const opt = document.createElement("option"); opt.value = d; opt.textContent = d.toUpperCase(); selDistDet.appendChild(opt); }); distDetContainer.style.display = "block"; segDetContainer.style.display = "none"; tablaTarifaDet.innerHTML = ""; }); // Evento: cambio distribuidor
   document.getElementById("sel-distribuidor-det").addEventListener("change", function() {
-    const region = document.getElementById("sel-region-det").value;
-    const dist = this.value;
-    const segDetContainer = document.getElementById("seg-det-container");
-    const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle");
+    const region = document.getElementById("sel-region-det").value; const dist = this.value; const segDetContainer = document.getElementById("seg-det-container"); const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle"); if (!region || !dist) {
+      segDetContainer.style.display = "none"; tablaTarifaDet.innerHTML = ""; return; }
 
-    if (!region || !dist) {
-      segDetContainer.style.display = "none";
-      tablaTarifaDet.innerHTML = "";
-      return;
-    }
-
-    segDetContainer.style.display = "block";
-    tablaTarifaDet.innerHTML = "";
-  });
-
-  // Evento: cambio segmento
+    segDetContainer.style.display = "block"; tablaTarifaDet.innerHTML = ""; }); // Evento: cambio segmento
   document.getElementById("sel-segmento-det").addEventListener("change", function() {
-    const region = document.getElementById("sel-region-det").value;
-    const dist = document.getElementById("sel-distribuidor-det").value;
-    const segmento = this.value;
-    const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle");
+    const region = document.getElementById("sel-region-det").value; const dist = document.getElementById("sel-distribuidor-det").value; const segmento = this.value; const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle"); if (!region || !dist || !segmento) {
+      tablaTarifaDet.innerHTML = ""; return; }
 
-    if (!region || !dist || !segmento) {
-      tablaTarifaDet.innerHTML = "";
-      return;
-    }
-
-    const tarifa = DTD.tarifas[region][dist][segmento];
-    if (!tarifa) {
-      tablaTarifaDet.innerHTML = "<p style='color:var(--ink-2);'>Sin datos para esta combinación.</p>";
-      return;
-    }
+    const tarifa = DTD.tarifas[region][dist][segmento]; if (!tarifa) {
+      tablaTarifaDet.innerHTML = "<p style='color:var(--ink-2);'>Sin datos para esta combinación.</p>"; return; }
 
     // Construir tabla con desglose PNP + VAD + Final
     const filas = [
@@ -623,56 +429,22 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
         cargo_fijo: tarifa.final.cargo_fijo,
         style: "font-weight: bold; background-color: #f0f0f0;"
       }
-    ];
-
-    const tabla = document.createElement("table");
-    tabla.style.cssText = "width:100%; border-collapse: collapse; margin: 1rem 0;";
-
-    // Encabezado
-    const thead = tabla.createTHead();
-    const headerRow = thead.insertRow();
-    ["Componente", "Energía ($/kWh)", "Potencia ($/kW/mes)", "Cargo Fijo ($/mes)"].forEach(h => {
-      const th = document.createElement("th");
-      th.textContent = h;
-      th.style.cssText = "text-align:left; padding:10px; border-bottom:2px solid #999; background:#f5f5f5;";
-      headerRow.appendChild(th);
-    });
-
-    // Filas
-    const tbody = tabla.createTBody();
-    filas.forEach(f => {
-      const row = tbody.insertRow();
-      if (f.style) row.style.cssText = f.style;
-      [f.componente, PW.fmt(f.energia, 2), PW.fmt(f.potencia, 0), f.cargo_fijo === "-" ? "-" : PW.fmt(f.cargo_fijo, 0)].forEach((val, i) => {
-        const cell = row.insertCell();
-        cell.textContent = val;
-        cell.style.cssText = "padding:10px; border-bottom:1px solid #ddd; text-align:" + (i === 0 ? "left" : "right");
-      });
-    });
-
-    tablaTarifaDet.innerHTML = "";
-    tablaTarifaDet.appendChild(tabla);
-  });
-}
+    ]; const tabla = document.createElement("table"); tabla.style.cssText = "width:100%; border-collapse: collapse; margin: 1rem 0;"; // Encabezado
+    const thead = tabla.createTHead(); const headerRow = thead.insertRow(); ["Componente", "Energía ($/kWh)", "Potencia ($/kW/mes)", "Cargo Fijo ($/mes)"].forEach(h => {
+      const th = document.createElement("th"); th.textContent = h; th.style.cssText = "text-align:left; padding:10px; border-bottom:2px solid #999; background:#f5f5f5;"; headerRow.appendChild(th); }); // Filas
+    const tbody = tabla.createTBody(); filas.forEach(f => {
+      const row = tbody.insertRow(); if (f.style) row.style.cssText = f.style; [f.componente, PW.fmt(f.energia, 2), PW.fmt(f.potencia, 0), f.cargo_fijo === "-" ? "-" : PW.fmt(f.cargo_fijo, 0)].forEach((val, i) => {
+        const cell = row.insertCell(); cell.textContent = val; cell.style.cssText = "padding:10px; border-bottom:1px solid #ddd; text-align:" + (i === 0 ? "left" : "right"); }); }); tablaTarifaDet.innerHTML = ""; tablaTarifaDet.appendChild(tabla); }); }
 
 // TAB 2: Tarifas de Electricidad - Datos de TarifasData (c_tarifas.js)
 (function() {
-  if (!window.TarifasData) return;
-
-  const T = window.TarifasData;
-  const stats = T.stats;
-  // El shock tarifario viene con precisión de punto flotante cruda (85.11592673025604x);
-  // se redondea acá para mostrar, en el KPI y en el banner de abajo.
-  const shockValor = parseFloat(T.hallazgos[0].valor).toFixed(1) + "x";
-
-  // Mostrar estadísticas principales
+  if (!window.TarifasData) return; const T = window.TarifasData; const stats = T.stats; // El shock tarifario viene con precisión de punto flotante cruda (85.11592673025604x); // se redondea acá para mostrar, en el KPI y en el banner de abajo.
+  const shockValor = parseFloat(T.hallazgos[0].valor).toFixed(1) + "x"; // Mostrar estadísticas principales
   document.getElementById("nota-tarifas").innerHTML = `
     <strong>Dataset:</strong> ${stats.total_filas.toLocaleString()} filas |
     ${stats.meses} meses (${stats.fecha_inicio} - ${stats.fecha_fin}) |
     ${stats.cobertura_cut_pct.toFixed(1)}% cobertura territorial (${stats.comunas_unicas} comunas)
-  `;
-
-  // KPIs principales
+  `; // KPIs principales
   const kpis_html = [
     [
       shockValor,
@@ -694,19 +466,13 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
       "Competencia",
       stats.distribuidores.join(", ").toUpperCase()
     ]
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-  document.getElementById("kpis-tarifas").innerHTML = kpis_html;
-
-  // Tabla de tarifas nacionales por categoría y fecha
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("kpis-tarifas").innerHTML = kpis_html; // Tabla de tarifas nacionales por categoría y fecha
   const filas_nacional = T.tarifas_nacional.map(t => ({
     fecha: t.fecha_vigencia,
     categoria: (T.categorias[t.segmento_categoria]?.nombre || t.segmento_categoria),
     energia: t.tarifa_energia_clp_kwh,
     potencia: t.tarifa_potencia_clp_kw,
-  }));
-
-  PW.tabla("t-tarifas", [
+  })); PW.tabla("t-tarifas", [
     { k: "fecha", titulo: "Fecha vigencia", num: false },
     { k: "categoria", titulo: "Categoría", num: false },
     { k: "energia", titulo: "Tarifa Energía ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
@@ -721,11 +487,8 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
       Límites: ${cat.amperes_max} / ${cat.potencia_max}<br/>
       Consumo típico: ${cat.consumo_tipico}
     </div>
-  `).join("");
-
-  // Insertar información en el div t-tarifas si está vacío
-  const t_tarifas = document.getElementById("t-tarifas");
-  if (t_tarifas && !t_tarifas.innerHTML.includes("<table")) {
+  `).join(""); // Insertar información en el div t-tarifas si está vacío
+  const t_tarifas = document.getElementById("t-tarifas"); if (t_tarifas && !t_tarifas.innerHTML.includes("<table")) {
     t_tarifas.innerHTML = `
       <div style="margin-bottom: 2rem; padding: 1rem; background: #fffacd; border-radius: 4px;">
         <strong>Hallazgo Principal (Enero 2026):</strong><br/>
@@ -744,22 +507,14 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
         </thead>
         <tbody id="t-tarifas-tbody"></tbody>
       </table>
-    `;
-
-    const tbody = document.getElementById("t-tarifas-tbody");
-    filas_nacional.slice(-30).reverse().forEach(f => {
-      const tr = tbody.insertRow();
-      tr.innerHTML = `
+    `; const tbody = document.getElementById("t-tarifas-tbody"); filas_nacional.slice(-30).reverse().forEach(f => {
+      const tr = tbody.insertRow(); tr.innerHTML = `
         <td style="padding: 8px; border-bottom: 1px solid #eee;">${f.fecha}</td>
         <td style="padding: 8px; border-bottom: 1px solid #eee;">${f.categoria}</td>
         <td style="text-align:right; padding: 8px; border-bottom: 1px solid #eee;">$${PW.fmt(f.energia, 2)}</td>
         <td style="text-align:right; padding: 8px; border-bottom: 1px solid #eee;">$${PW.fmt(f.potencia, 1)}</td>
-      `;
-    });
-  }
-})();
-
-// TAB 3: Stock de EVs 2025 — una sola proyeccion para todo el sitio (c_ev_proyeccion.js).
+      `; }); }
+})(); // TAB 3: Stock de EVs 2025 — una sola proyeccion para todo el sitio (c_ev_proyeccion.js).
 // Antes esta pestaña publicaba DOS proyecciones distintas del mismo hecho (69.596 por tasa de
 // crecimiento y 59.235 por segmento) y el modulo de Permisos una tercera (67.705), las tres
 // partiendo del mismo 33.853 real de 2024. Quedo la de Permisos, la unica con metodo
@@ -769,28 +524,16 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
 // como "Arica Interior", que no existe).
 function cargarTabEV2025() {
   if (!window.PW_DATA || !window.PW_DATA.c_ev_proyeccion) {
-    setTimeout(cargarTabEV2025, 100);
-    return;
-  }
+    setTimeout(cargarTabEV2025, 100); return; }
 
-  const D = window.PW_DATA.c_ev_proyeccion;
-  const T = D.totales;
-
-  document.getElementById("nota-ev2025").textContent = D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + ".";
-
-  const banda = (T.p2025_alta - T.p2025_baja);
-  const kpis_html = [
+  const D = window.PW_DATA.c_ev_proyeccion; const T = D.totales; document.getElementById("nota-ev2025").textContent = D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + "."; const banda = (T.p2025_alta - T.p2025_baja); const kpis_html = [
     [T.stock_2024.toLocaleString(), "Stock 2024 (REAL)", "INE Permisos de Circulación"],
     [T.p2025.toLocaleString(), "Stock 2025 (PROYECTADO)",
      "banda " + T.p2025_baja.toLocaleString() + " a " + T.p2025_alta.toLocaleString()],
     ["+" + (T.p2025 - T.stock_2024).toLocaleString(), "Incremento esperado",
      "±" + Math.round(banda / 2).toLocaleString() + " según la tasa de captura"],
     [D.regiones.length, "regiones cubiertas", "nombre canónico del kit CUT"],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-  document.getElementById("kpis-ev2025").innerHTML = kpis_html;
-
-  // Tabla principal: stock por region, con la banda a la vista -- es una proyeccion y el
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("kpis-ev2025").innerHTML = kpis_html; // Tabla principal: stock por region, con la banda a la vista -- es una proyeccion y el
   // rango es parte del resultado, no una nota al pie.
   const filas_ev = D.regiones.map(r => ({
     region: r.region,
@@ -799,41 +542,31 @@ function cargarTabEV2025() {
     rango: r.p2025_baja.toLocaleString() + " – " + r.p2025_alta.toLocaleString(),
     incremento: r.p2025 - r.stock_2024,
     crecimiento: r.stock_2024 ? PW.fmt(100 * (r.p2025 - r.stock_2024) / r.stock_2024, 1) + "%" : "—",
-  }));
-
-  PW.tabla("t-ev2025", [
+  })); PW.tabla("t-ev2025", [
     { k: "region", titulo: "Región", num: false },
     { k: "stock_2024", titulo: "Stock 2024 (REAL)", num: true, fmt: v => v.toLocaleString() },
     { k: "stock_2025", titulo: "Stock 2025 (central)", num: true, fmt: v => v.toLocaleString() },
     { k: "rango", titulo: "Banda 2025", num: false },
     { k: "incremento", titulo: "Incremento unidades", num: true, fmt: v => v.toLocaleString() },
     { k: "crecimiento", titulo: "Crecimiento %", num: false },
-  ], filas_ev, { max: 20 });
-
-  // Tabla: Correlacion Tarifa × Stock
+  ], filas_ev, { max: 20 }); // Tabla: Correlacion Tarifa × Stock
   const filas_correlacion = D.regiones.filter(r => r.tarifa_potencia != null).map(r => ({
     region: r.region,
     tarifa_potencia: r.tarifa_potencia,
     tarifa_energia: r.tarifa_energia,
     stock_2025: r.p2025,
-  }));
-
-  PW.tabla("t-ev-tarifas", [
+  })); PW.tabla("t-ev-tarifas", [
     { k: "region", titulo: "Region", num: false },
     { k: "tarifa_potencia", titulo: "Tarifa Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 1) },
     { k: "tarifa_energia", titulo: "Tarifa Energia ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
     { k: "stock_2025", titulo: "Stock EV 2025", num: true, fmt: v => v.toLocaleString() },
-  ], filas_correlacion, { max: 20 });
-  // El filtro por tarifa_potencia deja regiones afuera sin decirlo: la tabla se leia como si
+  ], filas_correlacion, { max: 20 }); // El filtro por tarifa_potencia deja regiones afuera sin decirlo: la tabla se leia como si
   // fuera el pais entero. Se declara cuantas y cuales.
-  const sinTarifa = D.regiones.filter(r => r.tarifa_potencia == null).map(r => r.region);
-  if (sinTarifa.length) {
-    const cont = document.getElementById("t-ev-tarifas");
-    if (cont) cont.insertAdjacentHTML("beforeend",
+  const sinTarifa = D.regiones.filter(r => r.tarifa_potencia == null).map(r => r.region); if (sinTarifa.length) {
+    const cont = document.getElementById("t-ev-tarifas"); if (cont) cont.insertAdjacentHTML("beforeend",
       '<p class="nota" style="margin:8px 0 0">' + filas_correlacion.length + " de " + D.regiones.length +
       " regiones: quedan fuera las que no tienen tarifa de potencia publicada (" +
-      PW.esc(sinTarifa.join(", ")) + ").</p>");
-  }
+      PW.esc(sinTarifa.join(", ")) + ").</p>"); }
 
 
 }
@@ -841,47 +574,33 @@ function cargarTabEV2025() {
 // === ELASTICIDAD REGIONAL PRELIMINAR ===
 function cargarElasticidadRegional() {
   if (!window.ElasticidadRegionalPreliminar) {
-    setTimeout(cargarElasticidadRegional, 100);
-    return;
-  }
+    setTimeout(cargarElasticidadRegional, 100); return; }
 
-  const ERp = window.ElasticidadRegionalPreliminar;
-  const M = ERp.metadata;
-
-  // Nota
+  const ERp = window.ElasticidadRegionalPreliminar; const M = ERp.metadata; // Nota
   document.getElementById("nota-elasticidad-regional").textContent =
-    "Análisis descriptivo (correlación). " + M.caveat;
-
-  // Tabla: Elasticidad Regional
+    "Análisis descriptivo (correlación). " + M.caveat; // Tabla: Elasticidad Regional
   const filas_elasticidad = ERp.regiones.map(r => ({
     region: r.region,
     tarifa: r.tarifa_potencia_kwm,
     stock_2024: r.stock_2024,
     pct_nacional: r.pct_stock_nacional.toFixed(1),
     ventas_h1: r.ventas_h1_2026_estimadas,
-  }));
-
-  PW.tabla("t-elasticidad-regional", [
+  })); PW.tabla("t-elasticidad-regional", [
     { k: "region", titulo: "Región", num: false },
     { k: "tarifa", titulo: "Tarifa Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 2) },
     { k: "stock_2024", titulo: "Stock 2024 (Real)", num: true, fmt: v => v.toLocaleString() },
     { k: "pct_nacional", titulo: "% Parque", num: false },
     { k: "ventas_h1", titulo: "Ventas H1 2026 (Est.)", num: true, fmt: v => v.toLocaleString() },
-  ], filas_elasticidad, { max: 20 });
-}
+  ], filas_elasticidad, { max: 20 }); }
 
 // Llamar elasticidad regional
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', cargarElasticidadRegional);
-} else {
-  cargarElasticidadRegional();
-}
+  document.addEventListener('DOMContentLoaded', cargarElasticidadRegional); } else {
+  cargarElasticidadRegional(); }
 // Llamar cuando DOM está listo
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', cargarTabEV2025);
-} else {
-  cargarTabEV2025();
-}
+  document.addEventListener('DOMContentLoaded', cargarTabEV2025); } else {
+  cargarTabEV2025(); }
 </script>
 </body>
 </html>

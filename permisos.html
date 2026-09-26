@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -76,8 +71,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2>Por región <span class="pill" id="ano-reg"></span></h2>
-    <p class="sub">Vehículos motorizados por región y tipo de motor. Ordena por la columna que quieras;
-    la columna “% eléctrico” muestra qué región electrifica más rápido su flota.</p>
+    <p class="sub">Vehículos motorizados por región y tipo de motor. Ordena por la columna que quieras; la columna “% eléctrico” muestra qué región electrifica más rápido su flota.</p>
     <div id="t-reg"></div>
   </div>
 
@@ -92,39 +86,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/permisos.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("permisos.html");
-const D = PW_DATA.permisos;
-const T = D.totales, S = D.serie;
-
-function g(id) { return document.getElementById(id); }
+PW.montarNav("permisos.html"); const D = PW_DATA.permisos; const T = D.totales, S = D.serie; function g(id) { return document.getElementById(id); }
 function miles(v) { return (v || v === 0) ? PW.fmt(v) : "—"; }
 
-g("ano-ult").textContent = T.ano;
-g("ano-reg").textContent = T.ano;
-g("ano-tipo").textContent = T.ano;
-
-g("kpis").innerHTML = [
+g("ano-ult").textContent = T.ano; g("ano-reg").textContent = T.ano; g("ano-tipo").textContent = T.ano; g("kpis").innerHTML = [
   [PW.fmt(T.parque), "vehículos en circulación", "parque total " + T.ano],
   [PW.fmt(T.electrico), "eléctricos", T.pct_elec.toLocaleString("es-CL") + "% del parque motorizado"],
   ["×" + T.crece_elec_x.toLocaleString("es-CL"), "creció la flota eléctrica", "en 10 años (desde " + PW.fmt(T.elec_hace_10) + ")"],
   [PW.fmt(T.diesel), "a diésel", "el motor más común tras la bencina"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-const labels = S.map(x => String(x.ano));
-
-PW.lineas("ch-elec", {
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const labels = S.map(x => String(x.ano)); PW.lineas("ch-elec", {
   labels,
   series: [{ nombre: "Eléctricos", valores: S.map(x => x.electrico) }],
   fmtY: v => PW.fmt(Math.round(v)),
-});
-
-PW.lineas("ch-parque", {
+}); PW.lineas("ch-parque", {
   labels,
   series: [{ nombre: "Parque motorizado", valores: S.map(x => x.motorizados) }],
   fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
-});
-
-// ---------- Proyección 2025 (ESTIMACIÓN) ----------
+}); // ---------- Proyección 2025 (ESTIMACIÓN) ----------
 // Insumo de la sesión "Permisos de Circulación" (CAMBIOS 558): metodo, backtest y reconciliacion
 // (suma de regiones = nacional, salvo "no motorizados" que la fuente regional no desglosa)
 // documentados en Permisos de Circulacion\proyeccion\README.md, ya verificados antes de integrar.
@@ -132,87 +110,37 @@ PW.lineas("ch-parque", {
 // dato real hasta 2025, toggleables por separado -- PW.lineas() no tiene ese patron y agregarlo
 // ahi por un solo modulo no valia la pena; se porto el SVG ya armado y probado del insumo.
 (function () {
-  const PY = D.proyeccion;
-  const aviso = g("aviso-proy");
-  if (!PY) {
+  const PY = D.proyeccion; const aviso = g("aviso-proy"); if (!PY) {
     aviso.innerHTML = "Falta el insumo de proyección " +
       "(<code>Permisos de Circulacion\\proyeccion\\permisos_proy.js</code>) al generar los datos. " +
-      "Ver CAMBIOS (558).";
-    return;
-  }
-  g("proy-ano-base").textContent = PY.anioBase;
-  const ESC_COLOR = { baja: "--s4", central: "--s1", alta: "--s6" };
-  const ESC_NOMBRE = { baja: "Baja", central: "Central", alta: "Alta" };
-  const escOn = new Set(["baja", "central", "alta"]);
-  const XMIN = 2008, XMAX = 2025;
-
-  const selReg = g("proy-region");
-  selReg.innerHTML = '<option value="">Nacional (total)</option>' +
-    PY.orden.map(r => `<option value="${PW.esc(r)}">${PW.esc(r)}</option>`).join("");
-
-  g("proy-chips").innerHTML = Object.keys(ESC_COLOR).map(e =>
+      "Ver CAMBIOS (558)."; return; }
+  g("proy-ano-base").textContent = PY.anioBase; const ESC_COLOR = { baja: "--s4", central: "--s1", alta: "--s6" }; const ESC_NOMBRE = { baja: "Baja", central: "Central", alta: "Alta" }; const escOn = new Set(["baja", "central", "alta"]); const XMIN = 2008, XMAX = 2025; const selReg = g("proy-region"); selReg.innerHTML = '<option value="">Nacional (total)</option>' +
+    PY.orden.map(r => `<option value="${PW.esc(r)}">${PW.esc(r)}</option>`).join(""); g("proy-chips").innerHTML = Object.keys(ESC_COLOR).map(e =>
     `<span class="capa-chip on" data-esc="${e}" style="--c:${PW.color(ESC_COLOR[e])}">` +
-    `<span class="dot"></span>${ESC_NOMBRE[e]} ${PY.growth[e]}</span>`).join("");
-  g("proy-chips").querySelectorAll(".capa-chip").forEach(chip => chip.addEventListener("click", () => {
-    const e = chip.dataset.esc;
-    if (escOn.has(e)) { escOn.delete(e); chip.classList.replace("on", "off"); }
+    `<span class="dot"></span>${ESC_NOMBRE[e]} ${PY.growth[e]}</span>`).join(""); g("proy-chips").querySelectorAll(".capa-chip").forEach(chip => chip.addEventListener("click", () => {
+    const e = chip.dataset.esc; if (escOn.has(e)) { escOn.delete(e); chip.classList.replace("on", "off"); }
     else { escOn.add(e); chip.classList.replace("off", "on"); }
-    pintarProyeccion();
-  }));
-  selReg.addEventListener("change", pintarProyeccion);
-
-  function niceCeil(x) {
-    const p = Math.pow(10, Math.floor(Math.log10(x)));
-    const n = x / p;
-    return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
-  }
+    pintarProyeccion(); })); selReg.addEventListener("change", pintarProyeccion); function niceCeil(x) {
+    const p = Math.pow(10, Math.floor(Math.log10(x))); const n = x / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; }
   function panelSVG(o) {
-    const sx = a => o.x + (a - XMIN) / (XMAX - XMIN) * o.w;
-    const sy = v => o.y + o.h - v / o.ymax * o.h;
-    const fmt = o.ymax >= 1e6 ? (v => (v / 1e6).toFixed(1) + "M") : o.ymax >= 1e3 ? (v => (v / 1e3).toFixed(0) + "k") : (v => "" + Math.round(v));
-    let s = `<text x="${o.x}" y="${o.y - 11}" font-size="14" font-weight="700" fill="${PW.color("--ink-1")}">${PW.esc(o.title)}</text>`;
-    for (let i = 0; i <= 5; i++) {
-      const v = o.ymax * i / 5, yy = sy(v);
-      s += `<line x1="${o.x}" y1="${yy.toFixed(1)}" x2="${o.x + o.w}" y2="${yy.toFixed(1)}" stroke="${PW.color("--grid")}"/>`;
-      s += `<text x="${o.x - 8}" y="${(yy + 4).toFixed(1)}" font-size="10.5" fill="${PW.color("--ink-3")}" text-anchor="end">${fmt(v)}</text>`;
-    }
+    const sx = a => o.x + (a - XMIN) / (XMAX - XMIN) * o.w; const sy = v => o.y + o.h - v / o.ymax * o.h; const fmt = o.ymax >= 1e6 ? (v => (v / 1e6).toFixed(1) + "M") : o.ymax >= 1e3 ? (v => (v / 1e3).toFixed(0) + "k") : (v => "" + Math.round(v)); let s = `<text x="${o.x}" y="${o.y - 11}" font-size="14" font-weight="700" fill="${PW.color("--ink-1")}">${PW.esc(o.title)}</text>`; for (let i = 0; i <= 5; i++) {
+      const v = o.ymax * i / 5, yy = sy(v); s += `<line x1="${o.x}" y1="${yy.toFixed(1)}" x2="${o.x + o.w}" y2="${yy.toFixed(1)}" stroke="${PW.color("--grid")}"/>`; s += `<text x="${o.x - 8}" y="${(yy + 4).toFixed(1)}" font-size="10.5" fill="${PW.color("--ink-3")}" text-anchor="end">${fmt(v)}</text>`; }
     for (let a = XMIN; a <= XMAX; a++) if (a % 2 === 0 || a === XMAX)
-      s += `<text x="${sx(a).toFixed(1)}" y="${o.y + o.h + 16}" font-size="10" fill="${PW.color("--ink-3")}" text-anchor="middle">${a}</text>`;
-    s += `<polyline points="${o.serie.map(([a, v]) => sx(a).toFixed(1) + "," + sy(v).toFixed(1)).join(" ")}" fill="none" stroke="${PW.color("--ink-2")}" stroke-width="2.4"/>`;
-    o.serie.forEach(([a, v]) => s += `<circle cx="${sx(a).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.3" fill="${PW.color("--ink-2")}"/>`);
-    const [la, lv] = o.serie[o.serie.length - 1], xa = sx(la), xb = sx(XMAX);
-    escOn.forEach(e => {
-      const v = o.proj[e], c = PW.color(ESC_COLOR[e]);
-      s += `<line x1="${xa.toFixed(1)}" y1="${sy(lv).toFixed(1)}" x2="${xb.toFixed(1)}" y2="${sy(v).toFixed(1)}" stroke="${c}" stroke-width="2.2" stroke-dasharray="6 4"/>`;
-      s += `<circle cx="${xb.toFixed(1)}" cy="${sy(v).toFixed(1)}" r="4.5" fill="${c}" stroke="${PW.color("--surface-1")}" stroke-width="1.5"/>`;
-    });
-    return s;
-  }
+      s += `<text x="${sx(a).toFixed(1)}" y="${o.y + o.h + 16}" font-size="10" fill="${PW.color("--ink-3")}" text-anchor="middle">${a}</text>`; s += `<polyline points="${o.serie.map(([a, v]) => sx(a).toFixed(1) + "," + sy(v).toFixed(1)).join(" ")}" fill="none" stroke="${PW.color("--ink-2")}" stroke-width="2.4"/>`; o.serie.forEach(([a, v]) => s += `<circle cx="${sx(a).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.3" fill="${PW.color("--ink-2")}"/>`); const [la, lv] = o.serie[o.serie.length - 1], xa = sx(la), xb = sx(XMAX); escOn.forEach(e => {
+      const v = o.proj[e], c = PW.color(ESC_COLOR[e]); s += `<line x1="${xa.toFixed(1)}" y1="${sy(lv).toFixed(1)}" x2="${xb.toFixed(1)}" y2="${sy(v).toFixed(1)}" stroke="${c}" stroke-width="2.2" stroke-dasharray="6 4"/>`; s += `<circle cx="${xb.toFixed(1)}" cy="${sy(v).toFixed(1)}" r="4.5" fill="${c}" stroke="${PW.color("--surface-1")}" stroke-width="1.5"/>`; }); return s; }
   function pintarProyeccion() {
-    const v = selReg.value, esNac = !v;
-    const Dp = esNac ? PY.nacional : PY.regiones[v];
-    const nom = esNac ? "Nacional" : v;
-    const m1 = esNac ? "Parque total" : "Motorizados";
-    const ymax1 = niceCeil(Math.max(...Dp.serie1.map(p => p[1]).concat(Object.values(Dp.band1))) * 1.05);
-    const ymax2 = niceCeil(Math.max(...Dp.serie2.map(p => p[1]).concat(Object.values(Dp.band2))) * 1.05);
-    g("proy-chart").innerHTML = `<svg viewBox="0 0 920 600">` +
+    const v = selReg.value, esNac = !v; const Dp = esNac ? PY.nacional : PY.regiones[v]; const nom = esNac ? "Nacional" : v; const m1 = esNac ? "Parque total" : "Motorizados"; const ymax1 = niceCeil(Math.max(...Dp.serie1.map(p => p[1]).concat(Object.values(Dp.band1))) * 1.05); const ymax2 = niceCeil(Math.max(...Dp.serie2.map(p => p[1]).concat(Object.values(Dp.band2))) * 1.05); g("proy-chart").innerHTML = `<svg viewBox="0 0 920 600">` +
       panelSVG({ x: 74, y: 52, w: 780, h: 200, ymax: ymax1, serie: Dp.serie1, proj: Dp.band1, title: m1 + " — " + nom }) +
       panelSVG({ x: 74, y: 360, w: 780, h: 200, ymax: ymax2, serie: Dp.serie2, proj: Dp.band2, title: "Vehículos eléctricos — " + nom }) +
-      `</svg>`;
-    g("proy-leyenda").innerHTML = [...escOn].map(e =>
+      `</svg>`; g("proy-leyenda").innerHTML = [...escOn].map(e =>
       `<span style="--c:${PW.color(ESC_COLOR[e])}">${ESC_NOMBRE[e]} ${PY.growth[e]}: ` +
       `${m1} ${PW.fmt(Dp.band1[e])} · Eléctrico ${PW.fmt(Dp.band2[e])}</span>`).join("") ||
-      `<span>Selecciona un escenario.</span>`;
-  }
+      `<span>Selecciona un escenario.</span>`; }
   g("proy-metodo").textContent = "Método: total del parque por tendencia (crecimiento central " +
     PY.growth.central + "; banda " + PY.growth.baja + " / " + PY.growth.alta + "); columna eléctrica " +
     "anclada en las ventas de electrificados 2025 con tasa de captura histórica (0,80–1,00). Por " +
     "región, Nacional muestra el parque total; cada región muestra motorizados (la fuente regional " +
-    "no desglosa no motorizados). Cuando el INE publique 2025, esta sección se reemplaza por el dato real.";
-  pintarProyeccion();
-})();
-
-const colsReg = [
+    "no desglosa no motorizados). Cuando el INE publique 2025, esta sección se reemplaza por el dato real."; pintarProyeccion(); })(); const colsReg = [
   { k: "region", titulo: "Región", fmt: v => `<b>${v}</b>` },
   { k: "total", titulo: "Motorizados", fmt: miles },
   { k: "bencinero", titulo: "Bencinero", fmt: miles },
@@ -220,18 +148,11 @@ const colsReg = [
   { k: "gas", titulo: "Gas", fmt: miles },
   { k: "electrico", titulo: "Eléctrico", fmt: miles },
   { k: "pct_elec", titulo: "% eléctrico", fmt: v => v.toLocaleString("es-CL") + "%" },
-];
-PW.tabla("t-reg", colsReg, D.regiones, { orden: "total", asc: false, buscador: false });
-
-const colsTipo = [
+]; PW.tabla("t-reg", colsReg, D.regiones, { orden: "total", asc: false, buscador: false }); const colsTipo = [
   { k: "tipo", titulo: "Tipo de vehículo", fmt: v => `<b>${v}</b>` },
   { k: "grupo", titulo: "Clase", fmt: v => v ? `<span class="pill">${v}</span>` : "—" },
   { k: "cantidad", titulo: "Cantidad", fmt: miles },
   { k: "pct", titulo: "% del parque", fmt: v => v.toLocaleString("es-CL") + "%" },
-];
-PW.tabla("t-tipo", colsTipo, D.tipos, { orden: "cantidad", asc: false, buscador: false });
-
-g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + " · Fuente: INE, Parque de vehículos en circulación (permisos municipales). " + D.nota;
-</script>
+]; PW.tabla("t-tipo", colsTipo, D.tipos, { orden: "cantidad", asc: false, buscador: false }); g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + " · Fuente: INE, Parque de vehículos en circulación (permisos municipales). " + D.nota; </script>
 </body>
 </html>

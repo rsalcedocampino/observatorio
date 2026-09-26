@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -277,129 +272,69 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_normativa.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("normativa.html");
-const D = PW_DATA.c_normativa;
-// Las cifras del texto se leen del dato: decian 114 documentos y 49 normas mientras el KPI de
+PW.montarNav("normativa.html"); const D = PW_DATA.c_normativa; // Las cifras del texto se leen del dato: decian 114 documentos y 49 normas mientras el KPI de
 // la misma pantalla mostraba 131 y 59. Escritas a mano se desfasan en cada actualizacion.
 {
-  const _d = document.getElementById("n-docs"), _n = document.getElementById("n-normas");
-  if (_d && D.kpis && D.kpis.documentos != null) _d.textContent = PW.fmt(D.kpis.documentos);
-  if (_n && D.kpis && D.kpis.normas != null) _n.textContent = PW.fmt(D.kpis.normas);
-}
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-
-const K = D.kpis;
-document.getElementById("kpis").innerHTML = [
+  const _d = document.getElementById("n-docs"), _n = document.getElementById("n-normas"); if (_d && D.kpis && D.kpis.documentos != null) _d.textContent = PW.fmt(D.kpis.documentos); if (_n && D.kpis && D.kpis.normas != null) _n.textContent = PW.fmt(D.kpis.normas); }
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const K = D.kpis; document.getElementById("kpis").innerHTML = [
   [K.documentos, "documentos oficiales verificados", ""],
   [K.metas_vinculantes + " de " + K.metas, "metas con rango vinculante", "el resto: declarativas, compromisos o indicativas"],
   [K.normas, "normas analizadas", "con relevancia EV y vacios"],
   [K.brechas_maxima + " de " + K.brechas, "brechas de urgencia maxima", "para la meta 2035"],
   [K.monitoreo, "items en el radar legislativo", "barrido mensual"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-const vinPill = c => `<span class="vin vin-${c}">${c}</span>`;
-
-let tMetas = null;
-function pintarMetas() {
-  const f = document.getElementById("f-vin").value;
-  const filas = D.metas.filter(m => !f || m.clase === f);
-  const cols = [
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const vinPill = c => `<span class="vin vin-${c}">${c}</span>`; let tMetas = null; function pintarMetas() {
+  const f = document.getElementById("f-vin").value; const filas = D.metas.filter(m => !f || m.clase === f); const cols = [
     { k: "Meta", titulo: "Meta" },
     { k: "Valor", titulo: "Valor", num: true, fmt: (v, r) => v == null ? "—" : PW.fmt(+v) + (r.Unidad ? " " + r.Unidad : "") },
     { k: "Año_Objetivo", titulo: "Año objetivo" },
     { k: "clase", titulo: "Vinculancia", fmt: v => vinPill(v) },
     { k: "Estado_Vinculancia", titulo: "Detalle" },
     { k: "Documento_Fuente", titulo: "Fuente" },
-  ];
-  if (tMetas) tMetas.actualizar(filas); else tMetas = PW.tabla("t-metas", cols, filas, {});
-}
-document.getElementById("f-vin").addEventListener("input", pintarMetas);
-pintarMetas();
-
-let tBrechas = null;
-function pintarBrechas() {
-  const f = document.getElementById("f-urg").value;
-  const filas = D.brechas.filter(b => !f || String(b.Urgencia).toLowerCase() === f);
-  const cols = [
+  ]; if (tMetas) tMetas.actualizar(filas); else tMetas = PW.tabla("t-metas", cols, filas, {}); }
+document.getElementById("f-vin").addEventListener("input", pintarMetas); pintarMetas(); let tBrechas = null; function pintarBrechas() {
+  const f = document.getElementById("f-urg").value; const filas = D.brechas.filter(b => !f || String(b.Urgencia).toLowerCase() === f); const cols = [
     { k: "Brecha", titulo: "Brecha" },
     { k: "Tipo", titulo: "Tipo", fmt: v => `<span class="pill">${v || "—"}</span>` },
     { k: "Urgencia", titulo: "Urgencia", fmt: v => `<span class="urg-${String(v).toLowerCase()}">${v || "—"}</span>` },
     { k: "Via", titulo: "Via" },
     { k: "Instrumento_Afectado", titulo: "Instrumento afectado" },
     { k: "Referencia_Internacional", titulo: "Referencia internacional" },
-  ];
-  if (tBrechas) tBrechas.actualizar(filas); else tBrechas = PW.tabla("t-brechas", cols, filas, {});
-}
-document.getElementById("f-urg").addEventListener("input", pintarBrechas);
-pintarBrechas();
-
-// Propuestas sobre la mesa, por actor (trasladado desde tracker.html)
+  ]; if (tBrechas) tBrechas.actualizar(filas); else tBrechas = PW.tabla("t-brechas", cols, filas, {}); }
+document.getElementById("f-urg").addEventListener("input", pintarBrechas); pintarBrechas(); // Propuestas sobre la mesa, por actor (trasladado desde tracker.html)
 PW.tabla("t-propuestas", [
   { k: "actor", titulo: "Actor", fmt: v => `<span class="pill">${v}</span>` },
   { k: "propuesta", titulo: "Propuesta", fmt: (v, r) => `<b>${v}</b><br><span style="color:var(--ink-2);font-size:12.5px">${r.detalle || ""}</span>` },
   { k: "estado", titulo: "Estado" },
   { k: "fuente", titulo: "Fuente" },
-], D.propuestas_actor || [], {});
-
-// Propuestas de actualización, norma por norma (las 32; trasladado desde tracker.html)
+], D.propuestas_actor || [], {}); // Propuestas de actualización, norma por norma (las 32; trasladado desde tracker.html)
 (function () {
-  const NP = D.normas_propuestas || [];
-  const q0 = s => (s || "").toLowerCase();
-  let tNP = null;
-  function pintarNP() {
-    const q = q0(document.getElementById("busca-prop").value);
-    const filas = NP.filter(n => !q || q0(n.norma + " " + n.propuesta).includes(q));
-    const cols = [
+  const NP = D.normas_propuestas || []; const q0 = s => (s || "").toLowerCase(); let tNP = null; function pintarNP() {
+    const q = q0(document.getElementById("busca-prop").value); const filas = NP.filter(n => !q || q0(n.norma + " " + n.propuesta).includes(q)); const cols = [
       { k: "norma", titulo: "Norma" },
       { k: "numero", titulo: "Número" },
       { k: "propuesta", titulo: "Actualización propuesta" },
-    ];
-    if (tNP) tNP.actualizar(filas); else tNP = PW.tabla("t-normas-prop", cols, filas, { max: 40, buscador: false });
-  }
-  document.getElementById("busca-prop").addEventListener("input", pintarNP);
-  pintarNP();
-})();
-
-PW.tabla("t-monitoreo", [
+    ]; if (tNP) tNP.actualizar(filas); else tNP = PW.tabla("t-normas-prop", cols, filas, { max: 40, buscador: false }); }
+  document.getElementById("busca-prop").addEventListener("input", pintarNP); pintarNP(); })(); PW.tabla("t-monitoreo", [
   { k: "Item", titulo: "Pendiente" },
   { k: "Estado_22jul2026", titulo: "Estado" },
   { k: "Fecha_Esperada", titulo: "Fecha esperada" },
-], D.monitoreo, {});
-
-// 27 de los 51 anios no tienen ninguna norma y no venian como fila: el grafico dibujaba 24
+], D.monitoreo, {}); // 27 de los 51 anios no tienen ninguna norma y no venian como fila: el grafico dibujaba 24
 // barras equiespaciadas y se leia como produccion normativa continua desde 1976.
-const NORMAS_ANIO = PW.completarSerie(D.normas_anio, "anio", "anio", { n: 0 });
-PW.columnas("g-normas", {
+const NORMAS_ANIO = PW.completarSerie(D.normas_anio, "anio", "anio", { n: 0 }); PW.columnas("g-normas", {
   labels: NORMAS_ANIO.map(n => String(n.anio)),
   valores: NORMAS_ANIO.map(n => n.n),
   fmtV: v => PW.fmt(v) + " normas", alto: 200,
-});
-
-PW.tabla("t-inversiones", [
+}); PW.tabla("t-inversiones", [
   { k: "Programa", titulo: "Programa" },
   { k: "Organismo", titulo: "Organismo" },
   { k: "Monto", titulo: "Monto", num: true, fmt: (v, r) => v == null ? "—" : PW.fmt(+v) + " " + (r.Moneda_Unidad || "") },
-], D.inversiones, {});
-
-const norm = s => (s || "").toLowerCase();
-let tNormas = null;
-const EJE_AB = { 1: "Infraestructura de carga", 2: "Transporte pesado", 3: "Marítimo", 4: "Economía circular de baterías", 5: "Coordinación pública" };
-function ejesDeNorma(n) {
-  const raw = String(n.Eje_Estrategia || "").trim();
-  return raw ? raw.split(/[,;/ ]+/).map(Number).filter(x => x) : [];
-}
+], D.inversiones, {}); const norm = s => (s || "").toLowerCase(); let tNormas = null; const EJE_AB = { 1: "Infraestructura de carga", 2: "Transporte pesado", 3: "Marítimo", 4: "Economía circular de baterías", 5: "Coordinación pública" }; function ejesDeNorma(n) {
+  const raw = String(n.Eje_Estrategia || "").trim(); return raw ? raw.split(/[,;/ ]+/).map(Number).filter(x => x) : []; }
 function pintarNormas() {
-  const q = norm(document.getElementById("busca-norma").value);
-  const fe = document.getElementById("f-norma-eje").value;
-  const filas = D.normas.filter(n => {
-    const ejes = ejesDeNorma(n);
-    const okEje = !fe || (fe === "_t" ? ejes.length === 0 : ejes.includes(+fe));
-    return okEje && (!q || norm(n.Norma + " " + n.Materia + " " + n.Relevancia_EV + " " + n.Vacios).includes(q));
-  }).slice().sort((a, b) => (ejesDeNorma(a)[0] || 9) - (ejesDeNorma(b)[0] || 9));
-  const cols = [
+  const q = norm(document.getElementById("busca-norma").value); const fe = document.getElementById("f-norma-eje").value; const filas = D.normas.filter(n => {
+    const ejes = ejesDeNorma(n); const okEje = !fe || (fe === "_t" ? ejes.length === 0 : ejes.includes(+fe)); return okEje && (!q || norm(n.Norma + " " + n.Materia + " " + n.Relevancia_EV + " " + n.Vacios).includes(q)); }).slice().sort((a, b) => (ejesDeNorma(a)[0] || 9) - (ejesDeNorma(b)[0] || 9)); const cols = [
     { k: "Eje_Estrategia", titulo: "Eje", fmt: (v, r) => {
-        const e = ejesDeNorma(r);
-        return e.length ? e.map(x => `<span class="pill" title="Eje ${x} · ${EJE_AB[x] || ""}">${x}</span>`).join(" ")
+        const e = ejesDeNorma(r); return e.length ? e.map(x => `<span class="pill" title="Eje ${x} · ${EJE_AB[x] || ""}">${x}</span>`).join(" ")
                         : `<span class="pill" title="Transversal (sin eje)">T</span>`; } },
     { k: "Norma", titulo: "Norma", fmt: (v, r) => r.doc_url
         ? `<a href="${r.doc_url}" target="_blank" rel="noopener" title="Ver o descargar el documento (Google Drive)">${v}</a>` : v },
@@ -408,53 +343,22 @@ function pintarNormas() {
     { k: "Materia", titulo: "Materia" },
     { k: "Relevancia_EV", titulo: "Relevancia EV" },
     { k: "Vacios", titulo: "Vacios" },
-  ];
-  if (tNormas) tNormas.actualizar(filas); else tNormas = PW.tabla("t-normas", cols, filas, { max: 60, buscador: false });
-}
-document.getElementById("busca-norma").addEventListener("input", pintarNormas);
-document.getElementById("f-norma-eje").addEventListener("input", pintarNormas);
-pintarNormas();
-
-PW.tabla("t-internacional", D.internacional.length ? Object.keys(D.internacional[0]).slice(0, 4).map(k => ({ k, titulo: k.replace(/_/g, " ") })) : [], D.internacional, {});
-
-let tCifras = null;
-function pintarCifras() {
-  const q = norm(document.getElementById("busca-cifra").value);
-  const filas = D.cifras.filter(c => !q || norm(c.Indicador + " " + c.Fuente).includes(q));
-  const cols = [
+  ]; if (tNormas) tNormas.actualizar(filas); else tNormas = PW.tabla("t-normas", cols, filas, { max: 60, buscador: false }); }
+document.getElementById("busca-norma").addEventListener("input", pintarNormas); document.getElementById("f-norma-eje").addEventListener("input", pintarNormas); pintarNormas(); PW.tabla("t-internacional", D.internacional.length ? Object.keys(D.internacional[0]).slice(0, 4).map(k => ({ k, titulo: k.replace(/_/g, " ") })) : [], D.internacional, {}); let tCifras = null; function pintarCifras() {
+  const q = norm(document.getElementById("busca-cifra").value); const filas = D.cifras.filter(c => !q || norm(c.Indicador + " " + c.Fuente).includes(q)); const cols = [
     { k: "Indicador", titulo: "Indicador" },
     { k: "Valor", titulo: "Valor", num: true, fmt: (v, r) => v == null ? "—" : v + " " + (r.Unidad || "") },
     { k: "Año", titulo: "Año" },
     { k: "Fuente", titulo: "Fuente" },
-  ];
-  if (tCifras) tCifras.actualizar(filas); else tCifras = PW.tabla("t-cifras", cols, filas, { max: 30, buscador: false });
-}
-document.getElementById("busca-cifra").addEventListener("input", pintarCifras);
-pintarCifras();
-
-// Ruta a la Meta 2035: panel interactivo — filtro por categoria + tarjetas desplegables
-const RUTA = D.ruta_2035 || { destacados: [], medidas: [] };
-const esc = s => (s == null ? "" : String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"));
-const corta = (s, n) => { s = s || ""; return s.length > n ? s.slice(0, n).trim() + "…" : s; };
-const CATS = [
+  ]; if (tCifras) tCifras.actualizar(filas); else tCifras = PW.tabla("t-cifras", cols, filas, { max: 30, buscador: false }); }
+document.getElementById("busca-cifra").addEventListener("input", pintarCifras); pintarCifras(); // Ruta a la Meta 2035: panel interactivo — filtro por categoria + tarjetas desplegables
+const RUTA = D.ruta_2035 || { destacados: [], medidas: [] }; const esc = s => (s == null ? "" : String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;")); const corta = (s, n) => { s = s || ""; return s.length > n ? s.slice(0, n).trim() + "…" : s; }; const CATS = [
   ["ruta_critica", "Rutas críticas"], ["oportunidad", "Oportunidades"], ["desafio", "Desafíos"],
   ["accion_faltante", "Acciones faltantes"], ["recuadro", "Datos-fuerza"],
-];
-const LBL = Object.fromEntries(CATS);
-const rutaCont = document.getElementById("ruta-cont");
-const rutaChips = document.getElementById("ruta-chips");
-const rutaToggle = document.getElementById("ruta-toggle");
-const rutaCount = document.getElementById("ruta-count");
-const catsCon = CATS.filter(([c]) => RUTA.destacados.some(d => d.categoria === c));
-
-rutaChips.innerHTML =
+]; const LBL = Object.fromEntries(CATS); const rutaCont = document.getElementById("ruta-cont"); const rutaChips = document.getElementById("ruta-chips"); const rutaToggle = document.getElementById("ruta-toggle"); const rutaCount = document.getElementById("ruta-count"); const catsCon = CATS.filter(([c]) => RUTA.destacados.some(d => d.categoria === c)); rutaChips.innerHTML =
   `<span class="ruta-chip on" data-cat="" style="--cc:var(--ink-2)">Todas <span class="num">${RUTA.destacados.length}</span></span>` +
   catsCon.map(([c, l]) => {
-    const n = RUTA.destacados.filter(d => d.categoria === c).length;
-    return `<span class="ruta-chip cat-${c}" data-cat="${c}"><span class="dot"></span>${l} <span class="num">${n}</span></span>`;
-  }).join("");
-
-rutaCont.innerHTML = catsCon.flatMap(([c]) =>
+    const n = RUTA.destacados.filter(d => d.categoria === c).length; return `<span class="ruta-chip cat-${c}" data-cat="${c}"><span class="dot"></span>${l} <span class="num">${n}</span></span>`; }).join(""); rutaCont.innerHTML = catsCon.flatMap(([c]) =>
   RUTA.destacados.filter(d => d.categoria === c).map(d =>
     `<details class="ruta-card cat-${c}" data-cat="${c}">` +
       `<summary><span class="dot"></span><span class="st">` +
@@ -469,153 +373,57 @@ rutaCont.innerHTML = catsCon.flatMap(([c]) =>
       `</div>` +
     `</details>`
   )
-).join("") || `<div class="ruta-vacio">Sin datos de la Ruta 2035 disponibles.</div>`;
-
-function filtrarRuta(cat) {
-  let vis = 0;
-  rutaCont.querySelectorAll(".ruta-card").forEach(el => {
-    const ok = !cat || el.dataset.cat === cat;
-    el.style.display = ok ? "" : "none";
-    if (ok) vis++;
-  });
-  rutaChips.querySelectorAll(".ruta-chip").forEach(ch => ch.classList.toggle("on", ch.dataset.cat === cat));
-  rutaCount.textContent = "Mostrando " + vis + " de " + RUTA.destacados.length + " puntos de la ruta.";
-}
+).join("") || `<div class="ruta-vacio">Sin datos de la Ruta 2035 disponibles.</div>`; function filtrarRuta(cat) {
+  let vis = 0; rutaCont.querySelectorAll(".ruta-card").forEach(el => {
+    const ok = !cat || el.dataset.cat === cat; el.style.display = ok ? "" : "none"; if (ok) vis++; }); rutaChips.querySelectorAll(".ruta-chip").forEach(ch => ch.classList.toggle("on", ch.dataset.cat === cat)); rutaCount.textContent = "Mostrando " + vis + " de " + RUTA.destacados.length + " puntos de la ruta."; }
 rutaChips.addEventListener("click", e => {
-  const ch = e.target.closest(".ruta-chip");
-  if (ch) filtrarRuta(ch.dataset.cat);
-});
-
-let rutaAbierto = false;
-rutaToggle.addEventListener("click", () => {
-  rutaAbierto = !rutaAbierto;
-  rutaCont.querySelectorAll(".ruta-card").forEach(el => { if (el.style.display !== "none") el.open = rutaAbierto; });
-  rutaToggle.textContent = rutaAbierto ? "Contraer todo" : "Expandir todo";
-});
-
-filtrarRuta("");
-
-// Timeline de medidas — grafico apilado por eje + panel de detalle interactivo
-const ANIOS = ["2026", "2027", "2028", "2029", "2030"];
-const ejeNum = e => (e || "").trim().split(/\s+/)[0];
-const EJE_COL = { "1": "var(--s1)", "2": "var(--s2)", "3": "var(--s3)", "4": "var(--s4)", "5": "var(--s5)", "Transversal": "var(--s6)" };
-const EJE_LBL = { "1": "Infraestructura de carga", "2": "Transporte pesado", "3": "Transporte fluvial/marítimo", "4": "Economía circular de baterías", "5": "Coordinación pública", "Transversal": "Transversal" };
-const colEje = e => EJE_COL[ejeNum(e)] || "var(--ink-3)";
-const medPorAnio = a => RUTA.medidas.filter(m => String(m.anio) === a).slice().sort((x, y) => ejeNum(x.eje).localeCompare(ejeNum(y.eje)));
-const maxN = Math.max(1, ...ANIOS.map(a => medPorAnio(a).length));
-const tlChart = document.getElementById("tl-chart");
-const tlDetalle = document.getElementById("tl-detalle");
-
-const ejesPresentes = [...new Set(RUTA.medidas.map(m => ejeNum(m.eje)))].sort();
-document.getElementById("tl-leyenda").innerHTML = ejesPresentes.map(ej =>
+  const ch = e.target.closest(".ruta-chip"); if (ch) filtrarRuta(ch.dataset.cat); }); let rutaAbierto = false; rutaToggle.addEventListener("click", () => {
+  rutaAbierto = !rutaAbierto; rutaCont.querySelectorAll(".ruta-card").forEach(el => { if (el.style.display !== "none") el.open = rutaAbierto; }); rutaToggle.textContent = rutaAbierto ? "Contraer todo" : "Expandir todo"; }); filtrarRuta(""); // Timeline de medidas — grafico apilado por eje + panel de detalle interactivo
+const ANIOS = ["2026", "2027", "2028", "2029", "2030"]; const ejeNum = e => (e || "").trim().split(/\s+/)[0]; const EJE_COL = { "1": "var(--s1)", "2": "var(--s2)", "3": "var(--s3)", "4": "var(--s4)", "5": "var(--s5)", "Transversal": "var(--s6)" }; const EJE_LBL = { "1": "Infraestructura de carga", "2": "Transporte pesado", "3": "Transporte fluvial/marítimo", "4": "Economía circular de baterías", "5": "Coordinación pública", "Transversal": "Transversal" }; const colEje = e => EJE_COL[ejeNum(e)] || "var(--ink-3)"; const medPorAnio = a => RUTA.medidas.filter(m => String(m.anio) === a).slice().sort((x, y) => ejeNum(x.eje).localeCompare(ejeNum(y.eje))); const maxN = Math.max(1, ...ANIOS.map(a => medPorAnio(a).length)); const tlChart = document.getElementById("tl-chart"); const tlDetalle = document.getElementById("tl-detalle"); const ejesPresentes = [...new Set(RUTA.medidas.map(m => ejeNum(m.eje)))].sort(); document.getElementById("tl-leyenda").innerHTML = ejesPresentes.map(ej =>
   `<span style="--ec:${EJE_COL[ej] || "var(--ink-3)"}">${ej === "Transversal" ? "Transversal" : "Eje " + ej}${EJE_LBL[ej] && ej !== "Transversal" ? " · " + esc(EJE_LBL[ej]) : ""}</span>`
-).join("");
-
-tlChart.innerHTML = ANIOS.map(a => {
-  const ms = medPorAnio(a);
-  const h = (ms.length / maxN * 100).toFixed(1);
-  const segs = ms.map(m => `<div class="tl-seg" style="--ec:${colEje(m.eje)}"></div>`).join("");
-  return `<div class="tl-bar" data-anio="${a}" role="button" tabindex="0" aria-label="Medidas ${a}: ${ms.length}">` +
+).join(""); tlChart.innerHTML = ANIOS.map(a => {
+  const ms = medPorAnio(a); const h = (ms.length / maxN * 100).toFixed(1); const segs = ms.map(m => `<div class="tl-seg" style="--ec:${colEje(m.eje)}"></div>`).join(""); return `<div class="tl-bar" data-anio="${a}" role="button" tabindex="0" aria-label="Medidas ${a}: ${ms.length}">` +
     `<div class="tl-track"><div class="tl-stack" style="height:${h}%">${segs}</div></div>` +
-    `<div class="tl-lab"><span class="n">${ms.length}</span><span class="yr">${a}</span></div></div>`;
-}).join("") +
+    `<div class="tl-lab"><span class="n">${ms.length}</span><span class="yr">${a}</span></div></div>`; }).join("") +
   `<div class="tl-bar vacio" data-anio="__vacio" role="button" tabindex="0" aria-label="2031-2035: sin medidas">` +
     `<div class="tl-track"><div class="tl-stack"></div></div>` +
-    `<div class="tl-lab"><span class="n">0</span><span class="yr">2031-2035</span></div></div>`;
-
-function pintarDetalle(a) {
+    `<div class="tl-lab"><span class="n">0</span><span class="yr">2031-2035</span></div></div>`; function pintarDetalle(a) {
   if (a === "__vacio") {
-    tlDetalle.className = "tl-detalle vacio";
-    tlDetalle.innerHTML = `<h4>2031-2035 · sin medidas nuevas</h4>` +
-      `<p class="cap">La Estrategia declara la meta de <b>100% de ventas cero emisiones al 2035</b> pero no programa ninguna medida con término en esa década: describe el 2035 como visión y no lo instrumenta. El plan de implementación debería extender medidas a 2031-2035 con hitos anuales de ventas y de despliegue de carga.</p>`;
-    return;
-  }
-  const esSF = a === "s/f";
-  const ms = esSF ? RUTA.medidas.filter(m => !ANIOS.includes(String(m.anio))) : medPorAnio(a);
-  tlDetalle.className = "tl-detalle";
-  tlDetalle.innerHTML =
+    tlDetalle.className = "tl-detalle vacio"; tlDetalle.innerHTML = `<h4>2031-2035 · sin medidas nuevas</h4>` +
+      `<p class="cap">La Estrategia declara la meta de <b>100% de ventas cero emisiones al 2035</b> pero no programa ninguna medida con término en esa década: describe el 2035 como visión y no lo instrumenta. El plan de implementación debería extender medidas a 2031-2035 con hitos anuales de ventas y de despliegue de carga.</p>`; return; }
+  const esSF = a === "s/f"; const ms = esSF ? RUTA.medidas.filter(m => !ANIOS.includes(String(m.anio))) : medPorAnio(a); tlDetalle.className = "tl-detalle"; tlDetalle.innerHTML =
     `<h4>${esSF ? "Medidas sin año de término definido" : "Medidas con término en " + a} · ${ms.length}</h4>` +
     `<p class="cap">Eje responsable, medida comprometida y su meta asociada.</p>` +
     ms.map(m => {
-      const ej = ejeNum(m.eje);
-      const ejLbl = (ej === "Transversal" ? "Transversal" : "Eje " + ej) + (EJE_LBL[ej] && ej !== "Transversal" ? " · " + EJE_LBL[ej] : "");
-      const mm = [m.responsables ? "Responsables: " + m.responsables : "", m.meta ? "Meta: " + m.meta : ""].filter(Boolean).join(" · ");
-      return `<div class="tl-m"><span class="eje" style="--ec:${colEje(m.eje)}">${esc(ejLbl)}</span>` +
+      const ej = ejeNum(m.eje); const ejLbl = (ej === "Transversal" ? "Transversal" : "Eje " + ej) + (EJE_LBL[ej] && ej !== "Transversal" ? " · " + EJE_LBL[ej] : ""); const mm = [m.responsables ? "Responsables: " + m.responsables : "", m.meta ? "Meta: " + m.meta : ""].filter(Boolean).join(" · "); return `<div class="tl-m"><span class="eje" style="--ec:${colEje(m.eje)}">${esc(ejLbl)}</span>` +
         `<div class="mt">${esc(m.medida)}</div>` +
-        (mm ? `<div class="mm">${esc(mm)}</div>` : "") + `</div>`;
-    }).join("");
-}
+        (mm ? `<div class="mm">${esc(mm)}</div>` : "") + `</div>`; }).join(""); }
 
 function seleccionarAnio(a) {
-  tlChart.querySelectorAll(".tl-bar").forEach(b => b.classList.toggle("sel", b.dataset.anio === a));
-  pintarDetalle(a);
-}
-tlChart.addEventListener("click", e => { const b = e.target.closest(".tl-bar"); if (b) seleccionarAnio(b.dataset.anio); });
-tlChart.addEventListener("keydown", e => {
-  const b = e.target.closest(".tl-bar");
-  if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); seleccionarAnio(b.dataset.anio); }
-});
+  tlChart.querySelectorAll(".tl-bar").forEach(b => b.classList.toggle("sel", b.dataset.anio === a)); pintarDetalle(a); }
+tlChart.addEventListener("click", e => { const b = e.target.closest(".tl-bar"); if (b) seleccionarAnio(b.dataset.anio); }); tlChart.addEventListener("keydown", e => {
+  const b = e.target.closest(".tl-bar"); if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); seleccionarAnio(b.dataset.anio); }
+}); const sf = RUTA.medidas.filter(m => !ANIOS.includes(String(m.anio))); const tlSf = document.getElementById("ruta-sf"); if (sf.length) {
+  tlSf.innerHTML = `<a id="tl-sf-link" role="button" tabindex="0">${sf.length} medidas sin año de término definido (s/f)</a> — no entran en el gráfico; toca para verlas en el detalle.`; const lk = document.getElementById("tl-sf-link"); const abrirSF = () => { tlChart.querySelectorAll(".tl-bar").forEach(b => b.classList.remove("sel")); pintarDetalle("s/f"); }; lk.addEventListener("click", abrirSF); lk.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirSF(); } }); } else { tlSf.textContent = ""; }
 
-const sf = RUTA.medidas.filter(m => !ANIOS.includes(String(m.anio)));
-const tlSf = document.getElementById("ruta-sf");
-if (sf.length) {
-  tlSf.innerHTML = `<a id="tl-sf-link" role="button" tabindex="0">${sf.length} medidas sin año de término definido (s/f)</a> — no entran en el gráfico; toca para verlas en el detalle.`;
-  const lk = document.getElementById("tl-sf-link");
-  const abrirSF = () => { tlChart.querySelectorAll(".tl-bar").forEach(b => b.classList.remove("sel")); pintarDetalle("s/f"); };
-  lk.addEventListener("click", abrirSF);
-  lk.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirSF(); } });
-} else { tlSf.textContent = ""; }
-
-const pico = ANIOS.reduce((best, a) => medPorAnio(a).length > medPorAnio(best).length ? a : best, ANIOS[0]);
-seleccionarAnio(pico);
-
-// Matriz normativa por eje: enlazado / falta crear / falta modificar
-const MTZ = RUTA.matriz || [];
-const MCOLS = [["enlazadas", "enl", "Enlazado"], ["crear", "cre", "Falta crear"], ["modificar", "mod", "Falta modificar"]];
-const mtzEl = document.getElementById("mtz");
-const mtzDet = document.getElementById("mtz-detalle");
-if (mtzEl && MTZ.length) {
-  let h = `<div class="mtz-h eje">Eje estratégico</div>` + MCOLS.map(c => `<div class="mtz-h">${c[2]}</div>`).join("");
-  MTZ.forEach((row, ri) => {
-    h += `<div class="mtz-eje">${esc(row.eje)}</div>`;
-    MCOLS.forEach(([key, cls]) => {
-      const n = (row[key] || []).length;
-      const cero = n === 0 ? " cero" : "";
-      h += `<div class="mtz-cell ${cls}${cero}" data-r="${ri}" data-k="${key}"${n ? ` role="button" tabindex="0"` : ""}><span class="n">${n}</span></div>`;
-    });
-  });
-  mtzEl.innerHTML = h;
-  const TIT = {
+const pico = ANIOS.reduce((best, a) => medPorAnio(a).length > medPorAnio(best).length ? a : best, ANIOS[0]); seleccionarAnio(pico); // Matriz normativa por eje: enlazado / falta crear / falta modificar
+const MTZ = RUTA.matriz || []; const MCOLS = [["enlazadas", "enl", "Enlazado"], ["crear", "cre", "Falta crear"], ["modificar", "mod", "Falta modificar"]]; const mtzEl = document.getElementById("mtz"); const mtzDet = document.getElementById("mtz-detalle"); if (mtzEl && MTZ.length) {
+  let h = `<div class="mtz-h eje">Eje estratégico</div>` + MCOLS.map(c => `<div class="mtz-h">${c[2]}</div>`).join(""); MTZ.forEach((row, ri) => {
+    h += `<div class="mtz-eje">${esc(row.eje)}</div>`; MCOLS.forEach(([key, cls]) => {
+      const n = (row[key] || []).length; const cero = n === 0 ? " cero" : ""; h += `<div class="mtz-cell ${cls}${cero}" data-r="${ri}" data-k="${key}"${n ? ` role="button" tabindex="0"` : ""}><span class="n">${n}</span></div>`; }); }); mtzEl.innerHTML = h; const TIT = {
     enlazadas: "Enlazado — leyes/decretos que ya lo sostienen",
     crear: "Falta crear — vacío absoluto o instrumento comprometido sin dictar",
     modificar: "Falta modificar — existe pero no sirve, o en conflicto",
-  };
-  function mtzMostrar(ri, key) {
-    mtzEl.querySelectorAll(".mtz-cell").forEach(c => c.classList.remove("on"));
-    const cell = mtzEl.querySelector(`[data-r="${ri}"][data-k="${key}"]`);
-    if (cell) cell.classList.add("on");
-    const row = MTZ[ri], items = row[key] || [];
-    let html = `<h3 style="margin:0 0 6px;font-size:14px">${esc(row.eje)} · ${TIT[key]} (${items.length})</h3>`;
-    if (!items.length) {
-      html += `<div class="mtz-det-item">Sin elementos en esta categoría para este eje.</div>`;
-    } else if (key === "enlazadas") {
+  }; function mtzMostrar(ri, key) {
+    mtzEl.querySelectorAll(".mtz-cell").forEach(c => c.classList.remove("on")); const cell = mtzEl.querySelector(`[data-r="${ri}"][data-k="${key}"]`); if (cell) cell.classList.add("on"); const row = MTZ[ri], items = row[key] || []; let html = `<h3 style="margin:0 0 6px;font-size:14px">${esc(row.eje)} · ${TIT[key]} (${items.length})</h3>`; if (!items.length) {
+      html += `<div class="mtz-det-item">Sin elementos en esta categoría para este eje.</div>`; } else if (key === "enlazadas") {
       html += items.map(i => {
-        const lab = `<b>${esc(i.norma)}</b> <span class="via">${esc(i.numero)} · ${esc(i.organismo)}</span>`;
-        return `<div class="mtz-det-item">${i.doc_url ? `<a href="${esc(i.doc_url)}" target="_blank" rel="noopener" title="Ver el documento en Drive">${lab}</a>` : lab}</div>`;
-      }).join("");
-    } else {
+        const lab = `<b>${esc(i.norma)}</b> <span class="via">${esc(i.numero)} · ${esc(i.organismo)}</span>`; return `<div class="mtz-det-item">${i.doc_url ? `<a href="${esc(i.doc_url)}" target="_blank" rel="noopener" title="Ver el documento en Drive">${lab}</a>` : lab}</div>`; }).join(""); } else {
       html += items.map(i => `<div class="mtz-det-item"><b>${esc(i.brecha)}</b>` +
         (i.urgencia ? ` — <span class="urg-${String(i.urgencia).toLowerCase()}">urgencia ${esc(i.urgencia)}</span>` : "") +
-        `<div class="via">Vía: ${esc(i.via) || "—"}${i.instrumento ? " · instrumento: " + esc(i.instrumento) : ""}</div></div>`).join("");
-    }
-    mtzDet.innerHTML = html;
-  }
-  mtzEl.addEventListener("click", e => { const c = e.target.closest(".mtz-cell"); if (c && !c.classList.contains("cero")) mtzMostrar(+c.dataset.r, c.dataset.k); });
-  mtzEl.addEventListener("keydown", e => { const c = e.target.closest(".mtz-cell"); if (c && !c.classList.contains("cero") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); mtzMostrar(+c.dataset.r, c.dataset.k); } });
-  let bri = 0, bmax = -1;
-  MTZ.forEach((row, ri) => { const n = (row.crear || []).length; if (n > bmax) { bmax = n; bri = ri; } });
-  mtzMostrar(bri, "crear");
-}
+        `<div class="via">Vía: ${esc(i.via) || "—"}${i.instrumento ? " · instrumento: " + esc(i.instrumento) : ""}</div></div>`).join(""); }
+    mtzDet.innerHTML = html; }
+  mtzEl.addEventListener("click", e => { const c = e.target.closest(".mtz-cell"); if (c && !c.classList.contains("cero")) mtzMostrar(+c.dataset.r, c.dataset.k); }); mtzEl.addEventListener("keydown", e => { const c = e.target.closest(".mtz-cell"); if (c && !c.classList.contains("cero") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); mtzMostrar(+c.dataset.r, c.dataset.k); } }); let bri = 0, bmax = -1; MTZ.forEach((row, ri) => { const n = (row.crear || []).length; if (n > bmax) { bmax = n; bri = ri; } }); mtzMostrar(bri, "crear"); }
 </script>
 </body>
 </html>

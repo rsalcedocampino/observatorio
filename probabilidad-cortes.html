@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -88,62 +83,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_probcortes.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("probabilidad-cortes.html");
-const D = PW_DATA.c_probcortes;
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-
-const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-               "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-const MES_ABR = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-const UMBRAL = 75;
-
-const selMes = document.getElementById("f-mes");
-MESES.forEach((m, i) => {
-  const o = document.createElement("option"); o.value = i; o.textContent = m; selMes.appendChild(o);
-});
-selMes.value = new Date().getMonth();
-
-const selR = document.getElementById("f-region");
-D.regiones.slice().sort((a, b) => a.region.localeCompare(b.region)).forEach(r => {
-  const o = document.createElement("option"); o.value = r.rcut; o.textContent = r.region; selR.appendChild(o);
-});
-const selC = document.getElementById("f-comuna");
-function poblarComunas() {
-  const rcut = selR.value;
-  const coms = D.comunas.filter(c => !rcut || c.rcut === rcut)
-    .map(c => c.comuna).sort();
-  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
-  selC.disabled = !rcut;
-}
-poblarComunas();
-
-let tab = null;
-let mapaProb = null;
-function refrescar() {
-  const mes = +selMes.value;
-  // choropleth del mes elegido (todas las comunas, independiente del filtro territorial)
+PW.montarNav("probabilidad-cortes.html"); const D = PW_DATA.c_probcortes; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+               "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]; const MES_ABR = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]; const UMBRAL = 75; const selMes = document.getElementById("f-mes"); MESES.forEach((m, i) => {
+  const o = document.createElement("option"); o.value = i; o.textContent = m; selMes.appendChild(o); }); selMes.value = new Date().getMonth(); const selR = document.getElementById("f-region"); D.regiones.slice().sort((a, b) => a.region.localeCompare(b.region)).forEach(r => {
+  const o = document.createElement("option"); o.value = r.rcut; o.textContent = r.region; selR.appendChild(o); }); const selC = document.getElementById("f-comuna"); function poblarComunas() {
+  const rcut = selR.value; const coms = D.comunas.filter(c => !rcut || c.rcut === rcut)
+    .map(c => c.comuna).sort(); selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join(""); selC.disabled = !rcut; }
+poblarComunas(); let tab = null; let mapaProb = null; function refrescar() {
+  const mes = +selMes.value; // choropleth del mes elegido (todas las comunas, independiente del filtro territorial)
   document.getElementById("titulo-mapa").textContent =
-    "Mapa comunal: probabilidad de corte en " + MESES[mes].toLowerCase();
-  if (mapaProb) { mapaProb.remove(); mapaProb = null; }
-  const leyVieja = document.querySelector("#mapa-prob + .leyenda");
-  if (leyVieja) leyVieja.remove();
-  const rcut = selR.value;
-  const comSel = selC.value;
-  const comunas = D.comunas.filter(c => (!rcut || c.rcut === rcut) && (!comSel || c.comuna === comSel));
-  const comunaUnica = comSel ? comunas[0] : null;
-  mapaProb = PW.choropleth("mapa-prob", {
+    "Mapa comunal: probabilidad de corte en " + MESES[mes].toLowerCase(); if (mapaProb) { mapaProb.remove(); mapaProb = null; }
+  const leyVieja = document.querySelector("#mapa-prob + .leyenda"); if (leyVieja) leyVieja.remove(); const rcut = selR.value; const comSel = selC.value; const comunas = D.comunas.filter(c => (!rcut || c.rcut === rcut) && (!comSel || c.comuna === comSel)); const comunaUnica = comSel ? comunas[0] : null; mapaProb = PW.choropleth("mapa-prob", {
     valores: Object.fromEntries(D.comunas.map(c => [c.cut, c.prob[mes]])),
     fmt: v => v == null ? "sin datos" : PW.fmt(v, 0) + "%",
     alto: 560, foco: (rcut || comSel) ? comunas.map(c => c.cut) : null,
-  });
-
-  // KPIs: infraestructura expuesta en la seleccion para el mes elegido
-  const expuestas = comunas.filter(c => c.prob[mes] >= UMBRAL);
-  const est = expuestas.reduce((s, c) => s + c.est, 0);
-  const carg = expuestas.reduce((s, c) => s + c.carg, 0);
-  const con = expuestas.reduce((s, c) => s + c.con, 0);
-  const ambito = comunaUnica ? comunaUnica.comuna : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el país");
-  document.getElementById("kpis").innerHTML = (comunaUnica ? [
+  }); // KPIs: infraestructura expuesta en la seleccion para el mes elegido
+  const expuestas = comunas.filter(c => c.prob[mes] >= UMBRAL); const est = expuestas.reduce((s, c) => s + c.est, 0); const carg = expuestas.reduce((s, c) => s + c.carg, 0); const con = expuestas.reduce((s, c) => s + c.con, 0); const ambito = comunaUnica ? comunaUnica.comuna : (rcut ? (D.regiones.find(r => r.rcut === rcut) || {}).region : "todo el país"); document.getElementById("kpis").innerHTML = (comunaUnica ? [
     [PW.fmt(comunaUnica.prob[mes], 1) + "%", "probabilidad de corte en " + MESES[mes].toLowerCase(), comunaUnica.comuna],
     [PW.fmt(comunaUnica.evprom[mes], 1), "cortes promedio ese mes", "eventos 500+ clientes"],
     [PW.fmt(comunaUnica.carg), "cargadores en la comuna", comunaUnica.est + " estaciones"],
@@ -153,76 +108,52 @@ function refrescar() {
     [PW.fmt(est), "estaciones de carga expuestas", ""],
     [PW.fmt(carg), "cargadores expuestos", ""],
     [PW.fmt(con), "conectores expuestos", ""],
-  ]).map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-  // Perfil anual: comuna elegida, o % de comunas afectadas (region / promedio pais)
-  let perfil, tituloPerfil, notaPerfil;
-  if (comunaUnica) {
-    perfil = comunaUnica.prob;
-    tituloPerfil = "Probabilidad mensual de corte en " + comunaUnica.comuna;
-    notaPerfil = "Probabilidad = años con al menos un corte ese mes / años con datos.";
-  } else if (rcut) {
-    const reg = D.regiones.find(r => r.rcut === rcut);
-    perfil = reg.pct_comunas;
-    tituloPerfil = "% de comunas afectadas por mes — " + reg.region;
-    notaPerfil = "Promedio histórico del porcentaje de comunas de la región con al menos un corte en el mes.";
-  } else {
+  ]).map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Perfil anual: comuna elegida, o % de comunas afectadas (region / promedio pais)
+  let perfil, tituloPerfil, notaPerfil; if (comunaUnica) {
+    perfil = comunaUnica.prob; tituloPerfil = "Probabilidad mensual de corte en " + comunaUnica.comuna; notaPerfil = "Probabilidad = años con al menos un corte ese mes / años con datos."; } else if (rcut) {
+    const reg = D.regiones.find(r => r.rcut === rcut); perfil = reg.pct_comunas; tituloPerfil = "% de comunas afectadas por mes — " + reg.region; notaPerfil = "Promedio histórico del porcentaje de comunas de la región con al menos un corte en el mes."; } else {
     // Ponderado por n_comunas y no promedio simple de regiones: el simple le da el mismo peso
     // a Aysen que a la Metropolitana, y el numero que sale NO es "el % de comunas del pais
     // afectadas", que es lo que promete el titulo. Subestimaba entre 6,7 y 9,7 puntos segun el
     // mes (enero: 61,2% simple contra 70,5% real). n_comunas ya venia en el dato, sin usarse.
-    const totCom = D.regiones.reduce((s, r) => s + (r.n_comunas || 0), 0);
-    perfil = MESES.map((_, m) => totCom
+    const totCom = D.regiones.reduce((s, r) => s + (r.n_comunas || 0), 0); perfil = MESES.map((_, m) => totCom
       ? +(D.regiones.reduce((s, r) => s + r.pct_comunas[m] * (r.n_comunas || 0), 0) / totCom).toFixed(1)
-      : +(D.regiones.reduce((s, r) => s + r.pct_comunas[m], 0) / D.regiones.length).toFixed(1));
-    tituloPerfil = "% de comunas afectadas por mes — país";
-    notaPerfil = totCom
+      : +(D.regiones.reduce((s, r) => s + r.pct_comunas[m], 0) / D.regiones.length).toFixed(1)); tituloPerfil = "% de comunas afectadas por mes — país"; notaPerfil = totCom
       ? "Porcentaje de las " + totCom + " comunas del país, ponderado por el tamaño de cada región."
-      : "Promedio simple de las " + D.regiones.length + " regiones.";
-  }
-  document.getElementById("titulo-perfil").textContent = tituloPerfil;
-  document.getElementById("nota-perfil").textContent = notaPerfil;
-  PW.columnas("g-perfil", {
+      : "Promedio simple de las " + D.regiones.length + " regiones."; }
+  document.getElementById("titulo-perfil").textContent = tituloPerfil; document.getElementById("nota-perfil").textContent = notaPerfil; PW.columnas("g-perfil", {
     labels: MES_ABR,
     valores: perfil,
     color: PW.color("--s2"),
     fmtV: v => PW.fmt(v, 1) + "%", fmtY: v => Math.round(v) + "%", alto: 250,
-  });
-
-  // Ranking del mes: comunas (o regiones si no hay filtro)
+  }); // Ranking del mes: comunas (o regiones si no hay filtro)
   if (rcut || comSel) {
-    document.getElementById("titulo-rank").textContent = "Comunas con mayor probabilidad en " + MESES[mes].toLowerCase();
-    PW.barras("g-rank", {
+    document.getElementById("titulo-rank").textContent = "Comunas con mayor probabilidad en " + MESES[mes].toLowerCase(); PW.barras("g-rank", {
       items: comunas.slice().sort((a, b) => b.prob[mes] - a.prob[mes]).slice(0, 15).map(c => ({
         nombre: c.comuna, valor: c.prob[mes],
         extra: PW.fmt(c.carg) + " cargadores, " + PW.fmt(c.con) + " conectores",
         color: c.prob[mes] >= UMBRAL ? PW.color("--critical") : PW.color("--s1"),
       })),
       fmtV: v => PW.fmt(v, 1) + "%",
-    });
-  } else {
-    document.getElementById("titulo-rank").textContent = "Regiones: % de comunas afectadas en " + MESES[mes].toLowerCase();
-    PW.barras("g-rank", {
+    }); } else {
+    document.getElementById("titulo-rank").textContent = "Regiones: % de comunas afectadas en " + MESES[mes].toLowerCase(); PW.barras("g-rank", {
       items: D.regiones.slice().sort((a, b) => b.pct_comunas[mes] - a.pct_comunas[mes]).map(r => ({
         nombre: r.region, valor: r.pct_comunas[mes],
         extra: PW.fmt(r.carg) + " cargadores, " + PW.fmt(r.con) + " conectores en la región",
         color: r.pct_comunas[mes] >= 50 ? PW.color("--critical") : PW.color("--s1"),
       })),
       fmtV: v => PW.fmt(v, 1) + "%",
-    });
-  }
+    }); }
 
   // Tabla de detalle
   document.getElementById("titulo-tabla").textContent =
-    "Comunas de " + ambito + " en " + MESES[mes].toLowerCase() + " (con su red de carga)";
-  const filas = comunas.map(c => ({
+    "Comunas de " + ambito + " en " + MESES[mes].toLowerCase() + " (con su red de carga)"; const filas = comunas.map(c => ({
     comuna: c.comuna, region: c.region,
     prob: c.prob[mes], evprom: c.evprom[mes],
     peor_mes: MES_ABR[c.prob.indexOf(Math.max(...c.prob))] + " (" + PW.fmt(Math.max(...c.prob), 0) + "%)",
     est: c.est, carg: c.carg, con: c.con,
     expuesta: c.prob[mes] >= UMBRAL && c.con > 0 ? "Si" : "",
-  }));
-  const cols = [
+  })); const cols = [
     { k: "comuna", titulo: "Comuna" },
     { k: "region", titulo: "Región" },
     { k: "prob", titulo: "Prob. " + MES_ABR[mes], num: true, fmt: v => `<span class="${v >= UMBRAL ? "estado-mal" : ""}">${PW.fmt(v, 1)}%</span>` },
@@ -232,15 +163,9 @@ function refrescar() {
     { k: "carg", titulo: "Cargadores", num: true, fmt: v => PW.fmt(v) },
     { k: "con", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
     { k: "expuesta", titulo: "Red expuesta", fmt: v => v ? `<span class="estado-mal">Si</span>` : "—" },
-  ];
-  if (tab) tab.actualizar(filas, cols); else tab = PW.tabla("t-detalle", cols, filas, { orden: "prob", max: 400 });
-}
-selMes.addEventListener("input", refrescar);
-selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
-selC.addEventListener("input", refrescar);
-// geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
+  ]; if (tab) tab.actualizar(filas, cols); else tab = PW.tabla("t-detalle", cols, filas, { orden: "prob", max: 400 }); }
+selMes.addEventListener("input", refrescar); selR.addEventListener("input", () => { poblarComunas(); refrescar(); }); selC.addEventListener("input", refrescar); // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
 // recien entonces se pinta el choropleth inicial (los refrescos por filtro ya lo tienen cacheado).
-PW.cargarGeoComunas().then(refrescar);
-</script>
+PW.cargarGeoComunas().then(refrescar); </script>
 </body>
 </html>

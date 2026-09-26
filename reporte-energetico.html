@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -36,8 +31,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .re-plazo { border-top:1px solid var(--border); margin-top:14px; padding-top:13px; font-size:15px; color:var(--ink-1); }
   .re-plazo b { color:var(--s2); }
   .origen-chips { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:2px 0 12px; }
-  .ochip { cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--ink-1);
-           border-radius:999px; padding:5px 12px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; }
+  .ochip { cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--ink-1); border-radius:999px; padding:5px 12px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; }
   .ochip:hover { border-color:var(--ink-3); }
   .ochip.activo { background:var(--ink-1); color:var(--surface-1); border-color:var(--ink-1); }
   .ochip.activo .odot { outline:1px solid var(--surface-1); }
@@ -54,25 +48,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .paso-grupo ul { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px; }
   .paso-grupo li { position:relative; padding-left:28px; font-size:13px; color:var(--ink-2); line-height:1.45; }
   .paso-grupo li b { color:var(--ink-1); }
-  .paso-num { position:absolute; left:0; top:1px; width:19px; height:19px; border-radius:50%; background:var(--plane);
-              color:var(--s1); border:1px solid var(--border); font-size:11px; font-weight:700; display:flex;
-              align-items:center; justify-content:center; font-variant-numeric:tabular-nums; }
+  .paso-num { position:absolute; left:0; top:1px; width:19px; height:19px; border-radius:50%; background:var(--plane); color:var(--s1); border:1px solid var(--border); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; font-variant-numeric:tabular-nums; }
   .aviso-plazo { margin:14px 0 0; font-size:12.5px; color:var(--ink-2); background:var(--plane); border:1px solid var(--border); border-radius:8px; padding:9px 12px; }
   /* buscador + solicitud por correo */
   .re-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:2px 0 12px; }
   .re-toolbar input[type=search] { flex:1 1 240px; }
   .re-count { margin-left:auto; font-size:12.5px; color:var(--ink-3); white-space:nowrap; }
-  .btn-principal { display:inline-flex; align-items:center; gap:6px; cursor:pointer; border:1px solid var(--s1);
-                   background:var(--s1); color:#fff; border-radius:8px; padding:7px 14px; font-size:13px;
-                   font-weight:600; font-family:inherit; text-decoration:none; }
+  .btn-principal { display:inline-flex; align-items:center; gap:6px; cursor:pointer; border:1px solid var(--s1); background:var(--s1); color:#fff; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:600; font-family:inherit; text-decoration:none; }
   .btn-principal:hover { opacity:.92; }
   .reqpanel p { margin:0 0 10px; font-size:13px; color:var(--ink-2); }
   .reqinfo { font-size:13px; background:var(--plane); border:1px solid var(--border); border-radius:8px; padding:9px 12px; margin-bottom:12px; }
   .reqactions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
   .reqnote { margin:10px 0 0; font-size:12px; color:var(--ink-3); }
   /* badges de cruce (operador / importador), nombre visible */
-  .hbadge { display:inline-block; font-size:10.5px; font-weight:700; border-radius:5px; padding:1px 6px;
-            margin-left:6px; border:1px solid var(--border); vertical-align:middle; }
+  .hbadge { display:inline-block; font-size:10.5px; font-weight:700; border-radius:5px; padding:1px 6px; margin-left:6px; border:1px solid var(--border); vertical-align:middle; }
   .hbadge.op { background:color-mix(in srgb, var(--s1) 14%, transparent); color:var(--s1); }
   .hbadge.im { background:color-mix(in srgb, var(--s4) 16%, transparent); color:var(--s4); }
 </style>
@@ -189,56 +178,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_ccge.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("reporte-energetico.html");
-const D = window.PW_DATA.c_ccge, M = D.meta;
-const esc = PW.esc, fmt = PW.fmt;
-
-// color por Origen (paleta del observatorio); CCGE destacado en naranjo.
-const OCOL = { ccge: "--s2", publica: "--s1", libre: "--s4", ds340: "--ink-3" };
-const OMAP = {};
-M.origenes.forEach(o => { OMAP[o.k] = o; });
-const dot = k => '<span class="odot" style="background:var(' + (OCOL[k] || "--ink-3") + ')"></span>';
-
-// --- tarjeta de obligacion + plazo
+PW.montarNav("reporte-energetico.html"); const D = window.PW_DATA.c_ccge, M = D.meta; const esc = PW.esc, fmt = PW.fmt; // color por Origen (paleta del observatorio); CCGE destacado en naranjo.
+const OCOL = { ccge: "--s2", publica: "--s1", libre: "--s4", ds340: "--ink-3" }; const OMAP = {}; M.origenes.forEach(o => { OMAP[o.k] = o; }); const dot = k => '<span class="odot" style="background:var(' + (OCOL[k] || "--ink-3") + ')"></span>'; // --- tarjeta de obligacion + plazo
 document.getElementById("oblig").innerHTML = [
   ["Obligación", "Proceso de Reporte Energético 2026"],
   ["Fuente", esc(M.fuente)],
   ["Base legal", esc(M.base_legal)],
   ["Empresas en el listado", fmt(M.total) + " (RUT únicos, referencial)"],
-].map(f => '<div class="re-field"><p class="k">' + f[0] + '</p><p class="v">' + f[1] + "</p></div>").join("");
-document.getElementById("plazo").innerHTML =
+].map(f => '<div class="re-field"><p class="k">' + f[0] + '</p><p class="v">' + f[1] + "</p></div>").join(""); document.getElementById("plazo").innerHTML =
   "Plazo del proceso: <b>" + esc(M.plazo) + "</b>. Es la declaración de los consumos y la intensidad " +
-  "energética de la empresa correspondientes al año 2025 en el Sistema de Balance Nacional de Energía.";
-
-// --- KPIs
-const ccgeN = (OMAP.ccge || {}).n || 0;
-const ct = M.crosstag || {};
-document.getElementById("kpis").innerHTML = [
+  "energética de la empresa correspondientes al año 2025 en el Sistema de Balance Nacional de Energía."; // --- KPIs
+const ccgeN = (OMAP.ccge || {}).n || 0; const ct = M.crosstag || {}; document.getElementById("kpis").innerHTML = [
   [fmt(M.total), "empresas obligadas", "al Proceso de Reporte Energético 2026"],
   [fmt(ccgeN), "CCGE (REX 49)", "deben implementar un Sistema de Gestión de Energía"],
   ["2 ene – 11 may 2026", "plazo para reportar", "declaración de consumos e intensidad 2025"],
   [fmt((ct.operador || 0) + (ct.importador || 0)), "también en el observatorio",
    (ct.operador || 0) + " operadores de carga · " + (ct.importador || 0) + " importadores"],
 ].map(d => '<div class="kpi"><div class="v">' + d[0] + '</div><div class="l">' + d[1] +
-  '</div><div class="d">' + d[2] + "</div></div>").join("");
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
-
-// --- explicador de Origen
+  '</div><div class="d">' + d[2] + "</div></div>").join(""); document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; // --- explicador de Origen
 document.getElementById("origen-explica").innerHTML = M.origenes.map(o =>
   '<div class="oexp">' + dot(o.k) + "<div><b>" + esc(o.label) + "</b> — " + fmt(o.n) +
-  " empresas. " + esc(o.desc) + "</div></div>").join("");
-
-// --- distintivos de cruce (nombre del grupo visible, no solo en tooltip)
+  " empresas. " + esc(o.desc) + "</div></div>").join(""); // --- distintivos de cruce (nombre del grupo visible, no solo en tooltip)
 function cruces(f) {
-  let s = "";
-  if (f.op) s += ' <span class="hbadge op" title="Operador de energía">' + esc(f.op) + "</span>";
-  if (f.im) s += ' <span class="hbadge im" title="Importador de vehículos">' + esc(f.im) + "</span>";
-  return s;
-}
+  let s = ""; if (f.op) s += ' <span class="hbadge op" title="Operador de energía">' + esc(f.op) + "</span>"; if (f.im) s += ' <span class="hbadge im" title="Importador de vehículos">' + esc(f.im) + "</span>"; return s; }
 function chipOrigen(k) {
-  const o = OMAP[k] || {};
-  return '<span class="chip-o">' + dot(k) + esc(o.label || k) + "</span>";
-}
+  const o = OMAP[k] || {}; return '<span class="chip-o">' + dot(k) + esc(o.label || k) + "</span>"; }
 
 // --- tabla: buscador propio (razon social / RUT / grupo economico) + chips de Origen combinados
 const cols = [
@@ -246,82 +210,39 @@ const cols = [
   { k: "dv", titulo: "DV", num: true },
   { k: "n", titulo: "Razón social", fmt: (v, f) => esc(v) + cruces(f) },
   { k: "o", titulo: "Origen", fmt: v => chipOrigen(v) },
-];
-const T = PW.tabla("tabla", cols, D.v.slice(), { orden: null, buscador: false });
-
-function normaliza(s) { return String(s || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
-let filtroO = "", filtroQ = "";
-function filtradas() {
-  const q = normaliza(filtroQ);
-  return D.v.filter(f => {
-    if (filtroO && f.o !== filtroO) return false;
-    if (!q) return true;
-    return normaliza(f.n).includes(q) || normaliza(f.r).includes(q) ||
-      (f.op && normaliza(f.op).includes(q)) || (f.im && normaliza(f.im).includes(q));
-  });
-}
+]; const T = PW.tabla("tabla", cols, D.v.slice(), { orden: null, buscador: false }); function normaliza(s) { return String(s || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+let filtroO = "", filtroQ = ""; function filtradas() {
+  const q = normaliza(filtroQ); return D.v.filter(f => {
+    if (filtroO && f.o !== filtroO) return false; if (!q) return true; return normaliza(f.n).includes(q) || normaliza(f.r).includes(q) ||
+      (f.op && normaliza(f.op).includes(q)) || (f.im && normaliza(f.im).includes(q)); }); }
 function aplicar() {
-  const filas = filtradas();
-  T.actualizar(filas);
-  document.getElementById("re-count").innerHTML = "<b>" + fmt(filas.length) + "</b> de " + fmt(D.v.length) + " empresas";
-}
-document.getElementById("re-buscar").addEventListener("input", e => { filtroQ = e.target.value; aplicar(); });
-
-// --- chips de filtro por Origen
+  const filas = filtradas(); T.actualizar(filas); document.getElementById("re-count").innerHTML = "<b>" + fmt(filas.length) + "</b> de " + fmt(D.v.length) + " empresas"; }
+document.getElementById("re-buscar").addEventListener("input", e => { filtroQ = e.target.value; aplicar(); }); // --- chips de filtro por Origen
 const chipsDefs = [{ k: "", label: "Todas", n: M.total }]
-  .concat(M.origenes.map(o => ({ k: o.k, label: o.label, n: o.n })));
-function pintarChips() {
+  .concat(M.origenes.map(o => ({ k: o.k, label: o.label, n: o.n }))); function pintarChips() {
   document.getElementById("chips").innerHTML = chipsDefs.map(c =>
     '<button type="button" class="ochip' + (filtroO === c.k ? " activo" : "") + '" data-k="' + c.k + '">' +
-    (c.k ? dot(c.k) : "") + esc(c.label) + " (" + fmt(c.n) + ")</button>").join("");
-  document.querySelectorAll("#chips .ochip").forEach(b => b.addEventListener("click", () => {
-    filtroO = b.dataset.k; pintarChips(); aplicar();
-  }));
-}
-pintarChips();
-aplicar();
-
-// --- solicitud del listado por correo (no hay descarga directa)
-const DEST_CORREO = "rsalcedocampino@gmail.com";
-function origenLabel(k) { return k ? ((OMAP[k] || {}).label || k) : "Todos los orígenes"; }
+    (c.k ? dot(c.k) : "") + esc(c.label) + " (" + fmt(c.n) + ")</button>").join(""); document.querySelectorAll("#chips .ochip").forEach(b => b.addEventListener("click", () => {
+    filtroO = b.dataset.k; pintarChips(); aplicar(); })); }
+pintarChips(); aplicar(); // --- solicitud del listado por correo (no hay descarga directa)
+const DEST_CORREO = "rsalcedocampino@gmail.com"; function origenLabel(k) { return k ? ((OMAP[k] || {}).label || k) : "Todos los orígenes"; }
 function solicitudTexto() {
-  const filas = filtradas();
-  const asunto = "Solicitud de listado — Reporte Energético 2026 CCGE";
-  const cuerpo =
+  const filas = filtradas(); const asunto = "Solicitud de listado — Reporte Energético 2026 CCGE"; const cuerpo =
     "Hola,\n\nSolicito el listado de empresas del Reporte Energético 2026 (CCGE) con el siguiente filtro:\n" +
     "- Origen: " + origenLabel(filtroO) + "\n" +
     (filtroQ ? ("- Búsqueda: " + filtroQ + "\n") : "") +
     "- Resultados: " + filas.length + " de " + D.v.length + " empresas\n\n" +
-    "Mis datos de contacto:\n- Nombre:\n- Correo:\n- Organización:\n\nGracias.";
-  return { asunto, cuerpo, filas };
-}
+    "Mis datos de contacto:\n- Nombre:\n- Correo:\n- Organización:\n\nGracias."; return { asunto, cuerpo, filas }; }
 function abrirSolicitud() {
-  const r = solicitudTexto();
-  document.getElementById("reqinfo").innerHTML =
+  const r = solicitudTexto(); document.getElementById("reqinfo").innerHTML =
     "<b>" + fmt(r.filas.length) + "</b> empresas · Origen: " + esc(origenLabel(filtroO)) +
-    (filtroQ ? (' · Búsqueda: "' + esc(filtroQ) + '"') : "");
-  document.getElementById("reqmail").href =
-    "mailto:" + DEST_CORREO + "?subject=" + encodeURIComponent(r.asunto) + "&body=" + encodeURIComponent(r.cuerpo);
-  document.getElementById("reqto").textContent = DEST_CORREO;
-  const p = document.getElementById("reqpanel");
-  p.hidden = false;
-  p.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-document.getElementById("btn-solicitar").addEventListener("click", abrirSolicitud);
-document.getElementById("reqclose").addEventListener("click", () => { document.getElementById("reqpanel").hidden = true; });
-document.getElementById("reqcopy").addEventListener("click", () => {
-  const r = solicitudTexto();
-  const txt = "Para: " + DEST_CORREO + "\nAsunto: " + r.asunto + "\n\n" + r.cuerpo;
-  if (navigator.clipboard) navigator.clipboard.writeText(txt);
-  const b = document.getElementById("reqcopy"), o = b.textContent;
-  b.textContent = "Copiado"; setTimeout(() => { b.textContent = o; }, 1500);
-});
-
-// --- fuente
+    (filtroQ ? (' · Búsqueda: "' + esc(filtroQ) + '"') : ""); document.getElementById("reqmail").href =
+    "mailto:" + DEST_CORREO + "?subject=" + encodeURIComponent(r.asunto) + "&body=" + encodeURIComponent(r.cuerpo); document.getElementById("reqto").textContent = DEST_CORREO; const p = document.getElementById("reqpanel"); p.hidden = false; p.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+document.getElementById("btn-solicitar").addEventListener("click", abrirSolicitud); document.getElementById("reqclose").addEventListener("click", () => { document.getElementById("reqpanel").hidden = true; }); document.getElementById("reqcopy").addEventListener("click", () => {
+  const r = solicitudTexto(); const txt = "Para: " + DEST_CORREO + "\nAsunto: " + r.asunto + "\n\n" + r.cuerpo; if (navigator.clipboard) navigator.clipboard.writeText(txt); const b = document.getElementById("reqcopy"), o = b.textContent; b.textContent = "Copiado"; setTimeout(() => { b.textContent = o; }, 1500); }); // --- fuente
 document.getElementById("fuente").textContent =
   "Fuente: " + M.fuente + " — " + M.titulo_oficial + ". Base legal: " + M.base_legal +
   ". El listado es referencial y no exime de la obligación a empresas que consuman 50 o más " +
-  "teracalorías al año. Datos preparados por el proyecto Documentos de Gobierno. Actualizado " + (D.generado || "").slice(0, 10) + ".";
-</script>
+  "teracalorías al año. Datos preparados por el proyecto Documentos de Gobierno. Actualizado " + (D.generado || "").slice(0, 10) + "."; </script>
 </body>
 </html>

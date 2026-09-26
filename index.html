@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -395,63 +390,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/resumen.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("index.html");
-const k = PW_DATA.resumen.kpis;
-// Las cifras que la portada cita en prosa se leen del dato, no van escritas a mano. Tres se
+PW.montarNav("index.html"); const k = PW_DATA.resumen.kpis; // Las cifras que la portada cita en prosa se leen del dato, no van escritas a mano. Tres se
 // habian desfasado sin que nada lo detectara (69 instrumentos contra 94, 584 vehiculos de
 // rescate contra 590, 114 documentos contra 131) y la cuarta era peor: "912 cargadores" no es
 // un numero viejo sino otra METRICA -- hoy hay 651 estaciones, 2.242 conectores y ~1.600
 // cargadores, y ninguno era 912. Por eso la pildora ahora dice "estaciones de carga", que es
 // lo que el dato cuenta. Si falta la clave queda el guion del HTML, nunca un numero inventado.
 document.querySelectorAll("[data-k]").forEach(el => {
-  const v = k[el.dataset.k];
-  if (v != null) el.textContent = PW.fmt(v);
-});
-const defs = [
+  const v = k[el.dataset.k]; if (v != null) el.textContent = PW.fmt(v); }); const defs = [
   [PW.fmt(k.estaciones), "estaciones de carga en Chile", "red completa · máx registrado " + PW.fmt(k.estaciones_max || k.estaciones)],
   [PW.fmt(k.conectores), "conectores instalados", k.conectores_disponibles + " disponibles · máx registrado " + PW.fmt(k.conectores_max || k.conectores)],
   [PW.fmt(k.ventas_ytd), "eléctricos e híbridos vendidos en " + k.ventas_ultimo_mes.slice(0,4), "acumulado a " + k.ventas_ultimo_mes.slice(0,7)],
   ["$" + PW.fmt(k.pkwh_nacional), "precio promedio de carga pública", "por kWh, potencia media " + PW.fmt(k.potencia_prom_kw, 1) + " kW"],
   [PW.fmt(k.pct_renovable_dia, 1) + "%", "de la generación fue renovable", "el " + k.fecha_generacion_dia],
-];
-document.getElementById("kpis").innerHTML = defs.map(d =>
-  `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-document.getElementById("nota-kpis").textContent =
-  "Datos generados el " + PW_DATA.resumen.generado + ". Importaciones publicadas hasta " + k.aduana_ultimo_mes + ".";
-
-// icono de cada modulo en su card
+]; document.getElementById("kpis").innerHTML = defs.map(d =>
+  `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota-kpis").textContent =
+  "Datos generados el " + PW_DATA.resumen.generado + ". Importaciones publicadas hasta " + k.aduana_ultimo_mes + "."; // icono de cada modulo en su card
 document.querySelectorAll(".modulo-card").forEach(card => {
-  const svg = PW.icono(card.getAttribute("href"));
-  if (svg) card.insertAdjacentHTML("afterbegin", `<span class="ic">${svg}</span>`);
-});
-
-// buscador de modulos: filtra cards y oculta secciones vacias
+  const svg = PW.icono(card.getAttribute("href")); if (svg) card.insertAdjacentHTML("afterbegin", `<span class="ic">${svg}</span>`); }); // buscador de modulos: filtra cards y oculta secciones vacias
 (function () {
-  const input = document.getElementById("busca-modulo");
-  const cont = document.getElementById("cont-modulos");
-  const cards = [...document.querySelectorAll(".modulo-card")];
-  const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
-  function filtrar() {
-    const q = norm(input.value.trim());
-    let visibles = 0;
-    cards.forEach(c => {
-      const ok = !q || norm(c.textContent).includes(q);
-      c.style.display = ok ? "" : "none";
-      if (ok) visibles++;
-    });
-    // ocultar titulos de seccion sin cards visibles
+  const input = document.getElementById("busca-modulo"); const cont = document.getElementById("cont-modulos"); const cards = [...document.querySelectorAll(".modulo-card")]; const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase(); function filtrar() {
+    const q = norm(input.value.trim()); let visibles = 0; cards.forEach(c => {
+      const ok = !q || norm(c.textContent).includes(q); c.style.display = ok ? "" : "none"; if (ok) visibles++; }); // ocultar titulos de seccion sin cards visibles
     document.querySelectorAll("main h2[id]").forEach(h2 => {
-      const grid = h2.nextElementSibling;
-      if (!grid || !grid.classList.contains("grid-modulos")) return;
-      const hayVisible = [...grid.querySelectorAll(".modulo-card")].some(c => c.style.display !== "none");
-      h2.style.display = hayVisible ? "" : "none";
-      grid.style.display = hayVisible ? "" : "none";
-    });
-    cont.textContent = q ? visibles + " de " + cards.length + " modulos" : cards.length + " modulos";
-  }
-  input.addEventListener("input", filtrar);
-  filtrar();
-})();
-</script>
+      const grid = h2.nextElementSibling; if (!grid || !grid.classList.contains("grid-modulos")) return; const hayVisible = [...grid.querySelectorAll(".modulo-card")].some(c => c.style.display !== "none"); h2.style.display = hayVisible ? "" : "none"; grid.style.display = hayVisible ? "" : "none"; }); cont.textContent = q ? visibles + " de " + cards.length + " modulos" : cards.length + " modulos"; }
+  input.addEventListener("input", filtrar); filtrar(); })(); </script>
 </body>
 </html>

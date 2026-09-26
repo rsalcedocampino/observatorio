@@ -4,7 +4,7 @@
 
 window.EV2025Data = {
   "metadata": {
-    "titulo": "Stock de Vehiculos Electricos 2025 (Proyectado)",
+    "titulo": "Stock de Vehículos Eléctricos 2025 (Proyectado)",
     "fecha_generacion": "2026-08-31",
     "vigencia_tarifas": "2026-08-01",
     "nota": "PROYECCION: basada en crecimiento 2023-2024. Se actualiza cuando INE publique Permisos 2025 (sep-2026)",
@@ -182,7 +182,7 @@ window.EV2025Data = {
       "detalle": "Stock proyectado pasa de 33.853 a 69.596 EVs nacionales"
     },
     {
-      "titulo": "Metropolitana Concentra Adopcion",
+      "titulo": "Metropolitana Concentra Adopción",
       "valor": "64.8%",
       "detalle": "45.034 de 69.596 EVs proyectados estan en RM"
     },
@@ -192,9 +192,9 @@ window.EV2025Data = {
       "detalle": "Arica-Parinacota lidera crecimiento (pero desde base muy pequena)"
     },
     {
-      "titulo": "Correlacion Tarifa × Stock EV",
+      "titulo": "Correlación Tarifa × Stock EV",
       "valor": "???",
-      "detalle": "Analizar: ¿tarifa alta frena o estimula adopcion? (ver tabla abajo)"
+      "detalle": "Analizar: ¿tarifa alta frena o estimula adopción? (ver tabla abajo)"
     }
   ]
 };

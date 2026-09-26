@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -82,21 +77,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_vulnerab.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("vulnerabilidad.html");
-
-const D = PW_DATA.c_vulnerab;
-// Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
+PW.montarNav("vulnerabilidad.html"); const D = PW_DATA.c_vulnerab; // Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
 // region) y hace foco/zoom a la seleccion (comuna: zoom a la comuna dentro de su region).
-let MAPA = null;
-
-// [FICHA] El mapa (choropleth) por defecto solo muestra "comuna: número" al pasar el mouse,
+let MAPA = null; // [FICHA] El mapa (choropleth) por defecto solo muestra "comuna: número" al pasar el mouse,
 // sin decir QUE es ese numero. Aca se enriquece page-local: tooltip etiquetado + popup al clic
 // con el detalle completo. byCut = indice rapido cut -> registro de la comuna.
-const byCut = Object.fromEntries(D.comunas.map(c => [c.cut, c]));
-const nivelIx = ix => ix >= 80 ? "muy alta" : ix >= 60 ? "alta" : ix >= 40 ? "media" : ix >= 20 ? "baja" : "muy baja";
-function fichaHTML(c) {
-  const rg = c.p93_origen === "regional" ? " (promedio regional)" : "";
-  return `<b>${PW.esc(c.comuna)}</b> &middot; ${PW.esc(c.region)}<br>` +
+const byCut = Object.fromEntries(D.comunas.map(c => [c.cut, c])); const nivelIx = ix => ix >= 80 ? "muy alta" : ix >= 60 ? "alta" : ix >= 40 ? "media" : ix >= 20 ? "baja" : "muy baja"; function fichaHTML(c) {
+  const rg = c.p93_origen === "regional" ? " (promedio regional)" : ""; return `<b>${PW.esc(c.comuna)}</b> &middot; ${PW.esc(c.region)}<br>` +
     `<b>Índice de vulnerabilidad energética: ${PW.fmt(c.indice, 1)} / 100</b> &mdash; ${nivelIx(c.indice)}<br>` +
     `<small>Compuesto por percentiles: cortes 40% &middot; precio 25% &middot; social 35%. Mayor = más vulnerable.</small>` +
     `<hr style="margin:6px 0;border:0;border-top:1px solid var(--border)">` +
@@ -105,49 +92,24 @@ function fichaHTML(c) {
     `Bencina 93: ${c.p93 != null ? PW.clp(c.p93) : "—"}${rg}<br>` +
     `Sin electricidad: ${PW.fmt(c.sin_elec, 1)}% &middot; Hacinamiento: ${PW.fmt(c.hacina, 1)}%<br>` +
     `Escolaridad: ${PW.fmt(c.escolaridad, 1)} años &middot; 60+ años: ${PW.fmt(c.envejec, 1)}%<br>` +
-    `Población (Censo 2024): ${PW.fmt(c.poblacion)} hab`;
-}
+    `Población (Censo 2024): ${PW.fmt(c.poblacion)} hab`; }
 // Re-liga los tooltips/popups de las comunas del choropleth con la ficha rica.
 function enriquecerMapa() {
-  if (!MAPA) return;
-  MAPA.eachLayer(grp => {
-    if (typeof grp.eachLayer !== "function") return;   // salta capas base (tiles)
+  if (!MAPA) return; MAPA.eachLayer(grp => {
+    if (typeof grp.eachLayer !== "function") return; // salta capas base (tiles)
     grp.eachLayer(l => {
-      const cut = l.feature && l.feature.properties && l.feature.properties.cut;
-      const c = cut && byCut[cut];
-      if (!c) return;
-      l.unbindTooltip();
-      l.bindTooltip(`<b>${PW.esc(c.comuna)}</b> &mdash; índice <b>${PW.fmt(c.indice, 1)}</b>/100 (${nivelIx(c.indice)})`, { sticky: true });
-      l.bindPopup(fichaHTML(c), { maxWidth: 340 });
-    });
-  });
-}
+      const cut = l.feature && l.feature.properties && l.feature.properties.cut; const c = cut && byCut[cut]; if (!c) return; l.unbindTooltip(); l.bindTooltip(`<b>${PW.esc(c.comuna)}</b> &mdash; índice <b>${PW.fmt(c.indice, 1)}</b>/100 (${nivelIx(c.indice)})`, { sticky: true }); l.bindPopup(fichaHTML(c), { maxWidth: 340 }); }); }); }
 
 function pintarMapa(reg, com, filas) {
   if (MAPA) { MAPA.remove(); MAPA = null; }
-  const ley = document.querySelector("#mapa-indice + .leyenda"); if (ley) ley.remove();
-  const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas;
-  const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null);
-  MAPA = PW.choropleth("mapa-indice", {
+  const ley = document.querySelector("#mapa-indice + .leyenda"); if (ley) ley.remove(); const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas; const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null); MAPA = PW.choropleth("mapa-indice", {
     valores: Object.fromEntries(comunasMapa.map(c => [c.cut, c.indice])),
     fmt: v => v == null ? "sin dato" : PW.fmt(v, 1),
     alto: 560, foco,
-  });
-  enriquecerMapa();
-}
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
-
-const selR = document.getElementById("f-region");
-const selC = document.getElementById("f-comuna");
-[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
-  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o);
-});
-function poblarComunas() {
-  const reg = selR.value;
-  const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort();
-  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
-  selC.disabled = !reg;
-}
+  }); enriquecerMapa(); }
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; const selR = document.getElementById("f-region"); const selC = document.getElementById("f-comuna"); [...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o); }); function poblarComunas() {
+  const reg = selR.value; const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort(); selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join(""); selC.disabled = !reg; }
 
 const cols = [
   { k: "indice", titulo: "Índice", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
@@ -159,29 +121,17 @@ const cols = [
   { k: "ch_pc", titulo: "Cliente-h/hab", num: true, fmt: v => PW.fmt(v, 1) },
   { k: "p93", titulo: "$/L 93", num: true, fmt: (v, f) => v == null ? "—" : PW.clp(v) + (f.p93_origen === "regional" ? "*" : "") },
   { k: "poblacion", titulo: "Poblacion", num: true, fmt: v => PW.fmt(v) },
-];
-
-let tab = null;
-function refrescar() {
-  const reg = selR.value;
-  const com = selC.value;
-  const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
-  pintarMapa(reg, com, filas);
-  PW.barras("g-top", {
+]; let tab = null; function refrescar() {
+  const reg = selR.value; const com = selC.value; const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com)); pintarMapa(reg, com, filas); PW.barras("g-top", {
     items: filas.slice(0, 20).map(c => ({
       nombre: c.comuna, valor: c.indice,
       extra: c.region + " — cortes " + PW.fmt(c.pilar_cortes) + " / precio " + PW.fmt(c.pilar_precio) + " / social " + PW.fmt(c.pilar_social),
       color: c.indice >= 75 ? PW.color("--critical") : (c.indice >= 60 ? PW.color("--s2") : PW.color("--s1")),
     })),
     fmtV: v => PW.fmt(v, 1),
-  });
-  if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "indice", max: 400 });
-}
-selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
-selC.addEventListener("input", refrescar);
-// geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
+  }); if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "indice", max: 400 }); }
+selR.addEventListener("input", () => { poblarComunas(); refrescar(); }); selC.addEventListener("input", refrescar); // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
 // recien entonces se pinta el choropleth inicial (los refrescos por filtro ya lo tienen cacheado).
-PW.cargarGeoComunas().then(refrescar);
-</script>
+PW.cargarGeoComunas().then(refrescar); </script>
 </body>
 </html>

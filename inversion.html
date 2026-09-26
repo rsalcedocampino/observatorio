@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -73,11 +68,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/inversion.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("inversion.html");
-const D = PW_DATA.inversion;
-const INV = D.instrumentos, T = D.totales;
-
-function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
+PW.montarNav("inversion.html"); const D = PW_DATA.inversion; const INV = D.instrumentos, T = D.totales; function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
 function g(id) { return document.getElementById(id); }
 
 g("kpis").innerHTML = [
@@ -85,30 +76,14 @@ g("kpis").innerHTML = [
   [PW.fmt(T.activos), "activos", "vigentes o en curso"],
   [PW.fmt(T.confirmados), "confirmados", "verificación 3-0 / fuente primaria"],
   [PW.fmt(T.categorias), "tipos de actor", "público, banca, fondo, bono…"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-function llenar(id, valores, etiqueta) {
-  const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es"));
-  g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join("");
-}
-llenar("f-cat", INV.map(x => x.categoria), "Todas");
-llenar("f-ori", INV.map(x => x.origen), "Todos");
-llenar("f-amb", INV.map(x => x.ambito), "Todos");
-llenar("f-ver", INV.map(x => x.verif_tier), "Todas");
-
-const COLOR_VER = { "confirmado": "--s3", "no verificado": "--s2", "baja confianza": "--critical" };
-function estadoBadge(x) {
-  const col = x.activo ? "--s3" : "--ink-3";
-  const txt = x.activo ? "Activo" : "Cerrado";
-  return `<span class="badge-est" style="background:color-mix(in srgb, ${PW.color(col)} 22%, transparent);color:${PW.color(col)}">${txt}</span>`;
-}
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); function llenar(id, valores, etiqueta) {
+  const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es")); g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join(""); }
+llenar("f-cat", INV.map(x => x.categoria), "Todas"); llenar("f-ori", INV.map(x => x.origen), "Todos"); llenar("f-amb", INV.map(x => x.ambito), "Todos"); llenar("f-ver", INV.map(x => x.verif_tier), "Todas"); const COLOR_VER = { "confirmado": "--s3", "no verificado": "--s2", "baja confianza": "--critical" }; function estadoBadge(x) {
+  const col = x.activo ? "--s3" : "--ink-3"; const txt = x.activo ? "Activo" : "Cerrado"; return `<span class="badge-est" style="background:color-mix(in srgb, ${PW.color(col)} 22%, transparent);color:${PW.color(col)}">${txt}</span>`; }
 function verBadge(x) {
-  const col = PW.color(COLOR_VER[x.verif_tier] || "--ink-3");
-  return `<span class="badge-est" style="background:color-mix(in srgb, ${col} 20%, transparent);color:${col}" title="${x.verificacion || ""}">${x.verif_tier}</span>`;
-}
+  const col = PW.color(COLOR_VER[x.verif_tier] || "--ink-3"); return `<span class="badge-est" style="background:color-mix(in srgb, ${col} 20%, transparent);color:${col}" title="${x.verificacion || ""}">${x.verif_tier}</span>`; }
 function fuenteLink(u) {
-  return /^https?:\/\//.test(u || "") ? `<a href="${u}" target="_blank" rel="noopener">fuente</a>` : "—";
-}
+  return /^https?:\/\//.test(u || "") ? `<a href="${u}" target="_blank" rel="noopener">fuente</a>` : "—"; }
 
 const cols = [
   { k: "instrumento", titulo: "Instrumento", fmt: (v, r) => `<b>${v}</b>` },
@@ -120,9 +95,7 @@ const cols = [
   { k: "verif_tier", titulo: "Verificación", fmt: (v, r) => verBadge(r) },
   { k: "_ordmonto", titulo: "Monto", fmt: (v, r) => montoTexto(r) },
   { k: "fuente", titulo: "Fuente", fmt: v => fuenteLink(v) },
-];
-
-// El monto se muestra en SU moneda y sin convertir: 9 de 94 instrumentos declaran una cifra
+]; // El monto se muestra en SU moneda y sin convertir: 9 de 94 instrumentos declaran una cifra
 // unica y hay 5 monedas distintas, asi que sumar o comparar entre monedas daria una cifra
 // inventada. Sin monto declarado va un guion (rango, tramos o umbral: el detalle esta en las
 // condiciones). Si el instrumento opera en varias monedas, se listan todas.
@@ -131,26 +104,15 @@ const cols = [
 // el primero es mayor. Agrupando por moneda, el orden dentro de cada una es real y entre
 // monedas no se insinua una comparacion que no existe. Sin monto va al final.
 function claveMonto(r) {
-  if (r.monto == null) return "zzz";
-  return (r.moneda && r.moneda[0] ? r.moneda[0] : "zz") + "|" +
-    String(Math.round(r.monto)).padStart(15, "0");
-}
+  if (r.monto == null) return "zzz"; return (r.moneda && r.moneda[0] ? r.moneda[0] : "zz") + "|" +
+    String(Math.round(r.monto)).padStart(15, "0"); }
 
 function montoTexto(r) {
-  const monedas = r.moneda || [];
-  if (r.monto == null) return monedas.length ? `<span class="nota">— (${PW.esc(monedas.join(", "))})</span>` : "—";
-  const m = monedas[0] || "";
-  const cifra = m === "CLP" ? PW.clp(r.monto) : PW.fmt(r.monto);
-  return `<b>${PW.esc(m)} ${cifra}</b>` + (monedas.length > 1
-    ? ` <span class="nota">(+ ${PW.esc(monedas.slice(1).join(", "))})</span>` : "");
-}
+  const monedas = r.moneda || []; if (r.monto == null) return monedas.length ? `<span class="nota">— (${PW.esc(monedas.join(", "))})</span>` : "—"; const m = monedas[0] || ""; const cifra = m === "CLP" ? PW.clp(r.monto) : PW.fmt(r.monto); return `<b>${PW.esc(m)} ${cifra}</b>` + (monedas.length > 1
+    ? ` <span class="nota">(+ ${PW.esc(monedas.slice(1).join(", "))})</span>` : ""); }
 
-let tab = null;
-function refrescar() {
-  const q = norm(g("busca").value.trim());
-  const cat = g("f-cat").value, ori = g("f-ori").value, amb = g("f-amb").value;
-  const est = g("f-est").value, ver = g("f-ver").value, mon = g("f-mon").value;
-  const filas = INV.filter(x =>
+let tab = null; function refrescar() {
+  const q = norm(g("busca").value.trim()); const cat = g("f-cat").value, ori = g("f-ori").value, amb = g("f-amb").value; const est = g("f-est").value, ver = g("f-ver").value, mon = g("f-mon").value; const filas = INV.filter(x =>
     (!cat || x.categoria === cat) &&
     (!ori || x.origen === ori) &&
     (!amb || x.ambito === amb) &&
@@ -158,25 +120,12 @@ function refrescar() {
     (!mon || (x.moneda || []).includes(mon)) &&
     (est === "" || (est === "act" ? x.activo : !x.activo)) &&
     (!q || norm(x.instrumento + " " + x.institucion + " " + (x.que_financia || "")).includes(q)))
-    .map(x => Object.assign({ _ordmonto: claveMonto(x) }, x));
-  const conMonto = filas.filter(x => x.monto != null).length;
-  g("contador").textContent = filas.length + " instrumentos" +
-    (conMonto ? " · " + conMonto + " con monto declarado" : "");
-  if (tab) tab.actualizar(filas);
-  else tab = PW.tabla("t-inv", cols, filas, { orden: "instrumento", asc: true, max: 200, buscador: false });
-}
+    .map(x => Object.assign({ _ordmonto: claveMonto(x) }, x)); const conMonto = filas.filter(x => x.monto != null).length; g("contador").textContent = filas.length + " instrumentos" +
+    (conMonto ? " · " + conMonto + " con monto declarado" : ""); if (tab) tab.actualizar(filas); else tab = PW.tabla("t-inv", cols, filas, { orden: "instrumento", asc: true, max: 200, buscador: false }); }
 // poblar el filtro de moneda con las que existen en el dato (no una lista fija)
 {
-  const sel = g("f-mon");
-  [...new Set(INV.flatMap(x => x.moneda || []))].sort().forEach(m => {
-    const o = document.createElement("option");
-    o.value = m; o.textContent = m;
-    sel.appendChild(o);
-  });
-}
-["busca", "f-cat", "f-ori", "f-amb", "f-est", "f-ver", "f-mon"].forEach(id => g(id).addEventListener("input", refrescar));
-refrescar();
-g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-</script>
+  const sel = g("f-mon"); [...new Set(INV.flatMap(x => x.moneda || []))].sort().forEach(m => {
+    const o = document.createElement("option"); o.value = m; o.textContent = m; sel.appendChild(o); }); }
+["busca", "f-cat", "f-ori", "f-amb", "f-est", "f-ver", "f-mon"].forEach(id => g(id).addEventListener("input", refrescar)); refrescar(); g("fuente").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; </script>
 </body>
 </html>

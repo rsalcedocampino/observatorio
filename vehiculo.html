@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -69,29 +64,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/vehiculo.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("vehiculo.html");
-const D = PW_DATA.vehiculo;
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-
-const selT = document.getElementById("f-tipo");
-[...new Set(D.modelos.map(m => m.tipo).filter(Boolean))].sort().forEach(t => {
-  const o = document.createElement("option"); o.value = t; o.textContent = t; selT.appendChild(o);
-});
-
-function norm(s) {
-  return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase();
-}
+PW.montarNav("vehiculo.html"); const D = PW_DATA.vehiculo; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const selT = document.getElementById("f-tipo"); [...new Set(D.modelos.map(m => m.tipo).filter(Boolean))].sort().forEach(t => {
+  const o = document.createElement("option"); o.value = t; o.textContent = t; selT.appendChild(o); }); function norm(s) {
+  return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
 
 function mostrarDetalle(m) {
-  const marcaN = norm(m.marca);
-  const info = D.marcas[marcaN] || {};
-  const totV = Object.values(info.ventas_anual || {}).reduce((s, v) => s + (v || 0), 0);
-  const totI = Object.values(info.import_anual || {}).reduce((s, v) => s + (v || 0), 0);
-  const marcaHTML = (totV || totI)
+  const marcaN = norm(m.marca); const info = D.marcas[marcaN] || {}; const totV = Object.values(info.ventas_anual || {}).reduce((s, v) => s + (v || 0), 0); const totI = Object.values(info.import_anual || {}).reduce((s, v) => s + (v || 0), 0); const marcaHTML = (totV || totI)
     ? `<p class="nota" style="margin-top:12px"><b>Marca ${m.marca}:</b> ${PW.fmt(totV)} vendidos y ${PW.fmt(totI)} importados (acumulado electrificado). La <b>rotación mensual</b> por marca —importación vs venta, stock y rezago— está en <a href="rotacion.html">Rotación de inventario</a>.</p>`
-    : `<p class="nota" style="margin-top:12px">La <b>rotación por marca</b> (importación vs venta, stock, rezago) está en <a href="rotacion.html">Rotación de inventario</a>.</p>`;
-  const det = document.getElementById("detalle");
-  det.innerHTML = `
+    : `<p class="nota" style="margin-top:12px">La <b>rotación por marca</b> (importación vs venta, stock, rezago) está en <a href="rotacion.html">Rotación de inventario</a>.</p>`; const det = document.getElementById("detalle"); det.innerHTML = `
   <div class="tarjeta">
     <h2 style="margin-top:0">${m.marca} ${m.modelo}</h2>
     <div class="kpis">
@@ -104,9 +84,7 @@ function mostrarDetalle(m) {
       <div class="kpi"><div class="v">${m.ficha_docs != null ? m.ficha_docs : "0"}</div><div class="l">documentos de rescate</div><div class="d">${m.ficha_docs ? '<a href="rescate.html">ver en Rescate</a>' : "sin ficha"}</div></div>
     </div>
     ${marcaHTML}
-  </div>`;
-  det.scrollIntoView({ behavior: "smooth", block: "start" });
-}
+  </div>`; det.scrollIntoView({ behavior: "smooth", block: "start" }); }
 
 const cols = [
   // data-i en vez de solo texto: 57 de 954 modelos comparten marca+modelo (variantes/anios
@@ -122,64 +100,29 @@ const cols = [
   { k: "precio_min", titulo: "Precio desde", num: true, fmt: v => PW.clp(v) },
   { k: "imp_unidades", titulo: "Importados", num: true, fmt: v => PW.fmt(v) },
   { k: "ficha_docs", titulo: "Fichas", num: true, fmt: v => v ? `<span class="estado-ok">${v}</span>` : "—" },
-];
-
-let filasActuales = [];
-let tab = null;
-function refrescar() {
-  const q = norm(document.getElementById("busca").value.trim());
-  const tipo = selT.value;
-  filasActuales = D.modelos.filter(m =>
+]; let filasActuales = []; let tab = null; function refrescar() {
+  const q = norm(document.getElementById("busca").value.trim()); const tipo = selT.value; filasActuales = D.modelos.filter(m =>
     (!tipo || m.tipo === tipo) &&
-    (!q || norm(m.marca + " " + m.modelo).includes(q)));
-  filasActuales.forEach((m, i) => { m._i = i; });
-  if (tab) tab.actualizar(filasActuales);
-  else tab = PW.tabla("t-modelos", cols, filasActuales, { orden: "imp_unidades", max: 300, buscador: false });
-}
-["busca", "f-tipo"].forEach(id => document.getElementById(id).addEventListener("input", refrescar));
-refrescar();
-// Delegado en el contenedor ESTABLE (nunca se recrea), no en cada <tr>: sigue funcionando igual
+    (!q || norm(m.marca + " " + m.modelo).includes(q))); filasActuales.forEach((m, i) => { m._i = i; }); if (tab) tab.actualizar(filasActuales); else tab = PW.tabla("t-modelos", cols, filasActuales, { orden: "imp_unidades", max: 300, buscador: false }); }
+["busca", "f-tipo"].forEach(id => document.getElementById(id).addEventListener("input", refrescar)); refrescar(); // Delegado en el contenedor ESTABLE (nunca se recrea), no en cada <tr>: sigue funcionando igual
 // despues de cualquier repintado (filtrar u ordenar por cabecera recrean las filas). Antes se
 // re-enganchaba un listener NUEVO por fila en cada click dentro de la tabla -incluidos los clicks
 // en las propias filas, via el "re-enganchar tras ordenar" de mas abajo- sin quitar los anteriores:
 // cada click quedaba disparando mostrarDetalle() una vez mas que el click anterior (bug real,
 // confirmado interactivamente: 1, +2, +3... llamadas por click a medida que se clickeaba la tabla).
-const contModelos = document.getElementById("t-modelos");
-function filaDe(tr) {
-  const marcador = tr.querySelector("[data-i]");
-  return marcador ? filasActuales[+marcador.dataset.i] : null;
-}
+const contModelos = document.getElementById("t-modelos"); function filaDe(tr) {
+  const marcador = tr.querySelector("[data-i]"); return marcador ? filasActuales[+marcador.dataset.i] : null; }
 contModelos.addEventListener("click", e => {
-  const tr = e.target.closest("tbody tr");
-  if (!tr) return;
-  const m = filaDe(tr);
-  if (m) mostrarDetalle(m);
-});
-
-// [A11Y FILAS] la ficha solo se abria con el mouse: los <tr> no tenian tabindex ni rol, asi que
+  const tr = e.target.closest("tbody tr"); if (!tr) return; const m = filaDe(tr); if (m) mostrarDetalle(m); }); // [A11Y FILAS] la ficha solo se abria con el mouse: los <tr> no tenian tabindex ni rol, asi que
 // con teclado la tabla era una lista muerta y el detalle del vehiculo, inalcanzable. PW.tabla
 // regenera las filas al ordenar por una cabecera o al filtrar, por eso se marcan con un
 // MutationObserver y no una sola vez; solo observamos childList, y lo que escribimos son
 // atributos, asi que no se realimenta.
 function marcarFilasAccesibles() {
   contModelos.querySelectorAll("tbody tr").forEach(tr => {
-    if (tr.getAttribute("role") === "button") return;
-    tr.tabIndex = 0;
-    tr.setAttribute("role", "button");
-    const f = filaDe(tr);
-    if (f) tr.setAttribute("aria-label", "Ver la ficha de " + f.marca + " " + f.modelo);
-  });
-}
-new MutationObserver(marcarFilasAccesibles).observe(contModelos, { childList: true, subtree: true });
-marcarFilasAccesibles();
-contModelos.addEventListener("keydown", e => {
-  if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
-  const tr = e.target.closest("tbody tr");
-  if (!tr) return;
-  e.preventDefault();               // Espacio no debe scrollear la pagina
-  const m = filaDe(tr);
-  if (m) mostrarDetalle(m);
-});
-</script>
+    if (tr.getAttribute("role") === "button") return; tr.tabIndex = 0; tr.setAttribute("role", "button"); const f = filaDe(tr); if (f) tr.setAttribute("aria-label", "Ver la ficha de " + f.marca + " " + f.modelo); }); }
+new MutationObserver(marcarFilasAccesibles).observe(contModelos, { childList: true, subtree: true }); marcarFilasAccesibles(); contModelos.addEventListener("keydown", e => {
+  if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return; const tr = e.target.closest("tbody tr"); if (!tr) return; e.preventDefault(); // Espacio no debe scrollear la pagina
+  const m = filaDe(tr); if (m) mostrarDetalle(m); }); </script>
 </body>
 </html>

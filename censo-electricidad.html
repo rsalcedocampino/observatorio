@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -97,40 +92,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_censoelec.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("censo-electricidad.html");
-const D = PW_DATA.c_censoelec;
-// Cobertura declarada: el Censo suprime la pregunta 9 en comunas muy chicas, asi que no todas las
+PW.montarNav("censo-electricidad.html"); const D = PW_DATA.c_censoelec; // Cobertura declarada: el Censo suprime la pregunta 9 en comunas muy chicas, asi que no todas las
 // 346 del padron tienen dato (hoy falta 12202 Antartica). Se dice cuantas hay y cual falta, en vez
 // de que la comuna desaparezca del mapa sin explicacion.
-const sinDato = D.comunas_sin_dato || [];
-document.getElementById("nota").textContent =
+const sinDato = D.comunas_sin_dato || []; document.getElementById("nota").textContent =
   "Actualizado " + (D.generado || "").slice(0, 10) + ". "
   + D.comunas.length + " de " + (D.n_comunas_padron || D.comunas.length) + " comunas con dato"
   + (sinDato.length ? "; sin microdato utilizable: " + sinDato.map(c => c.comuna).join(", ") : "")
-  + ".";
-
-// Filtros region/comuna. Censo 2024 es FOTO UNICA -> no hay filtro de año.
-const selR = document.getElementById("f-region");
-const selC = document.getElementById("f-comuna");
-[...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
-  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o);
-});
-function poblarComunas() {
-  const reg = selR.value;
-  const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort();
-  selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join("");
-  selC.disabled = !reg;
-}
+  + "."; // Filtros region/comuna. Censo 2024 es FOTO UNICA -> no hay filtro de año.
+const selR = document.getElementById("f-region"); const selC = document.getElementById("f-comuna"); [...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o); }); function poblarComunas() {
+  const reg = selR.value; const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort(); selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join(""); selC.disabled = !reg; }
 
 // KPIs del territorio: nacional exacto (D.nacional) o agregado ponderado por viviendas al filtrar.
 function aggregado(filas) {
-  const viv = filas.reduce((s, c) => s + c.viviendas, 0);
-  const w = k => viv ? filas.reduce((s, c) => s + (c[k] || 0) * c.viviendas, 0) / viv : 0;
-  return { viviendas: viv, pct_red: w("pct_red"), pct_solar: w("pct_solar"),
+  const viv = filas.reduce((s, c) => s + c.viviendas, 0); const w = k => viv ? filas.reduce((s, c) => s + (c[k] || 0) * c.viviendas, 0) / viv : 0; return { viviendas: viv, pct_red: w("pct_red"), pct_solar: w("pct_solar"),
     pct_generador: w("pct_generador"), pct_sin: w("pct_sin"),
     n_solar: Math.round(w("pct_solar") / 100 * viv), n_generador: Math.round(w("pct_generador") / 100 * viv),
-    n_sin: Math.round(w("pct_sin") / 100 * viv) };
-}
+    n_sin: Math.round(w("pct_sin") / 100 * viv) }; }
 function pintarKpis(A) {
   document.getElementById("kpis").innerHTML = [
     [PW.fmt(A.viviendas), "viviendas censadas con dato", "particulares ocupadas, 2024"],
@@ -138,21 +117,14 @@ function pintarKpis(A) {
     [PW.fmt(A.n_solar), "con placa solar", PW.fmt(A.pct_solar, 1) + "%"],
     [PW.fmt(A.n_generador), "con generador diesel/bencina", PW.fmt(A.pct_generador, 1) + "%"],
     [PW.fmt(A.n_sin), "sin electricidad", PW.fmt(A.pct_sin, 1) + "%"],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-}
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); }
 
-let MAPA = null;
-function pintarMapa(reg, com, filas) {
+let MAPA = null; function pintarMapa(reg, com, filas) {
   if (MAPA) { MAPA.remove(); MAPA = null; }
-  const ley = document.querySelector("#mapa-solar + .leyenda"); if (ley) ley.remove();
-  const metrica = document.getElementById("f-metrica").value;
-  const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas;
-  const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null);
-  MAPA = PW.choropleth("mapa-solar", {
+  const ley = document.querySelector("#mapa-solar + .leyenda"); if (ley) ley.remove(); const metrica = document.getElementById("f-metrica").value; const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas; const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null); MAPA = PW.choropleth("mapa-solar", {
     valores: Object.fromEntries(comunasMapa.map(c => [c.cut, c[metrica]])),
     fmt: v => v == null ? "sin dato" : PW.fmt(v, 1) + "%", alto: 540, foco,
-  });
-}
+  }); }
 
 const cols = [
   { k: "comuna", titulo: "Comuna" },
@@ -164,32 +136,18 @@ const cols = [
   { k: "pct_eolica", titulo: "% eólica", num: true, fmt: v => v == null ? "—" : (v >= 2 ? `<b>${PW.fmt(v, 1)}%</b>` : PW.fmt(v, 1) + "%") },
   { k: "pct_otro", titulo: "% otra", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) + "%" },
   { k: "pct_sin", titulo: "% sin electricidad", num: true, fmt: v => v >= 2 ? `<span class="estado-mal">${PW.fmt(v, 1)}%</span>` : PW.fmt(v, 1) + "%" },
-];
-
-let tab = null;
-function refrescar() {
-  const reg = selR.value, com = selC.value;
-  const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com));
-  pintarKpis((reg || com) ? aggregado(filas) : D.nacional);
-  pintarMapa(reg, com, filas);
-  PW.barras("g-generador", {
+]; let tab = null; function refrescar() {
+  const reg = selR.value, com = selC.value; const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com)); pintarKpis((reg || com) ? aggregado(filas) : D.nacional); pintarMapa(reg, com, filas); PW.barras("g-generador", {
     items: filas.slice().sort((a, b) => b.pct_generador - a.pct_generador).slice(0, 12).map(c => ({
       nombre: c.comuna, valor: c.pct_generador, extra: c.region + " — " + PW.fmt(c.viviendas) + " viviendas" })),
     color: PW.color("--s2"), fmtV: v => PW.fmt(v, 1) + "%",
-  });
-  PW.barras("g-sin", {
+  }); PW.barras("g-sin", {
     items: filas.slice().sort((a, b) => b.pct_sin - a.pct_sin).slice(0, 12).map(c => ({
       nombre: c.comuna, valor: c.pct_sin, extra: c.region })),
     color: PW.color("--critical"), fmtV: v => PW.fmt(v, 1) + "%",
-  });
-  if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "pct_solar", max: 400 });
-}
-selR.addEventListener("input", () => { poblarComunas(); refrescar(); });
-selC.addEventListener("input", refrescar);
-document.getElementById("f-metrica").addEventListener("input", refrescar);
-// geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
+  }); if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "pct_solar", max: 400 }); }
+selR.addEventListener("input", () => { poblarComunas(); refrescar(); }); selC.addEventListener("input", refrescar); document.getElementById("f-metrica").addEventListener("input", refrescar); // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
 // recien entonces se pinta el choropleth inicial (los refrescos por filtro ya lo tienen cacheado).
-PW.cargarGeoComunas().then(refrescar);
-</script>
+PW.cargarGeoComunas().then(refrescar); </script>
 </body>
 </html>

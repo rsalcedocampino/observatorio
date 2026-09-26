@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -76,43 +71,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_petroleras.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("petroleras.html");
-const D = window.PW_DATA.c_petroleras;
-const C = PW.color;
-const G = D.grupos, T = D.totales;
-const lider = G[0];
-
-document.getElementById("kpis").innerHTML = [
+PW.montarNav("petroleras.html"); const D = window.PW_DATA.c_petroleras; const C = PW.color; const G = D.grupos, T = D.totales; const lider = G[0]; document.getElementById("kpis").innerHTML = [
   [lider.grupo + " · " + PW.fmt(lider.con_carga), "más bencineras con carga en el sitio", PW.fmt(lider.pct_con_carga, 1) + "% de su propia red"],
   [PW.fmt(T.con_carga_en_sitio) + " de " + PW.fmt(T.grupos), "petroleras con carga en sus estaciones", "aunque la opere un tercero"],
   [PW.fmt(T.con_red_propia), "operan su propia red", "el resto solo hospeda a terceros"],
   [PW.fmt(T.bencineras), "bencineras", "de las petroleras catalogadas"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
-
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ".";
-PW.leyendaMapa("ley", [["Bencineras con carga en el sitio", C("--s3")], ["Bencineras sin carga", C("--s2")]]);
-
-function comp(g) {
-  const b = g.bencineras || 1;
-  const wc = g.con_carga / b * 100, ws = Math.max(0, 100 - wc);
-  return `<div class="comp">` +
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; PW.leyendaMapa("ley", [["Bencineras con carga en el sitio", C("--s3")], ["Bencineras sin carga", C("--s2")]]); function comp(g) {
+  const b = g.bencineras || 1; const wc = g.con_carga / b * 100, ws = Math.max(0, 100 - wc); return `<div class="comp">` +
     (wc ? `<i class="c" style="width:${wc}%"></i>` : "") +
-    (ws ? `<i class="b" style="width:${ws}%"></i>` : "") + `</div>`;
-}
+    (ws ? `<i class="b" style="width:${ws}%"></i>` : "") + `</div>`; }
 const th = `<thead><tr><th>Grupo (petrolera)</th>` +
   `<th class="num">Bencineras</th><th class="num">Con carga en el sitio</th>` +
   `<th>Cobertura de carga</th><th class="num">%</th>` +
-  `<th class="num">Red propia (opera)</th></tr></thead>`;
-const rows = G.map(g =>
+  `<th class="num">Red propia (opera)</th></tr></thead>`; const rows = G.map(g =>
   `<tr><td><b>${g.grupo}</b></td>` +
   `<td class="num">${PW.fmt(g.bencineras)}</td>` +
   `<td class="num">${PW.fmt(g.con_carga)}</td>` +
   `<td style="min-width:200px">${comp(g)}</td>` +
   `<td class="num pctlead" style="color:${g.pct_con_carga > 0 ? C("--s3") : "var(--ink-3)"}">${PW.fmt(g.pct_con_carga, 1)}%</td>` +
-  `<td class="num">${g.carga_propia > 0 ? PW.fmt(g.carga_propia) : "—"}</td></tr>`).join("");
-document.getElementById("tabla").innerHTML = th + "<tbody>" + rows + "</tbody>";
-
-document.getElementById("fuente").textContent = D.nota;
-</script>
+  `<td class="num">${g.carga_propia > 0 ? PW.fmt(g.carga_propia) : "—"}</td></tr>`).join(""); document.getElementById("tabla").innerHTML = th + "<tbody>" + rows + "</tbody>"; document.getElementById("fuente").textContent = D.nota; </script>
 </body>
 </html>

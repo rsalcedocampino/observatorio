@@ -2,23 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl https://www.google.com.ar https://www.google.com.br https://www.google.com.mx https://www.google.com.co https://www.google.com.pe https://www.google.com.ec https://www.google.com.uy https://www.google.com.bo https://www.google.com.py https://www.google.co.ve https://www.google.es https://www.google.co.uk https://www.google.de https://www.google.fr https://www.google.it https://www.google.ca https://www.google.com.au; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.google.com https://www.google.cl; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com https://www.google.com https://www.google.cl; style-src 'self' 'unsafe-inline' https://unpkg.com https://www.google.com https://www.google.cl; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.cl https://www.google.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.googletagmanager.com https://www.google.cl https://www.google.com; base-uri 'self' https://www.google.com https://www.google.cl; frame-src https://www.googletagmanager.com https://www.google.com https://www.google.cl; form-action 'none' https://www.google.com https://www.google.cl; object-src 'none' https://www.google.com https://www.google.cl;">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-0C4Z3N1KZJ');
-</script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
 <!-- End Google tag (gtag.js) -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -65,30 +60,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_rotacion.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=260923d"></script>
 <script>
-PW.montarNav("rotacion.html");
-const D = PW_DATA.c_rotacion;
-document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
-
-const sel = document.getElementById("f-marca");
-D.marcas.forEach(m => { const o = document.createElement("option"); o.value = m.marca; o.textContent = m.marca; sel.appendChild(o); });
-
-function pintar() {
-  const m = D.marcas.find(x => x.marca === sel.value) || D.marcas[0];
-  document.getElementById("t-serie").textContent =
-    m.marca + " — lag de máxima correlación: " + (m.lag_meses != null ? m.lag_meses + " meses (r=" + m.correlacion + ")" : "sin dato");
-  PW.lineas("g-serie", {
+PW.montarNav("rotacion.html"); const D = PW_DATA.c_rotacion; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const sel = document.getElementById("f-marca"); D.marcas.forEach(m => { const o = document.createElement("option"); o.value = m.marca; o.textContent = m.marca; sel.appendChild(o); }); function pintar() {
+  const m = D.marcas.find(x => x.marca === sel.value) || D.marcas[0]; document.getElementById("t-serie").textContent =
+    m.marca + " — lag de máxima correlación: " + (m.lag_meses != null ? m.lag_meses + " meses (r=" + m.correlacion + ")" : "sin dato"); PW.lineas("g-serie", {
     labels: D.meses,
     series: [
       { nombre: "Importado", valores: m.serie.imp },
       { nombre: "Vendido", valores: m.serie.ven, color: PW.color("--s3") },
     ],
     fmtV: v => PW.fmt(v) + " unid.", alto: 280,
-  });
-}
-sel.addEventListener("input", pintar);
-pintar();
-
-PW.tabla("t-marcas", [
+  }); }
+sel.addEventListener("input", pintar); pintar(); PW.tabla("t-marcas", [
   { k: "marca", titulo: "Marca" },
   { k: "importado", titulo: "Importado", num: true, fmt: v => PW.fmt(v) },
   { k: "vendido", titulo: "Vendido", num: true, fmt: v => PW.fmt(v) },
@@ -96,7 +78,6 @@ PW.tabla("t-marcas", [
   { k: "meses_stock", titulo: "Meses de stock", num: true, fmt: v => v == null ? "—" : `<span class="${v > 6 ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
   { k: "lag_meses", titulo: "Lag (meses)", num: true },
   { k: "correlacion", titulo: "r", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
-], D.marcas, { orden: "vendido" });
-</script>
+], D.marcas, { orden: "vendido" }); </script>
 </body>
 </html>
