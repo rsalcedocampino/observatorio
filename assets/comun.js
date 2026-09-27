@@ -44,16 +44,16 @@
       ["seguros.html", "Coberturas EV"],
     ]],
     ["Red de carga", [
-      ["cargadores-cortes.html", "Cargadores Públicos y Cortes de Energía"],
+      ["cargadores-cortes.html", "Cargadores públicos y cortes de energía"],
       ["mapa-carga.html", "Infraestructura de Carga"],
-      ["carga-registro-mapa.html", "Registro Oficial de Carga (SEC)"],
+      ["carga-registro-mapa.html", "Registro oficial de carga (SEC)"],
       ["infraestructura.html", "Capacidad de carga instalada"],
       ["carga-reporte-sec.html", "Reporte Nacional SEC 2026"],
       ["operadores.html", "Operadores y Sitios"],
       ["autonomia.html", "Brecha de cobertura"],
       ["duales.html", "Estaciones duales"],
       ["conectores-red.html", "Conectores flota-red"],
-      ["concentracion.html", "Concentración del mercado"],
+      ["concentracion.html", "Concentración de la red de carga"],
       ["petroleras.html", "Transición de las petroleras"],
     ]],
     ["Mercado e inversión", [
@@ -69,7 +69,7 @@
       ["integracion.html", "Integración vertical"],
     ]],
     ["Energía y resiliencia", [
-      ["riesgo.html", "Cortes de energía"],
+      ["riesgo.html", "Cortes eléctricos"],
       ["probabilidad-cortes.html", "Probabilidad de cortes"],
       ["resiliencia.html", "Resiliencia ante cortes"],
       ["bess-cortes.html", "Almacenamiento (BESS)"],
@@ -851,17 +851,35 @@
       // aria-sort (el lector anuncia el estado) y title (pista visible al pasar el mouse).
       // NO se envuelve en <button> a proposito: cambiaria el aspecto de la cabecera, y aca la
       // condicion es que no se mueva ni un pixel.
-      const th = cols.map(c =>
-        `<th class="${c.num ? "num" : ""} ${orden === c.k ? "orden" + (asc ? " asc" : "") : ""}" data-k="${c.k}"` +
+      // [CELULAR] Columna secundaria: solo se marca si la tabla DECLARA prioritarias.
+      // Sin `prio` en ninguna columna el comportamiento es identico al de siempre, que es
+      // la condicion para tocar un helper que usan decenas de paginas (769-5).
+      const hayPrio = cols.some(c => c.prio);
+      const claseCol = (c, i) => (hayPrio && i > 0 && !c.prio) ? " col-sec" : "";
+      const th = cols.map((c, i) =>
+        `<th class="${c.num ? "num" : ""} ${orden === c.k ? "orden" + (asc ? " asc" : "") : ""}${claseCol(c, i)}" data-k="${c.k}"` +
         ` tabindex="0" title="Ordenar por ${esc(c.titulo)}"` +
         ` aria-sort="${orden === c.k ? (asc ? "ascending" : "descending") : "none"}">${c.titulo}</th>`
       ).join("");
-      const cuerpo = datos.map(f => "<tr>" + cols.map(c => {
+      const cuerpo = datos.map(f => "<tr>" + cols.map((c, i) => {
         const v = f[c.k];
         const txt = c.fmt ? c.fmt(v, f) : (v == null ? "—" : esc(v));
-        return `<td class="${c.num ? "num" : ""}">${txt}</td>`;
+        return `<td class="${c.num ? "num" : ""}${claseCol(c, i)}">${txt}</td>`;
       }).join("") + "</tr>").join("");
-      contTabla.innerHTML = `<div class="scroll-x"><table class="pw"><thead><tr>${th}</tr></thead><tbody>${cuerpo}</tbody></table></div>`;
+      contTabla.innerHTML = `<div class="scroll-x"><table class="pw${hayPrio ? " hay-prio" : ""}"><thead><tr>${th}</tr></thead><tbody>${cuerpo}</tbody></table></div>`;
+      // Boton para ver el resto: ocultar columnas sin dar como recuperarlas seria
+      // esconder dato. Solo aparece en pantallas angostas, que es donde se ocultan.
+      if (hayPrio) {
+        const tb = contTabla.querySelector("table.pw");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pill tabla-cols";
+        const rotular = () => { btn.textContent = tb.classList.contains("hay-prio")
+          ? "Ver todas las columnas" : "Ver solo lo principal"; };
+        rotular();
+        btn.addEventListener("click", () => { tb.classList.toggle("hay-prio"); rotular(); });
+        contTabla.insertBefore(btn, contTabla.firstChild);
+      }
       // Siempre que se corta, tenga buscador o no. Condicionarla a la ausencia de pildora
       // dejaba ciegas ~20 tablas, justo las que mas se filtran; y la pildora nunca dice el
       // CRITERIO DE ORDEN, que es lo que permite entender que quedo afuera. Prefiero que los

@@ -639,3 +639,25 @@ main:focus { outline: none; }
 }
 .pw-mapa-aviso.visible { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .pw-mapa-aviso { transition: none; } }
+
+/* [TABLAS EN CELULAR] (769-5). A 375 px la tabla de operadores mide 880 px dentro de 297 visibles:
+   se ven 3 de 10 columnas y el "% operativo", que es el dato del modulo, es la sexta. Peor: al
+   desplazarse para alcanzarlo tambien se va la columna del nombre, y queda un numero sin dueno.
+   Por eso la primera columna se fija. Solo en pantallas angostas: en escritorio no hay problema
+   que resolver y no se toca nada. */
+.tabla-cols { display: none; margin: 0 0 8px; cursor: pointer; border: 1px solid var(--grid);
+  background: var(--surface-1); }
+@media (max-width: 760px) {
+  .tabla-cols { display: inline-block; }
+  .scroll-x table.pw th:first-child,
+  .scroll-x table.pw td:first-child {
+    position: sticky; left: 0; z-index: 1;
+    background: var(--plane);
+    box-shadow: 1px 0 0 var(--grid);
+  }
+  .scroll-x table.pw thead th:first-child { z-index: 3; background: var(--surface-1); }
+  .scroll-x table.pw tbody tr:hover td:first-child { background: var(--plane); }
+  /* Las secundarias solo se ocultan si la tabla declaro prioritarias; el boton quita la clase. */
+  .scroll-x table.pw.hay-prio th.col-sec,
+  .scroll-x table.pw.hay-prio td.col-sec { display: none; }
+}
