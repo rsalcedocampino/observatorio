@@ -70,8 +70,6 @@
     ]],
     ["Energía y resiliencia", [
       ["riesgo.html", "Cortes eléctricos"],
-      ["probabilidad-cortes.html", "Probabilidad de cortes"],
-      ["resiliencia.html", "Resiliencia ante cortes"],
       ["bess-cortes.html", "Almacenamiento (BESS)"],
       ["demanda-ev.html", "Demanda del parque EV"],
       ["red-electrica.html", "Red eléctrica y potencial"],
@@ -343,6 +341,57 @@
     document.body.appendChild(f);
 
     renderColaboradores(COLABORADORES);   // banda de logos arriba del pie (vacia -> no se muestra)
+  }
+
+  // ---------- pestanas + carga de datos bajo demanda (fusiones, CAMBIOS 778)
+  // El <script> de cada data/*.js se inyecta UNA vez y solo cuando se abre su pestana. Sin esto
+  // una pagina fusionada cargaria de golpe lo que hoy esta repartido en tres.
+  const _pedidos = {};
+  function cargarDatos(nombre) {
+    if (window.PW_DATA && window.PW_DATA[nombre]) return Promise.resolve(window.PW_DATA[nombre]);
+    if (_pedidos[nombre]) return _pedidos[nombre];
+    const tok = (document.querySelector('script[src*="comun.js"]') || {}).src || "";
+    const v = tok.indexOf("?v=") > 0 ? tok.slice(tok.indexOf("?v=")) : "";
+    _pedidos[nombre] = new Promise((ok, mal) => {
+      const sc = document.createElement("script");
+      sc.src = "data/" + nombre + ".js" + v;
+      sc.onload = () => ok(window.PW_DATA ? window.PW_DATA[nombre] : null);
+      // Nunca se queda colgado: si el archivo no esta, resuelve en null y la pestana lo dice.
+      sc.onerror = () => ok(null);
+      document.head.appendChild(sc);
+    });
+    return _pedidos[nombre];
+  }
+
+  // Pestanas por ancla: la URL lleva #<id>, asi que un enlace del menu o un marcador abre
+  // directo la pestana correcta y el boton Atras del navegador funciona.
+  // onAbrir(id) se llama la PRIMERA vez que cada pestana se muestra: ahi va su carga de datos.
+  function pestanas(cont, onAbrir) {
+    const el = typeof cont === "string" ? document.getElementById(cont) : cont;
+    if (!el) return;
+    const botones = [...el.querySelectorAll("[data-tab]")];
+    const paneles = botones.map(b => document.getElementById(b.dataset.tab)).filter(Boolean);
+    const abiertas = {};
+    function mostrar(id, empujarHash) {
+      const hay = botones.some(b => b.dataset.tab === id);
+      if (!hay) id = botones.length ? botones[0].dataset.tab : null;
+      if (!id) return;
+      botones.forEach(b => {
+        const on = b.dataset.tab === id;
+        b.classList.toggle("activo", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      paneles.forEach(p => p.classList.toggle("activo", p.id === id));
+      if (empujarHash && location.hash.slice(1) !== id) history.replaceState(null, "", "#" + id);
+      if (!abiertas[id]) { abiertas[id] = true; if (onAbrir) onAbrir(id); }
+    }
+    botones.forEach(b => {
+      b.setAttribute("role", "tab");
+      b.addEventListener("click", () => mostrar(b.dataset.tab, true));
+    });
+    window.addEventListener("hashchange", () => mostrar(location.hash.slice(1), false));
+    mostrar(location.hash.slice(1), false);
+    return { mostrar };
   }
 
   // ---------- formato
@@ -2002,6 +2051,6 @@
   document.addEventListener("visibilitychange", revisarDatosNuevos);
   window.addEventListener("focus", revisarDatosNuevos);
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto, ruedaSegura };
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto, ruedaSegura, pestanas, cargarDatos };
 })();
 

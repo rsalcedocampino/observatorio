@@ -2,31 +2,20 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="refresh" content="0; url=riesgo.html#resiliencia">
+<link rel="canonical" href="https://observatorio.energiasfuturo.com/riesgo.html#resiliencia">
+<meta name="robots" content="noindex, follow">
+<title>Resiliencia de la red de carga ante cortes — Energías Futuro</title>
+<meta name="description" content="Esta sección ahora vive dentro de Cortes eléctricos. Se te redirige automáticamente.">
+<link rel="stylesheet" href="assets/estilo.css">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
 <!-- End Google Tag Manager -->
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
-<script>
-  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
-<!-- End Google tag (gtag.js) -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>Resiliencia de la carga ante cortes — Energías Futuro</title>
-<meta name="description" content="Cuando la SEC registra un corte en una comuna, ¿se caen sus cargadores públicos? Cruce del histórico de estados cada 30 minutos con los eventos de...">
-<link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927c">
-<script>var _pwv=Math.floor(Date.now()/6e5)</script>
-<script>document.write('<link rel="preload" as="script" href="data/c_resiliencia.js?v='+_pwv+'">')</script>
-<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -34,40 +23,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
-  <h1>Resiliencia de la red de carga ante cortes</h1>
-  <p class="sub">Cuando la SEC registra un corte en una comuna, ¿se caen sus cargadores
-  públicos? Cruce del histórico de estados cada 30 minutos con los eventos de interrupción,
-  comuna por comuna. Nadie más puede medir esto: requiere ambos históricos propios.</p>
-  <p class="nota" id="nota"></p>
-
-  <div class="kpis" id="kpis"></div>
-
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Eventos analizados (mayor degradación primero)</h2>
-    <div id="t-casos"></div>
-    <p class="nota">fs = porcentaje de observaciones "fuera de servicio" de los conectores de la
-    comuna. Delta = fs durante el corte - fs línea base. Un delta alto sugiere cargadores sin
-    respaldo eléctrico; un delta nulo, red resiliente o corte fuera de la zona de los
-    cargadores.</p>
+  <div class="hero">
+    <h1>Resiliencia de la red de carga ante cortes</h1>
+    <p>Esta sección ahora es una pestaña de <strong>Cortes eléctricos</strong>. Si no se te redirige, <a href="riesgo.html#resiliencia">entra aquí</a>.</p>
   </div>
 </main>
-<script>document.write('<script src="data/c_resiliencia.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927c"></script>
-<script>
-PW.montarNav("resiliencia.html"); const D = PW_DATA.c_resiliencia; document.getElementById("nota").textContent = "Ventana desde " + D.desde + ". Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; document.getElementById("kpis").innerHTML = [
-  [D.eventos_analizados, "cortes analizados", "peak 1.000+ clientes, en comunas con cargadores"],
-  [D.eventos_con_degradacion, "con degradación de la carga", "delta > 5 puntos"],
-  [D.eventos_analizados ? Math.round(100 * D.eventos_con_degradacion / D.eventos_analizados) + "%" : "—",
-    "tasa de contagio corte-carga", "preliminar"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); PW.tabla("t-casos", [
-  { k: "comuna", titulo: "Comuna" },
-  { k: "inicio", titulo: "Inicio corte" },
-  { k: "fin", titulo: "Fin" },
-  { k: "peak_clientes", titulo: "Peak clientes", num: true, fmt: v => PW.fmt(v) },
-  { k: "fs_base", titulo: "fs base %", num: true, fmt: v => PW.fmt(v, 1) },
-  { k: "fs_durante", titulo: "fs durante %", num: true, fmt: v => PW.fmt(v, 1) },
-  { k: "delta", titulo: "Delta (pts)", num: true, fmt: v => `<span class="${v > 5 ? "estado-mal" : (v <= 0 ? "estado-ok" : "")}">${PW.fmt(v, 1)}</span>` },
-  { k: "obs", titulo: "Obs.", num: true },
-], D.casos, { orden: "delta" }); </script>
 </body>
 </html>

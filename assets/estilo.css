@@ -661,3 +661,19 @@ main:focus { outline: none; }
   .scroll-x table.pw.hay-prio th.col-sec,
   .scroll-x table.pw.hay-prio td.col-sec { display: none; }
 }
+
+/* [PESTANAS] Componente compartido para las paginas fusionadas (CAMBIOS 778). Existia solo en
+   elasticidad.html, con CSS inline y colores fijos que ignoraban el tema. Aqui van con las
+   variables, asi que el modo oscuro funciona sin tocar nada. */
+.tab-nav { display: flex; flex-wrap: wrap; gap: 2px; margin: 0 0 16px; border-bottom: 1px solid var(--grid); }
+.tab-nav button {
+  padding: 10px 16px; background: none; border: none; cursor: pointer;
+  font-size: 14px; font-family: inherit; color: var(--ink-2);
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+}
+.tab-nav button:hover { color: var(--ink-1); }
+.tab-nav button.activo { color: var(--ink-1); font-weight: 600; border-bottom-color: var(--s1); }
+.tab-nav button:focus-visible { outline: 2px solid var(--s1); outline-offset: -2px; }
+.tab-content { display: none; }
+.tab-content.activo { display: block; }
+@media (max-width: 760px) { .tab-nav button { padding: 9px 12px; font-size: 13px; } }
