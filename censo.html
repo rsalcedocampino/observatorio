@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="El retrato demográfico y habitacional del país según el Censo 2002, 2017 y 2024 (INE): población, estructura de edad, educación, empleo, vivienda...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260926a">
+<link rel="stylesheet" href="assets/estilo.css?v=260927a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <style>
@@ -127,7 +127,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/censo.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260926a"></script>
+<script src="assets/comun.js?v=260927a"></script>
 <script>
 PW.montarNav("censo.html"); const D = window.PW_DATA.censo; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; document.getElementById("fuente").textContent = D.nota; // ---------- indices + helpers ----------
 const comByCut = Object.fromEntries(D.comunas.map(c => [c.cut, c])); const cutByComuna = Object.fromEntries(D.comunas.map(c => [c.comuna, c.cut])); const regByName = Object.fromEntries(D.regiones.map(r => [r.region, r])); const VAR = D.variacion || {}; const serieCensada = (D.serie_nacional || []).filter(x => x.tipo === "censado"); const serieByAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x.poblacion])); const serieRowAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x])); // fila completa (var_pct, crec_anual)

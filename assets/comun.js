@@ -339,7 +339,7 @@
       "Elaboración propia.<br>" +
       // Capa comercial: un enlace, no un formulario. La CSP tiene `form-action 'none'`
       // desde la (661) y un `mailto:` no lo gobierna esa directiva.
-      "<a class='solicitar-pie' href='mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio'>Solicitar datos o informe</a>";
+      "<a class='solicitar-pie' href='mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio'>Contacto</a>";
     document.body.appendChild(f);
 
     renderColaboradores(COLABORADORES);   // banda de logos arriba del pie (vacia -> no se muestra)
