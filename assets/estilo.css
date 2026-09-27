@@ -255,6 +255,13 @@ header.pw nav a.activo, header.pw nav a:hover { background: var(--plane); color:
 }
 .hero .ctas a.principal { background: var(--s1); border-color: var(--s1); color: #fff; }
 .hero .ctas a:hover { text-decoration: none; border-color: var(--s1); transform: translateY(-1px); }
+/* Boton de la capa comercial (pedido 723-A). Queda en el hero y en el pie comun; se marca
+   con borde del color de acento sin robarle el primer lugar a 'Mi auto', que es la accion
+   principal del sitio. */
+.hero .ctas a.solicitar { border-color: var(--s1); color: var(--s1); font-weight: 600; }
+footer.pw a.solicitar-pie { display: inline-block; margin-top: 10px; padding: 7px 14px;
+  border: 1px solid var(--s1); border-radius: 8px; color: var(--s1); font-weight: 600; }
+footer.pw a.solicitar-pie:hover { text-decoration: none; background: var(--s1); color: #fff; }
 
 /* iconos de modulo */
 .icono-h1 { display: inline-flex; vertical-align: -4px; margin-right: 10px; color: var(--s1); }
@@ -621,3 +628,14 @@ footer.pw {
 }
 .saltar-al-contenido:focus { top: 0; }
 main:focus { outline: none; }
+
+/* Aviso de la rueda en los mapas (pedido 723-D). Aparece solo cuando alguien pasa la rueda por
+   encima sin Ctrl, y se va solo. z-index sobre los controles de Leaflet, que usan 400-1000. */
+.pw-mapa { position: relative; }
+.pw-mapa-aviso {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(15, 23, 42, .55); color: #fff; font-weight: 600; font-size: 15px;
+  z-index: 1100; opacity: 0; pointer-events: none; transition: opacity .18s ease;
+}
+.pw-mapa-aviso.visible { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .pw-mapa-aviso { transition: none; } }

@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Chile comprometió 100% de ventas de vehículos livianos cero emisiones al 2035. Este panel proyecta el ritmo real de ventas, infraestructura, energía y...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260923d">
+<link rel="stylesheet" href="assets/estilo.css?v=260926a">
 <style>
 .semaforo td:first-child { font-weight: 600; }
 .sem-punto { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 7px; vertical-align: -1px; }
@@ -176,7 +176,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_pelp.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_normativa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260923d"></script>
+<script src="assets/comun.js?v=260926a"></script>
 <script>
 PW.montarNav("tracker.html"); const D = PW_DATA.tracker; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; // Metas OFICIALES desde la biblioteca normativa (Documentos de Gobierno)
 const OF = (window.PW_DATA.c_normativa || {}).oficiales || null; if (OF && OF.cargadores_2030 && OF.cargadores_2030.valor) {
@@ -188,7 +188,7 @@ function numAym(x) {
   const a = Math.floor(x), m = Math.round((x - a) * 12) + 1; return m > 12 ? (a + 1) + "-01" : a + "-" + String(m).padStart(2, "0"); }
 function ajusteLineal(pares) { // [[x,y],...] -> {a, b} de y = a + b x
   const n = pares.length; const sx = pares.reduce((s, p) => s + p[0], 0), sy = pares.reduce((s, p) => s + p[1], 0); const sxx = pares.reduce((s, p) => s + p[0] * p[0], 0), sxy = pares.reduce((s, p) => s + p[0] * p[1], 0); const b = (n * sxy - sx * sy) / (n * sxx - sx * sx || 1); return { a: (sy - b * sx) / n, b }; }
-const logit = p => Math.log(p / (100 - p)); const invLogit = z => 100 / (1 + Math.exp(-z)); function fmtAnio(x) { return x == null ? "no llega al ritmo actual" : (x > 2100 ? "despues de 2100" : "~" + Math.round(x)); }
+const logit = p => Math.log(p / (100 - p)); const invLogit = z => 100 / (1 + Math.exp(-z)); function fmtAnio(x) { return x == null ? "no llega al ritmo actual" : (x > 2100 ? "después de 2100" : "~" + Math.round(x)); }
 function estadoMeta(llegada, anioMeta) {
   if (llegada == null || llegada > anioMeta + 5) return ["rojo", "var(--critical)", "Lejos de la meta"]; if (llegada > anioMeta) return ["amarillo", "var(--warning)", "Atrasado"]; return ["verde", "var(--good)", "En trayectoria"]; }
 
@@ -337,7 +337,7 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque); 
     // El semaforo compara contra la meta, asi que usa el ultimo mes CERRADO: con el parcial
     // publicaba 73,0% (18 dias) como el valor de hoy contra el 80% objetivo, cuando el ultimo
     // mes completo da 67,7%. El KPI de arriba si muestra el parcial, pero rotulado como tal.
-    nombre: "Energía: generación renovable", hoy: PW.fmt(ultC.pct_renov, 1) + "%",
+    nombre: "Energía: generación renovable (último mes cerrado)", hoy: PW.fmt(ultC.pct_renov, 1) + "%",
     objetivo: "80% (referencial)",
     llegada: fmtAnio(llegada), color: colorS, texto: textoS,
   }; pintarSemaforo(); })(); // ---------- 4. metas comprometidas y propuestas (biblioteca normativa)

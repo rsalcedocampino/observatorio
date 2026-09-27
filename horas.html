@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="A que hora conviene cargar: la ocupación real de la red pública hora por hora, del histórico capturado cada 30 minutos. Menos fila, más sol.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260923d">
+<link rel="stylesheet" href="assets/estilo.css?v=260926a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/horas.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_horaverde.js?v='+_pwv+'">')</script>
@@ -93,7 +93,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script>document.write('<script src="data/horas.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_horaverde.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260923d"></script>
+<script src="assets/comun.js?v=260926a"></script>
 <script>
 PW.montarNav("horas.html"); const D = PW_DATA.horas; if (!D.disponible) {
   document.getElementById("nota").textContent = "Sin historico de estados disponible todavia."; } else {
@@ -157,7 +157,7 @@ PW.montarNav("horas.html"); const D = PW_DATA.horas; if (!D.disponible) {
         labels: horas.map(h => String(h).padStart(2, "0") + ":00"),
         series: [
           { nombre: "% solar en el mix (PELP " + selAnio.value + ")", valores: p.pct_solar, color: PW.color("--s4"), area: true },
-          { nombre: "% ocupacion red de carga (hoy)", valores: ocup, color: PW.color("--s1") },
+          { nombre: "% ocupación red de carga (hoy)", valores: ocup, color: PW.color("--s1") },
         ],
         fmtV: v => PW.fmt(v, 1) + "%", fmtY: v => Math.round(v) + "%",
         max: 100, alto: 300,

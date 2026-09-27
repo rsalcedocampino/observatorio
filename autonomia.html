@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="¿En que tramos de ruta un eléctrico promedio se queda sin donde cargar? Comparamos la distancia entre cargadores rápidos (50 kW o más) con la autonomía...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260923d">
+<link rel="stylesheet" href="assets/estilo.css?v=260926a">
 <style>
 @media (max-width: 768px) {
   .fila2 { grid-template-columns: 1fr !important; }
@@ -103,7 +103,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_autonomia.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260923d"></script>
+<script src="assets/comun.js?v=260926a"></script>
 <script>
 function initAut() {
   if (typeof PW === "undefined") {
@@ -115,8 +115,8 @@ PW.montarNav("autonomia.html"); const D = PW_DATA.c_autonomia; // indice estable
 // referencias (filter() no clona), asi que _i sobrevive a cualquier filtro por region.
 D.brechas.forEach((b, i) => { b._i = i; }); document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const K = D.kpis; document.getElementById("kpis").innerHTML = [
   [K.estaciones_dc, "estaciones con carga rapida <span class=\"kpi-info\" data-tooltip=\"Puntos de carga rápida: 50 kW o más\">ℹ</span>", "50 kW o más"],
-  [PW.fmt(K.autonomia_p50) + " km", "autonomia mediana del catalogo <span class=\"kpi-info\" data-tooltip=\"Percentil 50: la mitad de vehículos llega más lejos\">ℹ</span>", "p25: " + PW.fmt(K.autonomia_p25) + " km"],
-  [PW.fmt(K.rango_util_p25) + " km", "rango util conservador <span class=\"kpi-info\" data-tooltip=\"70% del p25 para garantizar cobertura confiable incluso con envejecimiento de batería\">ℹ</span>", "70% de la autonomia p25"],
+  [PW.fmt(K.autonomia_p50) + " km", "autonomía mediana del catálogo <span class=\"kpi-info\" data-tooltip=\"Percentil 50: la mitad de vehículos llega más lejos\">ℹ</span>", "p25: " + PW.fmt(K.autonomia_p25) + " km"],
+  [PW.fmt(K.rango_util_p25) + " km", "rango útil conservador <span class=\"kpi-info\" data-tooltip=\"70% del p25 para garantizar cobertura confiable incluso con envejecimiento de batería\">ℹ</span>", "70% de la autonomía p25"],
   [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada <span class=\"kpi-info\" data-tooltip=\"Distancia más grande sin cargadores rápidos en corredor norte-sur\">ℹ</span>", D.brechas.length ? D.brechas[0].desde : ""],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const umbral = K.rango_util_p25; let mapaRef = null; function calcularBrechaPorRegion() {
   const brechasPorReg = {}; D.brechas.forEach(b => {

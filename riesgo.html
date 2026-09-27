@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="El estado del suministro eléctrico de Chile en un solo lugar: primero la foto en vivo de la SEC (quién está sin luz ahora, por región y por distribuidora)...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260923d">
+<link rel="stylesheet" href="assets/estilo.css?v=260926a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -156,7 +156,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/riesgo.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/cortes.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260923d"></script>
+<script src="assets/comun.js?v=260926a"></script>
 <script>
 PW.montarNav("riesgo.html"); const D = PW_DATA.riesgo; const DC = window.PW_DATA.cortes || null; const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; // ============================================================
 // PARTE 1 — EN VIVO (cortes.js: foto SEC del momento)
@@ -332,7 +332,7 @@ poblarComunas(); function refrescar() {
     : "Acumulado 2017 a hoy: incluye además los cortes menores de la serie horaria. Elige un año para ver ese periodo."; // filas comunales de la seleccion (fuente segun el año elegido)
   const comunas = fuente.filter(c => (!rcut || c.cod_region === rcut) && (!com || c.comuna === com)); // totales de la seleccion
   const totClientes = comunas.reduce((s, c) => s + c.peak_clientes, 0); const totHoras = comunas.reduce((s, c) => s + c.horas_afectada, 0); const totCH = comunas.reduce((s, c) => s + c.cliente_horas, 0); document.getElementById("h-clientes").textContent = "Clientes sin energía — " + periodo; document.getElementById("h-horas").textContent = "Horas sin energía — " + periodo; document.getElementById("kpis-clientes").innerHTML = [
-    [PW.fmt(totClientes), com ? "peak de clientes sin energía" : "clientes sin energia (peak sumado)", ambito],
+    [PW.fmt(totClientes), com ? "peak de clientes sin energía" : "clientes sin energía (peak sumado)", ambito],
     [comunas.length, com ? "comuna" : "comunas con registro", periodo],
   ].map(kpiHTML).join(""); document.getElementById("kpis-horas").innerHTML = [
     [PW.fmt(totHoras), com ? "horas con corte" : "horas-comuna sin energía", ambito],
@@ -341,7 +341,7 @@ poblarComunas(); function refrescar() {
   const ordClientes = comunas.slice().sort((a, b) => b.peak_clientes - a.peak_clientes).slice(0, 15); PW.barras("g-clientes", {
     items: ordClientes.map(c => ({
       nombre: c.comuna, valor: c.peak_clientes,
-      extra: c.region + " — " + PW.fmt(c.horas_afectada) + " h sin energia",
+      extra: c.region + " — " + PW.fmt(c.horas_afectada) + " h sin energía",
       color: PW.color("--critical"),
     })),
     fmtV: v => PW.fmt(v),

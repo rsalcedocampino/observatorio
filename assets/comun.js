@@ -336,7 +336,10 @@
       "y Combustibles), Servicio Nacional de Aduanas y los operadores de carga. Cada cifra es " +
       "trazable a su fuente y está homologada por comuna (CUT INE), tipo de conector, estado " +
       "y tecnología.<br>" +
-      "Elaboración propia.";
+      "Elaboración propia.<br>" +
+      // Capa comercial: un enlace, no un formulario. La CSP tiene `form-action 'none'`
+      // desde la (661) y un `mailto:` no lo gobierna esa directiva.
+      "<a class='solicitar-pie' href='mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio'>Solicitar datos o informe</a>";
     document.body.appendChild(f);
 
     renderColaboradores(COLABORADORES);   // banda de logos arriba del pie (vacia -> no se muestra)
@@ -1064,6 +1067,31 @@
   // el zoom minimo = "todo Chile" (no se puede alejar mas alla del pais) y el paneo no sale
   // del territorio (maxBounds con viscosidad 1). Mismo patron que el mapa de cortes (103).
   const BOUNDS_CHILE = [[-56.0, -76.2], [-17.4, -66.2]];
+  // ---------- rueda del mouse: que no quede atrapada en el mapa (pedido 723-D)
+  // Al bajar por la pagina con la rueda y pasar sobre un mapa, Leaflet hacia zoom y la pagina se
+  // quedaba clavada. Se apaga el zoom por rueda y se reimplementa con Ctrl/Cmd, que es lo que ya
+  // hacen los mapas embebidos que la gente conoce. Solo ahi se llama preventDefault, porque sin
+  // Ctrl el evento tiene que llegar al navegador para que la pagina siga bajando.
+  function ruedaSegura(m, el) {
+    if (!m || !el || !m.scrollWheelZoom) return;
+    m.scrollWheelZoom.disable();
+    const aviso = document.createElement("div");
+    aviso.className = "pw-mapa-aviso";
+    aviso.textContent = "Use Ctrl + rueda para hacer zoom";
+    el.appendChild(aviso);
+    let t = null;
+    el.addEventListener("wheel", function (e) {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        m.setZoom(m.getZoom() + (e.deltaY < 0 ? 0.5 : -0.5));
+        return;
+      }
+      aviso.classList.add("visible");
+      clearTimeout(t);
+      t = setTimeout(function () { aviso.classList.remove("visible"); }, 1400);
+    }, { passive: false });
+  }
+
   function acotarAChile(m) {
     const b = L.latLngBounds(BOUNDS_CHILE);
     m.setMaxBounds(b.pad(0.12));
@@ -1144,6 +1172,7 @@
     const zoom = cfg.zoom || 5;
     const m = L.map(el, { preferCanvas: true, zoomSnap: 0.5 }).setView(centro, zoom);
     acotarAChile(m);
+    ruedaSegura(m, el);
 
     // [BASE] capas base homologadas (Mapa/Satélite/Relieve/Calles) + escala
     const raiz = document.documentElement;
@@ -1528,7 +1557,7 @@
     const regiones = [...new Map(puntos.filter(p => p.rcut && p.reg).map(p => [p.rcut, p.reg])).entries()]
       .sort((a, b) => a[0].localeCompare(b[0]));
     el.insertAdjacentHTML("afterbegin",
-      `<label>Region <select data-f="reg"><option value="">Todas</option>` +
+      `<label>Región <select data-f="reg"><option value="">Todas</option>` +
       regiones.map(([cut, nom]) => `<option value="${esc(cut)}">${esc(nom)}</option>`).join("") +
       `</select></label>` +
       `<label>Comuna <select data-f="com" disabled><option value="">Todas</option></select></label>` +
@@ -1568,6 +1597,7 @@
     el.style.height = (cfg.alto || 520) + "px";
     const m = L.map(el, { zoomSnap: 0.5 }).setView([-38, -72], 4.5);
     acotarAChile(m);
+    ruedaSegura(m, el);
     const raiz = document.documentElement;
     const oscuro = raiz.dataset.theme === "dark" ||
       (raiz.dataset.theme !== "light" && window.matchMedia &&
@@ -1951,6 +1981,6 @@
   document.addEventListener("visibilitychange", revisarDatosNuevos);
   window.addEventListener("focus", revisarDatosNuevos);
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto };
+  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto, ruedaSegura };
 })();
 
