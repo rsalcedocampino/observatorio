@@ -33,7 +33,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="canonical" href="https://observatorio.energiasfuturo.com/">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927d">
+<link rel="stylesheet" href="assets/estilo.css?v=260927e">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/resumen.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -144,14 +144,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <h2 id="red-carga">Red de carga</h2>
   <div class="grid-modulos">
-    <a class="modulo-card" href="cargadores-cortes.html">
-      <h3>Cargadores públicos y cortes de energía</h3>
-      <p>Mapa en vivo: la red pública de carga cruzada con los cortes de la SEC — qué comunas están
-      sin luz ahora y qué cargadores podrían quedar sin servicio.</p>
-      <div class="aud"><span class="pill">SEC en vivo</span> <span class="pill">Mapa</span></div>
-    </a>
     <a class="modulo-card" href="mapa-carga.html">
-      <h3>Infraestructura de Carga</h3>
+      <h3>Red de carga en vivo</h3>
       <p>Mapa de la red pública de carga: cada cargador con su operador, conector, potencia (AC/DC),
       estado, dirección y horario. Filtra por operador, corriente, potencia y región.</p>
       <div class="aud"><span class="pill"><span data-k="estaciones">—</span> estaciones de carga</span> <span class="pill">Mapa</span></div>
@@ -162,13 +156,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       con las categorías que la red viva no cubre: privada, electroterminales y transporte público.
       La comuna sale de la geometría real, no de una lista.</p>
       <div class="aud"><span class="pill">EcoCarga declarado</span> <span class="pill">Estación por estación</span></div>
-    </a>
-    <a class="modulo-card" href="infraestructura.html">
-      <h3>Infraestructura de carga (SEC)</h3>
-      <p>El registro oficial declarado a la SEC (EcoCarga): cuántas instalaciones, cargadores,
-      conectores y MW hay por categoría de uso, macro-zona, región, clase de potencia y tipo de
-      conector. La base declarada, complemento de la red viva.</p>
-      <div class="aud"><span class="pill">SEC EcoCarga</span> <span class="pill">Base declarada</span></div>
     </a>
     <a class="modulo-card" href="operadores.html">
       <h3>Ranking de operadores</h3>
@@ -193,25 +180,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>¿La red instalada calza con los conectores de los autos que están llegando? Oferta y
       demanda de estándares, cara a cara.</p>
       <div class="aud"><span class="pill">Estándares</span></div>
-    </a>
-    <a class="modulo-card" href="concentracion.html">
-      <h3>Concentración de la red de carga</h3>
-      <p>¿La red de carga es competitiva o dominada por unos pocos? El índice HHI por región, con
-      los operadores agrupados por grupo económico. Quién lidera y qué tan cautivo es cada mercado.</p>
-      <div class="aud"><span class="pill">Por grupo económico</span></div>
-    </a>
-    <a class="modulo-card" href="petroleras.html">
-      <h3>La transición de las petroleras</h3>
-      <p>Bencineras vs puntos de carga por grupo económico: quién está convirtiendo su red a
-      eléctrica y quién sigue solo en fósil. Copec lidera; el resto, muy atrás.</p>
-      <div class="aud"><span class="pill">Por grupo económico</span></div>
-    </a>
-    <a class="modulo-card" href="carga-reporte-sec.html">
-      <h3>Reporte Nacional SEC 2026</h3>
-      <p>Lo que el registro georreferenciado no cubre, del reporte de la SEC con datos
-      2018-2025: fiscalización de la red pública, buses eléctricos y
-      compatibilidad entre vehículo y cargador.</p>
-      <div class="aud"><span class="pill">Datos 2018-2025</span></div>
     </a>
   </div>
 
@@ -242,12 +210,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       CIF por bus e infraestructura de carga, región por región.</p>
       <div class="aud"><span class="pill">Transporte público</span></div>
     </a>
-    <a class="modulo-card" href="grupoauto.html">
-      <h3>Grupo automotriz 360</h3>
-      <p>Varias marcas son un solo dueño: Geely reúne a Volvo, Zeekr y más. La participación EV
-      real por grupo económico automotriz, no por marca. La concentración que no se ve.</p>
-      <div class="aud"><span class="pill">Por grupo económico</span></div>
-    </a>
     <a class="modulo-card" href="inversion.html">
       <h3>Inversión y financiamiento verde</h3>
       <p>El catastro del dinero disponible para la transición: <span data-k="inversion_instrumentos">—</span> instrumentos de crédito, leasing,
@@ -266,10 +228,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       casi nadie sigue en Chile.</p>
       <div class="aud"><span class="pill">Para invertir</span> <span class="pill">Inédito en Chile</span></div>
     </a>
-    <a class="modulo-card" href="integracion.html">
-      <h3>Integración vertical del sector</h3>
-      <p>Un mismo grupo económico puede estar en la carga, las bencineras, la generación y la
-      transmisión a la vez. Quién controla varios eslabones de la energía, cruzado por grupo.</p>
+    <a class="modulo-card" href="grupos-economicos.html">
+      <h3>Grupos económicos</h3>
+      <p>Un mismo grupo puede estar en la carga, las bencineras, la generación y la
+      transmisión a la vez, y varias marcas de auto tener un solo dueño. Cuatro miradas al
+      mismo tablero: integración vertical, grupo automotriz, concentración de la red y
+      transición de las petroleras.</p>
       <div class="aud"><span class="pill">Por grupo económico</span></div>
     </a>
     <a class="modulo-card" href="camiones.html">
@@ -343,12 +307,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       de la desigualdad energética de las 346 comunas.</p>
       <div class="aud"><span class="pill">Política pública</span></div>
     </a>
-    <a class="modulo-card" href="censo-electricidad.html">
-      <h3>Electricidad en las viviendas</h3>
-      <p>6,4 millones de hogares según su fuente de energía: red, panel solar, generador o sin
-      electricidad. Directo del microdato del Censo.</p>
-      <div class="aud"><span class="pill">Microdato 18,5M</span></div>
-    </a>
     <a class="modulo-card" href="permisos.html">
       <h3>Parque de vehículos</h3>
       <p>Todos los vehículos con permiso de circulación en Chile según el INE: 6,7 millones en 2024, su evolución desde 2008 por tipo de motor — bencinero, diésel, gas y eléctrico — y por región.</p>
@@ -360,13 +318,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       vivienda, conectividad y servicios básicos, por región y por las 346 comunas, con mapa comunal
       por indicador. El contexto que sostiene el resto del observatorio.</p>
       <div class="aud"><span class="pill">Censo 2024 INE</span> <span class="pill">346 comunas</span></div>
-    </a>
-    <a class="modulo-card" href="censo-proyectado.html">
-      <h3>Censo proyectado</h3>
-      <p>Chile no hace censos parciales entre censos: para 2025 en adelante, la referencia oficial
-      es la proyección de población del INE sobre la base del Censo 2024 — estimada, no censada, y
-      ajustada por omisión.</p>
-      <div class="aud"><span class="pill">Proyección INE</span> <span class="pill">Post-2024</span></div>
     </a>
     <a class="modulo-card" href="normativa.html">
       <h3>Metas y marco legal</h3>
@@ -391,7 +342,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/resumen.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927d"></script>
+<script src="assets/comun.js?v=260927e"></script>
 <script>
 PW.montarNav("index.html"); const k = PW_DATA.resumen.kpis; // Las cifras que la portada cita en prosa se leen del dato, no van escritas a mano. Tres se
 // habian desfasado sin que nada lo detectara (69 instrumentos contra 94, 584 vehiculos de

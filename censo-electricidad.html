@@ -2,7 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="refresh" content="0; url=censo.html#electricidad">
+<link rel="canonical" href="https://observatorio.energiasfuturo.com/censo.html#electricidad">
+<meta name="robots" content="noindex, follow">
+<title>Electricidad en las viviendas — Energías Futuro</title>
+<meta name="description" content="Esta sección ahora vive dentro de Censo Nacional 2024. Se te redirige automáticamente.">
+<link rel="stylesheet" href="assets/estilo.css">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -12,26 +19,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0C4Z3N1KZJ');
+</script>
 <!-- End Google tag (gtag.js) -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>Electricidad en las viviendas — Energías Futuro</title>
-<meta name="description" content="El desglose de la fuente eléctrica del hogar — red pública, generador propio, panel solar, eólica, otra o sin electricidad — por comuna, directo del...">
-<link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927d">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
-<script>var _pwv=Math.floor(Date.now()/6e5)</script>
-<script>document.write('<link rel="preload" as="script" href="data/c_censoelec.js?v='+_pwv+'">')</script>
-<!-- geo_comunas.js se pide bajo demanda (cargarGeoComunas), pero esta pagina SIEMPRE lo necesita
-     (choropleth visible por defecto): precargarlo evita que la espera sea secuencial. -->
-<script>document.write('<link rel="preload" as="script" href="data/geo_comunas.js?v='+_pwv+'">')</script>
-<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -39,115 +33,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
-  <h1>Electricidad en las viviendas</h1>
-  <p class="sub">El <b>desglose de la fuente eléctrica del hogar</b> — red pública, <b>generador
-  propio</b>, panel solar, eólica, otra o sin electricidad — por comuna, directo del microdato del
-  Censo 2024 (18,5 millones de registros). Complementa el mapa amplio del <a href="censo.html">Censo
-  Nacional</a> separando la generación domiciliaria que el mapa general no distingue. La base real
-  para dimensionar la carga domiciliaria de vehículos eléctricos.</p>
-  <p class="nota" id="nota"></p>
-
-  <div class="filtros">
-    <label>Región <select id="f-region"><option value="">Todas</option></select></label>
-    <label>Comuna <select id="f-comuna" disabled><option value="">Todas</option></select></label>
-    <span class="pill">Foto Censo 2024 (sin serie anual)</span>
-  </div>
-
-  <div class="kpis" id="kpis"></div>
-
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Mapa comunal por fuente</h2>
-    <div class="filtros" style="margin:0 0 8px">
-      <label>Fuente <select id="f-metrica">
-        <option value="pct_solar">Placa solar</option>
-        <option value="pct_generador">Generador diesel/bencina</option>
-        <option value="pct_sin">Sin electricidad</option>
-        <option value="pct_red">Red pública</option>
-      </select></label>
-    </div>
-    <p class="nota">Quintiles: más oscuro = mayor proporción. En el extremo, comunas aisladas sin red
-    (General Lagos 68% solar, Río Verde 51%): allí la generación domiciliaria ES la red. Los filtros
-    de arriba acotan y hacen foco en el mapa.</p>
-    <div id="mapa-solar"></div>
-  </div>
-
-  <div class="fila2">
-    <div class="tarjeta">
-      <h2 style="margin-top:0">Mayor dependencia de generador diesel/bencina</h2>
-      <div id="g-generador"></div>
-      <p class="nota">Comunas donde más viviendas dependen de un generador: energía cara y
-      contaminante — candidatas naturales a solar + almacenamiento.</p>
-    </div>
-    <div class="tarjeta">
-      <h2 style="margin-top:0">Más viviendas sin electricidad</h2>
-      <div id="g-sin"></div>
-    </div>
-  </div>
-
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Todas las comunas</h2>
-    <div id="t-comunas"></div>
+  <div class="hero">
+    <h1>Electricidad en las viviendas</h1>
+    <p>Esta sección ahora es una pestaña de <strong>Censo Nacional 2024</strong>. Si no se te redirige, <a href="censo.html#electricidad">entra aquí</a>.</p>
   </div>
 </main>
-<script>document.write('<script src="data/c_censoelec.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927d"></script>
-<script>
-PW.montarNav("censo-electricidad.html"); const D = PW_DATA.c_censoelec; // Cobertura declarada: el Censo suprime la pregunta 9 en comunas muy chicas, asi que no todas las
-// 346 del padron tienen dato (hoy falta 12202 Antartica). Se dice cuantas hay y cual falta, en vez
-// de que la comuna desaparezca del mapa sin explicacion.
-const sinDato = D.comunas_sin_dato || []; document.getElementById("nota").textContent =
-  "Actualizado " + (D.generado || "").slice(0, 10) + ". "
-  + D.comunas.length + " de " + (D.n_comunas_padron || D.comunas.length) + " comunas con dato"
-  + (sinDato.length ? "; sin microdato utilizable: " + sinDato.map(c => c.comuna).join(", ") : "")
-  + "."; // Filtros region/comuna. Censo 2024 es FOTO UNICA -> no hay filtro de año.
-const selR = document.getElementById("f-region"); const selC = document.getElementById("f-comuna"); [...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
-  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o); }); function poblarComunas() {
-  const reg = selR.value; const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort(); selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join(""); selC.disabled = !reg; }
-
-// KPIs del territorio: nacional exacto (D.nacional) o agregado ponderado por viviendas al filtrar.
-function aggregado(filas) {
-  const viv = filas.reduce((s, c) => s + c.viviendas, 0); const w = k => viv ? filas.reduce((s, c) => s + (c[k] || 0) * c.viviendas, 0) / viv : 0; return { viviendas: viv, pct_red: w("pct_red"), pct_solar: w("pct_solar"),
-    pct_generador: w("pct_generador"), pct_sin: w("pct_sin"),
-    n_solar: Math.round(w("pct_solar") / 100 * viv), n_generador: Math.round(w("pct_generador") / 100 * viv),
-    n_sin: Math.round(w("pct_sin") / 100 * viv) }; }
-function pintarKpis(A) {
-  document.getElementById("kpis").innerHTML = [
-    [PW.fmt(A.viviendas), "viviendas censadas con dato", "particulares ocupadas, 2024"],
-    [PW.fmt(A.pct_red, 1) + "%", "conectadas a la red pública", "la base de la carga domiciliaria"],
-    [PW.fmt(A.n_solar), "con placa solar", PW.fmt(A.pct_solar, 1) + "%"],
-    [PW.fmt(A.n_generador), "con generador diesel/bencina", PW.fmt(A.pct_generador, 1) + "%"],
-    [PW.fmt(A.n_sin), "sin electricidad", PW.fmt(A.pct_sin, 1) + "%"],
-  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); }
-
-let MAPA = null; function pintarMapa(reg, com, filas) {
-  if (MAPA) { MAPA.remove(); MAPA = null; }
-  const ley = document.querySelector("#mapa-solar + .leyenda"); if (ley) ley.remove(); const metrica = document.getElementById("f-metrica").value; const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas; const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null); MAPA = PW.choropleth("mapa-solar", {
-    valores: Object.fromEntries(comunasMapa.map(c => [c.cut, c[metrica]])),
-    fmt: v => v == null ? "sin dato" : PW.fmt(v, 1) + "%", alto: 540, foco,
-  }); }
-
-const cols = [
-  { k: "comuna", titulo: "Comuna" },
-  { k: "region", titulo: "Región" },
-  { k: "viviendas", titulo: "Viviendas", num: true, fmt: v => PW.fmt(v) },
-  { k: "pct_red", titulo: "% red publica", num: true, fmt: v => PW.fmt(v, 1) + "%" },
-  { k: "pct_solar", titulo: "% placa solar", num: true, fmt: v => v >= 5 ? `<b>${PW.fmt(v, 1)}%</b>` : PW.fmt(v, 1) + "%" },
-  { k: "pct_generador", titulo: "% generador", num: true, fmt: v => PW.fmt(v, 1) + "%" },
-  { k: "pct_eolica", titulo: "% eólica", num: true, fmt: v => v == null ? "—" : (v >= 2 ? `<b>${PW.fmt(v, 1)}%</b>` : PW.fmt(v, 1) + "%") },
-  { k: "pct_otro", titulo: "% otra", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) + "%" },
-  { k: "pct_sin", titulo: "% sin electricidad", num: true, fmt: v => v >= 2 ? `<span class="estado-mal">${PW.fmt(v, 1)}%</span>` : PW.fmt(v, 1) + "%" },
-]; let tab = null; function refrescar() {
-  const reg = selR.value, com = selC.value; const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com)); pintarKpis((reg || com) ? aggregado(filas) : D.nacional); pintarMapa(reg, com, filas); PW.barras("g-generador", {
-    items: filas.slice().sort((a, b) => b.pct_generador - a.pct_generador).slice(0, 12).map(c => ({
-      nombre: c.comuna, valor: c.pct_generador, extra: c.region + " — " + PW.fmt(c.viviendas) + " viviendas" })),
-    color: PW.color("--s2"), fmtV: v => PW.fmt(v, 1) + "%",
-  }); PW.barras("g-sin", {
-    items: filas.slice().sort((a, b) => b.pct_sin - a.pct_sin).slice(0, 12).map(c => ({
-      nombre: c.comuna, valor: c.pct_sin, extra: c.region })),
-    color: PW.color("--critical"), fmtV: v => PW.fmt(v, 1) + "%",
-  }); if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "pct_solar", max: 400 }); }
-selR.addEventListener("input", () => { poblarComunas(); refrescar(); }); selC.addEventListener("input", refrescar); document.getElementById("f-metrica").addEventListener("input", refrescar); // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
-// recien entonces se pinta el choropleth inicial (los refrescos por filtro ya lo tienen cacheado).
-PW.cargarGeoComunas().then(refrescar); </script>
 </body>
 </html>

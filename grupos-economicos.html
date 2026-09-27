@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
+<!-- End Google tag (gtag.js) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Grupos económicos — Energías Futuro</title>
+<meta name="description" content="Un mismo grupo económico puede estar en varios eslabones de la energía a la vez. Cruzando por grupo económico canónico (kit de homologación de...">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260927e">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_integracion.js?v='+_pwv+'">')</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <div class="tab-nav" id="pestanas" role="tablist">
+    <button class="tab-btn activo" data-tab="integracion">Integración vertical</button>
+    <button class="tab-btn" data-tab="automotriz">Grupo automotriz</button>
+    <button class="tab-btn" data-tab="concentracion">Concentración de la red</button>
+    <button class="tab-btn" data-tab="petroleras">Transición de las petroleras</button>
+  </div>
+  <section class="tab-content activo" id="integracion">
+  <h1>Grupos económicos</h1>
+  <p class="sub">Un mismo grupo económico puede estar en varios eslabones de la energía a la vez.
+  Cruzando por <b>grupo económico canónico</b> (kit de homologación de operadores), este tablero
+  muestra quién está en la <b>red de carga</b>, en las <b>bencineras</b>, en la <b>generación</b>
+  y en la <b>transmisión</b> — y quién los combina.</p>
+
+  <div class="kpis" id="kpis"></div>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Matriz grupo económico × eslabón</h2>
+    <div class="leyenda" id="ley" style="margin:4px 0 12px"></div>
+    <div class="scroll-x"><table class="pw" id="matriz"></table></div>
+    <p class="nota" style="margin-top:10px">Intensidad del color = magnitud relativa dentro de
+    cada columna. "Sectores" cuenta en cuántos de los cuatro eslabones participa el grupo; 3 o 4
+    indican <b>integración vertical</b>. Solo se muestran los grupos reconocidos por el kit de
+    operadores (los SPV y actores menores no catalogados quedan fuera).</p>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+  </section>
+  <section class="tab-content" id="automotriz">
+<h1>Grupo automotriz 360</h1>
+  <p class="sub">En el mercado eléctrico chileno, varias "marcas" son en realidad <b>un solo grupo
+  económico</b>: Geely reúne a Volvo, Zeekr, Lynk &amp; Co, Smart y más. Este tablero mide la
+  participación en ventas de enchufables (BEV+PHEV) por <b>grupo económico automotriz</b> (kit de
+  homologación de marca), revelando la concentración que se pierde al mirar marca por marca.</p>
+
+  <div class="kpis" id="ga-kpis"></div>
+  <p class="nota" id="ga-nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Participación EV por grupo económico automotriz</h2>
+    <div class="scroll-x"><table class="pw" id="ga-tabla"></table></div>
+    <p class="nota" style="margin-top:10px">La barra es la participación en unidades enchufables
+    acumuladas de la serie. "Marcas" es cuántas marcas comerciales agrupa cada grupo económico; los grupos con 2 o más marcas están resaltados (concentración que no se ve marca por marca).</p>
+  </div>
+
+  <p class="fuente" id="ga-fuente"></p>
+  </section>
+  <section class="tab-content" id="concentracion">
+<h1>Concentración de la red de carga</h1>
+  <p class="sub">¿La red de carga pública es un mercado competitivo o dominado por unos pocos?
+  Medimos la concentración con el <b>índice Herfindahl-Hirschman (HHI)</b> sobre las estaciones de
+  carga, con los operadores agrupados por <b>grupo económico canónico</b>. Umbrales de referencia
+  (DOJ EE.UU.): bajo 1.500 competitivo, 1.500-2.500 moderado, sobre 2.500 concentrado.</p>
+
+  <div class="kpis" id="co-kpis"></div>
+  <p class="nota" id="co-nota"></p>
+
+  <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">¿Quieres ver el detalle operacional de cada operador? → <a href="operadores.html" style="text-decoration:underline">Ranking de operadores</a> | ¿Cómo evolucionan los grupos petroleros? → <a href="petroleras.html" style="text-decoration:underline">Transición de las petroleras</a></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">HHI por región (de más a menos concentrada)</h2>
+    <div class="leyenda" id="co-ley" style="margin:4px 0 12px"></div>
+    <div class="scroll-x"><table class="pw" id="co-tabla"></table></div>
+    <p class="nota" style="margin-top:10px">La barra escala el HHI de 0 a 10.000 (monopolio puro).
+    "Jugadores" es el número de grupos/operadores distintos en la región; "Líder" es el que más
+    estaciones tiene y su participación. Solo red pública (no incluye cargadores privados o de
+    acceso restringido).</p>
+  </div>
+
+  <p class="fuente" id="co-fuente"></p>
+  </section>
+  <section class="tab-content" id="petroleras">
+<h1>La transición de las petroleras</h1>
+  <p class="sub">Las distribuidoras de combustible pueden sumar carga eléctrica a sus estaciones.
+  Cruzando por <b>grupo económico</b>, este tablero mira dos señales distintas: cuántas de sus
+  bencineras <b>ya tienen un cargador en el sitio</b> (aunque lo opere un tercero) y cuántos puntos
+  de carga <b>opera la propia petrolera</b>. Así se ve quién solo hospeda carga de terceros y quién
+  apostó por su propia red.</p>
+
+  <div class="kpis" id="pe-kpis"></div>
+  <p class="nota" id="pe-nota"></p>
+
+  <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">¿Ver la presencia operacional de estos grupos? → <a href="operadores.html" style="text-decoration:underline">Ranking de operadores</a> | ¿Analizar el poder de mercado? → <a href="concentracion.html" style="text-decoration:underline">Concentración del mercado</a></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Bencineras vs puntos de carga, por petrolera</h2>
+    <div class="leyenda" id="pe-ley" style="margin:4px 0 12px"></div>
+    <div class="scroll-x"><table class="pw" id="pe-tabla"></table></div>
+    <p class="nota" style="margin-top:10px"><b>"Con carga en el sitio"</b> = bencineras del grupo
+    con un cargador a 100 m o menos, sin importar quién lo opera (co-ubicación física); la barra
+    muestra esa cobertura (verde) sobre el total de bencineras. <b>"Red propia"</b> = puntos de
+    carga operados por el mismo grupo. Distingue a quien solo <b>hospeda</b> carga de terceros
+    (ej. Aramco/Gasco con cargadores Enel X en sus estaciones) de quien apostó por su <b>propia
+    red</b> (Copec Voltex, Enex/Shell). Complementa "Estaciones duales". Solo grupos con bencineras.</p>
+  </div>
+
+  <p class="fuente" id="pe-fuente"></p>
+  </section>
+</main>
+
+<script>document.write('<script src="data/c_integracion.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=260927e"></script>
+<script>
+PW.montarNav("grupos-economicos.html"); const D = window.PW_DATA.c_integracion; const C = PW.color; // eslabones: clave, titulo, unidad, color, formato
+const COLS = [
+  { k: "carga", t: "Red de carga", u: "estaciones", col: "--s3", fmt: v => PW.fmt(v) },
+  { k: "comb",  t: "Combustible",  u: "bencineras", col: "--s2", fmt: v => PW.fmt(v) },
+  { k: "mw",    t: "Generación",   u: "MW",         col: "--s4", fmt: v => PW.fmt(Math.round(v)) },
+  { k: "sub",   t: "Transmisión",  u: "subestaciones", col: "--s1", fmt: v => PW.fmt(v) },
+]; const max = {}; COLS.forEach(c => { max[c.k] = Math.max(...D.grupos.map(g => g[c.k] || 0), 1); }); // KPIs
+const integrados = D.grupos.filter(g => g.sectores >= 2); const lider = D.grupos[0]; document.getElementById("kpis").innerHTML = [
+  [PW.fmt(D.grupos.length), "grupos económicos", "reconocidos por el kit"],
+  [PW.fmt(integrados.length), "en 2 o más eslabones", "presencia multisector"],
+  [lider.grupo, "el más integrado", lider.sectores + " de 4 eslabones"],
+  [PW.fmt(D.totales.mw ? Math.round(D.totales.mw) : 0), "MW en la base", "sumados en generación"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; PW.leyendaMapa("ley", COLS.map(c => [c.t + " (" + c.u + ")", C(c.col)])); // mezcla el color de la columna con el fondo segun la magnitud (0..1)
+function celda(c, v) {
+  if (!v) return `<td class="num" style="color:var(--ink-3)">—</td>`; const pct = Math.round(18 + 62 * Math.sqrt(v / max[c.k])); // 18%..80%
+  const bg = `color-mix(in srgb, ${C(c.col)} ${pct}%, transparent)`; return `<td class="num" style="background:${bg};font-weight:600">${c.fmt(v)}</td>`; }
+function badge(n) {
+  // C() obligatorio tambien en la ultima rama: sin el se emitia background:--ink-3 (CSS
+  // invalido) y el badge quedaba blanco sobre fondo transparente, invisible en el tema claro.
+  const col = n >= 4 ? C("--critical") : (n >= 3 ? C("--s2") : (n >= 2 ? C("--s4") : C("--ink-3"))); return `<span style="display:inline-block;min-width:20px;text-align:center;border-radius:6px;` +
+    `padding:1px 7px;font-weight:700;color:#fff;background:${col}">${n}</span>`; }
+const th = `<thead><tr><th>Grupo económico</th>` +
+  COLS.map(c => `<th class="num">${c.t}<br><span style="font-weight:400;color:var(--ink-3)">${c.u}</span></th>`).join("") +
+  `<th class="num">Sectores</th></tr></thead>`; const rows = D.grupos.map(g =>
+  `<tr${g.sectores >= 3 ? ' style="outline:2px solid ' + C("--s1") + ';outline-offset:-2px"' : ""}>` +
+  `<td><b>${g.grupo}</b></td>` +
+  COLS.map(c => celda(c, g[c.k])).join("") +
+  `<td class="num">${badge(g.sectores)}</td></tr>`).join(""); document.getElementById("matriz").innerHTML = th + "<tbody>" + rows + "</tbody>"; document.getElementById("fuente").textContent = D.nota; 
+// [FUSION 778] Pestanas. Cada una carga SUS datos la primera vez que se abre, para
+// no sumar en la carga inicial lo que antes estaba repartido en varias paginas.
+// Los ids de las absorbidas van con prefijo: habia colisiones y en un documento
+// unico gana el primero, asi que se pisarian en silencio.
+const _hecho = {};
+PW.pestanas("pestanas", async (id) => {
+  if (id === "automotriz" && !_hecho.automotriz) {
+    _hecho.automotriz = true;
+    if (!await PW.cargarDatos("c_grupoauto")) return;
+    (function () {
+const D = window.PW_DATA.c_grupoauto; const C = PW.color; const G = D.grupos; const maxp = Math.max(...G.map(g => g.pct), 1); const multimarca = G.filter(g => g.n_marcas >= 2); const lider = G[0]; const nivelHHI = D.hhi < 1500 ? "competitivo" : (D.hhi < 2500 ? "moderado" : "concentrado"); document.getElementById("ga-kpis").innerHTML = [
+  [PW.fmt(D.total_ev), "unidades enchufables", "acumuladas en la serie"],
+  [lider.grupo + " " + PW.fmt(lider.pct, 1) + "%", "grupo líder", lider.n_marcas + " marca" + (lider.n_marcas > 1 ? "s" : "")],
+  [PW.fmt(D.hhi), "HHI del mercado", "por grupo — " + nivelHHI],
+  [PW.fmt(multimarca.length), "grupos multimarca", "2 o más marcas bajo un dueño"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("ga-nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; function barra(g) {
+  const w = Math.min(100, g.pct / maxp * 100); return `<div class="part"><span class="n">${PW.fmt(g.unidades)} · ${PW.fmt(g.pct, 1)}%</span>` +
+    `<div class="track"><i style="width:${w}%"></i></div></div>`; }
+function chipMarcas(n) {
+  // C() obligatorio tambien en la ultima rama: sin el se emitia background:--ink-3 (CSS
+  // invalido, el navegador lo descarta) y el chip quedaba con texto blanco sobre fondo
+  // transparente, es decir invisible sobre la tarjeta -- la columna "Marcas" se veia vacia
+  // en los grupos de una sola marca (BYD, Tesla, Changan). Fallaba en el tema por defecto.
+  const col = n >= 5 ? C("--critical") : (n >= 2 ? C("--s4") : C("--ink-3")); return `<span class="chip-n" style="background:${col}">${n}</span>`; }
+const th = `<thead><tr><th>Grupo económico</th><th>Participación EV</th>` +
+  `<th class="num">Marcas</th><th>Marcas que agrupa</th></tr></thead>`; const rows = G.map(g =>
+  `<tr${g.n_marcas >= 2 ? ' style="background:color-mix(in srgb, ' + C("--s4") + ' 7%, transparent)"' : ""}>` +
+  `<td><b>${g.grupo}</b></td>` +
+  `<td style="min-width:220px">${barra(g)}</td>` +
+  `<td class="num">${chipMarcas(g.n_marcas)}</td>` +
+  `<td class="marcas">${g.marcas.join(", ")}</td></tr>`).join(""); document.getElementById("ga-tabla").innerHTML = th + "<tbody>" + rows + "</tbody>"; document.getElementById("ga-fuente").textContent = D.nota;
+    })();
+  }
+  if (id === "concentracion" && !_hecho.concentracion) {
+    _hecho.concentracion = true;
+    if (!await PW.cargarDatos("c_concentracion")) return;
+    (function () {
+const D = window.PW_DATA.c_concentracion; const C = PW.color; const NIV = {
+  concentrado: ["Concentrado", "--critical"],
+  moderado:    ["Moderado", "--warning"],
+  competitivo: ["Competitivo", "--good"],
+}; const N = D.nacional; const noCopec = D.regiones.filter(r => r.lider !== "Copec"); document.getElementById("co-kpis").innerHTML = [
+  [PW.fmt(N.hhi), "HHI nacional", NIV[N.nivel][0].toLowerCase()],
+  [N.lider + " " + PW.fmt(N.pct_lider, 1) + "%", "líder nacional", "de las estaciones públicas"],
+  [PW.fmt(D.regiones.filter(r => r.nivel === "concentrado").length) + " de " + D.regiones.length, "regiones concentradas", "HHI sobre 2.500"],
+  [PW.fmt(noCopec.length), "regiones no lidera Copec", noCopec.map(r => r.region).join(", ") || "—"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("co-nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; PW.leyendaMapa("co-ley", [
+  ["Concentrado (>2.500)", C("--critical")],
+  ["Moderado (1.500-2.500)", C("--warning")],
+  ["Competitivo (<1.500)", C("--good")],
+]); function barra(hhi, nivel) {
+  const w = Math.min(100, hhi / 10000 * 100); const col = C(NIV[nivel][1]); return `<div style="display:flex;align-items:center;gap:8px">` +
+    `<span class="hhi-val" style="min-width:44px;text-align:right">${PW.fmt(hhi)}</span>` +
+    `<div class="hhi-bar"><span style="width:${w}%;background:${col}"></span></div></div>`; }
+function badge(nivel) {
+  const [txt, cvar] = NIV[nivel] || ["—", "--ink-3"]; return `<span class="nivel" style="background:${C(cvar)}">${txt}</span>`; }
+const th = `<thead><tr><th>Región</th><th>HHI</th>` +
+  `<th class="num">Estaciones</th><th class="num">Jugadores</th>` +
+  `<th>Líder</th><th class="num">% líder</th><th>Nivel</th></tr></thead>`; const rows = D.regiones.map(r =>
+  `<tr><td><b>${r.region}</b></td>` +
+  `<td style="min-width:180px">${barra(r.hhi, r.nivel)}</td>` +
+  `<td class="num">${PW.fmt(r.estaciones)}</td>` +
+  `<td class="num">${PW.fmt(r.jugadores)}</td>` +
+  `<td>${r.lider}</td>` +
+  `<td class="num">${PW.fmt(r.pct_lider, 1)}%</td>` +
+  `<td>${badge(r.nivel)}</td></tr>`).join(""); document.getElementById("co-tabla").innerHTML = th + "<tbody>" + rows + "</tbody>"; document.getElementById("co-fuente").textContent = D.nota;
+    })();
+  }
+  if (id === "petroleras" && !_hecho.petroleras) {
+    _hecho.petroleras = true;
+    if (!await PW.cargarDatos("c_petroleras")) return;
+    (function () {
+const D = window.PW_DATA.c_petroleras; const C = PW.color; const G = D.grupos, T = D.totales; const lider = G[0]; document.getElementById("pe-kpis").innerHTML = [
+  [lider.grupo + " · " + PW.fmt(lider.con_carga), "más bencineras con carga en el sitio", PW.fmt(lider.pct_con_carga, 1) + "% de su propia red"],
+  [PW.fmt(T.con_carga_en_sitio) + " de " + PW.fmt(T.grupos), "petroleras con carga en sus estaciones", "aunque la opere un tercero"],
+  [PW.fmt(T.con_red_propia), "operan su propia red", "el resto solo hospeda a terceros"],
+  [PW.fmt(T.bencineras), "bencineras", "de las petroleras catalogadas"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("pe-nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; PW.leyendaMapa("pe-ley", [["Bencineras con carga en el sitio", C("--s3")], ["Bencineras sin carga", C("--s2")]]); function comp(g) {
+  const b = g.bencineras || 1; const wc = g.con_carga / b * 100, ws = Math.max(0, 100 - wc); return `<div class="comp">` +
+    (wc ? `<i class="c" style="width:${wc}%"></i>` : "") +
+    (ws ? `<i class="b" style="width:${ws}%"></i>` : "") + `</div>`; }
+const th = `<thead><tr><th>Grupo (petrolera)</th>` +
+  `<th class="num">Bencineras</th><th class="num">Con carga en el sitio</th>` +
+  `<th>Cobertura de carga</th><th class="num">%</th>` +
+  `<th class="num">Red propia (opera)</th></tr></thead>`; const rows = G.map(g =>
+  `<tr><td><b>${g.grupo}</b></td>` +
+  `<td class="num">${PW.fmt(g.bencineras)}</td>` +
+  `<td class="num">${PW.fmt(g.con_carga)}</td>` +
+  `<td style="min-width:200px">${comp(g)}</td>` +
+  `<td class="num pctlead" style="color:${g.pct_con_carga > 0 ? C("--s3") : "var(--ink-3)"}">${PW.fmt(g.pct_con_carga, 1)}%</td>` +
+  `<td class="num">${g.carga_propia > 0 ? PW.fmt(g.carga_propia) : "—"}</td></tr>`).join(""); document.getElementById("pe-tabla").innerHTML = th + "<tbody>" + rows + "</tbody>"; document.getElementById("pe-fuente").textContent = D.nota;
+    })();
+  }
+});
+</script>
+</body>
+</html>

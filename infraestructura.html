@@ -2,7 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="refresh" content="0; url=carga-registro-mapa.html#capacidad">
+<link rel="canonical" href="https://observatorio.energiasfuturo.com/carga-registro-mapa.html#capacidad">
+<meta name="robots" content="noindex, follow">
+<title>Infraestructura de carga (SEC) — Energías Futuro</title>
+<meta name="description" content="Esta sección ahora vive dentro de Registro oficial de carga (SEC). Se te redirige automáticamente.">
+<link rel="stylesheet" href="assets/estilo.css">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -12,21 +19,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0C4Z3N1KZJ');
+</script>
 <!-- End Google tag (gtag.js) -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>Infraestructura de carga (SEC) — Energías Futuro</title>
-<meta name="description" content="El registro oficial del regulador: lo que los operadores declaran a la SEC (reporte EcoCarga). Acumulado histórico por categoría de uso, macro-zona...">
-<link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927d">
-<script>var _pwv=Math.floor(Date.now()/6e5)</script>
-<script>document.write('<link rel="preload" as="script" href="data/infraestructura.js?v='+_pwv+'">')</script>
-<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -34,110 +33,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
-  <h1>Infraestructura de carga (SEC)</h1>
-  <p class="sub">El registro <b>oficial</b> del regulador: lo que los operadores declaran a la SEC
-  (reporte EcoCarga). Acumulado histórico por categoría de uso, macro-zona, región, clase de potencia
-  y tipo de conector. Es distinto de la <a href="operadores.html">red viva</a> (Cargadores y
-  Conectores / OCPI, cada 30 min): aquí está la <b>base declarada</b>.</p>
-  <p class="nota" id="nota"></p>
-
-  <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">¿Te interesa la cobertura teórica y dónde faltan cargadores? → <a href="autonomia.html" style="text-decoration:underline">Brecha de cobertura</a> (en sección Carga)</p>
-
-  <div class="kpis" id="kpis"></div>
-
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Crecimiento de la infraestructura declarada</h2>
-    <div id="g-serie"></div>
-    <p class="nota">Acumulado mes a mes desde 2018 (serie aditiva del reporte SEC). Los conectores
-    (tomas) superan a los cargadores porque un cargador puede tener varias tomas.</p>
+  <div class="hero">
+    <h1>Infraestructura de carga (SEC)</h1>
+    <p>Esta sección ahora es una pestaña de <strong>Registro oficial de carga (SEC)</strong>. Si no se te redirige, <a href="carga-registro-mapa.html#capacidad">entra aquí</a>.</p>
   </div>
-
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Por categoría de uso</h2>
-    <div class="scroll-x"><div id="t-cat"></div></div>
-    <p class="nota" id="nota-cat"></p>
-  </div>
-
-  <div class="fila2">
-    <div class="tarjeta">
-      <h2 style="margin-top:0">Por macro-zona SEC</h2>
-      <div id="g-zona"></div>
-    </div>
-    <div class="tarjeta">
-      <h2 style="margin-top:0">Por región</h2>
-      <div id="g-region"></div>
-    </div>
-  </div>
-
-  <div class="fila2">
-    <div class="tarjeta">
-      <h2 style="margin-top:0">Por clase de potencia</h2>
-      <div id="g-pot"></div>
-      <p class="nota">Snapshot de la red pública (EcoCarga). Semi-rápido y ultrarápido dominan.</p>
-    </div>
-    <div class="tarjeta">
-      <h2 style="margin-top:0">Por tipo de conector</h2>
-      <div id="g-con"></div>
-      <p class="nota">Snapshot de la red pública, tipo de conector homologado al estándar canónico. Es la base <b>declarada</b> a la SEC; la red <b>viva</b> (OCPI) está en <a href="conectores-red.html">Conectores flota-red</a>.</p>
-    </div>
-  </div>
-
-  <p class="fuente" id="fuente"></p>
 </main>
-
-<script>document.write('<script src="data/infraestructura.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927d"></script>
-<script>
-PW.montarNav("infraestructura.html"); const D = window.PW_DATA.infraestructura; // Declarar el desvio contra la vista georreferenciada del MISMO registro: esta pagina publica
-// el total oficial de EcoCarga y el mapa publica lo que pudo ubicar, y las dos cifras conviven
-// en el sitio sin que nada dijera por que difieren. Dos instalaciones vigentes no traen
-// coordenada; el resto del desvio no esta conciliado aguas arriba, y decirlo es mas honesto
-// que dejar al lector descubriendo dos numeros para el mismo hecho.
-document.getElementById("nota").textContent =
-  "Actualización SEC: " + D.actualizacion + ". Estas son las cifras del registro oficial "
-  + "completo. La vista georreferenciada del mismo registro (mapa del catastro SEC) muestra "
-  + "menos, porque solo puede ubicar las instalaciones con coordenada: esa diferencia no está "
-  + "conciliada en la fuente y por eso los dos módulos no dan el mismo total."; document.getElementById("kpis").innerHTML = [
-  [PW.fmt(D.kpis.instalaciones), "instalaciones", "puntos de carga declarados"],
-  [PW.fmt(D.kpis.cargadores), "cargadores", "equipos de carga"],
-  [PW.fmt(D.kpis.conectores), "conectores", "tomas de carga"],
-  [PW.fmt(D.kpis.mw, 1) + " MW", "potencia instalada", "capacidad declarada"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Serie ACUMULADA ("aditiva desde 2018"): el unico mes ausente (2019-10) no es un hueco de
-// medicion, es un mes sin altas, asi que el stock vale lo mismo que el mes anterior. Marcarlo
-// "sin dato" declaraba ignorancia sobre un mes que el registro SI cubre.
-const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar"); PW.lineas("g-serie", {
-  labels: SERIE.map(x => x.ym),
-  series: [
-    { nombre: "Conectores", valores: SERIE.map(x => x.conectores), area: true },
-    { nombre: "Cargadores", valores: SERIE.map(x => x.cargadores), color: PW.color("--s2") },
-  ],
-  fmtV: v => PW.fmt(v), alto: 300,
-}); PW.tabla("t-cat", [
-  { k: "cat", titulo: "Categoría de uso" },
-  { k: "instalaciones", titulo: "Instalaciones", num: true, fmt: v => PW.fmt(v) },
-  { k: "cargadores", titulo: "Cargadores", num: true, fmt: v => PW.fmt(v) },
-  { k: "conectores", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
-  { k: "mw", titulo: "Potencia (MW)", num: true, fmt: v => PW.fmt(v, 1) },
-], D.categorias, { orden: "conectores", buscador: false }); const catMW = D.categorias.slice().sort((a, b) => b.mw - a.mw)[0]; document.getElementById("nota-cat").textContent =
-  "El uso privado concentra la mayor cantidad de conectores, pero " + catMW.cat.toLowerCase() +
-  " concentra la potencia (" + PW.fmt(catMW.mw, 1) + " MW): los buses eléctricos cargan a alta potencia."; PW.barras("g-zona", {
-  items: D.zonas.map(z => ({
-    nombre: z.zona, valor: z.conectores,
-    extra: PW.fmt(z.cargadores) + " cargadores · " + PW.fmt(z.mw, 1) + " MW",
-  })),
-  fmtV: v => PW.fmt(v),
-}); PW.barras("g-region", {
-  items: D.regiones.filter(r => r.conectores > 0).map(r => ({
-    nombre: r.region, valor: r.conectores,
-    extra: PW.fmt(r.cargadores) + " cargadores",
-  })),
-  fmtV: v => PW.fmt(v),
-}); PW.barras("g-pot", {
-  items: D.por_potencia.map(p => ({ nombre: p.clase, valor: p.n })),
-  fmtV: v => PW.fmt(v),
-}); PW.barras("g-con", {
-  items: D.por_conector.map(c => ({ nombre: c.tipo, valor: c.n })),
-  fmtV: v => PW.fmt(v),
-}); document.getElementById("fuente").textContent = D.nota; </script>
 </body>
 </html>

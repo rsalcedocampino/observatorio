@@ -2,7 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta http-equiv="refresh" content="0; url=grupos-economicos.html#petroleras">
+<link rel="canonical" href="https://observatorio.energiasfuturo.com/grupos-economicos.html#petroleras">
+<meta name="robots" content="noindex, follow">
+<title>La transición de las petroleras — Energías Futuro</title>
+<meta name="description" content="Esta sección ahora vive dentro de Grupos económicos. Se te redirige automáticamente.">
+<link rel="stylesheet" href="assets/estilo.css">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -12,28 +19,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0C4Z3N1KZJ');
+</script>
 <!-- End Google tag (gtag.js) -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>La transición de las petroleras — Energías Futuro</title>
-<meta name="description" content="Las distribuidoras de combustible pueden sumar carga eléctrica a sus estaciones. Cruzando por grupo económico, este tablero mira dos señales distintas...">
-<link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927d">
-<style>
-  .comp { display: flex; height: 20px; border-radius: 5px; overflow: hidden; min-width: 160px; background: var(--grid); }
-  .comp > i { height: 100%; }
-  .comp .c { background: var(--s3); }
-  .comp .b { background: var(--s2); }
-  .pctlead { font-variant-numeric: tabular-nums; font-weight: 700; }
-</style>
-<script>var _pwv=Math.floor(Date.now()/6e5)</script>
-<script>document.write('<link rel="preload" as="script" href="data/c_petroleras.js?v='+_pwv+'">')</script>
-<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -41,54 +33,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
-  <h1>La transición de las petroleras</h1>
-  <p class="sub">Las distribuidoras de combustible pueden sumar carga eléctrica a sus estaciones.
-  Cruzando por <b>grupo económico</b>, este tablero mira dos señales distintas: cuántas de sus
-  bencineras <b>ya tienen un cargador en el sitio</b> (aunque lo opere un tercero) y cuántos puntos
-  de carga <b>opera la propia petrolera</b>. Así se ve quién solo hospeda carga de terceros y quién
-  apostó por su propia red.</p>
-
-  <div class="kpis" id="kpis"></div>
-  <p class="nota" id="nota"></p>
-
-  <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">¿Ver la presencia operacional de estos grupos? → <a href="operadores.html" style="text-decoration:underline">Ranking de operadores</a> | ¿Analizar el poder de mercado? → <a href="concentracion.html" style="text-decoration:underline">Concentración del mercado</a></p>
-
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Bencineras vs puntos de carga, por petrolera</h2>
-    <div class="leyenda" id="ley" style="margin:4px 0 12px"></div>
-    <div class="scroll-x"><table class="pw" id="tabla"></table></div>
-    <p class="nota" style="margin-top:10px"><b>"Con carga en el sitio"</b> = bencineras del grupo
-    con un cargador a 100 m o menos, sin importar quién lo opera (co-ubicación física); la barra
-    muestra esa cobertura (verde) sobre el total de bencineras. <b>"Red propia"</b> = puntos de
-    carga operados por el mismo grupo. Distingue a quien solo <b>hospeda</b> carga de terceros
-    (ej. Aramco/Gasco con cargadores Enel X en sus estaciones) de quien apostó por su <b>propia
-    red</b> (Copec Voltex, Enex/Shell). Complementa "Estaciones duales". Solo grupos con bencineras.</p>
+  <div class="hero">
+    <h1>La transición de las petroleras</h1>
+    <p>Esta sección ahora es una pestaña de <strong>Grupos económicos</strong>. Si no se te redirige, <a href="grupos-economicos.html#petroleras">entra aquí</a>.</p>
   </div>
-
-  <p class="fuente" id="fuente"></p>
 </main>
-
-<script>document.write('<script src="data/c_petroleras.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927d"></script>
-<script>
-PW.montarNav("petroleras.html"); const D = window.PW_DATA.c_petroleras; const C = PW.color; const G = D.grupos, T = D.totales; const lider = G[0]; document.getElementById("kpis").innerHTML = [
-  [lider.grupo + " · " + PW.fmt(lider.con_carga), "más bencineras con carga en el sitio", PW.fmt(lider.pct_con_carga, 1) + "% de su propia red"],
-  [PW.fmt(T.con_carga_en_sitio) + " de " + PW.fmt(T.grupos), "petroleras con carga en sus estaciones", "aunque la opere un tercero"],
-  [PW.fmt(T.con_red_propia), "operan su propia red", "el resto solo hospeda a terceros"],
-  [PW.fmt(T.bencineras), "bencineras", "de las petroleras catalogadas"],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; PW.leyendaMapa("ley", [["Bencineras con carga en el sitio", C("--s3")], ["Bencineras sin carga", C("--s2")]]); function comp(g) {
-  const b = g.bencineras || 1; const wc = g.con_carga / b * 100, ws = Math.max(0, 100 - wc); return `<div class="comp">` +
-    (wc ? `<i class="c" style="width:${wc}%"></i>` : "") +
-    (ws ? `<i class="b" style="width:${ws}%"></i>` : "") + `</div>`; }
-const th = `<thead><tr><th>Grupo (petrolera)</th>` +
-  `<th class="num">Bencineras</th><th class="num">Con carga en el sitio</th>` +
-  `<th>Cobertura de carga</th><th class="num">%</th>` +
-  `<th class="num">Red propia (opera)</th></tr></thead>`; const rows = G.map(g =>
-  `<tr><td><b>${g.grupo}</b></td>` +
-  `<td class="num">${PW.fmt(g.bencineras)}</td>` +
-  `<td class="num">${PW.fmt(g.con_carga)}</td>` +
-  `<td style="min-width:200px">${comp(g)}</td>` +
-  `<td class="num pctlead" style="color:${g.pct_con_carga > 0 ? C("--s3") : "var(--ink-3)"}">${PW.fmt(g.pct_con_carga, 1)}%</td>` +
-  `<td class="num">${g.carga_propia > 0 ? PW.fmt(g.carga_propia) : "—"}</td></tr>`).join(""); document.getElementById("tabla").innerHTML = th + "<tbody>" + rows + "</tbody>"; document.getElementById("fuente").textContent = D.nota; </script>
 </body>
 </html>

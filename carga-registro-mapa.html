@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Mapa del registro oficial de infraestructura de carga declarada a la SEC (reporte EcoCarga), ubicado estación por estación. A diferencia del mapa de la...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927d">
+<link rel="stylesheet" href="assets/estilo.css?v=260927e">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -41,6 +41,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
+  <div class="tab-nav" id="pestanas" role="tablist">
+    <button class="tab-btn activo" data-tab="mapa">Mapa</button>
+    <button class="tab-btn" data-tab="capacidad">Capacidad instalada</button>
+    <button class="tab-btn" data-tab="reporte">Reporte nacional 2026</button>
+  </div>
+  <section class="tab-content activo" id="mapa">
   <h1>Registro oficial de carga (SEC)</h1>
   <p class="sub">Mapa del <b>registro oficial</b> de infraestructura de carga declarada a la SEC (reporte
   EcoCarga), ubicado <b>estación por estación</b>. A diferencia del <a href="mapa-carga.html">mapa de la red
@@ -72,9 +78,93 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     comuna, cargadores y conectores. Los marcados <span class="pill">También en red pública en vivo</span>
     cruzan con la red OCPI (por folio = exacto, o espacial = aproximado).</p>
   </div>
+  </section>
+  <section class="tab-content" id="capacidad">
+<h1>Infraestructura de carga (SEC)</h1>
+  <p class="sub">El registro <b>oficial</b> del regulador: lo que los operadores declaran a la SEC
+  (reporte EcoCarga). Acumulado histórico por categoría de uso, macro-zona, región, clase de potencia
+  y tipo de conector. Es distinto de la <a href="operadores.html">red viva</a> (Cargadores y
+  Conectores / OCPI, cada 30 min): aquí está la <b>base declarada</b>.</p>
+  <p class="nota" id="ci-nota"></p>
+
+  <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">¿Te interesa la cobertura teórica y dónde faltan cargadores? → <a href="autonomia.html" style="text-decoration:underline">Brecha de cobertura</a> (en sección Carga)</p>
+
+  <div class="kpis" id="ci-kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Crecimiento de la infraestructura declarada</h2>
+    <div id="ci-g-serie"></div>
+    <p class="nota">Acumulado mes a mes desde 2018 (serie aditiva del reporte SEC). Los conectores
+    (tomas) superan a los cargadores porque un cargador puede tener varias tomas.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Por categoría de uso</h2>
+    <div class="scroll-x"><div id="ci-t-cat"></div></div>
+    <p class="nota" id="ci-nota-cat"></p>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por macro-zona SEC</h2>
+      <div id="ci-g-zona"></div>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por región</h2>
+      <div id="ci-g-region"></div>
+    </div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por clase de potencia</h2>
+      <div id="ci-g-pot"></div>
+      <p class="nota">Snapshot de la red pública (EcoCarga). Semi-rápido y ultrarápido dominan.</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Por tipo de conector</h2>
+      <div id="ci-g-con"></div>
+      <p class="nota">Snapshot de la red pública, tipo de conector homologado al estándar canónico. Es la base <b>declarada</b> a la SEC; la red <b>viva</b> (OCPI) está en <a href="conectores-red.html">Conectores flota-red</a>.</p>
+    </div>
+  </div>
+
+  <p class="fuente" id="ci-fuente"></p>
+  </section>
+  <section class="tab-content" id="reporte">
+<h1>Reporte Nacional SEC 2026</h1>
+  <p class="sub">Dimensiones del <b>Reporte Nacional de Infraestructura de Recarga para Vehículos Eléctricos 2026</b>
+  de la SEC (datos 2018-2025) que complementan el registro georreferenciado: <b>fiscalización</b> de la red pública,
+  <b>transporte público</b> (buses eléctricos) y <b>compatibilidad</b> vehículo-cargador. Para el registro por estación
+  ver <a href="carga-registro-mapa.html">el mapa del registro</a> y <a href="infraestructura.html">la capacidad instalada</a>.</p>
+  <p class="nota" id="rp-nota"></p>
+
+  <h2>Fiscalización de la red pública (2025)</h2>
+  <p class="sub">Durante 2025 la SEC fiscalizó en terreno la operatividad de la infraestructura de recarga pública.</p>
+  <div class="kpis" id="rp-kpi-fisc"></div>
+  <div class="tarjeta">
+    <h3 style="margin-top:0">Operatividad por macrozona</h3>
+    <div id="rp-g-fisc"></div>
+    <div id="rp-t-fisc"></div>
+  </div>
+
+  <h2>Transporte público eléctrico</h2>
+  <div class="kpis" id="rp-kpi-tp"></div>
+  <div class="tarjeta">
+    <p class="nota" id="rp-nota-tp"></p>
+  </div>
+
+  <h2>Compatibilidad vehículo-cargador</h2>
+  <p class="sub">Presencia de cada estándar en el mercado automotriz vs en las instalaciones públicas.</p>
+  <div class="tarjeta">
+    <div id="rp-t-compat"></div>
+    <p class="nota" id="rp-nota-compat"></p>
+  </div>
+
+  <p class="fuente" id="rp-fuente"></p>
+  </section>
 </main>
 <script>document.write('<script src="data/carga_mapa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927d"></script>
+<script src="assets/comun.js?v=260927e"></script>
 <script>
 PW.montarNav("carga-registro-mapa.html"); const D = window.PW_DATA.carga_mapa || {}; const PTS = (D.puntos || []).map(p => ({ ...p, lat: +p.lat, lon: +p.lon }))
   .filter(p => !Number.isNaN(p.lat) && !Number.isNaN(p.lon)); document.getElementById("nota").textContent =
@@ -130,6 +220,106 @@ PW.leyendaMapa("leyenda-mapa", [
   ["Transporte público", COLC["Cargador de transporte público"]],
 ]); [selAc, selCat, selReg, selMet].forEach(s => s.addEventListener("input", render)); // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
 // recien entonces se pinta el registro por comuna inicial (los refrescos por filtro ya lo tienen cacheado).
-PW.cargarGeoComunas().then(render); </script>
+PW.cargarGeoComunas().then(render); 
+// [FUSION 778] Pestanas. Cada una carga SUS datos la primera vez que se abre, para
+// no sumar en la carga inicial lo que antes estaba repartido en varias paginas.
+// Los ids de las absorbidas van con prefijo: habia colisiones y en un documento
+// unico gana el primero, asi que se pisarian en silencio.
+const _hecho = {};
+PW.pestanas("pestanas", async (id) => {
+  if (id === "capacidad" && !_hecho.capacidad) {
+    _hecho.capacidad = true;
+    if (!await PW.cargarDatos("infraestructura")) return;
+    (function () {
+const D = window.PW_DATA.infraestructura; // Declarar el desvio contra la vista georreferenciada del MISMO registro: esta pagina publica
+// el total oficial de EcoCarga y el mapa publica lo que pudo ubicar, y las dos cifras conviven
+// en el sitio sin que nada dijera por que difieren. Dos instalaciones vigentes no traen
+// coordenada; el resto del desvio no esta conciliado aguas arriba, y decirlo es mas honesto
+// que dejar al lector descubriendo dos numeros para el mismo hecho.
+document.getElementById("ci-nota").textContent =
+  "Actualización SEC: " + D.actualizacion + ". Estas son las cifras del registro oficial "
+  + "completo. La vista georreferenciada del mismo registro (mapa del catastro SEC) muestra "
+  + "menos, porque solo puede ubicar las instalaciones con coordenada: esa diferencia no está "
+  + "conciliada en la fuente y por eso los dos módulos no dan el mismo total."; document.getElementById("ci-kpis").innerHTML = [
+  [PW.fmt(D.kpis.instalaciones), "instalaciones", "puntos de carga declarados"],
+  [PW.fmt(D.kpis.cargadores), "cargadores", "equipos de carga"],
+  [PW.fmt(D.kpis.conectores), "conectores", "tomas de carga"],
+  [PW.fmt(D.kpis.mw, 1) + " MW", "potencia instalada", "capacidad declarada"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Serie ACUMULADA ("aditiva desde 2018"): el unico mes ausente (2019-10) no es un hueco de
+// medicion, es un mes sin altas, asi que el stock vale lo mismo que el mes anterior. Marcarlo
+// "sin dato" declaraba ignorancia sobre un mes que el registro SI cubre.
+const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar"); PW.lineas("ci-g-serie", {
+  labels: SERIE.map(x => x.ym),
+  series: [
+    { nombre: "Conectores", valores: SERIE.map(x => x.conectores), area: true },
+    { nombre: "Cargadores", valores: SERIE.map(x => x.cargadores), color: PW.color("--s2") },
+  ],
+  fmtV: v => PW.fmt(v), alto: 300,
+}); PW.tabla("ci-t-cat", [
+  { k: "cat", titulo: "Categoría de uso" },
+  { k: "instalaciones", titulo: "Instalaciones", num: true, fmt: v => PW.fmt(v) },
+  { k: "cargadores", titulo: "Cargadores", num: true, fmt: v => PW.fmt(v) },
+  { k: "conectores", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
+  { k: "mw", titulo: "Potencia (MW)", num: true, fmt: v => PW.fmt(v, 1) },
+], D.categorias, { orden: "conectores", buscador: false }); const catMW = D.categorias.slice().sort((a, b) => b.mw - a.mw)[0]; document.getElementById("ci-nota-cat").textContent =
+  "El uso privado concentra la mayor cantidad de conectores, pero " + catMW.cat.toLowerCase() +
+  " concentra la potencia (" + PW.fmt(catMW.mw, 1) + " MW): los buses eléctricos cargan a alta potencia."; PW.barras("ci-g-zona", {
+  items: D.zonas.map(z => ({
+    nombre: z.zona, valor: z.conectores,
+    extra: PW.fmt(z.cargadores) + " cargadores · " + PW.fmt(z.mw, 1) + " MW",
+  })),
+  fmtV: v => PW.fmt(v),
+}); PW.barras("ci-g-region", {
+  items: D.regiones.filter(r => r.conectores > 0).map(r => ({
+    nombre: r.region, valor: r.conectores,
+    extra: PW.fmt(r.cargadores) + " cargadores",
+  })),
+  fmtV: v => PW.fmt(v),
+}); PW.barras("ci-g-pot", {
+  items: D.por_potencia.map(p => ({ nombre: p.clase, valor: p.n })),
+  fmtV: v => PW.fmt(v),
+}); PW.barras("ci-g-con", {
+  items: D.por_conector.map(c => ({ nombre: c.tipo, valor: c.n })),
+  fmtV: v => PW.fmt(v),
+}); document.getElementById("ci-fuente").textContent = D.nota;
+    })();
+  }
+  if (id === "reporte" && !_hecho.reporte) {
+    _hecho.reporte = true;
+    if (!await PW.cargarDatos("reporte_sec")) return;
+    (function () {
+const D = window.PW_DATA.reporte_sec || {}; document.getElementById("rp-nota").textContent = "Fuente: " + (D.fuente || "SEC") + ". Datos " + (D.periodo || "2018-2025") + ". Generado " + (D.generado || "—") + "."; const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; // --- Fiscalizacion ---
+const F = D.fiscalizacion || {}; document.getElementById("rp-kpi-fisc").innerHTML = [
+  [PW.fmt(F.total_instalaciones || 0), "instalaciones fiscalizadas", "en 2025"],
+  [(F.por_macrozona || []).length, "macrozonas", "+ RM"],
+].map(kpiHTML).join(""); if (window.PW && PW.barras) {
+  PW.barras("rp-g-fisc", { items: (F.por_macrozona || []).map(m => ({ nombre: m.macrozona, valor: m.operatividad_pct })), fmtV: v => PW.fmt(v, 1) + "%" }); }
+PW.tabla("rp-t-fisc", [
+  { k: "macrozona", titulo: "Macrozona" },
+  { k: "instalaciones", titulo: "Instalaciones", num: true, fmt: v => PW.fmt(v) },
+  { k: "operatividad_pct", titulo: "Operatividad", num: true,
+    fmt: v => v == null ? "—" : PW.fmt(v, 1) + "%" },
+], F.por_macrozona || [], { orden: "instalaciones" }); // --- Transporte publico ---
+const T = D.transporte_publico || {}; const cctp = T.cctp || {}, elt = T.electroterminales || {}, bus = T.flota_buses_red || {}; document.getElementById("rp-kpi-tp").innerHTML = [
+  [PW.fmt(cctp.cantidad_actual || 0), "centros de carga transporte público", (cctp.potencia_instalada_mw || 0) + " MW instalados"],
+  [PW.fmt(elt.cantidad_actual || 0), "electroterminales", (elt.potencia_instalada_mw || 0) + " MW"],
+  [PW.fmt(bus["2025"] || 0), "buses eléctricos RED (2025)", "desde 2 en 2017"],
+  ["+" + PW.fmt(cctp.cantidad_proyectada_2026_2027 || 0), "CCTP proyectados 2026-27", "+" + (cctp.potencia_proyectada_mw_2026_2027 || 0) + " MW"],
+].map(kpiHTML).join(""); document.getElementById("rp-nota-tp").innerHTML =
+  "Flota RED proyectada a <b>" + PW.fmt(bus.proyectado_2026 || 0) + "</b> buses en 2026 (crecimiento ~" + (bus.crecimiento_anual_prom_pct || 0) + "%/año). " +
+  (T.datos_clave || []).join(" "); // --- Compatibilidad ---
+const C = D.compatibilidad || {}; PW.tabla("rp-t-compat", [
+  { k: "estandar", titulo: "Estándar" },
+  { k: "mercado_automotriz_pct", titulo: "Mercado automotriz", num: true,
+    fmt: v => v == null ? "—" : PW.fmt(v, 2) + "%" },
+  { k: "instalaciones_publicas_carga_lenta_pct", titulo: "En instalaciones (carga lenta)", num: true,
+    fmt: v => v == null ? "—" : PW.fmt(v, 2) + "%" },
+  { k: "instalaciones_publicas_rapida_ultra_pct", titulo: "En instalaciones (rápida/ultra)", num: true,
+    fmt: v => v == null ? "—" : PW.fmt(v, 2) + "%" },
+], C.conector || [], { orden: "mercado_automotriz_pct" }); document.getElementById("rp-nota-compat").innerHTML = (C.datos_clave || []).join(" "); document.getElementById("rp-fuente").textContent = "Fuente: " + (D.fuente || "SEC") + ".";
+    })();
+  }
+});
+</script>
 </body>
 </html>

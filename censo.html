@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="El retrato demográfico y habitacional del país según el Censo 2002, 2017 y 2024 (INE): población, estructura de edad, educación, empleo, vivienda...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927d">
+<link rel="stylesheet" href="assets/estilo.css?v=260927e">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <style>
@@ -47,6 +47,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
+  <div class="tab-nav" id="pestanas" role="tablist">
+    <button class="tab-btn activo" data-tab="censo2024">Censo 2024</button>
+    <button class="tab-btn" data-tab="electricidad">Electricidad en las viviendas</button>
+    <button class="tab-btn" data-tab="proyeccion">Proyección INE</button>
+  </div>
+  <section class="tab-content activo" id="censo2024">
   <h1>Censo Nacional</h1>
   <p class="sub">El retrato demográfico y habitacional del país según el <b>Censo 2002, 2017 y 2024 (INE)</b>:
   población, estructura de edad, educación, empleo, vivienda, conectividad y servicios básicos, por
@@ -124,10 +130,100 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </details>
 
   <p class="fuente" id="fuente"></p>
+  </section>
+  <section class="tab-content" id="electricidad">
+<h1>Electricidad en las viviendas</h1>
+  <p class="sub">El <b>desglose de la fuente eléctrica del hogar</b> — red pública, <b>generador
+  propio</b>, panel solar, eólica, otra o sin electricidad — por comuna, directo del microdato del
+  Censo 2024 (18,5 millones de registros). Complementa el mapa amplio del <a href="censo.html">Censo
+  Nacional</a> separando la generación domiciliaria que el mapa general no distingue. La base real
+  para dimensionar la carga domiciliaria de vehículos eléctricos.</p>
+  <p class="nota" id="el-nota"></p>
+
+  <div class="filtros">
+    <label>Región <select id="el-f-region"><option value="">Todas</option></select></label>
+    <label>Comuna <select id="el-f-comuna" disabled><option value="">Todas</option></select></label>
+    <span class="pill">Foto Censo 2024 (sin serie anual)</span>
+  </div>
+
+  <div class="kpis" id="el-kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Mapa comunal por fuente</h2>
+    <div class="filtros" style="margin:0 0 8px">
+      <label>Fuente <select id="el-f-metrica">
+        <option value="pct_solar">Placa solar</option>
+        <option value="pct_generador">Generador diesel/bencina</option>
+        <option value="pct_sin">Sin electricidad</option>
+        <option value="pct_red">Red pública</option>
+      </select></label>
+    </div>
+    <p class="nota">Quintiles: más oscuro = mayor proporción. En el extremo, comunas aisladas sin red
+    (General Lagos 68% solar, Río Verde 51%): allí la generación domiciliaria ES la red. Los filtros
+    de arriba acotan y hacen foco en el mapa.</p>
+    <div id="el-mapa-solar"></div>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Mayor dependencia de generador diesel/bencina</h2>
+      <div id="el-g-generador"></div>
+      <p class="nota">Comunas donde más viviendas dependen de un generador: energía cara y
+      contaminante — candidatas naturales a solar + almacenamiento.</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Más viviendas sin electricidad</h2>
+      <div id="el-g-sin"></div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Todas las comunas</h2>
+    <div id="el-t-comunas"></div>
+  </div>
+  </section>
+  <section class="tab-content" id="proyeccion">
+<h1>Censo proyectado</h1>
+  <p class="sub">Chile no realiza censos parciales en años intermedios. Para 2025 en adelante, la
+    referencia oficial es la <b>proyección de población del INE</b> (Estimaciones y Proyecciones,
+    base Censo 2024, publicada el 28-01-2026). La población proyectada es <b>estimada</b> —ajustada
+    por omisión censal—, distinta de la censada.</p>
+  <p class="nota" id="pr-nota"></p>
+
+  <div class="aviso-borrador" id="pr-aviso">Proyección ≠ censo. El detalle regional y comunal base 2024
+    lo publica el INE el 2º semestre de 2026; aquí se muestra el nivel nacional.</div>
+
+  <div class="kpis" id="pr-kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Trayectoria de la población, 1952–2070</h2>
+    <div id="pr-g-serie"></div>
+    <div class="leyenda">
+      <span style="--c:var(--s1)">Población censada (INE, 1952–2024)</span>
+      <span style="--c:var(--s2)">Proyección INE base 2024 (2024–2070)</span>
+    </div>
+    <p class="nota">En 2024 conviven el conteo censal (18.480.432) y la población estimada
+      (19.871.764): la diferencia es la <b>omisión censal (7,0%)</b>. El 2025 es interpolación entre
+      anclas oficiales (no es cifra oficial del INE).</p>
+  </div>
+
+  <div class="fila2">
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Reconciliación 2024: censo vs proyección</h2>
+      <div id="pr-recon"></div>
+      <p class="nota">El censo cuenta a las personas efectivamente enumeradas; la proyección estima la
+        población total ajustando por quienes no fueron censados y por la migración.</p>
+    </div>
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Hitos de la proyección</h2>
+      <div id="pr-tabla"></div>
+    </div>
+  </div>
+  </section>
 </main>
 
 <script>document.write('<script src="data/censo.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927d"></script>
+<script src="assets/comun.js?v=260927e"></script>
 <script>
 PW.montarNav("censo.html"); const D = window.PW_DATA.censo; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; document.getElementById("fuente").textContent = D.nota; // ---------- indices + helpers ----------
 const comByCut = Object.fromEntries(D.comunas.map(c => [c.cut, c])); const cutByComuna = Object.fromEntries(D.comunas.map(c => [c.comuna, c.cut])); const regByName = Object.fromEntries(D.regiones.map(r => [r.region, r])); const VAR = D.variacion || {}; const serieCensada = (D.serie_nacional || []).filter(x => x.tipo === "censado"); const serieByAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x.poblacion])); const serieRowAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x])); // fila completa (var_pct, crec_anual)
@@ -320,6 +416,138 @@ selAno.addEventListener("input", () => {
   if (selAno.value !== "2024" && !ESPECIALES[selInd.value]) selInd.value = "__pob"; aplicar(); }); selR.addEventListener("input", () => { poblarComunas(); aplicar(); }); selC.addEventListener("input", aplicar); selInd.addEventListener("input", aplicar); selInd2.addEventListener("input", aplicar); document.getElementById("f-limpiar").addEventListener("click", () => {
   selAno.value = "2024"; selR.value = ""; poblarComunas(); selC.value = ""; selInd.value = IND_DEFAULT; selInd2.value = ""; aplicar(); }); // geo_comunas.js (~4 MB) ya no se carga fijo: el mapa principal (PW.choropleth) lo necesita, asi
 // que la primera pintada espera a que este disponible bajo demanda (comun.js:cargarGeoComunas); // los refrescos por filtro ya lo tienen cacheado.
-PW.cargarGeoComunas().then(aplicar); </script>
+PW.cargarGeoComunas().then(aplicar); 
+// [FUSION 778] Pestanas. Cada una carga SUS datos la primera vez que se abre, para
+// no sumar en la carga inicial lo que antes estaba repartido en varias paginas.
+// Los ids de las absorbidas van con prefijo: habia colisiones y en un documento
+// unico gana el primero, asi que se pisarian en silencio.
+const _hecho = {};
+PW.pestanas("pestanas", async (id) => {
+  if (id === "electricidad" && !_hecho.electricidad) {
+    _hecho.electricidad = true;
+    if (!await PW.cargarDatos("c_censoelec")) return;
+    await PW.cargarGeoComunas();
+    (function () {
+const D = PW_DATA.c_censoelec; // Cobertura declarada: el Censo suprime la pregunta 9 en comunas muy chicas, asi que no todas las
+// 346 del padron tienen dato (hoy falta 12202 Antartica). Se dice cuantas hay y cual falta, en vez
+// de que la comuna desaparezca del mapa sin explicacion.
+const sinDato = D.comunas_sin_dato || []; document.getElementById("el-nota").textContent =
+  "Actualizado " + (D.generado || "").slice(0, 10) + ". "
+  + D.comunas.length + " de " + (D.n_comunas_padron || D.comunas.length) + " comunas con dato"
+  + (sinDato.length ? "; sin microdato utilizable: " + sinDato.map(c => c.comuna).join(", ") : "")
+  + "."; // Filtros region/comuna. Censo 2024 es FOTO UNICA -> no hay filtro de año.
+const selR = document.getElementById("el-f-region"); const selC = document.getElementById("el-f-comuna"); [...new Set(D.comunas.map(c => c.region))].sort().forEach(r => {
+  const o = document.createElement("option"); o.value = r; o.textContent = r; selR.appendChild(o); }); function poblarComunas() {
+  const reg = selR.value; const coms = [...new Set(D.comunas.filter(c => !reg || c.region === reg).map(c => c.comuna))].sort(); selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${c}</option>`).join(""); selC.disabled = !reg; }
+
+// KPIs del territorio: nacional exacto (D.nacional) o agregado ponderado por viviendas al filtrar.
+function aggregado(filas) {
+  const viv = filas.reduce((s, c) => s + c.viviendas, 0); const w = k => viv ? filas.reduce((s, c) => s + (c[k] || 0) * c.viviendas, 0) / viv : 0; return { viviendas: viv, pct_red: w("pct_red"), pct_solar: w("pct_solar"),
+    pct_generador: w("pct_generador"), pct_sin: w("pct_sin"),
+    n_solar: Math.round(w("pct_solar") / 100 * viv), n_generador: Math.round(w("pct_generador") / 100 * viv),
+    n_sin: Math.round(w("pct_sin") / 100 * viv) }; }
+function pintarKpis(A) {
+  document.getElementById("el-kpis").innerHTML = [
+    [PW.fmt(A.viviendas), "viviendas censadas con dato", "particulares ocupadas, 2024"],
+    [PW.fmt(A.pct_red, 1) + "%", "conectadas a la red pública", "la base de la carga domiciliaria"],
+    [PW.fmt(A.n_solar), "con placa solar", PW.fmt(A.pct_solar, 1) + "%"],
+    [PW.fmt(A.n_generador), "con generador diesel/bencina", PW.fmt(A.pct_generador, 1) + "%"],
+    [PW.fmt(A.n_sin), "sin electricidad", PW.fmt(A.pct_sin, 1) + "%"],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); }
+
+let MAPA = null; function pintarMapa(reg, com, filas) {
+  if (MAPA) { MAPA.remove(); MAPA = null; }
+  const ley = document.querySelector("#el-mapa-solar + .leyenda"); if (ley) ley.remove(); const metrica = document.getElementById("el-f-metrica").value; const comunasMapa = reg ? D.comunas.filter(c => c.region === reg) : D.comunas; const foco = com ? filas.map(c => c.cut) : (reg ? comunasMapa.map(c => c.cut) : null); MAPA = PW.choropleth("el-mapa-solar", {
+    valores: Object.fromEntries(comunasMapa.map(c => [c.cut, c[metrica]])),
+    fmt: v => v == null ? "sin dato" : PW.fmt(v, 1) + "%", alto: 540, foco,
+  }); }
+
+const cols = [
+  { k: "comuna", titulo: "Comuna" },
+  { k: "region", titulo: "Región" },
+  { k: "viviendas", titulo: "Viviendas", num: true, fmt: v => PW.fmt(v) },
+  { k: "pct_red", titulo: "% red publica", num: true, fmt: v => PW.fmt(v, 1) + "%" },
+  { k: "pct_solar", titulo: "% placa solar", num: true, fmt: v => v >= 5 ? `<b>${PW.fmt(v, 1)}%</b>` : PW.fmt(v, 1) + "%" },
+  { k: "pct_generador", titulo: "% generador", num: true, fmt: v => PW.fmt(v, 1) + "%" },
+  { k: "pct_eolica", titulo: "% eólica", num: true, fmt: v => v == null ? "—" : (v >= 2 ? `<b>${PW.fmt(v, 1)}%</b>` : PW.fmt(v, 1) + "%") },
+  { k: "pct_otro", titulo: "% otra", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) + "%" },
+  { k: "pct_sin", titulo: "% sin electricidad", num: true, fmt: v => v >= 2 ? `<span class="estado-mal">${PW.fmt(v, 1)}%</span>` : PW.fmt(v, 1) + "%" },
+]; let tab = null; function refrescar() {
+  const reg = selR.value, com = selC.value; const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com)); pintarKpis((reg || com) ? aggregado(filas) : D.nacional); pintarMapa(reg, com, filas); PW.barras("el-g-generador", {
+    items: filas.slice().sort((a, b) => b.pct_generador - a.pct_generador).slice(0, 12).map(c => ({
+      nombre: c.comuna, valor: c.pct_generador, extra: c.region + " — " + PW.fmt(c.viviendas) + " viviendas" })),
+    color: PW.color("--s2"), fmtV: v => PW.fmt(v, 1) + "%",
+  }); PW.barras("el-g-sin", {
+    items: filas.slice().sort((a, b) => b.pct_sin - a.pct_sin).slice(0, 12).map(c => ({
+      nombre: c.comuna, valor: c.pct_sin, extra: c.region })),
+    color: PW.color("--critical"), fmtV: v => PW.fmt(v, 1) + "%",
+  }); if (tab) tab.actualizar(filas); else tab = PW.tabla("el-t-comunas", cols, filas, { orden: "pct_solar", max: 400 }); }
+selR.addEventListener("input", () => { poblarComunas(); refrescar(); }); selC.addEventListener("input", refrescar); document.getElementById("el-f-metrica").addEventListener("input", refrescar); // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
+// recien entonces se pinta el choropleth inicial (los refrescos por filtro ya lo tienen cacheado).
+PW.cargarGeoComunas().then(refrescar);
+    })();
+  }
+  if (id === "proyeccion" && !_hecho.proyeccion) {
+    _hecho.proyeccion = true;
+    if (!await PW.cargarDatos("censo")) return;
+    (function () {
+const D = (window.PW_DATA && window.PW_DATA.censo) || {}; document.getElementById("pr-nota").textContent =
+  "Fuente: " + (D.fuente || "Censo 2024 (INE)") + ". Proyección: INE, Estimaciones y Proyecciones "
+  + "de Población base Censo 2024."; const F = D.proy_facts || null; const fmt = (v) => PW.fmt(Math.round(v)); // ---- KPIs ----
+if (F) {
+  document.getElementById("pr-kpis").innerHTML = [
+    [fmt(F.pob_2026), "población proyectada 2026", ""],
+    [fmt(F.peak_pob), "máximo poblacional", "año " + F.peak_anio],
+    [fmt(F.pob_2070), "población hacia 2070", "inicia descenso en 2036"],
+    [F.tgf_2026 + " h/mujer", "fecundidad 2026 (TGF)", "1,06 en 2024"],
+    [F.omision + " %", "omisión censal 2024", ""],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); } else {
+  document.getElementById("pr-aviso").innerHTML =
+    "Faltan los datos de proyección en <code>data/censo.js</code> "
+    + "(<code>proy_facts</code> / <code>proyeccion</code>). Agregar el bloque en "
+    + "<code>generar_cruces.py::m_censo_nacional()</code> (ver ESPEC parte A) y regenerar."; }
+
+// ---- Trayectoria (censo + proyección) ----
+const S = D.serie_nacional || []; if (S.length) {
+  const esCenso = x => x.tipo ? x.tipo === "censado" : (x.ano <= 2024 && x.poblacion < 19e6); const anios = [...new Set(S.map(x => x.ano))].sort((a, b) => a - b); const val = pred => anios.map(a => { const e = S.find(x => x.ano === a && pred(x)); return e ? e.poblacion : null; }); PW.lineas("pr-g-serie", {
+    alto: 320,
+    labels: anios.map(String),
+    series: [
+      { nombre: "Censado", valores: val(esCenso), color: PW.color("--s1") },
+      { nombre: "Proyectado", valores: val(x => !esCenso(x)), color: PW.color("--s2") },
+    ],
+    fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
+  }); }
+
+// ---- Reconciliación 2024 ----
+(function () {
+  const cN = F ? F.censado_2024 : (S.find(x => x.ano === 2024 && (x.tipo ? x.tipo === "censado" : x.poblacion < 19e6)) || {}).poblacion; const pN = F ? F.proyectado_2024 : (S.find(x => x.ano === 2024 && (x.tipo ? x.tipo !== "censado" : x.poblacion >= 19e6)) || {}).poblacion; if (cN == null || pN == null) return; const gap = pN - cN, om = F ? F.omision : (100 * gap / pN).toFixed(1); document.getElementById("pr-recon").innerHTML =
+    `<div style="display:grid;gap:10px">
+      <div style="display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center">
+        <span style="color:var(--ink-2)">Censado (conteo)</span>
+        <span style="height:18px;border-radius:5px;background:var(--s1);width:${(cN / pN * 100).toFixed(1)}%"></span>
+        <b style="font-variant-numeric:tabular-nums">${fmt(cN)}</b></div>
+      <div style="display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center">
+        <span style="color:var(--ink-2)">Proyectado (estimado)</span>
+        <span style="height:18px;border-radius:5px;background:var(--s2);width:100%"></span>
+        <b style="font-variant-numeric:tabular-nums">${fmt(pN)}</b></div>
+     </div>
+     <div style="margin-top:12px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap">
+       <span style="font-size:22px;font-weight:800;font-variant-numeric:tabular-nums">+${fmt(gap)}</span>
+       <span class="pill" style="background:var(--warning);color:#241a00;border-color:var(--warning)">omisión ${om}%</span>
+       <span style="color:var(--ink-3);font-size:12.5px">personas estimadas no censadas en 2024</span>
+     </div>`; })(); // ---- Hitos de la proyección ----
+(function () {
+  const PR = D.proyeccion || []; if (!PR.length) { document.getElementById("pr-tabla").innerHTML =
+    `<p class="pr-nota">Agregar el bloque <code>proyeccion</code> a data/censo.js (ESPEC parte A).</p>`; return; }
+  const tipoTxt = t => t === "proyectado_interpolado" ? "interpolado" : "proyectado"; const filas = PR.map(r => `<tr><td>${r.ano}</td><td class="num">${fmt(r.poblacion)}</td>
+    <td><span class="pill">${tipoTxt(r.tipo)}</span></td>
+    <td style="color:var(--ink-3);font-size:12px">${r.nota || ""}</td></tr>`).join(""); document.getElementById("pr-tabla").innerHTML =
+    `<div class="scroll-x"><table class="pw"><thead><tr><th>Año</th><th class="num">Población</th>
+     <th>Tipo</th><th>Nota</th></tr></thead><tbody>${filas}</tbody></table></div>`; })();
+    })();
+  }
+});
+</script>
 </body>
 </html>
