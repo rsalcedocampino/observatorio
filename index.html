@@ -33,7 +33,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="canonical" href="https://observatorio.energiasfuturo.com/">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927a">
+<link rel="stylesheet" href="assets/estilo.css?v=260927b">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/resumen.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -206,6 +206,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       eléctrica y quién sigue solo en fósil. Copec lidera; el resto, muy atrás.</p>
       <div class="aud"><span class="pill">Por grupo económico</span></div>
     </a>
+    <a class="modulo-card" href="carga-reporte-sec.html">
+      <h3>Reporte Nacional SEC 2026</h3>
+      <p>Lo que el registro georreferenciado no cubre, del reporte de la SEC con datos
+      2018-2025: fiscalización de la red pública, buses eléctricos y
+      compatibilidad entre vehículo y cargador.</p>
+      <div class="aud"><span class="pill">Datos 2018-2025</span></div>
+    </a>
   </div>
 
   <h2 id="mercado">Mercado e inversión</h2>
@@ -265,6 +272,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       transmisión a la vez. Quién controla varios eslabones de la energía, cruzado por grupo.</p>
       <div class="aud"><span class="pill">Por grupo económico</span></div>
     </a>
+    <a class="modulo-card" href="camiones.html">
+      <h3>Camiones cero y baja emisión</h3>
+      <p>Cuántos camiones eléctricos y a gas natural licuado circulan en Chile,
+      en qué tramos de peso, y si la carga rápida pública les sirve. El
+      eslabón más difícil de electrificar.</p>
+      <div class="aud"><span class="pill">Por tramo de peso</span></div>
+    </a>
   </div>
 
   <h2 id="energia">Energía y resiliencia</h2>
@@ -277,7 +291,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </a>
     <a class="modulo-card" href="probabilidad-cortes.html">
       <h3>Probabilidad de cortes</h3>
-      <p>Con 9 años de historial: qué tan probable es un corte en tu comuna cada mes, y cuanta
+      <p>Con 9 años de historial: qué tan probable es un corte en tu comuna cada mes, y cuánta
       infraestructura de carga queda expuesta.</p>
       <div class="aud"><span class="pill">Por mes y comuna</span></div>
     </a>
@@ -389,7 +403,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/resumen.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927a"></script>
+<script src="assets/comun.js?v=260927b"></script>
 <script>
 PW.montarNav("index.html"); const k = PW_DATA.resumen.kpis; // Las cifras que la portada cita en prosa se leen del dato, no van escritas a mano. Tres se
 // habian desfasado sin que nada lo detectara (69 instrumentos contra 94, 584 vehiculos de
@@ -406,7 +420,7 @@ document.querySelectorAll("[data-k]").forEach(el => {
   [PW.fmt(k.estaciones), "estaciones de carga en Chile", maxSi(k.estaciones, k.estaciones_max,
     "red completa")],
   [PW.fmt(k.conectores), "conectores instalados", maxSi(k.conectores, k.conectores_max,
-    k.conectores_disponibles + " disponibles")],
+    PW.fmt(k.conectores_disponibles) + " disponibles")],
   [PW.fmt(k.ventas_ytd), "eléctricos e híbridos vendidos en " + k.ventas_ultimo_mes.slice(0,4), "acumulado a " + k.ventas_ultimo_mes.slice(0,7)],
   ["$" + PW.fmt(k.pkwh_nacional), "precio promedio de carga pública", "por kWh, potencia media " + PW.fmt(k.potencia_prom_kw, 1) + " kW"],
   [PW.fmt(k.pct_renovable_dia, 1) + "%", "de la generación fue renovable", "el " + k.fecha_generacion_dia],
@@ -420,7 +434,7 @@ document.querySelectorAll(".modulo-card").forEach(card => {
     const q = norm(input.value.trim()); let visibles = 0; cards.forEach(c => {
       const ok = !q || norm(c.textContent).includes(q); c.style.display = ok ? "" : "none"; if (ok) visibles++; }); // ocultar titulos de seccion sin cards visibles
     document.querySelectorAll("main h2[id]").forEach(h2 => {
-      const grid = h2.nextElementSibling; if (!grid || !grid.classList.contains("grid-modulos")) return; const hayVisible = [...grid.querySelectorAll(".modulo-card")].some(c => c.style.display !== "none"); h2.style.display = hayVisible ? "" : "none"; grid.style.display = hayVisible ? "" : "none"; }); cont.textContent = q ? visibles + " de " + cards.length + " modulos" : cards.length + " modulos"; }
+      const grid = h2.nextElementSibling; if (!grid || !grid.classList.contains("grid-modulos")) return; const hayVisible = [...grid.querySelectorAll(".modulo-card")].some(c => c.style.display !== "none"); h2.style.display = hayVisible ? "" : "none"; grid.style.display = hayVisible ? "" : "none"; }); cont.textContent = q ? visibles + " de " + cards.length + " módulos" : cards.length + " módulos"; }
   input.addEventListener("input", filtrar); filtrar(); })(); </script>
 </body>
 </html>

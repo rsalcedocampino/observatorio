@@ -1566,7 +1566,10 @@
     const selC = el.querySelector('select[data-f="com"]');
     function pobComunas() {
       const rc = selR.value;
-      const coms = [...new Set(puntos.filter(p => (!rc || p.rcut === rc) && p.com).map(p => p.com))].sort();
+      const coms = [...new Set(puntos.filter(p => (!rc || p.rcut === rc) && p.com).map(p => p.com))]
+        // localeCompare('es'): con .sort() a secas la Ñ compara por punto de codigo y
+        // "Ñuñoa" quedaba DESPUES de la Z (769-6). Las regiones ya lo usaban.
+        .sort((a, b) => a.localeCompare(b, "es"));
       selC.innerHTML = `<option value="">Todas</option>` + coms.map(c => `<option>${esc(c)}</option>`).join("");
       selC.disabled = !rc;
     }
