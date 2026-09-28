@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Compara el costo real de tener un vehículo eléctrico frente a uno a combustión a lo largo de los años: compra, energía, mantención, seguro, permiso de...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927e">
+<link rel="stylesheet" href="assets/estilo.css?v=260928a">
 <style>
 .pestanas { display: flex; gap: 2px; flex-wrap: wrap; margin: 16px 0 4px; border-bottom: 1px solid var(--border); }
 .pestanas button { background: none; border: 0; padding: 8px 14px; font: inherit; color: var(--ink-2); cursor: pointer; border-radius: 8px 8px 0 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
@@ -197,7 +197,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/c_tco.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927e"></script>
+<script src="assets/comun.js?v=260928a"></script>
 <script>
 PW.montarNav("tco.html"); let D = PW_DATA.c_tco; let V = D.v, P0 = D.p, E0 = D.e; const g = id => document.getElementById(id); // [MILES] los campos de dinero (clase "miles") son type=text y muestran puntos de miles; // numIn les quita los puntos antes de parsear (los campos con decimales, p.ej. km/kWh, NO llevan la clase).
 const numIn = (id, def) => { const el = g(id); if (!el) return def; const x = parseFloat(el.classList.contains("miles") ? el.value.replace(/\./g, "") : el.value); return isFinite(x) ? x : def; }; const fmtMiles = n => (isFinite(n) ? Math.round(n).toLocaleString("es-CL") : ""); document.querySelectorAll("input.miles").forEach(el => {

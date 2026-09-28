@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="A que hora conviene cargar: la ocupación real de la red pública hora por hora, del histórico capturado cada 30 minutos. Menos fila, más sol.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927e">
+<link rel="stylesheet" href="assets/estilo.css?v=260928a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/horas.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_horaverde.js?v='+_pwv+'">')</script>
@@ -46,7 +46,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <label>Estado <select id="estado-sel">
         <option value="ocupacion">Ocupado</option>
         <option value="disponible_pct">Disponible</option>
-        <option value="fuera_de_servicio_pct">Fuera de servicio</option>
+        <option value="fuera_de_servicio_pct">Sin comunicación o fuera de servicio</option>
         <option value="no_disponible_pct">No disponible</option>
         <option value="desconocido_pct">Desconocido</option>
       </select></label>
@@ -93,19 +93,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script>document.write('<script src="data/horas.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_horaverde.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927e"></script>
+<script src="assets/comun.js?v=260928a"></script>
 <script>
 PW.montarNav("horas.html"); const D = PW_DATA.horas; if (!D.disponible) {
   document.getElementById("nota").textContent = "Sin historico de estados disponible todavia."; } else {
   document.getElementById("nota").textContent =
-    "Basado en " + D.dias_observados + " días de observación. " + D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + "."; const horas = [...Array(24).keys()]; // "ocupacion"/"disponible_pct" son % del pool operativo (disponible+ocupado, como siempre); // los otros 3 son % del total de observaciones esa hora (los 5 estados) -- no encajan en esa
+    "Basado en " + D.dias_observados + " días de observación. " + D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + "."; const horas = [...Array(24).keys()]; // "ocupacion"/"disponible_pct" son % del pool operativo (disponible+ocupado, como siempre); // los otros 3 son % del total de observaciones esa hora (los 6 estados) -- no encajan en esa
   // dicotomia. Cada opcion trae su propia nota para que quede claro cual base usa.
   const ESTADOS = {
-    ocupacion: { label: "ocupado", nota: 'Filtro: % del pool operativo ("disponible" + "ocupado"). Los otros 3 estados posibles (fuera de servicio / no disponible / desconocido) quedan fuera de esta base -- no ocupan ni desocupan, simplemente no se cuentan.' },
-    disponible_pct: { label: "disponible", nota: 'Filtro: % del pool operativo ("disponible" + "ocupado"), complementario de "Ocupado" (suman 100%). Los otros 3 estados quedan fuera de esta base.' },
-    fuera_de_servicio_pct: { label: "fuera de servicio", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos), no del pool operativo -- \"fuera de servicio\" no es ni disponible ni ocupado." },
-    no_disponible_pct: { label: "no disponible", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos), no del pool operativo." },
-    desconocido_pct: { label: "desconocido", nota: "Filtro: % del total de observaciones esa hora (los 5 estados declarados juntos) -- la fuente no informó el estado real." },
+    // Que base usa cada serie, y que la curva de fuera de servicio suma el equipo averiado con el
+    // que dejo de comunicar, lo explica el DATO en `nota_estados` y la pagina lo renderiza: una
+    // sola copia, en el origen. Las notas de aqui dicen solo lo propio de cada opcion. No repetir
+    // aqui lo que diga `nota_estados`, ni fijar cifras del reparto entre averiado y mudo, que
+    // cambia en cada corrida.
+    ocupacion: { label: "ocupado", nota: "Los estados que quedan fuera de esa base no ocupan ni desocupan: simplemente no se cuentan." },
+    disponible_pct: { label: "disponible", nota: 'Es el complementario de "Ocupado": suman 100%.' },
+    fuera_de_servicio_pct: { label: "sin comunicación o fuera de servicio", nota: "Que un equipo no comunique no implica que esté averiado: puede estar sano y su operador no publicar el estado." },
+    no_disponible_pct: { label: "no disponible", nota: "" },
+    desconocido_pct: { label: "desconocido", nota: "La fuente no informó el estado real." },
   }; const selEstado = document.getElementById("estado-sel"); const selDia = document.getElementById("dia-sel"); const selSemana = document.getElementById("semana-sel"); const selMes = document.getElementById("mes-sel"); // Dia/semana/mes son desgloses NACIONALES (no cruzados entre si ni con operador): elegir uno
   // resetea los otros dos, para no insinuar un cruce que los datos no tienen (p.ej. "lunes de
   // la semana 37" no existe como agregado propio).
@@ -122,7 +127,10 @@ PW.montarNav("horas.html"); const D = PW_DATA.horas; if (!D.disponible) {
       fmtV: v => PW.fmt(v, 1) + "% " + info.label,
       fmtY: v => Math.round(v) + "%",
       alto: 260,
-    }); document.getElementById("nota-estado").textContent = info.nota; document.getElementById("nota-filtros").textContent = D.nota_filtros || ""; }
+    }); // `nota_estados` lo emite el dato desde la (809) y esta pagina lo descartaba: el origen se
+    // describia y el lector no lo veia (hallazgo de "#13 - Cargadores y Conectores en VIVO").
+    document.getElementById("nota-estado").textContent =
+      [D.nota_estados, info.nota].filter(Boolean).join(" "); document.getElementById("nota-filtros").textContent = D.nota_filtros || ""; }
   selEstado.addEventListener("input", pintarNacional); selDia.addEventListener("input", () => { selSemana.value = ""; selMes.value = ""; pintarNacional(); }); selSemana.addEventListener("input", () => { selDia.value = ""; selMes.value = ""; pintarNacional(); }); selMes.addEventListener("input", () => { selDia.value = ""; selSemana.value = ""; pintarNacional(); }); pintarNacional(); // El operador viene homologado al canonico del kit (antes "Copec" y "COPEC S.A." eran dos
   // series distintas). Lo que no mapea a un operador_id queda fuera del ranking, igual que en
   // el modulo de operadores; se declara cuanto es para que la exclusion no sea muda.

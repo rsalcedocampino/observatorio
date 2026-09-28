@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Qué tan confiable es cada red de carga en Chile, medida en terreno cada 30 minutos: porcentaje operativo, ocupación real y cargadores caídos de forma...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260927e">
+<link rel="stylesheet" href="assets/estilo.css?v=260928a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -96,26 +96,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/operadores.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/sitios.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260927e"></script>
+<script src="assets/comun.js?v=260928a"></script>
 <script>
 PW.montarNav("operadores.html"); // Mapa: estaciones coloreadas por estado en tiempo real, con filtros
 (function () {
+  // El dato trae el estado canonico con mayuscula y espacios ("Fuera de servicio"); las claves de
+  // aqui y los `value` del filtro son slugs. Comparar los dos crudos NO calza: el filtro se
+  // vaciaba con cualquier estado elegido y todos los puntos salian en el gris de respaldo. Se
+  // normaliza el dato en vez de copiar sus mayusculas, para que aguante un estado nuevo del kit.
+  const slugEst = v => (v || "").toLowerCase().normalize("NFD")
+    .replace(/[̀-ͯ]/g, "").replace(/\s+/g, "_");
   const EST_COLOR = {
     disponible: PW.color("--good"),
     ocupado: PW.color("--s1"),
     fuera_de_servicio: PW.color("--critical"),
     no_disponible: PW.color("--ink-3"),
+    // No comunica no es lo mismo que averiado: el equipo puede estar sano y su operador no
+    // publicar el estado. Ambar, no rojo.
+    sin_comunicacion: PW.color("--warning"),
+    desconocido: PW.color("--ink-3"),
   }; const datos = PW_DATA.mapa_carga.carga; // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
   const operadoresU = [...new Set(datos.map(p => p.op).filter(Boolean))].sort(); let filtroTerr = { rcut: null, com: null }; let mapaRed = null; const popup = p => PW.popupEstacion(p); function pintar() {
     const est = document.getElementById("f-estado").value; const op = document.getElementById("f-operador").value; const kwMin = +document.getElementById("f-kw").value || 0; const soloOfi = document.getElementById("f-oficial").checked; const sel = datos.filter(p =>
       (!filtroTerr.rcut || p.rcut === filtroTerr.rcut) &&
       (!filtroTerr.com || p.com === filtroTerr.com) &&
-      (!est || (est === "sin_dato" ? !p.est : p.est === est)) &&
+      (!est || (est === "sin_dato" ? !p.est : slugEst(p.est) === est)) &&
       (!op || p.op === op) &&
       ((p.kw || 0) >= kwMin) &&
       (!soloOfi || p.ofi)); const pts = sel.map(p => ({
       lat: p.lat, lon: p.lon, r: 7.5,
-      color: EST_COLOR[p.est] || PW.color("--ink-3"),
+      color: EST_COLOR[slugEst(p.est)] || PW.color("--ink-3"),
       popup: popup(p),
     })); if (mapaRed) { mapaRed.remove(); mapaRed = null; }
     mapaRed = PW.mapa("mapa-red", { capas: [{ nombre: "Estaciones", puntos: pts }], centro: [-35.5, -71.5], zoom: 5 }); if (mapaRed && pts.length && (filtroTerr.rcut || filtroTerr.com)) {
@@ -126,7 +136,9 @@ PW.montarNav("operadores.html"); // Mapa: estaciones coloreadas por estado en ti
   PW.filtrosTerritorio("filtros-mapa", datos, f => { filtroTerr = f; pintar(); },
     `<label>Estado <select id="f-estado"><option value="">Todos</option>
       <option value="disponible">Disponible</option><option value="ocupado">Ocupado</option>
-      <option value="fuera_de_servicio">Fuera de servicio</option><option value="sin_dato">Sin dato</option>
+      <option value="fuera_de_servicio">Fuera de servicio</option><option value="no_disponible">No disponible</option>
+      <option value="sin_comunicacion">Sin comunicación</option><option value="desconocido">Desconocido</option>
+      <option value="sin_dato">Sin dato</option>
     </select></label>
     <label>Operador <select id="f-operador"><option value="">Todos</option>` +
     operadoresU.map(o => `<option>${o}</option>`).join("") + `</select></label>

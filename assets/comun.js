@@ -60,6 +60,7 @@
       ["inversion.html", "Inversión verde"],
       ["radar.html", "Importaciones de vehículos"],
       ["baterias.html", "Importaciones de baterías de litio"],
+      ["cargadores-importacion.html", "Importación de cargadores EV"],
       ["grupos-economicos.html", "Grupos económicos"],
     ]],
     ["Energía y resiliencia", [
@@ -154,6 +155,7 @@
   ICONOS["cargadores-cortes.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/><path d="M3 3l18 18"/>');
   ICONOS["mapa-carga.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>');
   ICONOS["carga-registro-mapa.html"] = IC('<path d="M12 21s-6.5-5.6-6.5-10.4A6.5 6.5 0 0 1 12 4a6.5 6.5 0 0 1 6.5 6.6C18.5 15.4 12 21 12 21z"/><path d="M12.6 7.5L10 11.2h3l-.6 3 2.6-3.7h-3z"/>');
+  ICONOS["cargadores-importacion.html"] = IC('<path d="M8 3v5M16 3v5"/><rect x="6" y="8" width="12" height="7" rx="2"/><path d="M12 15v3"/><path d="M9 18h6"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
 
   // ---------- colaboradores (empresas / instituciones): banda de logos ARRIBA del pie.
@@ -1564,6 +1566,32 @@
       `<div class="pop-linea"><span>Estado</span><div><b style="color:${estColor}">${estTxt}</b></div></div>` +
       (sinEstadoVivo
         ? `<div class="pop-detalle">Esta fuente no publica estado en tiempo real</div>` : "") +
+      // Racha sin comunicacion (entradas 809/811 de "#13 - Cargadores y Conectores en VIVO").
+      // `nsc` y `cfl` NUNCA coexisten -- la contradiccion se evalua por sitio, asi que si una
+      // fuente desmiente el sitio, todos sus conectores mudos pierden la racha-, por eso esto
+      // es un if/else y no dos bloques sumados.
+      //
+      // Lo que NO se puede decir en ninguna de las dos ramas: "caido" ni "fuera de linea". No
+      // comunicar y estar averiado son estados DISTINTOS desde la (809): el equipo puede estar
+      // sano y su operador no publicar el estado.
+      (p.nsc
+        ? (() => {
+            // `dsc` es el MINIMO de las rachas de sus conectores: lo que se puede afirmar de la
+            // estacion completa. Con `msc`, ademas, alguno nunca reporto un estado normal en todo
+            // el historico, asi que su racha puede venir de antes y la cifra es un piso: ahi el
+            // texto dice "al menos". Sin `msc` la fecha es exacta.
+            const dias = p.dsc;
+            const cuantos = p.nc && p.nsc < p.nc
+              ? `${p.nsc} de ${p.nc} conectores no se comunica${p.nsc === 1 ? "" : "n"}`
+              : (p.nsc === 1 ? "Su conector no se comunica" : "Sus conectores no se comunican");
+            const cuanto = dias == null ? ""
+              : dias < 1 ? (p.msc ? " desde hace menos de un día" : " desde hoy")
+              : ` desde hace ${p.msc ? "al menos " : ""}${dias} ${dias === 1 ? "día" : "días"}`;
+            return `<div class="pop-detalle">${cuantos}${cuanto}. No implica que el equipo esté averiado: puede estar operativo y su operador no publicar el estado.</div>`;
+          })()
+        : p.cfl
+          ? `<div class="pop-detalle">El feed oficial no reporta ${p.cfl} de sus conectores, pero la fuente del operador ${p.cfl === 1 ? "lo ve activo" : "los ve activos"}. No se puede afirmar que ${p.cfl === 1 ? "esté" : "estén"} fuera de servicio.</div>`
+          : "") +
       fila("Potencia", p.kw ? nf0.format(p.kw) + " kW" + (p.cor ? " (" + esc(p.cor) + ")" : "") : null) +
       fila("Conectores", conectores) +
       fila("Precio", precioTxt(p)) +
