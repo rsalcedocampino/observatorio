@@ -51,9 +51,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="sub">Mapa del <b>registro oficial</b> de infraestructura de carga declarada a la SEC (reporte
   EcoCarga), ubicado <b>estación por estación</b>. A diferencia del <a href="mapa-carga.html">mapa de la red
   pública en vivo</a>, este incluye <b>todas las categorías</b>: pública, privada, electroterminales y
-  transporte público de buses. La comuna sale de la <b>geometría</b> (point-in-polygon contra los polígonos
-  comunales del Censo). Para los agregados por región y potencia ver
-  <a href="infraestructura.html">Capacidad de carga instalada</a>.</p>
+  transporte público de buses. Para los agregados por región y potencia ver
+  <a href="#capacidad">Capacidad de carga instalada</a>.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
@@ -135,7 +134,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="sub">Dimensiones del <b>Reporte Nacional de Infraestructura de Recarga para Vehículos Eléctricos 2026</b>
   de la SEC (datos 2018-2025) que complementan el registro georreferenciado: <b>fiscalización</b> de la red pública,
   <b>transporte público</b> (buses eléctricos) y <b>compatibilidad</b> vehículo-cargador. Para el registro por estación
-  ver <a href="carga-registro-mapa.html">el mapa del registro</a> y <a href="infraestructura.html">la capacidad instalada</a>.</p>
+  ver <a href="carga-registro-mapa.html">el mapa del registro</a> y <a href="#capacidad">la capacidad instalada</a>.</p>
   <p class="nota" id="rp-nota"></p>
 
   <h2>Fiscalización de la red pública (2025)</h2>
@@ -192,7 +191,9 @@ const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]); let mapa = null;
     [PW.fmt(pts.length), "estaciones", ambito],
     [PW.fmt(pts.reduce((s, p) => s + (p.ncar || 0), 0)), "cargadores", "suma"],
     [PW.fmt(pts.reduce((s, p) => s + (p.nc || 0), 0)), "conectores", "suma"],
-    [PW.fmt(pts.filter(p => p.ac === "Red pública").length), "de red pública", "acceso abierto"],
+    // "Red publica" SIN tilde: es el valor del dato (campo `acceso` del registro SEC), no prosa.
+    // Con la tilde el filtro no calzaba con ninguna fila y el KPI mostraba 0 en vez de 602.
+    [PW.fmt(pts.filter(p => p.ac === "Red publica").length), "de red pública", "acceso abierto"],
   ].map(kpiHTML).join(""); const capas = [{
     nombre: "Estaciones", visible: true, color: PW.color("--s2"),
     puntos: pts.map(p => ({
