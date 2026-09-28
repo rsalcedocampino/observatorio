@@ -57,7 +57,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="filtros">
     <label>Operador <select id="f-op"><option value="">Todos</option></select></label>
     <label>Corriente <select id="f-cor"><option value="">Todas</option><option value="DC">Carga rápida (DC)</option><option value="AC">Carga AC</option></select></label>
-    <label>Potencia <select id="f-pot"><option value="">Todas</option><option value="ultra">Ultrarrápida (≥50 kW)</option><option value="rapida">Rápida (22–49 kW)</option><option value="lenta">Lenta (&lt;22 kW)</option><option value="sindato">Sin potencia declarada</option></select></label>
+    <label>Potencia <select id="f-pot"><option value="">Todas</option><option value="ultra">Ultrarrápida (≥150 kW)</option><option value="rapida">Rápida (&gt;22 y &lt;150 kW)</option><option value="lenta">Lenta (≤22 kW)</option><option value="sindato">Sin potencia declarada</option></select></label>
     <label>Región <select id="f-reg"><option value="">Todas</option></select></label>
     <label>Acceso <select id="f-acc"><option value="">Todos</option><option value="publico">Público</option><option value="publico_restringido">Público con restricción</option><option value="restringido">Restringido</option><option value="mixto">Mixto</option></select></label>
     <span class="pill" id="ambito"></span>
@@ -147,7 +147,11 @@ const HAY_ACC = CARGA.some(p => p.acc); if (!HAY_ACC && CARGA.length) {
 const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; const COL_DC = PW.color("--s2"), COL_AC = PW.color("--s3"); // Poblar selects (operadores y regiones presentes en el dato)
 const selOp = document.getElementById("f-op"); [...new Set(CARGA.map(p => p.op).filter(Boolean))].sort((a, b) => a.localeCompare(b))
   .forEach(op => { const o = document.createElement("option"); o.value = op; o.textContent = op; selOp.appendChild(o); }); const selReg = document.getElementById("f-reg"); const REG = {}; CARGA.forEach(p => { if (p.rcut) REG[p.rcut] = p.reg; }); Object.entries(REG).sort((a, b) => (a[1] || "").localeCompare(b[1] || ""))
-  .forEach(([rc, nom]) => { const o = document.createElement("option"); o.value = rc; o.textContent = nom; selReg.appendChild(o); }); const selCor = document.getElementById("f-cor"); const selPot = document.getElementById("f-pot"); const selAcc = document.getElementById("f-acc"); function claseP(kw) { return kw == null ? "sindato" : (kw >= 50 ? "ultra" : (kw >= 22 ? "rapida" : "lenta")); }
+  .forEach(([rc, nom]) => { const o = document.createElement("option"); o.value = rc; o.textContent = nom; selReg.appendChild(o); }); const selCor = document.getElementById("f-cor"); const selPot = document.getElementById("f-pot"); const selAcc = document.getElementById("f-acc"); // Vocabulario UNICO del ecosistema (Cargadores y Conectores\clase_potencia.py, cortes de AFIR):
+// lenta <=22 / rapida >22 y <150 / ultra >=150. Antes este filtro usaba cortes propios (ultra >=50,
+// rapida 22-49) y 215 de 653 estaciones cambiaban de etiqueta segun se mirara el mapa o el resto
+// del sitio: un cargador de 70 kW era "ultrarrapida" aqui y "rapida" en el registro SEC.
+function claseP(kw) { return kw == null ? "sindato" : (kw >= 150 ? "ultra" : (kw > 22 ? "rapida" : "lenta")); }
 function filtrar() {
   const op = selOp.value, cor = selCor.value, pot = selPot.value, rc = selReg.value, acc = selAcc.value; return CARGA.filter(p =>
     (!op || p.op === op) &&

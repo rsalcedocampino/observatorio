@@ -20,7 +20,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Brechas de autonomía — Energías Futuro</title>
-<meta name="description" content="¿En que tramos de ruta un eléctrico promedio se queda sin donde cargar? Comparamos la distancia entre cargadores rápidos (50 kW o más) con la autonomía...">
+<meta name="description" content="¿En qué tramos de ruta un eléctrico promedio se queda sin donde cargar? Comparamos la distancia entre estaciones con carga DC con la autonomía...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=260927e">
@@ -52,9 +52,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <main>
   <h1>Brechas de autonomía</h1>
-  <p class="sub">¿En que tramos de ruta un eléctrico promedio se queda sin donde cargar?
-  Comparamos la distancia entre cargadores rápidos (50 kW o más) con la autonomía real del
-  catálogo, para ver donde falta infraestructura para viajar.</p>
+  <p class="sub">¿En qué tramos de ruta un eléctrico promedio se queda sin donde cargar?
+  Comparamos la distancia entre estaciones con carga DC con la autonomía real del catálogo, para
+  ver donde falta infraestructura para viajar. El criterio es la corriente, no la potencia: también
+  cuentan los puntos DC lentos, porque en ruta sirven.</p>
   <p class="nota" id="nota"></p>
 
   <div style="margin:20px 0;padding:15px;background:var(--surface-2);border-radius:6px;max-width:860px">
@@ -114,10 +115,10 @@ PW.montarNav("autonomia.html"); const D = PW_DATA.c_autonomia; // indice estable
 // podia abrir la brecha equivocada de esas 2. Los objetos filtrados abajo son las MISMAS
 // referencias (filter() no clona), asi que _i sobrevive a cualquier filtro por region.
 D.brechas.forEach((b, i) => { b._i = i; }); document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const K = D.kpis; document.getElementById("kpis").innerHTML = [
-  [K.estaciones_dc, "estaciones con carga rapida <span class=\"kpi-info\" data-tooltip=\"Puntos de carga rápida: 50 kW o más\">ℹ</span>", "50 kW o más"],
+  [K.estaciones_dc, "estaciones con carga DC <span class=\"kpi-info\" data-tooltip=\"Estaciones con al menos un conector DC, cualquier potencia. El criterio es la corriente, no la clase de velocidad: en el vocabulario del sitio 'rápida' parte sobre 22 kW\">ℹ</span>", "cualquier potencia"],
   [PW.fmt(K.autonomia_p50) + " km", "autonomía mediana del catálogo <span class=\"kpi-info\" data-tooltip=\"Percentil 50: la mitad de vehículos llega más lejos\">ℹ</span>", "p25: " + PW.fmt(K.autonomia_p25) + " km"],
   [PW.fmt(K.rango_util_p25) + " km", "rango útil conservador <span class=\"kpi-info\" data-tooltip=\"70% del p25 para garantizar cobertura confiable incluso con envejecimiento de batería\">ℹ</span>", "70% de la autonomía p25"],
-  [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada <span class=\"kpi-info\" data-tooltip=\"Distancia más grande sin cargadores rápidos en corredor norte-sur\">ℹ</span>", D.brechas.length ? D.brechas[0].desde : ""],
+  [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada <span class=\"kpi-info\" data-tooltip=\"Distancia más grande sin estaciones con carga DC en corredor norte-sur\">ℹ</span>", D.brechas.length ? D.brechas[0].desde : ""],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const umbral = K.rango_util_p25; let mapaRef = null; function calcularBrechaPorRegion() {
   const brechasPorReg = {}; D.brechas.forEach(b => {
     const pDesde = D.puntos.find(p => b.desde.includes(p.n)); const pHasta = D.puntos.find(p => b.hasta.includes(p.n)); if (pDesde && pHasta) {
