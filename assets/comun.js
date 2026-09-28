@@ -1580,13 +1580,24 @@
             // estacion completa. Con `msc`, ademas, alguno nunca reporto un estado normal en todo
             // el historico, asi que su racha puede venir de antes y la cifra es un piso: ahi el
             // texto dice "al menos". Sin `msc` la fecha es exacta.
-            const dias = p.dsc;
             const cuantos = p.nc && p.nsc < p.nc
               ? `${p.nsc} de ${p.nc} conectores no se comunica${p.nsc === 1 ? "" : "n"}`
               : (p.nsc === 1 ? "Su conector no se comunica" : "Sus conectores no se comunican");
-            const cuanto = dias == null ? ""
-              : dias < 1 ? (p.msc ? " desde hace menos de un día" : " desde hoy")
-              : ` desde hace ${p.msc ? "al menos " : ""}${dias} ${dias === 1 ? "día" : "días"}`;
+            // `min` = la cifra es un PISO, no un dato exacto: ese conector nunca reporto un
+            // estado normal en todo el historico, asi que su racha puede venir de antes.
+            const dur = (d, min) => d == null ? null
+              : d < 1 ? (min ? "desde hace menos de un día" : "desde hoy")
+              : `desde hace ${min ? "al menos " : ""}${d} ${d === 1 ? "día" : "días"}`;
+            // `dscx` (racha mas LARGA) viaja SOLO cuando difiere de `dsc`, asi que su presencia
+            // ya es la marca de que el sitio tiene conectores con antiguedades distintas. Sin
+            // esto la tarjeta decia "desde hoy" -porque `dsc` es el minimo- en estaciones con un
+            // conector mudo hace mas de dos meses, y el lector concluia que el problema es nuevo.
+            // `mscx` dice si el MAS ANTIGUO es de racha minima; no se deduce de `msc`, que es
+            // true si CUALQUIERA lo es. Para el mas reciente se usa `msc`, que es conservador:
+            // si alguno es minimo y no sabemos cual, no se afirma una fecha exacta.
+            const cuanto = p.dscx != null
+              ? `. El más antiguo, ${dur(p.dscx, p.mscx)}; el más reciente, ${dur(p.dsc, p.msc)}`
+              : (dur(p.dsc, p.msc) ? " " + dur(p.dsc, p.msc) : "");
             return `<div class="pop-detalle">${cuantos}${cuanto}. No implica que el equipo esté averiado: puede estar operativo y su operador no publicar el estado.</div>`;
           })()
         : p.cfl
