@@ -78,7 +78,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Reporte Energético 2026 CCGE</h1>
   <p class="sub">El Ministerio de Energía publicó el listado actualizado de <b>Consumidores con Capacidad
   de Gestión de Energía 2026 (CCGE)</b>, dando inicio a nuevos plazos y obligaciones asociados a la gestión
-  energética. Aquí puedes buscar las <b>1.869 empresas</b> obligadas al Proceso de Reporte Energético 2026
+  energética. Aquí puedes buscar las <b><span id="re-total">—</span> empresas</b> obligadas al Proceso de Reporte Energético 2026
   y distinguir cuáles son CCGE (deben además implementar un Sistema de Gestión de Energía).</p>
 
   <div class="tarjeta" style="margin-bottom:18px">
@@ -179,6 +179,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="assets/comun.js?v=260928b"></script>
 <script>
 PW.montarNav("reporte-energetico.html"); const D = window.PW_DATA.c_ccge, M = D.meta; const esc = PW.esc, fmt = PW.fmt; // color por Origen (paleta del observatorio); CCGE destacado en naranjo.
+{ // El total se lee del dato, no clavado: la nomina CCGE cambia entre procesos.
+  const _rt = document.getElementById("re-total"), _cm = (PW_DATA.c_ccge || {}).meta;
+  if (_rt && _cm && _cm.total != null) _rt.textContent = PW.fmt(_cm.total); }
 const OCOL = { ccge: "--s2", publica: "--s1", libre: "--s4", ds340: "--ink-3" }; const OMAP = {}; M.origenes.forEach(o => { OMAP[o.k] = o; }); const dot = k => '<span class="odot" style="background:var(' + (OCOL[k] || "--ink-3") + ')"></span>'; // --- tarjeta de obligacion + plazo
 document.getElementById("oblig").innerHTML = [
   ["Obligación", "Proceso de Reporte Energético 2026"],

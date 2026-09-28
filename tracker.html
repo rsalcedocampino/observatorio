@@ -158,7 +158,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <p class="nota" style="margin-top:14px">Las <b>propuestas sobre la mesa por actor</b> (gobierno,
   estudio de copropiedad, gremio renovable) y las <b>normas con su actualización propuesta</b>
-  están en la biblioteca normativa, junto con las 25 brechas, la matriz por eje y el radar
+  están en la biblioteca normativa, junto con las <span id="tk-brechas">—</span> brechas, la matriz por eje y el radar
   legislativo: <a href="normativa.html">ver en Normativa y metas &rarr;</a></p>
 
   <h2 class="pregunta">5. ¿El sistema eléctrico sigue el plan?</h2>
@@ -180,6 +180,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("tracker.html"); const D = PW_DATA.tracker; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; // Metas OFICIALES desde la biblioteca normativa (Documentos de Gobierno)
 const OF = (window.PW_DATA.c_normativa || {}).oficiales || null; if (OF && OF.cargadores_2030 && OF.cargadores_2030.valor) {
+{ // El conteo de brechas se lee del dato: crece con el barrido mensual de LeyChile.
+  const _tb = document.getElementById("tk-brechas"), _nk = (PW_DATA.c_normativa || {}).kpis;
+  if (_tb && _nk && _nk.brechas != null) _tb.textContent = PW.fmt(_nk.brechas); }
   document.getElementById("meta-carg").value = OF.cargadores_2030.valor; document.getElementById("meta-carg-anio").value = 2030; }
 
 // ---------- utilidades de proyeccion
