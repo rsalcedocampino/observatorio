@@ -193,9 +193,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa de brechas normativas para la meta 2035</h2>
-    <p class="nota">25 brechas tipificadas: vacío absoluto (la norma no existe), actualización
-    (existe pero no sirve), conflicto (normas que chocan) y creación. La vía indica si se
-    resuelve por decreto o requiere ley.</p>
+    <!-- El conteo se lee del dato: crece con el barrido mensual de LeyChile, y clavado en el
+         HTML envejece solo. Misma practica que el resto de las cifras vivas del sitio. -->
+    <p class="nota" id="nb-conteo"></p>
     <div class="filtros">
       <label>Urgencia <select id="f-urg"><option value="">Todas</option>
         <option>máxima</option><option>alta</option><option>media</option><option>baja</option>
@@ -275,6 +275,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 PW.montarNav("normativa.html"); const D = PW_DATA.c_normativa; // Las cifras del texto se leen del dato: decian 114 documentos y 49 normas mientras el KPI de
 // la misma pantalla mostraba 131 y 59. Escritas a mano se desfasan en cada actualizacion.
 {
+  // El conteo de brechas se lee del dato por la misma razon que los de arriba: crece con el
+  // barrido mensual de LeyChile y clavado en el HTML se desfasa solo (hallazgo de #13, 825).
+  const _b = document.getElementById("nb-conteo");
+  if (_b) _b.textContent = ((D.kpis && D.kpis.brechas != null) ? PW.fmt(D.kpis.brechas) + " brechas tipificadas" : "Brechas tipificadas") +
+    ": vacío absoluto (la norma no existe), actualización (existe pero no sirve), conflicto (normas que chocan) y creación. La vía indica si se resuelve por decreto o requiere ley.";
   const _d = document.getElementById("n-docs"), _n = document.getElementById("n-normas"); if (_d && D.kpis && D.kpis.documentos != null) _d.textContent = PW.fmt(D.kpis.documentos); if (_n && D.kpis && D.kpis.normas != null) _n.textContent = PW.fmt(D.kpis.normas); }
 document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const K = D.kpis; document.getElementById("kpis").innerHTML = [
   [K.documentos, "documentos oficiales verificados", ""],
