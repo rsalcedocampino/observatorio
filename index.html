@@ -33,7 +33,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="canonical" href="https://observatorio.energiasfuturo.com/">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260928b">
+<link rel="stylesheet" href="assets/estilo.css?v=260928c">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/resumen.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -54,7 +54,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#red-carga">Red de carga</a>
       <a href="#mercado">Mercado e inversión</a>
       <a href="#energia">Energía y resiliencia</a>
-      <a href="#normativa">Normativa y territorio</a>
+      <a href="#normativa">Normativa y metas</a>
+      <a href="#territorio">Territorio y población</a>
       <a class="solicitar" href="mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio">Contacto</a>
     </div>
   </div>
@@ -67,6 +68,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <input type="search" id="busca-modulo" placeholder="Ej: cortes, seguros, solar, buses...">
     </label>
     <span class="pill" id="cont-modulos"></span>
+  </div>
+
+  <!-- Puertas de entrada: seleccion EDITORIAL, no "lo mas visto" -- no medimos visitas y
+       decirlo seria afirmar lo que no sabemos. Se cambian a mano, a proposito. Las tarjetas
+       llevan `data-destacado` para que el buscador de modulos no las cuente ni las repita. -->
+  <h2 id="empieza">Empieza por aquí</h2>
+  <div class="grid-modulos" id="grid-destacados">
+    <a class="modulo-card" data-destacado href="reporte-regional.html">
+      <h3>Tu comuna en una página</h3>
+      <p>Elige una región o una comuna y arma su dossier: parque enchufable, red de carga,
+      cortes, precios y contexto social, todo cruzado sobre el mismo territorio.</p>
+      <div class="aud"><span class="pill">Reporte Regional</span></div>
+    </a>
+    <a class="modulo-card" data-destacado href="mapa-carga.html">
+      <h3>Dónde cargar ahora</h3>
+      <p>La red de carga pública con el estado de cada punto actualizado cada 30 minutos:
+      disponible, ocupado, sin comunicación.</p>
+      <div class="aud"><span class="pill">Red de carga en vivo</span></div>
+    </a>
+    <a class="modulo-card" data-destacado href="tco.html">
+      <h3>Cuánto cuesta tenerlo</h3>
+      <p>El costo total de propiedad de un eléctrico contra uno a combustión, con precios de
+      energía y combustible reales, no supuestos.</p>
+      <div class="aud"><span class="pill">TCO Vehículos</span></div>
+    </a>
+    <a class="modulo-card" data-destacado href="tracker.html">
+      <h3>¿Vamos a llegar?</h3>
+      <p>Chile comprometió 100% de ventas de vehículos livianos cero emisiones al 2035. Qué
+      dicen las cifras sobre esa meta y qué fuerza legal tiene cada compromiso.</p>
+      <div class="aud"><span class="pill">Meta 2035</span></div>
+    </a>
   </div>
 
   <h2 id="mapas">Mapas Interactivos</h2>
@@ -285,39 +317,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </a>
   </div>
 
-  <h2 id="normativa">Normativa y territorio</h2>
+  <h2 id="normativa">Normativa y metas</h2>
   <div class="grid-modulos">
     <a class="modulo-card" href="tracker.html">
       <h3>Meta 2035: ¿vamos a llegar?</h3>
       <p>Ventas, cargadores, energía y metas oficiales proyectados al 2035. En qué va Chile
       adelantado y en qué va en rojo, región por región.</p>
       <div class="aud"><span class="pill">Para decidir</span> <span class="pill">Rendición de cuentas</span></div>
-    </a>
-    <a class="modulo-card" href="reporte-regional.html">
-      <h3>Reporte Regional</h3>
-      <p>La meta nacional se gana o se pierde región por región. Para cada una: su parque
-      enchufable, su red de carga actual, cuántos cargadores le faltarían al 2035, el avance de su
-      transición energética (solar, almacenamiento, generación distribuida) y un detalle territorial
-      hasta nivel de comuna con recomendaciones.</p>
-      <div class="aud"><span class="pill">16 regiones</span> <span class="pill">INE + Censo + SEC + red viva</span></div>
-    </a>
-    <a class="modulo-card" href="vulnerabilidad.html">
-      <h3>Vulnerabilidad energética</h3>
-      <p>Cortes, precio de la energía y realidad social del Censo en un solo índice: el mapa
-      de la desigualdad energética de las 346 comunas.</p>
-      <div class="aud"><span class="pill">Política pública</span></div>
-    </a>
-    <a class="modulo-card" href="permisos.html">
-      <h3>Parque de vehículos</h3>
-      <p>Todos los vehículos con permiso de circulación en Chile según el INE: 6,7 millones en 2024, su evolución desde 2008 por tipo de motor — bencinero, diésel, gas y eléctrico — y por región.</p>
-      <div class="aud"><span class="pill">Serie 2008–2024</span> <span class="pill">INE, oficial</span></div>
-    </a>
-    <a class="modulo-card" href="censo.html">
-      <h3>Censo Nacional 2024</h3>
-      <p>El retrato demográfico y habitacional del país (INE): población, edad, educación, empleo,
-      vivienda, conectividad y servicios básicos, por región y por las 346 comunas, con mapa comunal
-      por indicador. El contexto que sostiene el resto del observatorio.</p>
-      <div class="aud"><span class="pill">Censo 2024 INE</span> <span class="pill">346 comunas</span></div>
     </a>
     <a class="modulo-card" href="normativa.html">
       <h3>Metas y marco legal</h3>
@@ -340,9 +346,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="aud"><span class="pill">Normativa</span> <span class="pill">Baterías y REP</span></div>
     </a>
   </div>
+
+  <h2 id="territorio">Territorio y población</h2>
+  <div class="grid-modulos">
+    <a class="modulo-card" href="reporte-regional.html">
+      <h3>Reporte Regional</h3>
+      <p>La meta nacional se gana o se pierde región por región. Para cada una: su parque
+      enchufable, su red de carga actual, cuántos cargadores le faltarían al 2035, el avance de su
+      transición energética (solar, almacenamiento, generación distribuida) y un detalle territorial
+      hasta nivel de comuna con recomendaciones.</p>
+      <div class="aud"><span class="pill">16 regiones</span> <span class="pill">INE + Censo + SEC + red viva</span></div>
+    </a>
+    <a class="modulo-card" href="vulnerabilidad.html">
+      <h3>Vulnerabilidad energética</h3>
+      <p>Cortes, precio de la energía y realidad social del Censo en un solo índice: el mapa
+      de la desigualdad energética de las 346 comunas.</p>
+      <div class="aud"><span class="pill">Política pública</span></div>
+    </a>
+    <a class="modulo-card" href="censo.html">
+      <h3>Censo Nacional 2024</h3>
+      <p>El retrato demográfico y habitacional del país (INE): población, edad, educación, empleo,
+      vivienda, conectividad y servicios básicos, por región y por las 346 comunas, con mapa comunal
+      por indicador. El contexto que sostiene el resto del observatorio.</p>
+      <div class="aud"><span class="pill">Censo 2024 INE</span> <span class="pill">346 comunas</span></div>
+    </a>
+    <a class="modulo-card" href="permisos.html">
+      <h3>Parque de vehículos</h3>
+      <p>Todos los vehículos con permiso de circulación en Chile según el INE: 6,7 millones en 2024, su evolución desde 2008 por tipo de motor — bencinero, diésel, gas y eléctrico — y por región.</p>
+      <div class="aud"><span class="pill">Serie 2008–2024</span> <span class="pill">INE, oficial</span></div>
+    </a>
+  </div>
 </main>
 <script>document.write('<script src="data/resumen.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260928b"></script>
+<script src="assets/comun.js?v=260928c"></script>
 <script>
 PW.montarNav("index.html"); const k = PW_DATA.resumen.kpis; // Las cifras que la portada cita en prosa se leen del dato, no van escritas a mano. Tres se
 // habian desfasado sin que nada lo detectara (69 instrumentos contra 94, 584 vehiculos de
@@ -369,11 +405,15 @@ document.querySelectorAll("[data-k]").forEach(el => {
 document.querySelectorAll(".modulo-card").forEach(card => {
   const svg = PW.icono(card.getAttribute("href")); if (svg) card.insertAdjacentHTML("afterbegin", `<span class="ic">${svg}</span>`); }); // buscador de modulos: filtra cards y oculta secciones vacias
 (function () {
-  const input = document.getElementById("busca-modulo"); const cont = document.getElementById("cont-modulos"); const cards = [...document.querySelectorAll(".modulo-card")]; const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase(); function filtrar() {
+  const input = document.getElementById("busca-modulo"); const cont = document.getElementById("cont-modulos"); const cards = [...document.querySelectorAll(".modulo-card:not([data-destacado])")]; const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase(); function filtrar() {
     const q = norm(input.value.trim()); let visibles = 0; cards.forEach(c => {
-      const ok = !q || norm(c.textContent).includes(q); c.style.display = ok ? "" : "none"; if (ok) visibles++; }); // ocultar titulos de seccion sin cards visibles
+      const ok = !q || norm(c.textContent).includes(q); c.style.display = ok ? "" : "none"; if (ok) visibles++; });
+    // La fila de entrada se esconde mientras haya consulta: es un atajo para quien no
+    // sabe por donde empezar, y estorba a quien ya sabe que busca.
+    { const _d = document.getElementById("grid-destacados"), _h = document.getElementById("empieza");
+      if (_d) _d.style.display = q ? "none" : ""; if (_h) _h.style.display = q ? "none" : ""; } // ocultar titulos de seccion sin cards visibles
     document.querySelectorAll("main h2[id]").forEach(h2 => {
-      const grid = h2.nextElementSibling; if (!grid || !grid.classList.contains("grid-modulos")) return; const hayVisible = [...grid.querySelectorAll(".modulo-card")].some(c => c.style.display !== "none"); h2.style.display = hayVisible ? "" : "none"; grid.style.display = hayVisible ? "" : "none"; }); cont.textContent = q ? visibles + " de " + cards.length + " módulos" : cards.length + " módulos"; }
+      const grid = h2.nextElementSibling; if (!grid || !grid.classList.contains("grid-modulos")) return; if (grid.id === "grid-destacados") return; /* la fila de entrada no es una seccion buscable: su visibilidad la decide el bloque de arriba; sin esta guarda, este recorrido la volvia a mostrar al buscar */ const hayVisible = [...grid.querySelectorAll(".modulo-card")].some(c => c.style.display !== "none"); h2.style.display = hayVisible ? "" : "none"; grid.style.display = hayVisible ? "" : "none"; }); cont.textContent = q ? visibles + " de " + cards.length + " módulos" : cards.length + " módulos"; }
   input.addEventListener("input", filtrar); filtrar(); })(); </script>
 </body>
 </html>

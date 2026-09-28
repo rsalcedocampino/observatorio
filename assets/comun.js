@@ -71,15 +71,17 @@
       ["pelp.html", "Chile vs PELP"],
       ["generacion.html", "Parque de generación"],
     ]],
-    ["Normativa y territorio", [
+    ["Normativa y metas", [
       ["tracker.html", "Meta 2035"],
-      ["reporte-regional.html", "Reporte Regional"],
-      ["vulnerabilidad.html", "Vulnerabilidad energética"],
-      ["permisos.html", "Parque de vehículos"],
-      ["censo.html", "Censo Nacional"],
       ["normativa.html", "Metas y marco legal"],
       ["reporte-energetico.html", "Reporte Energético 2026 CCGE"],
       ["bodegaje.html", "Bodegaje de sustancias peligrosas"],
+    ]],
+    ["Territorio y población", [
+      ["reporte-regional.html", "Reporte Regional"],
+      ["vulnerabilidad.html", "Vulnerabilidad energética"],
+      ["censo.html", "Censo Nacional"],
+      ["permisos.html", "Parque de vehículos"],
     ]],
   ];
 
