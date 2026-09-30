@@ -57,8 +57,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="tab-btn activo" data-tab="bencina">Bencina 93</button>
     <button class="tab-btn" data-tab="tarifas">Tarifas de Electricidad (Regional)</button>
     <button class="tab-btn" data-tab="ev2025">Stock EV 2025 (Proyectado)</button>
-    <button class="tab-btn" data-tab="pnp">Precios Nudo por Subestación</button>
-    <button class="tab-btn" data-tab="tarifas-detalle">Tarifa Final (PNP + VAD)</button>
+    <button class="tab-btn" hidden data-tab="pnp">Precios Nudo por Subestación</button>
+    <button class="tab-btn" hidden data-tab="tarifas-detalle">Tarifa Final (PNP + VAD)</button>
+  <p class="nota" style="margin:.75rem 0 0">Las dos vistas de <strong>tarifas por región y distribuidor</strong> están retiradas temporalmente. Motivo: en la fuente que asigna cada subestación a su región y distribuidora, 18 de las 34 subestaciones traen la distribuidora marcada como desconocida, de modo que el nombre que se mostraba no estaba establecido. Vuelven cuando la atribución esté verificada.</p>
   </div>
 
   <!-- TAB 1: Bencina 93 -->
@@ -197,7 +198,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- TAB 4: Tarifa Final (PNP + VAD) -->
   <div id="tab-tarifas-detalle" class="tab-content">
-    <p class="sub">Tarifa final al cliente = Precio Nudo (transmisión CNE) + Valor Agregado Distribución (distribuidor).
+    <p class="sub">Tarifa final al cliente = Precio Nudo + Valor Agregado Distribución (distribuidor). El Precio Nudo de esta vista es un valor de REFERENCIA, pendiente de reemplazo por el dato de la CNE: no confundir con el decreto vigente.
     Selecciona región, distribuidor y segmento para ver desglose completo: energía, potencia, cargos fijos y tarifa total.</p>
     <p class="nota" id="nota-tarifa-detalle"></p>
 
@@ -379,15 +380,25 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
 if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
   const DTD = PW_DATA.c_elasticidad_tarifas_detallado; // Actualizar nota
   document.getElementById("nota-tarifa-detalle").textContent = "Actualizado " + (DTD.generado || "").slice(0, 10) + ". " + DTD.nota; // Llenar dropdown regiones
-  const selRegionDet = document.getElementById("sel-region-det"); const regionesMapeo = {
+  const selRegionDet = document.getElementById("sel-region-det"); const regionesMapeo = {   // las 16, nombre corto del kit canonico territorio_chile:
+    // una region nueva en el dato ya no sale sin nombre en el desplegable
     "01": "Tarapacá",
     "02": "Antofagasta",
     "03": "Atacama",
     "04": "Coquimbo",
     "05": "Valparaíso",
     "06": "O'Higgins",
-    "13": "Metropolitana"
-  }; Object.keys(DTD.tarifas || {}).sort().forEach(region => {
+    "07": "Maule",
+    "08": "Biobío",
+    "09": "La Araucanía",
+    "10": "Los Lagos",
+    "11": "Aysén",
+    "12": "Magallanes",
+    "13": "Metropolitana",
+    "14": "Los Ríos",
+    "15": "Arica y Parinacota",
+    "16": "Ñuble",
+    }; Object.keys(DTD.tarifas || {}).sort().forEach(region => {
     const opt = document.createElement("option"); opt.value = region; opt.textContent = region + " - " + (regionesMapeo[region] || ""); selRegionDet.appendChild(opt); }); // Evento: cambio región
   selRegionDet.addEventListener("change", function() {
     const region = this.value; const distDetContainer = document.getElementById("dist-det-container"); const segDetContainer = document.getElementById("seg-det-container"); const selDistDet = document.getElementById("sel-distribuidor-det"); const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle"); if (!region) {

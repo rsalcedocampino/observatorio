@@ -120,7 +120,7 @@ document.getElementById("nota").textContent = "Actualizado " + (D.generado || ""
 const celdasEV = D.productos.length * Object.keys(D.coberturas_ev).length; const prodConEV = new Set(matEV.map(m => m.producto)).size; document.getElementById("kpis").innerHTML = [
   [D.aseguradoras.length, "aseguradoras analizadas", conEV + " con oferta EV especifica"],
   [D.productos.length, "productos y planes", "condicionados POL/CAD citados"],
-  ["8", "coberturas EV canonicas", "del catalogo del proyecto"],
+  ["8", "coberturas EV canónicas", "del catálogo del proyecto"],
   [cubiertas + " de " + celdasEV, "celdas EV con cobertura confirmada",
    "solo " + prodConEV + " de " + D.productos.length + " productos declara cobertura EV"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // selector de aseguradoras
@@ -129,7 +129,7 @@ const selA = document.getElementById("f-aseg"); D.aseguradoras.forEach(a => {
 function pintarMatriz() {
   const asegSel = selA.value; const tipo = document.getElementById("f-tipo").value; const cat = tipo === "ev" ? D.coberturas_ev : D.coberturas_base; const cobIds = Object.keys(cat); const productos = D.productos.filter(p => !asegSel || p.aseg_id === asegSel); const idx = {}; D.matriz.forEach(m => { idx[m.producto + "|" + m.cobertura] = m; }); function celda(p, c) {
     const m = idx[p.id + "|" + c]; const v = m ? m.incluida : "S/I"; const clase = v === "si" ? "cob-si" : v === "no" ? "cob-no" : v === "opcional" ? "cob-opcional" : "cob-si1"; const titulo = m ? [m.limite, m.nota, m.fuente].filter(Boolean).join(" — ") : "Sin información en la fuente"; return `<span class="celda-cob ${clase}" title="${(titulo || "").replace(/"/g, "'")}">${v}</span>`; }
-  const nombreCob = c => c.replace(/_/g, " ").replace("bateria hv", "bateria alta tensión"); const html = `<table class="pw"><thead><tr><th>Producto</th><th>Aseguradora</th>` +
+  const nombreCob = c => c.replace(/_/g, " ").replace("bateria hv", "batería alta tensión"); const html = `<table class="pw"><thead><tr><th>Producto</th><th>Aseguradora</th>` +
     cobIds.map(c => `<th title="${(cat[c] || "").replace(/"/g, "'")}">${nombreCob(c)}</th>`).join("") +
     `</tr></thead><tbody>` +
     productos.map(p => `<tr><td>${p.nombre}</td><td>${p.aseguradora}</td>` +

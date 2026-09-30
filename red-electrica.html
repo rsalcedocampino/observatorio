@@ -102,7 +102,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 PW.montarNav("red-electrica.html"); const D = PW_DATA.c_redelec; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const K = D.kpis; document.getElementById("kpis").innerHTML = [
   [PW.fmt(K.subestaciones), "subestaciones", PW.fmt(K.mva_total) + " MVA de capacidad"],
-  [PW.fmt(K.lineas_coordinador), "lineas de transmisión", K.km_lineas ? PW.fmt(K.km_lineas) + " km (trazados IDE)" : ""],
+  [PW.fmt(K.lineas_coordinador), "líneas de transmisión", K.km_lineas ? PW.fmt(K.km_lineas) + " km (trazados IDE)" : ""],
   [PW.fmt(K.dist_mediana_km, 1) + " km", "mediana cargador-subestacion", "toda la red de carga"],
   [PW.fmt(K.potencial_total_gw, 1) + " GW", "potencial renovable instalable", "estudio MinEnergia 2021"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Mapa de subestaciones (color por nivel de tension)
