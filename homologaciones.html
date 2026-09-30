@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
+<!-- End Google tag (gtag.js) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Radar de homologaciones — Energías Futuro</title>
+<meta name="description" content="Qué modelos se certifican en Chile y cuándo: línea de tiempo de homologaciones de vehículos por fecha, con el avance de los electrificados frente a la combustión, los modelos del último mes y las motos.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=260930a">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_homologaciones.js?v='+_pwv+'">')</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <h1>Radar de homologaciones</h1>
+  <p class="sub">La homologación es el primer paso obligatorio antes de que un modelo se pueda
+  vender: mucho antes de la primera patente, el modelo ya pasó por la certificación. Esta es la
+  foto vigente de las homologaciones de vehículos livianos y medianos por su fecha de certificación
+  (padrón 3CV de la Subsecretaría de Transportes), para ver qué se certifica y cuándo, y cómo avanzan
+  los electrificados frente a la combustión.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Homologaciones por mes: electrificados vs combustión</h2>
+    <div id="ley-tend" style="display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;margin:2px 0 6px"></div>
+    <div id="g-tendencia"></div>
+    <p class="nota" id="nota-tend"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Enchufables homologados por mes (BEV, PHEV, FCEV)</h2>
+    <div id="g-ench"></div>
+    <p class="nota">Los enchufables son el subconjunto que carga de la red: no incluye híbridos
+    convencionales (HEV) ni híbridos leves (MHEV). Pasa el mouse por una columna para el mes.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Autonomía media de los enchufables homologados, por año</h2>
+    <div id="g-autonomia"></div>
+    <p class="nota" id="nota-autonomia"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0" id="t-ultimo-tit">Modelos del último mes</h2>
+    <div class="scroll-x" id="t-ultimo"></div>
+    <p class="nota" id="nota-ultimo"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Motos</h2>
+    <div class="kpis" id="kpis-motos"></div>
+    <div id="g-motos"></div>
+    <p class="nota">Las motos se homologan en un padrón aparte (sin CIT). El gráfico muestra las
+    homologaciones por mes de los últimos dos años; las eléctricas todavía son una fracción menor.</p>
+  </div>
+</main>
+
+<script>document.write('<script src="data/c_homologaciones.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=260930a"></script>
+<script>
+PW.montarNav("homologaciones.html");
+const D = PW_DATA.c_homologaciones;
+const g = id => document.getElementById(id);
+const NOM_MES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+                 "septiembre", "octubre", "noviembre", "diciembre"];
+const mesLargo = ym => { if (!ym) return ""; const p = ym.split("-"); return NOM_MES[(+p[1]) - 1] + " " + p[0]; };
+const TEC_TXT = { BEV: "Eléctrico", PHEV: "Híbrido enchufable", EREV: "Rango extendido",
+  PEREV: "Rango ext. enchufable", FCEV: "Hidrógeno", HEV: "Híbrido", MHEV: "Híbrido leve",
+  Combustion: "Combustión", "s/d": "s/d" };
+const CARR_TXT = { sedan: "Sedán", hatchback: "Hatchback", suv: "SUV", "station-wagon": "Station wagon",
+  coupe: "Coupé", cabrio: "Cabriolet", camioneta: "Camioneta", furgon: "Furgón", minibus: "Minibús",
+  van: "Van", bus: "Bus", pickup: "Pickup", todoterreno: "Todo terreno", liviano: "Liviano" };
+
+g("nota").textContent = "Actualizado " + (D.generado || "") + ". " + D.nota + " Fuente: " + D.fuente;
+
+const meses = D.meses || [];
+const last = meses.length ? meses[meses.length - 1] : { total: 0, elec: 0, ench: 0, comb: 0 };
+const U = D.ultimo || { mes: "", n: 0, n_modelos: 0, filas: [] };
+const MO = D.motos || { total: 0, elec: 0, por_mes: [] };
+const pctElec = last.total ? Math.round(last.elec / last.total * 100) : 0;
+
+g("kpis").innerHTML = [
+  [PW.fmt(U.n), "homologaciones en " + mesLargo(U.mes), PW.fmt(U.n_modelos) + " modelos distintos"],
+  [pctElec + "%", "electrificados el último mes", PW.fmt(last.ench) + " enchufables de " + PW.fmt(last.total)],
+  [PW.fmt(D.total), "homologaciones vigentes", D.rango.n_meses + " meses desde " + (D.rango.desde || "")],
+  [PW.fmt(MO.total), "motos homologadas", PW.fmt(MO.elec) + " eléctricas"],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+// --- tendencia: electrificados vs combustion, ultimos 24 meses (2 lineas) ---
+const N = 24;
+const ms = meses.slice(-N);
+const C_ELEC = PW.color("--s1") || "#16a34a";
+const C_COMB = PW.color("--ink-3") || "#9ca3af";
+g("ley-tend").innerHTML = [["Electrificados (incluye híbridos)", C_ELEC], ["Combustión", C_COMB]]
+  .map(s => `<span><i style="display:inline-block;width:11px;height:11px;border-radius:2px;background:${s[1]};margin-right:5px"></i>${PW.esc(s[0])}</span>`).join("");
+PW.lineas("g-tendencia", {
+  labels: ms.map(m => m.mes),
+  series: [
+    { nombre: "Electrificados", valores: ms.map(m => m.elec), color: C_ELEC, area: true },
+    { nombre: "Combustión", valores: ms.map(m => m.comb), color: C_COMB },
+  ],
+  fmtY: v => PW.fmt(v),
+  fmtV: v => PW.fmt(v) + " homologaciones",
+});
+g("nota-tend").textContent = "Últimos " + ms.length + " meses (" + mesLargo(ms.length ? ms[0].mes : "") +
+  " a " + mesLargo(last.mes) + "). El mes en curso puede estar incompleto. Los electrificados incluyen " +
+  "híbridos convencionales; el detalle de enchufables va en el gráfico siguiente.";
+
+// --- enchufables por mes (columnas) ---
+PW.columnas("g-ench", {
+  labels: ms.map(m => m.mes),
+  valores: ms.map(m => m.ench),
+  color: PW.color("--s2") || "#2563eb",
+  fmtV: v => PW.fmt(v) + " enchufables",
+});
+
+// --- tendencia: autonomia media de enchufables por año (desde 2017, serie continua) ---
+const TEND = (D.tendencia_autonomia || []).filter(t => t.ano >= "2017");
+if (TEND.length) {
+  PW.columnas("g-autonomia", {
+    labels: TEND.map(t => t.ano),
+    valores: TEND.map(t => t.autonomia_media),
+    color: PW.color("--s3") || "#0891b2",
+    fmtV: v => PW.fmt(v) + " km",
+    fmtY: v => PW.fmt(v),
+  });
+  const t0 = TEND[0], t1 = TEND[TEND.length - 1];
+  const bajos = TEND.filter(t => t.n && t.n_ficha / t.n < 0.9)
+    .map(t => t.ano + " con " + PW.fmt(t.n_ficha) + " de " + PW.fmt(t.n) + " (" + Math.round(100 * t.n_ficha / t.n) + "%)");
+  g("nota-autonomia").textContent = "Autonomía media (km) de los BEV, PHEV y FCEV homologados cada año, " +
+    "cruzando cada CIT con la ficha del maestro TCO. Subió de " + PW.fmt(t0.autonomia_media) + " km en " +
+    t0.ano + " a " + PW.fmt(t1.autonomia_media) + " km en " + t1.ano + ". Cada barra promedia los enchufables " +
+    "con ficha ese año, cobertura casi completa" + (bajos.length ? " salvo " + bajos.join(" y ") : "") +
+    "; el año en curso se omite porque sus especificaciones llegan meses después de la homologación.";
+} else if (g("g-autonomia")) { g("g-autonomia").parentElement.style.display = "none"; }
+
+// --- tabla del ultimo mes ---
+g("t-ultimo-tit").textContent = "Modelos homologados en " + mesLargo(U.mes);
+PW.tabla("t-ultimo", [
+  { k: "mk", titulo: "Marca" },
+  { k: "md", titulo: "Modelo" },
+  { k: "tec", titulo: "Tecnología", fmt: v => `<span class="pill">${PW.esc(TEC_TXT[v] || v)}</span>` },
+  { k: "carr", titulo: "Carrocería", fmt: v => v ? PW.esc(CARR_TXT[v] || v) : "—" },
+  { k: "comb", titulo: "Combustible", fmt: v => v ? PW.esc(v) : "—" },
+  { k: "an", titulo: "Año", num: true, fmt: v => v ? PW.esc(v) : "—" },
+  { k: "nv", titulo: "Versiones", num: true, fmt: v => PW.fmt(v) },
+], U.filas, { buscador: U.filas.length > 20, max: 400 });
+g("nota-ultimo").textContent = "Modelos con fecha de homologación en " + mesLargo(U.mes) + ": " +
+  PW.fmt(U.n) + " certificaciones agrupadas en " + PW.fmt(U.n_modelos) + " modelos. \"Versiones\" cuenta " +
+  "las variantes de un mismo modelo homologadas ese mes.";
+
+// --- motos ---
+g("kpis-motos").innerHTML = [
+  [PW.fmt(MO.total), "motos homologadas", "todas las fechas"],
+  [PW.fmt(MO.elec), "eléctricas", MO.total ? Math.round(MO.elec / MO.total * 100) + "% del total" : ""],
+  [MO.ultimo ? PW.fmt(MO.ultimo.total) : "—", "en " + (MO.ultimo ? mesLargo(MO.ultimo.mes) : "—"),
+   MO.ultimo ? PW.fmt(MO.ultimo.elec) + " eléctricas" : ""],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+const mms = (MO.por_mes || []).slice(-N);
+if (mms.length) {
+  PW.columnas("g-motos", {
+    labels: mms.map(m => m.mes),
+    valores: mms.map(m => m.total),
+    color: PW.color("--s4") || "#a855f7",
+    fmtV: v => PW.fmt(v) + " motos",
+  });
+} else { g("g-motos").style.display = "none"; }
+</script>
+</body>
+</html>
