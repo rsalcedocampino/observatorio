@@ -1,6 +1,6 @@
 PW_DATA.c_elasticidad_tarifas_detallado = {
-  "generado": "2026-09-30",
-  "nota": "Tarifas completas = PNP (transmisión CNE) + VAD (distribuidor) por segmento",
+  "generado": "2026-10-01",
+  "nota": "Tarifas completas = PNP (valores de referencia, pendiente dato CNE oficial) + VAD (distribuidor) por segmento",
   "segmentos_info": {
     "BT1": "Domiciliario",
     "BT2": "Comercial <50kW",
@@ -74,6 +74,222 @@ PW_DATA.c_elasticidad_tarifas_detallado = {
           "final": {
             "energia": 56.47,
             "potencia": 9124.0,
+            "cargo_fijo": 0.0
+          },
+          "subestaciones": 1
+        }
+      }
+    },
+    "06": {
+      "cge": {
+        "BT1": {
+          "pnp": {
+            "energia": 51.15,
+            "potencia": 8450.0
+          },
+          "vad": {
+            "energia": 8.5,
+            "potencia": 850.0,
+            "cargo_fijo": 3500.0
+          },
+          "final": {
+            "energia": 59.65,
+            "potencia": 9300.0,
+            "cargo_fijo": 3500.0
+          },
+          "subestaciones": 1
+        },
+        "BT2": {
+          "pnp": {
+            "energia": 51.15,
+            "potencia": 8450.0
+          },
+          "vad": {
+            "energia": 7.8,
+            "potencia": 800.0,
+            "cargo_fijo": 5000.0
+          },
+          "final": {
+            "energia": 58.95,
+            "potencia": 9250.0,
+            "cargo_fijo": 5000.0
+          },
+          "subestaciones": 1
+        },
+        "MT": {
+          "pnp": {
+            "energia": 51.15,
+            "potencia": 8450.0
+          },
+          "vad": {
+            "energia": 6.5,
+            "potencia": 700.0,
+            "cargo_fijo": 0.0
+          },
+          "final": {
+            "energia": 57.65,
+            "potencia": 9150.0,
+            "cargo_fijo": 0.0
+          },
+          "subestaciones": 1
+        },
+        "AT": {
+          "pnp": {
+            "energia": 51.15,
+            "potencia": 8450.0
+          },
+          "vad": {
+            "energia": 5.2,
+            "potencia": 600.0,
+            "cargo_fijo": 0.0
+          },
+          "final": {
+            "energia": 56.35,
+            "potencia": 9050.0,
+            "cargo_fijo": 0.0
+          },
+          "subestaciones": 1
+        }
+      }
+    },
+    "07": {
+      "cge": {
+        "BT1": {
+          "pnp": {
+            "energia": 50.8,
+            "potencia": 8380.0
+          },
+          "vad": {
+            "energia": 8.5,
+            "potencia": 850.0,
+            "cargo_fijo": 3500.0
+          },
+          "final": {
+            "energia": 59.3,
+            "potencia": 9230.0,
+            "cargo_fijo": 3500.0
+          },
+          "subestaciones": 1
+        },
+        "BT2": {
+          "pnp": {
+            "energia": 50.8,
+            "potencia": 8380.0
+          },
+          "vad": {
+            "energia": 7.8,
+            "potencia": 800.0,
+            "cargo_fijo": 5000.0
+          },
+          "final": {
+            "energia": 58.6,
+            "potencia": 9180.0,
+            "cargo_fijo": 5000.0
+          },
+          "subestaciones": 1
+        },
+        "MT": {
+          "pnp": {
+            "energia": 50.8,
+            "potencia": 8380.0
+          },
+          "vad": {
+            "energia": 6.5,
+            "potencia": 700.0,
+            "cargo_fijo": 0.0
+          },
+          "final": {
+            "energia": 57.3,
+            "potencia": 9080.0,
+            "cargo_fijo": 0.0
+          },
+          "subestaciones": 1
+        },
+        "AT": {
+          "pnp": {
+            "energia": 50.8,
+            "potencia": 8380.0
+          },
+          "vad": {
+            "energia": 5.2,
+            "potencia": 600.0,
+            "cargo_fijo": 0.0
+          },
+          "final": {
+            "energia": 56.0,
+            "potencia": 8980.0,
+            "cargo_fijo": 0.0
+          },
+          "subestaciones": 1
+        }
+      }
+    },
+    "08": {
+      "cge": {
+        "BT1": {
+          "pnp": {
+            "energia": 51.05,
+            "potencia": 8520.0
+          },
+          "vad": {
+            "energia": 8.5,
+            "potencia": 850.0,
+            "cargo_fijo": 3500.0
+          },
+          "final": {
+            "energia": 59.55,
+            "potencia": 9370.0,
+            "cargo_fijo": 3500.0
+          },
+          "subestaciones": 1
+        },
+        "BT2": {
+          "pnp": {
+            "energia": 51.05,
+            "potencia": 8520.0
+          },
+          "vad": {
+            "energia": 7.8,
+            "potencia": 800.0,
+            "cargo_fijo": 5000.0
+          },
+          "final": {
+            "energia": 58.85,
+            "potencia": 9320.0,
+            "cargo_fijo": 5000.0
+          },
+          "subestaciones": 1
+        },
+        "MT": {
+          "pnp": {
+            "energia": 51.05,
+            "potencia": 8520.0
+          },
+          "vad": {
+            "energia": 6.5,
+            "potencia": 700.0,
+            "cargo_fijo": 0.0
+          },
+          "final": {
+            "energia": 57.55,
+            "potencia": 9220.0,
+            "cargo_fijo": 0.0
+          },
+          "subestaciones": 1
+        },
+        "AT": {
+          "pnp": {
+            "energia": 51.05,
+            "potencia": 8520.0
+          },
+          "vad": {
+            "energia": 5.2,
+            "potencia": 600.0,
+            "cargo_fijo": 0.0
+          },
+          "final": {
+            "energia": 56.25,
+            "potencia": 9120.0,
             "cargo_fijo": 0.0
           },
           "subestaciones": 1
@@ -366,223 +582,7 @@ PW_DATA.c_elasticidad_tarifas_detallado = {
         }
       }
     },
-    "06": {
-      "enel": {
-        "BT1": {
-          "pnp": {
-            "energia": 51.15,
-            "potencia": 8450.0
-          },
-          "vad": {
-            "energia": 8.8,
-            "potencia": 880.0,
-            "cargo_fijo": 3600.0
-          },
-          "final": {
-            "energia": 59.95,
-            "potencia": 9330.0,
-            "cargo_fijo": 3600.0
-          },
-          "subestaciones": 1
-        },
-        "BT2": {
-          "pnp": {
-            "energia": 51.15,
-            "potencia": 8450.0
-          },
-          "vad": {
-            "energia": 8.1,
-            "potencia": 810.0,
-            "cargo_fijo": 0.0
-          },
-          "final": {
-            "energia": 59.25,
-            "potencia": 9260.0,
-            "cargo_fijo": 0.0
-          },
-          "subestaciones": 1
-        },
-        "MT": {
-          "pnp": {
-            "energia": 51.15,
-            "potencia": 8450.0
-          },
-          "vad": {
-            "energia": 6.8,
-            "potencia": 680.0,
-            "cargo_fijo": 0.0
-          },
-          "final": {
-            "energia": 57.95,
-            "potencia": 9130.0,
-            "cargo_fijo": 0.0
-          },
-          "subestaciones": 1
-        },
-        "AT": {
-          "pnp": {
-            "energia": 51.15,
-            "potencia": 8450.0
-          },
-          "vad": {
-            "energia": 5.5,
-            "potencia": 620.0,
-            "cargo_fijo": 0.0
-          },
-          "final": {
-            "energia": 56.65,
-            "potencia": 9070.0,
-            "cargo_fijo": 0.0
-          },
-          "subestaciones": 1
-        }
-      }
-    },
-    "07": {
-      "enel": {
-        "BT1": {
-          "pnp": {
-            "energia": 50.8,
-            "potencia": 8380.0
-          },
-          "vad": {
-            "energia": 8.8,
-            "potencia": 880.0,
-            "cargo_fijo": 3600.0
-          },
-          "final": {
-            "energia": 59.6,
-            "potencia": 9260.0,
-            "cargo_fijo": 3600.0
-          },
-          "subestaciones": 1
-        },
-        "BT2": {
-          "pnp": {
-            "energia": 50.8,
-            "potencia": 8380.0
-          },
-          "vad": {
-            "energia": 8.1,
-            "potencia": 810.0,
-            "cargo_fijo": 0.0
-          },
-          "final": {
-            "energia": 58.9,
-            "potencia": 9190.0,
-            "cargo_fijo": 0.0
-          },
-          "subestaciones": 1
-        },
-        "MT": {
-          "pnp": {
-            "energia": 50.8,
-            "potencia": 8380.0
-          },
-          "vad": {
-            "energia": 6.8,
-            "potencia": 680.0,
-            "cargo_fijo": 0.0
-          },
-          "final": {
-            "energia": 57.6,
-            "potencia": 9060.0,
-            "cargo_fijo": 0.0
-          },
-          "subestaciones": 1
-        },
-        "AT": {
-          "pnp": {
-            "energia": 50.8,
-            "potencia": 8380.0
-          },
-          "vad": {
-            "energia": 5.5,
-            "potencia": 620.0,
-            "cargo_fijo": 0.0
-          },
-          "final": {
-            "energia": 56.3,
-            "potencia": 9000.0,
-            "cargo_fijo": 0.0
-          },
-          "subestaciones": 1
-        }
-      }
-    },
-    "08": {
-      "enel": {
-        "BT1": {
-          "pnp": {
-            "energia": 51.05,
-            "potencia": 8520.0
-          },
-          "vad": {
-            "energia": 8.8,
-            "potencia": 880.0,
-            "cargo_fijo": 3600.0
-          },
-          "final": {
-            "energia": 59.85,
-            "potencia": 9400.0,
-            "cargo_fijo": 3600.0
-          },
-          "subestaciones": 1
-        },
-        "BT2": {
-          "pnp": {
-            "energia": 51.05,
-            "potencia": 8520.0
-          },
-          "vad": {
-            "energia": 8.1,
-            "potencia": 810.0,
-            "cargo_fijo": 0.0
-          },
-          "final": {
-            "energia": 59.15,
-            "potencia": 9330.0,
-            "cargo_fijo": 0.0
-          },
-          "subestaciones": 1
-        },
-        "MT": {
-          "pnp": {
-            "energia": 51.05,
-            "potencia": 8520.0
-          },
-          "vad": {
-            "energia": 6.8,
-            "potencia": 680.0,
-            "cargo_fijo": 0.0
-          },
-          "final": {
-            "energia": 57.85,
-            "potencia": 9200.0,
-            "cargo_fijo": 0.0
-          },
-          "subestaciones": 1
-        },
-        "AT": {
-          "pnp": {
-            "energia": 51.05,
-            "potencia": 8520.0
-          },
-          "vad": {
-            "energia": 5.5,
-            "potencia": 620.0,
-            "cargo_fijo": 0.0
-          },
-          "final": {
-            "energia": 56.55,
-            "potencia": 9140.0,
-            "cargo_fijo": 0.0
-          },
-          "subestaciones": 1
-        }
-      }
-    },
-    "03": {
+    "12": {
       "edelmag": {
         "BT1": {
           "vad": {
