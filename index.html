@@ -399,16 +399,20 @@ document.querySelectorAll("[data-k]").forEach(el => {
   const v = k[el.dataset.k]; if (v != null) el.textContent = PW.fmt(v); }); const defs = [
   // El maximo se muestra SOLO si difiere del valor de hoy: "729 / max registrado 729" no
   // informa nada y hace dudar de si hubo una caida (pedido 723-C).
+  // "red completa" significaba que la cifra de hoy iguala el maximo registrado, pero se
+  // leia como "toda la red del pais" y llevaba a compararla con el registro de la SEC,
+  // que es otra fuente. Se declara el universo: red viva, publica y privada.
   [PW.fmt(k.estaciones), "estaciones de carga en Chile", maxSi(k.estaciones, k.estaciones_max,
-    "red completa")],
+    "red viva · incluye públicos con restricción y privados")],
   [PW.fmt(k.conectores), "conectores instalados", maxSi(k.conectores, k.conectores_max,
-    PW.fmt(k.conectores_disponibles) + " disponibles")],
+    PW.fmt(k.conectores_disponibles) + " disponibles · red viva")],
   [PW.fmt(k.ventas_ytd), "eléctricos e híbridos vendidos en " + k.ventas_ultimo_mes.slice(0,4), "acumulado a " + k.ventas_ultimo_mes.slice(0,7)],
   ["$" + PW.fmt(k.pkwh_nacional), "precio promedio de carga pública", "por kWh, potencia media " + PW.fmt(k.potencia_prom_kw, 1) + " kW"],
   [PW.fmt(k.pct_renovable_dia, 1) + "%", "de la generación fue renovable", "el " + k.fecha_generacion_dia],
 ]; document.getElementById("kpis").innerHTML = defs.map(d =>
   `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota-kpis").textContent =
-  "Datos generados el " + PW_DATA.resumen.generado + ". Importaciones publicadas hasta " + k.aduana_ultimo_mes + "."; // icono de cada modulo en su card
+  "Datos generados el " + PW_DATA.resumen.generado + ". Importaciones publicadas hasta " + k.aduana_ultimo_mes +
+  ". Las cifras de carga son la RED VIVA, lo que los operadores transmiten cada 30 minutos, e incluyen las tres categorías de acceso: público, público CON RESTRICCIÓN y privado. El registro declarado a la SEC se ve en Infraestructura de carga y no tiene por qué coincidir."; // icono de cada modulo en su card
 document.querySelectorAll(".modulo-card").forEach(card => {
   const svg = PW.icono(card.getAttribute("href")); if (svg) card.insertAdjacentHTML("afterbegin", `<span class="ic">${svg}</span>`); }); // buscador de modulos: filtra cards y oculta secciones vacias
 (function () {

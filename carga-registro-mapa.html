@@ -264,7 +264,8 @@ const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar"); PW.lineas("c
   { k: "mw", titulo: "Potencia (MW)", num: true, fmt: v => PW.fmt(v, 1) },
 ], D.categorias, { orden: "conectores", buscador: false }); const catMW = D.categorias.slice().sort((a, b) => b.mw - a.mw)[0]; document.getElementById("ci-nota-cat").textContent =
   "El uso privado concentra la mayor cantidad de conectores, pero " + catMW.cat.toLowerCase() +
-  " concentra la potencia (" + PW.fmt(catMW.mw, 1) + " MW): los buses eléctricos cargan a alta potencia."; PW.barras("ci-g-zona", {
+  " concentra la potencia (" + PW.fmt(catMW.mw, 1) + " MW): los buses eléctricos cargan a alta potencia." +
+  " Estas cifras son el REGISTRO DECLARADO a la SEC y no tienen por qué coincidir con la red viva que publican la portada y el mapa en vivo, que es lo que los operadores transmiten cada 30 minutos: son dos fuentes distintas del mismo mundo."; PW.barras("ci-g-zona", {
   items: D.zonas.map(z => ({
     nombre: z.zona, valor: z.conectores,
     extra: PW.fmt(z.cargadores) + " cargadores · " + PW.fmt(z.mw, 1) + " MW",
