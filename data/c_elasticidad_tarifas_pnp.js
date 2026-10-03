@@ -3,18 +3,12 @@
    Generado: generar_datos_elasticidad_pnp.py */
 
 PW_DATA.c_elasticidad_tarifas_pnp = {
-  generado: "2026-08-22",
+  generado: "2026-10-03",
   nota: "Datos APR-2026 de Subestaciones 220kV. Mapeado a distribuidoras.",
   total_subestaciones: 34,
   subestaciones_por_region_dist: {
   "01": {
-    "emse": [
-      {
-        "subestacion": "Parinacota",
-        "tension_kv": 220,
-        "energia_kwh": 50.25,
-        "potencia_kw": 8717.93
-      },
+    "sin-distribuidor": [
       {
         "subestacion": "Pozo Almonte",
         "tension_kv": 220,
@@ -48,7 +42,7 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
     ]
   },
   "02": {
-    "emse": [
+    "sin-distribuidor": [
       {
         "subestacion": "Crucero",
         "tension_kv": 220,
@@ -100,7 +94,13 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
     ]
   },
   "03": {
-    "edelmag": [
+    "sin-distribuidor": [
+      {
+        "subestacion": "Atacama",
+        "tension_kv": 220,
+        "energia_kwh": 52.774,
+        "potencia_kw": 8926.93
+      },
       {
         "subestacion": "D. De Almagro",
         "tension_kv": 220,
@@ -114,34 +114,6 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
         "potencia_kw": 8388.51
       },
       {
-        "subestacion": "Pan de Azúcar",
-        "tension_kv": 220,
-        "energia_kwh": 51.737,
-        "potencia_kw": 8506.34
-      }
-    ],
-    "emse": [
-      {
-        "subestacion": "Atacama",
-        "tension_kv": 220,
-        "energia_kwh": 52.774,
-        "potencia_kw": 8926.93
-      }
-    ]
-  },
-  "04": {
-    "emelco": [
-      {
-        "subestacion": "Los Vilos",
-        "tension_kv": 220,
-        "energia_kwh": 52.988,
-        "potencia_kw": 8802.22
-      }
-    ]
-  },
-  "05": {
-    "cge": [
-      {
         "subestacion": "Cardones",
         "tension_kv": 220,
         "energia_kwh": 51.563,
@@ -152,7 +124,27 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
         "tension_kv": 220,
         "energia_kwh": 50.424,
         "potencia_kw": 8372.17
+      }
+    ]
+  },
+  "04": {
+    "sin-distribuidor": [
+      {
+        "subestacion": "Pan de Azúcar",
+        "tension_kv": 220,
+        "energia_kwh": 51.737,
+        "potencia_kw": 8506.34
       },
+      {
+        "subestacion": "Los Vilos",
+        "tension_kv": 220,
+        "energia_kwh": 52.988,
+        "potencia_kw": 8802.22
+      }
+    ]
+  },
+  "05": {
+    "cge": [
       {
         "subestacion": "Punta Colorada",
         "tension_kv": 220,
@@ -171,10 +163,18 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
         "energia_kwh": 52.236,
         "potencia_kw": 8788.46
       }
+    ],
+    "sin-distribuidor": [
+      {
+        "subestacion": "Los Maquis",
+        "tension_kv": 220,
+        "energia_kwh": 57.239,
+        "potencia_kw": 8797.06
+      }
     ]
   },
   "06": {
-    "enel-distribucion": [
+    "cge": [
       {
         "subestacion": "O’Higgins",
         "tension_kv": 220,
@@ -224,12 +224,6 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
         "potencia_kw": 8836.62
       },
       {
-        "subestacion": "Los Maquis",
-        "tension_kv": 220,
-        "energia_kwh": 57.239,
-        "potencia_kw": 8797.06
-      },
-      {
         "subestacion": "Lampa",
         "tension_kv": 220,
         "energia_kwh": 49.64,
@@ -244,6 +238,16 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
         "potencia_kw": 8603.53
       }
     ]
+  },
+  "15": {
+    "sin-distribuidor": [
+      {
+        "subestacion": "Parinacota",
+        "tension_kv": 220,
+        "energia_kwh": 50.25,
+        "potencia_kw": 8717.93
+      }
+    ]
   }
 },
   regiones: [
@@ -254,6 +258,7 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
     {cut: "05", nombre: "Valparaíso"},
     {cut: "06", nombre: "O'Higgins"},
     {cut: "13", nombre: "Metropolitana"},
+    {cut: "15", nombre: "Arica y Parinacota"},
   ],
   estado: "Completo — 34/34 subestaciones (100%)",
 };
