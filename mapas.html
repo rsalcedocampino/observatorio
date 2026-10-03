@@ -142,6 +142,9 @@ function asegurarCuts() {
 
 // indicador del telon de fondo comunal: Censo (fuente CEN) o Distribucion SEC (fuente DIST)
 const IND = {
+  pct_solar: ["Censo: % viviendas con generación solar", v => PW.fmt(v, 1) + "%"],
+  pct_red:   ["Censo: % viviendas conectadas a la red", v => PW.fmt(v, 1) + "%"],
+  viviendas: ["Censo: viviendas por comuna", v => PW.fmt(v, 0)],
   km_bt:     ["Distribución: km de red BT (SEC)", v => PW.fmt(v, 0) + " km"],
   km_mt:     ["Distribución: km de red MT (SEC)", v => PW.fmt(v, 0) + " km"],
 }; // que dataset alimenta cada indicador del telon (hoy solo Distribucion SEC; el detalle del Censo
@@ -440,6 +443,11 @@ PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; PW.carga
   `<label>Telón de fondo por comuna
      <select id="f-ind">
        <option value="" selected>— (apagado)</option>
+       <optgroup label="Censo 2024">
+         <option value="pct_solar">% de viviendas con generación solar</option>
+         <option value="pct_red">% de viviendas conectadas a la red</option>
+         <option value="viviendas">viviendas por comuna</option>
+       </optgroup>
        <optgroup label="Distribución eléctrica (SEC)">
          <option value="km_bt">km de red BT (baja tensión)</option>
          <option value="km_mt">km de red MT (media tensión)</option>
