@@ -57,9 +57,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="tab-btn activo" data-tab="bencina">Bencina 93</button>
     <button class="tab-btn" hidden data-tab="tarifas">Tarifas de Electricidad (Regional)</button>
     <button class="tab-btn" data-tab="ev2025">Stock EV 2025 (Proyectado)</button>
-    <button class="tab-btn" hidden data-tab="pnp">Precios Nudo por Subestación</button>
-    <button class="tab-btn" hidden data-tab="tarifas-detalle">Tarifa Final (PNP + VAD)</button>
-  <p class="nota" style="margin:.75rem 0 0">Las <strong>tres vistas de tarifas eléctricas</strong> están retiradas temporalmente, por dos motivos distintos. Uno: en la fuente que asigna cada subestación a su región y distribuidora, 18 de las 34 subestaciones traen la distribuidora marcada como desconocida, así que el nombre que se mostraba no estaba establecido. Dos: en la serie de tarifas por categoría, el valor domiciliario va de 0,78 a 72,77 $/kWh mientras el comercial va de 1.849 a 1.983 en los mismos meses, de modo que no pueden estar todos en la unidad que declaran. Vuelven cuando ambas cosas estén verificadas.</p>
+    <button class="tab-btn" data-tab="pnp">Precios Nudo por Subestación</button>
+    <button class="tab-btn" data-tab="tarifas-detalle">Tarifa Final (PNP + VAD)</button>
+  <p class="nota" style="margin:.75rem 0 0">La vista <strong>Tarifas de Electricidad (Regional)</strong> sigue retirada: en su serie por categoría el valor domiciliario va de 0,78 a 72,77 $/kWh mientras el comercial va de 1.849 a 1.983 en los mismos meses, de modo que no pueden estar todos en la unidad que declaran. Vuelve cuando esté verificada.</p>
   </div>
 
   <!-- TAB 1: Bencina 93 -->
@@ -167,7 +167,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- TAB 4: Precios Nudo por Subestacion -->
   <div id="tab-pnp" class="tab-content">
     <p class="sub">Precio Nudo Promedio (PNP) en subestaciones 220kV del Sistema Nacional de Transmisión.
-    Selecciona una región y distribuidor para ver tarifas de energía ($/kWh) y potencia ($/kW/mes).</p>
+    Elige una región para ver sus tarifas de energía ($/kWh) y potencia ($/kW/mes); cuando la región tiene distribuidoras establecidas en la fuente, puedes además filtrar por una.</p>
     <p class="nota" id="nota-pnp"></p>
 
     <div class="tarjeta">
@@ -266,7 +266,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", function() {
-    const tab = this.getAttribute("data-tab"); document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("activo")); document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("activo")); this.classList.add("activo"); document.getElementById("tab-" + tab).classList.add("activo"); }); }); PW.montarNav("elasticidad.html"); // TAB 1: Bencina
+    const tab = this.getAttribute("data-tab"); document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("activo")); document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("activo")); this.classList.add("activo"); document.getElementById("tab-" + tab).classList.add("activo"); }); }); PW.montarNav("elasticidad.html"); // El dato trae el slug "sin-distribuidor" cuando la fuente no establece cual es.
+// Mostrarlo en mayusculas ("SIN-DISTRIBUIDOR") se lee como un codigo del sistema y no
+// como lo que es: un hueco declarado. Afecta a la mayoria de los nodos, asi que importa.
+// Dibuja la tabla de precios nudo. La usan los DOS caminos: elegir distribuidor, y el de
+// region sin distribuidora establecida. Una sola funcion para que no se separen.
+function tablaPNP(subs) {
+  const cont = document.getElementById("tabla-pnp");
+  if (!subs || !subs.length) { cont.innerHTML = "<p style='color:var(--ink-2);'>Sin datos para esta selección.</p>"; return; }
+  PW.tabla("tabla-pnp", [
+    { k: "subestacion", titulo: "Subestación", num: false },
+    { k: "tension", titulo: "Tensión", num: false },
+    { k: "energia", titulo: "Energía ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
+    { k: "potencia", titulo: "Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 0) },
+  ], subs.map(x => ({ subestacion: x.subestacion, tension: x.tension_kv + " kV",
+                      energia: x.energia_kwh, potencia: x.potencia_kw })), {});
+}
+const etiquetaDist = d => d === "sin-distribuidor" ? "Sin distribuidora identificada" : String(d).toUpperCase(); // TAB 1: Bencina
 const D = PW_DATA.c_elasticidad; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const n = D.capturas_p93.length; const primeraCaptura = n ? D.capturas_p93[0].captura : null; const ultimaCaptura = n ? D.capturas_p93[n - 1].captura : null; document.getElementById("kpis").innerHTML = [
   [n, "capturas de precio acumuladas", primeraCaptura ? "del " + primeraCaptura + " al " + ultimaCaptura : "aún sin capturas"],
   [D.participacion.length ? PW.fmt(D.participacion[D.participacion.length - 1].pct, 1) + "%" : "—",
@@ -354,7 +370,30 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
 
     // Llenar dropdown distribuidores
     selDist.innerHTML = '<option value="">-- Selecciona distribuidor --</option>'; const dists = Object.keys(DPNP.subestaciones_por_region_dist[region] || {}); dists.forEach(d => {
-      const opt = document.createElement("option"); opt.value = d; opt.textContent = d.toUpperCase(); selDist.appendChild(opt); }); distContainer.style.display = "block"; tablaPnp.innerHTML = ""; }); // Evento: cambio distribuidor
+      const opt = document.createElement("option"); opt.value = d; opt.textContent = etiquetaDist(d); selDist.appendChild(opt); });
+    // Si para esta region NINGUNA subestacion tiene distribuidora establecida, el selector
+    // no aporta: ofreceria una sola opcion identica. Se oculta y se dice por que. Es
+    // adaptativo a proposito: la atribucion de distribuidora esta en revision (el Decreto
+    // PNP fija precios, no distribuidoras), asi que la pagina se comporta bien con el dato
+    // de hoy y con el que venga, sin volver a tocarla.
+    const hayDist = dists.some(d => d !== "sin-distribuidor");
+    distContainer.style.display = hayDist ? "block" : "none";
+    if (hayDist) { tablaPnp.innerHTML = ""; } else {
+      // Sin distribuidora establecida se muestran TODAS las subestaciones de la region.
+      // Antes aqui solo iba un mensaje y la tabla no se dibujaba nunca: el texto decia
+      // que los precios estaban disponibles y no se veia ninguno.
+      const todas = Object.values(DPNP.subestaciones_por_region_dist[region] || {}).flat();
+      tablaPnp.innerHTML = '<p class="nota">Ninguna subestación de esta región tiene distribuidora establecida en la fuente, así que no hay por cuál filtrar. Se muestran todas las subestaciones de la región.</p>';
+      const div = document.createElement("div"); div.id = "tabla-pnp-sub"; tablaPnp.appendChild(div);
+      PW.tabla("tabla-pnp-sub", [
+        { k: "subestacion", titulo: "Subestación", num: false },
+        { k: "tension", titulo: "Tensión", num: false },
+        { k: "energia", titulo: "Energía ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
+        { k: "potencia", titulo: "Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 0) },
+      ], todas.map(x => ({ subestacion: x.subestacion, tension: x.tension_kv + " kV",
+                           energia: x.energia_kwh, potencia: x.potencia_kw })), {});
+    }
+    }); // Evento: cambio distribuidor
   document.getElementById("sel-distribuidor").addEventListener("change", function() {
     const region = document.getElementById("sel-region").value; const dist = this.value; const tablaPnp = document.getElementById("tabla-pnp"); if (!region || !dist) {
       tablaPnp.innerHTML = ""; return; }
@@ -406,7 +445,7 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
 
     // Llenar dropdown distribuidores
     selDistDet.innerHTML = '<option value="">-- Selecciona distribuidor --</option>'; const dists = Object.keys(DTD.tarifas[region] || {}); dists.forEach(d => {
-      const opt = document.createElement("option"); opt.value = d; opt.textContent = d.toUpperCase(); selDistDet.appendChild(opt); }); distDetContainer.style.display = "block"; segDetContainer.style.display = "none"; tablaTarifaDet.innerHTML = ""; }); // Evento: cambio distribuidor
+      const opt = document.createElement("option"); opt.value = d; opt.textContent = etiquetaDist(d); selDistDet.appendChild(opt); }); distDetContainer.style.display = "block"; segDetContainer.style.display = "none"; tablaTarifaDet.innerHTML = ""; }); // Evento: cambio distribuidor
   document.getElementById("sel-distribuidor-det").addEventListener("change", function() {
     const region = document.getElementById("sel-region-det").value; const dist = this.value; const segDetContainer = document.getElementById("seg-det-container"); const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle"); if (!region || !dist) {
       segDetContainer.style.display = "none"; tablaTarifaDet.innerHTML = ""; return; }

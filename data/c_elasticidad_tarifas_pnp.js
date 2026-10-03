@@ -144,7 +144,7 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
     ]
   },
   "05": {
-    "cge": [
+    "sin-distribuidor": [
       {
         "subestacion": "Punta Colorada",
         "tension_kv": 220,
@@ -162,9 +162,7 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
         "tension_kv": 220,
         "energia_kwh": 52.236,
         "potencia_kw": 8788.46
-      }
-    ],
-    "sin-distribuidor": [
+      },
       {
         "subestacion": "Los Maquis",
         "tension_kv": 220,
@@ -174,7 +172,7 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
     ]
   },
   "06": {
-    "cge": [
+    "sin-distribuidor": [
       {
         "subestacion": "O’Higgins",
         "tension_kv": 220,
@@ -190,12 +188,24 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
     ]
   },
   "13": {
-    "cge": [
+    "sin-distribuidor": [
+      {
+        "subestacion": "Polpaico",
+        "tension_kv": 220,
+        "energia_kwh": 48.715,
+        "potencia_kw": 8836.62
+      },
       {
         "subestacion": "El Llano",
         "tension_kv": 220,
         "energia_kwh": 56.847,
         "potencia_kw": 8732.55
+      },
+      {
+        "subestacion": "Lampa",
+        "tension_kv": 220,
+        "energia_kwh": 49.64,
+        "potencia_kw": 8786.74
       },
       {
         "subestacion": "Cerro Navia",
@@ -214,23 +224,7 @@ PW_DATA.c_elasticidad_tarifas_pnp = {
         "tension_kv": 220,
         "energia_kwh": 48.79,
         "potencia_kw": 8853.82
-      }
-    ],
-    "chilquinta": [
-      {
-        "subestacion": "Polpaico",
-        "tension_kv": 220,
-        "energia_kwh": 48.715,
-        "potencia_kw": 8836.62
       },
-      {
-        "subestacion": "Lampa",
-        "tension_kv": 220,
-        "energia_kwh": 49.64,
-        "potencia_kw": 8786.74
-      }
-    ],
-    "enel-distribucion": [
       {
         "subestacion": "Maipo",
         "tension_kv": 220,
