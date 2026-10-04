@@ -197,14 +197,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2 style="margin-top:0" id="pb-titulo-tabla">Detalle con la infraestructura expuesta</h2>
     <div id="pb-t-detalle"></div>
     <p class="nota">Expuesta = comunas con probabilidad de 75% o más en el mes elegido. La
-    infraestructura es la red de carga viva (actualizada cada 30 min); el historial de cortes
+    infraestructura es la red de carga viva (actualizada cada 15 min); el historial de cortes
     es 2017-2026 con el umbral SEC de 500+ clientes por evento.</p>
   </div>
   </section>
   <section class="tab-content" id="resiliencia">
 <h1>Resiliencia de la red de carga ante cortes</h1>
   <p class="sub">Cuando la SEC registra un corte en una comuna, ¿se caen sus cargadores
-  públicos? Cruce del histórico de estados cada 30 minutos con los eventos de interrupción,
+  públicos? Cruce del histórico de estados con los eventos de interrupción,
   comuna por comuna. Nadie más puede medir esto: requiere ambos históricos propios.</p>
   <p class="nota" id="rs-nota"></p>
 
@@ -290,7 +290,7 @@ function mapaVivo() {
   }); const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length; // Universo del MAPA: las mismas comunas que se pintan de azul (SEC vivo por comuna). El KPI
   // contaba solo las confirmadas por distribuidora, que es un subconjunto estricto: al medirlo
   // el 2026-09-19 eran 20 de 153 comunas, y el KPI anunciaba 37 cargadores sobre un mapa donde
-  // 432 de 651 caian en comuna con corte activo. (Ese feed se actualiza cada 30 min, asi que
+  // 432 de 651 caian en comuna con corte activo. (Ese feed se actualiza cada 15 min, asi que
   // las cifras del ejemplo envejecen; la proporcion es lo que importa.) El dato de
   // distribuidora no se pierde: pasa al subtitulo, que es su lugar.
   // Si la SEC no publica el detalle por comuna (el generador declara que puede venir vacio),

@@ -83,7 +83,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </a>
     <a class="modulo-card" data-destacado href="mapa-carga.html">
       <h3>Dónde cargar ahora</h3>
-      <p>La red de carga pública con el estado de cada punto actualizado cada 30 minutos:
+      <p>La red de carga pública con el estado de cada punto actualizado cada 15 minutos:
       disponible, ocupado, sin comunicación.</p>
       <div class="aud"><span class="pill">Red de carga en vivo</span></div>
     </a>
@@ -192,7 +192,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </a>
     <a class="modulo-card" href="operadores.html">
       <h3>Ranking de operadores</h3>
-      <p>Qué tan confiable es cada red de carga, medido en terreno cada 30 minutos: porcentaje
+      <p>Qué tan confiable es cada red de carga, medido en terreno de forma continua: porcentaje
       operativo, ocupación y cargadores caídos de forma crónica.</p>
       <div class="aud"><span class="pill">Para decidir</span> <span class="pill">Dato único</span></div>
     </a>
@@ -412,7 +412,7 @@ document.querySelectorAll("[data-k]").forEach(el => {
 ]; document.getElementById("kpis").innerHTML = defs.map(d =>
   `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota-kpis").textContent =
   "Datos generados el " + PW_DATA.resumen.generado + ". Importaciones publicadas hasta " + k.aduana_ultimo_mes +
-  ". Las cifras de carga son la RED VIVA, lo que los operadores transmiten cada 30 minutos, e incluyen las tres categorías de acceso: público, público CON RESTRICCIÓN y privado. El registro declarado a la SEC se ve en Infraestructura de carga y no tiene por qué coincidir."; // icono de cada modulo en su card
+  ". Las cifras de carga son la RED VIVA, lo que los operadores transmiten cada 15 minutos, e incluyen las tres categorías de acceso: público, público CON RESTRICCIÓN y privado. El registro declarado a la SEC se ve en Infraestructura de carga y no tiene por qué coincidir."; // icono de cada modulo en su card
 document.querySelectorAll(".modulo-card").forEach(card => {
   const svg = PW.icono(card.getAttribute("href")); if (svg) card.insertAdjacentHTML("afterbegin", `<span class="ic">${svg}</span>`); }); // buscador de modulos: filtra cards y oculta secciones vacias
 (function () {

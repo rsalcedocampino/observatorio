@@ -275,7 +275,7 @@ function refrescarInfra() {
     lineaY: { v: meta, texto: "Meta " + PW.fmt(meta) },
     fmtV: x => PW.fmt(Math.round(x)), alto: 320,
   }); const mesesFalt = Math.max(1, Math.round((metaAnio + 11 / 12 - xUlt) * 12)); const ritmoReq = (meta - hoyCarg) / mesesFalt; document.getElementById("kpis-infra").innerHTML = [
-    [PW.fmt(hoyCarg), "cargadores públicos hoy", "red viva, cada 30 min"],
+    [PW.fmt(hoyCarg), "cargadores públicos hoy", "red viva, cada 15 min"],
     [PW.fmt(Math.round(ritmo)) + "/mes", "ritmo real (12 meses)", "se requieren " + PW.fmt(Math.round(ritmoReq)) + "/mes"],
     [fmtAnio(llegada), "llegada proyectada", "meta " + PW.fmt(meta) + " — objetivo " + metaAnio],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); if (D.red_viva) {
@@ -285,7 +285,7 @@ function refrescarInfra() {
         PW.fmt(OF.cargadores_2035.valor) + " puntos (" + OF.cargadores_2035.vinculancia + ")."
       : "Meta editada manualmente (la oficial es " + PW.fmt(OF && OF.cargadores_2030 ? OF.cargadores_2030.valor : 6500) + " al 2030)."; document.getElementById("nota-infra").textContent =
       "Serie: SEC EcoCarga categoría público hasta " + ult.ym + ". Red viva hoy (Cargadores y " +
-      "Conectores, cada 30 min, acceso publico + privado/restringido): " +
+      "Conectores, cada 15 min, acceso publico + privado/restringido): " +
       PW.fmt(D.red_viva.cargadores) + " cargadores y " + PW.fmt(D.red_viva.conectores) +
       " conectores en " + PW.fmt(D.red_viva.estaciones) + " estaciones" +
       (D.red_viva.cargadores_publico ? " (" + PW.fmt(D.red_viva.cargadores_publico) +

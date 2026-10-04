@@ -83,7 +83,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="sub">El registro <b>oficial</b> del regulador: lo que los operadores declaran a la SEC
   (reporte EcoCarga). Acumulado histórico por categoría de uso, macro-zona, región, clase de potencia
   y tipo de conector. Es distinto de la <a href="operadores.html">red viva</a> (Cargadores y
-  Conectores / OCPI, cada 30 min): aquí está la <b>base declarada</b>.</p>
+  Conectores / OCPI, cada 15 min): aquí está la <b>base declarada</b>.</p>
   <p class="nota" id="ci-nota"></p>
 
   <p class="puente" style="color:var(--ink-2);font-size:14px;max-width:860px">¿Te interesa la cobertura teórica y dónde faltan cargadores? → <a href="autonomia.html" style="text-decoration:underline">Brecha de cobertura</a> (en sección Carga)</p>
@@ -265,7 +265,7 @@ const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar"); PW.lineas("c
 ], D.categorias, { orden: "conectores", buscador: false }); const catMW = D.categorias.slice().sort((a, b) => b.mw - a.mw)[0]; document.getElementById("ci-nota-cat").textContent =
   "El uso privado concentra la mayor cantidad de conectores, pero " + catMW.cat.toLowerCase() +
   " concentra la potencia (" + PW.fmt(catMW.mw, 1) + " MW): los buses eléctricos cargan a alta potencia." +
-  " Estas cifras son el REGISTRO DECLARADO a la SEC y no tienen por qué coincidir con la red viva que publican la portada y el mapa en vivo, que es lo que los operadores transmiten cada 30 minutos: son dos fuentes distintas del mismo mundo."; PW.barras("ci-g-zona", {
+  " Estas cifras son el REGISTRO DECLARADO a la SEC y no tienen por qué coincidir con la red viva que publican la portada y el mapa en vivo, que es lo que los operadores transmiten cada 15 minutos: son dos fuentes distintas del mismo mundo."; PW.barras("ci-g-zona", {
   items: D.zonas.map(z => ({
     nombre: z.zona, valor: z.conectores,
     extra: PW.fmt(z.cargadores) + " cargadores · " + PW.fmt(z.mw, 1) + " MW",

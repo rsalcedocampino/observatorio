@@ -246,7 +246,7 @@ const comCli = {}; ((V.por_comuna) || []).forEach(c => { if (c.cut && (c.cliente
 const nCarga = (MAPA.carga || []).length; const nCargaPub = (MAPA.carga || []).filter(p => p.acc !== "restringido").length; const nCargAfect = (MAPA.carga || []).filter(p => afectadas.has(_norm(p.com))).length; // Universo del MAPA: las mismas comunas que se pintan de azul (SEC vivo por comuna). El KPI
 // contaba solo las confirmadas por distribuidora, que es un subconjunto estricto: al medirlo
 // el 2026-09-19 eran 20 de 153 comunas, y el KPI anunciaba 37 cargadores sobre un mapa donde
-// 432 de 651 caian en comuna con corte activo. (Ese feed se actualiza cada 30 min, asi que
+// 432 de 651 caian en comuna con corte activo. (Ese feed se actualiza cada 15 min, asi que
 // las cifras del ejemplo envejecen; la proporcion es lo que importa.) El dato de
 // distribuidora no se pierde: pasa al subtitulo, que es su lugar.
 // Si la SEC no publica el detalle por comuna (el generador declara que puede venir vacio),
