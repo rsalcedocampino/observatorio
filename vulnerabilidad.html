@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Que comunas combinan cortes frecuentes, energía cara y población vulnerable. Un índice 0-100 sobre las 346 comunas que cruza el historial SEC 2017-2026...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260930a">
+<link rel="stylesheet" href="assets/estilo.css?v=261005a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
@@ -53,11 +53,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa comunal del índice</h2>
-    <p class="nota">Las 346 comunas coloreadas por su <b>índice de vulnerabilidad energética
+    <p class="nota">Comunas coloreadas por su <b>índice de vulnerabilidad energética
     (0-100)</b>; quintiles, más oscuro = más vulnerable. Pasa el cursor por una comuna para ver su
     índice, o haz clic para el detalle completo: los tres pilares (cortes, precio, social), los
     cortes 2017-2026 per cápita, el precio de la bencina y las variables sociales del Censo 2024.
-    Cartografía oficial del Censo 2024.</p>
+    Cartografía oficial del Censo 2024. <span id="mapa-cobertura"></span></p>
     <div id="mapa-indice"></div>
   </div>
 
@@ -75,7 +75,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_vulnerab.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260930a"></script>
+<script src="assets/comun.js?v=261005a"></script>
 <script>
 PW.montarNav("vulnerabilidad.html"); const D = PW_DATA.c_vulnerab; // Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
 // region) y hace foco/zoom a la seleccion (comuna: zoom a la comuna dentro de su region).
@@ -132,6 +132,22 @@ const cols = [
   }); if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comunas", cols, filas, { orden: "indice", max: 400 }); }
 selR.addEventListener("input", () => { poblarComunas(); refrescar(); }); selC.addEventListener("input", refrescar); // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
 // recien entonces se pinta el choropleth inicial (los refrescos por filtro ya lo tienen cacheado).
-PW.cargarGeoComunas().then(refrescar); </script>
+PW.cargarGeoComunas().then(() => {
+  refrescar();
+  // El indice cubre las 346 comunas del padron, pero la cartografia OFICIAL del Censo no trae
+  // poligono para todas (hoy falta 12202, Antartica), asi que el mapa pinta una menos que la
+  // tabla. Se dice cuantas pinta y cual falta, en vez de prometer 346 y que una desaparezca sin
+  // explicacion. Se cuenta del dato, no se escribe: si la cartografia cambia, el texto cambia.
+  const geo = (PW_DATA.geo_comunas && PW_DATA.geo_comunas.features) || [];
+  const conPoli = new Set(geo.map(f => f.properties && f.properties.cut));
+  const sin = D.comunas.filter(c => !conPoli.has(c.cut));
+  const el = document.getElementById("mapa-cobertura");
+  if (el) {
+    el.textContent = "Pinta " + (D.comunas.length - sin.length) + " de las "
+      + D.comunas.length + " comunas con índice"
+      + (sin.length ? "; sin polígono en la cartografía oficial: "
+         + sin.map(c => c.comuna).join(", ") : "") + ".";
+  }
+}); </script>
 </body>
 </html>

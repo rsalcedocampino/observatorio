@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="El marco legal y de metas de la electromovilidad y la energía en Chile: qué está comprometido, con qué fuerza jurídica, qué normas existen, dónde están...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260930a">
+<link rel="stylesheet" href="assets/estilo.css?v=261005a">
 <style>
 .vin { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
 .vin-vinculante { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
@@ -157,7 +157,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tarjeta">
     <h2 style="margin-top:0">Timeline de medidas de la Estrategia (2026-2030)</h2>
     <p class="nota">La propia Estrategia fija la meta de <b>100% de ventas cero emisiones al 2035</b>
-    (y 100% del transporte público urbano al 2035), pero sus 26 medidas con año comprometido se concentran
+    (y 100% del transporte público urbano al 2035), pero de sus <span id="tl-n-total">—</span> medidas
+    las <span id="tl-n-anio">—</span> con año comprometido se concentran
     en 2027-2029 y se apagan en 2030: <b>ninguna tiene hito en 2031-2035</b> — justo la década en que las
     ventas deben pasar de ~20% a 100%. No es que la Estrategia termine antes de la meta: declara el 2035
     y no lo calendariza.</p>
@@ -270,7 +271,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_normativa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260930a"></script>
+<script src="assets/comun.js?v=261005a"></script>
 <script>
 PW.montarNav("normativa.html"); const D = PW_DATA.c_normativa; // Las cifras del texto se leen del dato: decian 114 documentos y 49 normas mientras el KPI de
 // la misma pantalla mostraba 131 y 59. Escritas a mano se desfasan en cada actualizacion.
@@ -408,7 +409,11 @@ function seleccionarAnio(a) {
   tlChart.querySelectorAll(".tl-bar").forEach(b => b.classList.toggle("sel", b.dataset.anio === a)); pintarDetalle(a); }
 tlChart.addEventListener("click", e => { const b = e.target.closest(".tl-bar"); if (b) seleccionarAnio(b.dataset.anio); }); tlChart.addEventListener("keydown", e => {
   const b = e.target.closest(".tl-bar"); if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); seleccionarAnio(b.dataset.anio); }
-}); const sf = RUTA.medidas.filter(m => !ANIOS.includes(String(m.anio))); const tlSf = document.getElementById("ruta-sf"); if (sf.length) {
+}); const sf = RUTA.medidas.filter(m => !ANIOS.includes(String(m.anio))); // El parrafo de arriba decia "sus 26 medidas con año comprometido": son 26 en total, pero 4 no
+// traen año (s/f) y el propio grafico las deja fuera, asi que la prosa se contradecia con el
+// enlace de s/f que esta a dos lineas. Las dos cifras salen del MISMO filtro que el grafico.
+const elTot = document.getElementById("tl-n-total"); const elAnio = document.getElementById("tl-n-anio"); if (elTot) elTot.textContent = RUTA.medidas.length; if (elAnio) elAnio.textContent = RUTA.medidas.length - sf.length;
+const tlSf = document.getElementById("ruta-sf"); if (sf.length) {
   tlSf.innerHTML = `<a id="tl-sf-link" role="button" tabindex="0">${sf.length} medidas sin año de término definido (s/f)</a> — no entran en el gráfico; toca para verlas en el detalle.`; const lk = document.getElementById("tl-sf-link"); const abrirSF = () => { tlChart.querySelectorAll(".tl-bar").forEach(b => b.classList.remove("sel")); pintarDetalle("s/f"); }; lk.addEventListener("click", abrirSF); lk.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirSF(); } }); } else { tlSf.textContent = ""; }
 
 const pico = ANIOS.reduce((best, a) => medPorAnio(a).length > medPorAnio(best).length ? a : best, ANIOS[0]); seleccionarAnio(pico); // Matriz normativa por eje: enlazado / falta crear / falta modificar

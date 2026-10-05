@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Un modelo, todo su rastro en Chile en una sola ficha: cuánto se importó y a qué precio, cuánto se vende, batería, autonomía, conectores y guía de rescate...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260930a">
+<link rel="stylesheet" href="assets/estilo.css?v=261005a">
 <style>
   #t-modelos tbody tr { cursor: pointer; }
   /* el foco tiene que verse: una fila enfocable sin indicador deja el teclado a ciegas */
@@ -62,7 +62,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/vehiculo.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260930a"></script>
+<script src="assets/comun.js?v=261005a"></script>
 <script>
 PW.montarNav("vehiculo.html"); const D = PW_DATA.vehiculo; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const selT = document.getElementById("f-tipo"); [...new Set(D.modelos.map(m => m.tipo).filter(Boolean))].sort().forEach(t => {
   const o = document.createElement("option"); o.value = t; o.textContent = t; selT.appendChild(o); }); function norm(s) {

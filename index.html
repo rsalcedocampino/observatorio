@@ -33,7 +33,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="canonical" href="https://observatorio.energiasfuturo.com/">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260930a">
+<link rel="stylesheet" href="assets/estilo.css?v=261005a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/resumen.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -47,8 +47,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="hero">
     <h1>Observatorio ejecutivo de la electromovilidad, infraestructura y la energía en Chile</h1>
     <p>Mercado, red de carga, energía y regulación en una sola vista, con datos cruzados por comuna
-    y por vehículo, para proyectar las Energías Futuro. Más de 25 indicadores basados en fuentes
-    oficiales para responder tres preguntas clave: dónde invertir, cuándo y con qué nivel de riesgo.</p>
+    y por vehículo, para proyectar las Energías Futuro. <span id="n-paneles">Decenas de</span>
+    paneles basados en fuentes oficiales para responder tres preguntas clave: dónde invertir,
+    cuándo y con qué nivel de riesgo.</p>
     <div class="ctas">
       <a class="principal" href="#mi-auto">Mi auto</a>
       <a href="#red-carga">Red de carga</a>
@@ -385,9 +386,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/resumen.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260930a"></script>
+<script src="assets/comun.js?v=261005a"></script>
 <script>
-PW.montarNav("index.html"); const k = PW_DATA.resumen.kpis; // Las cifras que la portada cita en prosa se leen del dato, no van escritas a mano. Tres se
+PW.montarNav("index.html"); // El titular decia "Mas de 25 indicadores" escrito a mano, con el sitio ya en mas de 40 paneles:
+// una cifra que no crece con el sitio lo subdeclara y el lint la venia marcando. Se cuenta del
+// menu que acaba de montarse -- paginas distintas, sin contar las anclas de pestañas ni los
+// encabezados de grupo -- asi que sube sola cuando se agrega una pagina. Si el menu no estuviera,
+// queda el "Decenas de" del HTML y nunca un numero inventado.
+(function () {
+  const el = document.getElementById("n-paneles"); if (!el) return;
+  const vistas = new Set([...document.querySelectorAll("header.pw nav a[href$='.html'], header.pw nav a[href*='.html#']")]
+    .map(a => (a.getAttribute("href") || "").split("#")[0]).filter(h => h && h !== "index.html"));
+  if (vistas.size > 1) el.textContent = vistas.size;
+})(); const k = PW_DATA.resumen.kpis; // Las cifras que la portada cita en prosa se leen del dato, no van escritas a mano. Tres se
 // habian desfasado sin que nada lo detectara (69 instrumentos contra 94, 584 vehiculos de
 // rescate contra 590, 114 documentos contra 131) y la cuarta era peor: "912 cargadores" no es
 // un numero viejo sino otra METRICA -- hoy hay 651 estaciones, 2.242 conectores y ~1.600

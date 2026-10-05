@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="¿Cuándo sube la bencina, sube la adopción de enchufables meses después? Este cruce contrasta la participación de mercado enchufable con el precio real de...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=260930a">
+<link rel="stylesheet" href="assets/estilo.css?v=261005a">
 <style>
   /* flex-wrap: a 360px los 5 botones median 587px en una fila de 320 y desbordaban la pagina
      entera (medido: scrollWidth 584 contra ventana 360). El color de esta barra no se toca. */
@@ -190,7 +190,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div id="tabla-pnp"></div>
 
       <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color:var(--ink-2);">
-        Datos: Decreto PNP-2026-04 (CNE). Transmisión Nacional (220kV). Próximos datos: octubre 2026.
+        Datos: Decreto PNP-2026-04 (CNE). Transmisión Nacional (220kV). El decreto se reemplaza
+        cuando la CNE publica el siguiente; aquí se muestra el que está cargado, con su fecha.
         Nota: estos son precios de transmisión. Para tarifa final al cliente, sumar VAD distribuidor.
       </p>
     </div>
@@ -261,7 +262,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 })(); </script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=260930a"></script>
+<script src="assets/comun.js?v=261005a"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -622,15 +623,29 @@ function cargarTabEV2025() {
 }
 
 // === ELASTICIDAD REGIONAL PRELIMINAR ===
+// [2026-10-05] La tarjeta salia VACIA en produccion: el archivo declara `ElasticidadRegional` y
+// aqui se esperaba `ElasticidadRegionalPreliminar`, que nunca existio, asi que el reintento de
+// 100 ms corria para siempre (medido: 10 por segundo, indefinidamente) y la tabla jamas se
+// dibujaba. Se acepta cualquiera de los dos nombres y el reintento ahora se rinde y lo DICE, en
+// vez de dejar un titulo sin contenido.
+let _erIntentos = 0;
 function cargarElasticidadRegional() {
-  if (!window.ElasticidadRegionalPreliminar) {
+  const ERp = window.ElasticidadRegional || window.ElasticidadRegionalPreliminar;
+  const nota = document.getElementById("nota-elasticidad-regional");
+  if (!ERp) {
+    if (++_erIntentos > 50) { if (nota) nota.textContent = "Dato regional preliminar no disponible en esta carga."; return; }
     setTimeout(cargarElasticidadRegional, 100); return; }
 
-  const ERp = window.ElasticidadRegionalPreliminar; const M = ERp.metadata; // Nota
-  document.getElementById("nota-elasticidad-regional").textContent =
-    "Análisis descriptivo (correlación). " + M.caveat; // Tabla: Elasticidad Regional
+  const M = ERp.metadata; // Nota
+  // El nombre de region del archivo preliminar rotula mal dos casos (cut 01 como
+  // "Arica-Parinacota", que es Tarapaca, y cut 15 como "Arica Interior", que no existe) y seis
+  // mas van sin tildes. Se toma el nombre por CUT del cruce canonico que esta pagina ya carga,
+  // que es el mismo criterio de m_ev_proyeccion; si faltara, se cae al del archivo.
+  const CANON = Object.fromEntries((((window.PW_DATA || {}).c_ev_proyeccion || {}).regiones || [])
+    .map(r => [String(r.cut).padStart(2, "0"), r.region]));
+  if (nota) nota.textContent = "Análisis descriptivo (correlación). " + M.caveat; // Tabla: Elasticidad Regional
   const filas_elasticidad = ERp.regiones.map(r => ({
-    region: r.region,
+    region: CANON[String(r.cut).padStart(2, "0")] || r.region,
     tarifa: r.tarifa_potencia_kwm,
     stock_2024: r.stock_2024,
     pct_nacional: r.pct_stock_nacional.toFixed(1),

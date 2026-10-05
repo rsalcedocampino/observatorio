@@ -264,8 +264,9 @@
       `<button type="button" class="nav-toggle" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>` +
       `<nav>${nav}</nav>` +
       `<button type="button" class="tema-toggle"></button>`;
-    // Accesibilidad: primer tabulador de la pagina. Sin esto, quien navega con teclado
-    // tiene que pasar por los 52 enlaces del menu antes de llegar al contenido, en CADA pagina.
+    // Accesibilidad: primer tabulador de la pagina. Sin esto, quien navega con teclado tiene que
+    // pasar por TODO el menu (hoy 45 enlaces, el numero cambia con GRUPOS) antes de llegar al
+    // contenido, en CADA pagina.
     const main = document.querySelector("main");
     if (main) {
       if (!main.id) main.id = "contenido";
