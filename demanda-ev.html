@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Cuanta energía consume hoy el parque eléctrico y cuando su crecimiento se hará sentir en el sistema eléctrico nacional. Proyección con supuestos...">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261005a">
+<link rel="stylesheet" href="assets/estilo.css?v=261007a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_demanda.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -61,7 +61,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261005a"></script>
+<script src="assets/comun.js?v=261007a"></script>
 <script>
 PW.montarNav("demanda-ev.html"); const D = PW_DATA.c_demanda; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; function refrescar() {
   const km = +document.getElementById("f-km").value || 15000; const rend = +document.getElementById("f-rend").value || 5.4; const gwh = D.kpis.parque_ev * km / rend / 1e6; document.getElementById("kpis").innerHTML = [

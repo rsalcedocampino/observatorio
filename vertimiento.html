@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
+<!-- End Google tag (gtag.js) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Vertimiento de energía renovable — Energías Futuro</title>
+<meta name="description" content="Cuánta energía eólica, solar e hidro no pudo absorber el sistema y debió reducirse: por región, por mes y por hora del día. El recorte es cero de noche y máximo a media tarde.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261007a">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_vertimiento.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_demanda.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/horas.js?v='+_pwv+'">')</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <h1>Vertimiento de energía renovable</h1>
+  <p class="sub">Energía eólica, solar e hidro que el sistema no pudo absorber y debió reducir en
+  la operación en tiempo real. Por región, por mes y por hora del día: el recorte es cero de noche
+  y máximo a media tarde, justo cuando la red de carga está más ocupada.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Cuánto se reduce cada mes</h2>
+    <p class="nota">GWh reducidos por mes, todas las tecnologías. La estacionalidad es fuerte:
+    el verano concentra el recorte porque es cuando más sol hay y más excedente sobra.</p>
+    <div id="g-serie"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Dónde se reduce</h2>
+    <p class="nota" id="nota-region"></p>
+    <div id="g-region"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Qué tecnología se reduce</h2>
+    <div id="g-tec"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">La hora del día: el hallazgo</h2>
+    <p class="nota" id="nota-hora"></p>
+    <div id="g-hora"></div>
+    <p class="nota" style="margin-top:1.2rem"><b>Y esto es lo que hace la red de carga a esas
+    mismas horas.</b> La ocupación de los cargadores públicos ya es más alta justo en la ventana
+    en que sobra energía, y cae de noche, cuando no sobra nada. Dicho de otra forma:
+    <b>"cargar de noche" sería el consejo equivocado</b> si lo que se busca es aprovechar el
+    excedente renovable.</p>
+    <div id="g-ocup"></div>
+    <p class="nota" id="nota-cruce"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Las centrales que más reducen</h2>
+    <p class="nota" id="nota-centrales"></p>
+    <div id="t-centrales"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">De dónde sale este dato</h2>
+    <p class="nota" id="nota-fuente"></p>
+  </div>
+</main>
+<script>document.write('<script src="data/c_vertimiento.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/horas.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=261007a"></script>
+<script>
+PW.montarNav("vertimiento.html");
+const V = PW_DATA.c_vertimiento;
+const DEM = PW_DATA.c_demanda, HOR = PW_DATA.horas;
+
+// Las cifras de escala se CALCULAN del dato, no se escriben: si cambia el mes o se actualiza
+// c_demanda, se mueven solas. El anualizado sale de los meses que realmente trae la serie, que
+// hoy son 14 y manana seran mas.
+const anual = V.nacional.meses ? V.nacional.gwh_total / V.nacional.meses * 12 : null;
+const kSen = DEM && DEM.kpis ? DEM.kpis.gwh_sen_anual : null;
+const kEv = DEM && DEM.kpis ? DEM.kpis.gwh_ev_anual : null;
+const solar = (V.por_tecnologia.find(t => t.tecnologia === "solar") || {}).pct;
+const dosReg = V.regiones.slice().sort((a, b) => b.gwh - a.gwh).slice(0, 2);
+
+document.getElementById("nota").textContent =
+  "Actualizado " + (V.generado || "").slice(0, 10) + ". " + V.nacional.meses +
+  " meses observados, de " + V.nacional.desde + " a " + V.nacional.hasta + ".";
+
+// KPI: solo se muestra lo que el dato sostiene. Si falta c_demanda, el modulo de escala no se
+// inventa: se omite la tarjeta en vez de mostrar un guion sin explicacion.
+const tarjetas = [];
+if (anual && kSen) {
+  tarjetas.push([PW.fmt(100 * anual / kSen, 1) + "%", "de la generación del SEN",
+    "se reduce por no poder absorberla"]);
+}
+tarjetas.push([PW.fmt(anual), "GWh al año", "ritmo de los últimos " + V.nacional.meses + " meses"]);
+if (anual && kEv) {
+  tarjetas.push([PW.fmt(anual / kEv, 0) + " veces", "el consumo de la flota EV",
+    "la flota eléctrica del país gasta " + PW.fmt(kEv, 1) + " GWh al año"]);
+}
+if (solar != null) {
+  tarjetas.push([PW.fmt(solar, 1) + "%", "es solar", "el resto es eólica e hidro"]);
+}
+if (dosReg.length === 2) {
+  tarjetas.push([PW.fmt(dosReg[0].pct + dosReg[1].pct, 1) + "%", "en dos regiones",
+    dosReg[0].region + " y " + dosReg[1].region]);
+}
+document.getElementById("kpis").innerHTML = tarjetas.map(d =>
+  '<div class="kpi"><div class="v">' + PW.esc(d[0]) + '</div><div class="l">' + PW.esc(d[1]) +
+  '</div><div class="c">' + PW.esc(d[2]) + "</div></div>").join("");
+
+// --- serie mensual
+PW.lineas("g-serie", {
+  labels: V.serie_mes.map(x => x.ym),
+  series: [{ nombre: "GWh reducidos en el mes", valores: V.serie_mes.map(x => x.gwh),
+             area: true, color: PW.color("--s4") }],
+  fmtV: v => PW.fmt(v) + " GWh", alto: 260,
+});
+
+// --- ranking regional. NO hay cartografia REGIONAL en el sitio (geo_comunas es comunal y este
+// dato no baja a comuna), asi que el ranking va como barras, igual que bess-cortes. Decir
+// "mapa" y mostrar barras seria prometer lo que no hay.
+const regs = V.regiones.slice().sort((a, b) => b.gwh - a.gwh);
+PW.barras("g-region", {
+  items: regs.map(r => ({
+    nombre: r.rcut === "sin_region" ? "Sin región asignada" : r.region,
+    valor: r.gwh, extra: PW.fmt(r.pct, 1) + "%",
+  })),
+  color: PW.color("--s2"),
+  fmtV: v => PW.fmt(v) + " GWh",
+});
+document.getElementById("nota-region").textContent =
+  "GWh reducidos por región en los " + V.nacional.meses + " meses. " +
+  (dosReg.length === 2
+    ? dosReg[0].region + " y " + dosReg[1].region + " concentran " +
+      PW.fmt(dosReg[0].pct + dosReg[1].pct, 1) + "% del total. "
+    : "") +
+  "El " + PW.fmt(V.nacional.pct_sin_region, 2) + "% no tiene región asignada en la fuente" +
+  (V.sin_region && V.sin_region.centrales && V.sin_region.centrales.length
+    ? " y corresponde a " + V.sin_region.centrales.length + " centrales: " +
+      V.sin_region.centrales.join(", ") + "."
+    : ".");
+
+// --- tecnologia
+PW.barras("g-tec", {
+  items: V.por_tecnologia.slice().sort((a, b) => b.gwh - a.gwh).map(t => ({
+    nombre: t.tecnologia.replace("hidro_pasada", "hidro de pasada")
+      .replace("hidro_embalse", "hidro de embalse").replace("eolica", "eólica"),
+    valor: t.gwh, extra: PW.fmt(t.pct, 1) + "%",
+  })),
+  color: PW.color("--s3"),
+  fmtV: v => PW.fmt(v) + " GWh",
+});
+
+// --- perfil horario. `por_hora` viene YA en hora de pared 0-23 desde el origen (#11 lo
+// re-indexa desde la hora 1-24 de la fuente). No se le aplica ningun desplazamiento aqui: ese
+// -1 hecho dos veces, o ninguna, es exactamente el bug de la curva corrida que este sitio ya
+// tuvo una vez, y que renderiza perfecto mientras miente.
+const ph = V.por_hora.slice().sort((a, b) => a.hora - b.hora);
+const etiqHora = h => String(h).padStart(2, "0") + ":00";
+PW.lineas("g-hora", {
+  labels: ph.map(x => etiqHora(x.hora)),
+  series: [{ nombre: "GWh reducidos, acumulado de todo el período", valores: ph.map(x => x.gwh),
+             area: true, color: PW.color("--s4") }],
+  fmtV: v => PW.fmt(v) + " GWh", alto: 260,
+});
+const pico = ph.reduce((a, b) => (b.gwh > a.gwh ? b : a), ph[0]);
+const noche = ph.filter(x => x.hora >= 21 || x.hora <= 6).reduce((s, x) => s + x.gwh, 0);
+document.getElementById("nota-hora").textContent =
+  "GWh reducidos según la hora del día, sumando todo el período. El máximo es el bloque de las " +
+  etiqHora(pico.hora) + " a las " + etiqHora((pico.hora + 1) % 24) + ". Entre las 21:00 y las " +
+  "07:00 se reduce apenas el " + PW.fmt(100 * noche / V.nacional.gwh_total, 1) +
+  "% del total: de noche no sobra energía renovable porque no hay sol. " +
+  // la convencion la declara el propio dato; no se le antepone una glosa que la repita
+  (V.convencion_hora ? "Convención horaria: " + V.convencion_hora + "." : "");
+
+// --- ocupacion de la carga, en GRAFICO APARTE. Son unidades distintas (GWh contra % de puntos
+// ocupados): ponerlas en un mismo eje haria que una de las dos pareciera plana y seria una
+// mentira visual. Mismo eje horizontal, dos graficos.
+if (HOR && HOR.nacional && HOR.nacional.length) {
+  const oc = HOR.nacional.slice().sort((a, b) => a.hora - b.hora);
+  PW.lineas("g-ocup", {
+    labels: oc.map(x => etiqHora(x.hora)),
+    series: [{ nombre: "Ocupación de los cargadores públicos", valores: oc.map(x => x.ocupacion),
+               area: true, color: PW.color("--s1") }],
+    fmtV: v => PW.fmt(v, 1) + "%", alto: 220,
+  });
+  const dia = oc.filter(x => x.hora >= 9 && x.hora <= 19);
+  const noc = oc.filter(x => x.hora >= 21 || x.hora <= 6);
+  const prom = a => a.reduce((s, x) => s + (x.ocupacion || 0), 0) / Math.max(a.length, 1);
+  document.getElementById("nota-cruce").innerHTML =
+    "Entre las 09:00 y las 19:00 la ocupación promedia " + PW.fmt(prom(dia), 1) +
+    "% y entre las 21:00 y las 07:00 baja a " + PW.fmt(prom(noc), 1) + "%. " +
+    "<b>Dos advertencias para no leer de más:</b> la ocupación es el porcentaje de puntos de " +
+    "carga ocupados, <b>no energía</b>, así que esto muestra coincidencia de horario y no " +
+    "cuantifica cuánto excedente podría absorberse; y la red de carga es <b>nacional</b> " +
+    "mientras el vertimiento se concentra en el norte, de modo que cruzarlos a nivel país " +
+    "esconde esa diferencia territorial. " +
+    "El perfil de carga sale del histórico propio del observatorio (ver Mejor hora).";
+} else {
+  document.getElementById("nota-cruce").textContent =
+    "El perfil de ocupación de la red de carga no está disponible en esta carga.";
+}
+
+// --- centrales
+const cen = V.centrales.slice().sort((a, b) => b.gwh - a.gwh);
+PW.tabla("t-centrales", [
+  { k: "central", titulo: "Central" },
+  { k: "region", titulo: "Región" },
+  { k: "gwh", titulo: "GWh reducidos", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "pct", titulo: "% del total", num: true, fmt: v => PW.fmt(v, 2) + "%" },
+], cen.map(c => {
+  const r = V.regiones.find(x => x.rcut === c.rcut);
+  return {
+    central: c.nombre_catalogo || c.central,
+    region: r ? (c.rcut === "sin_region" ? "Sin región asignada" : r.region) : "—",
+    gwh: c.gwh, pct: 100 * c.gwh / V.nacional.gwh_total,
+  };
+}), { orden: "gwh", max: 40 });
+document.getElementById("nota-centrales").textContent =
+  "Las " + cen.length + " que más reducen, de " + V.nacional.n_centrales +
+  " centrales con algún recorte en el período. Donde el catálogo no tiene nombre comercial se " +
+  "muestra el identificador del Coordinador.";
+
+document.getElementById("nota-fuente").textContent = V.nota + " Fuente: " + V.fuente;
+</script>
+</body>
+</html>
