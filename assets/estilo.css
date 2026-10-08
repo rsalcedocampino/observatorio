@@ -11,6 +11,8 @@
   --axis: #c3c2b7;
   --border: rgba(11, 11, 11, 0.10);
   --s1: #2a78d6;  /* azul */
+  --accion: #2670ca;        /* enlaces y botones: el azul de marca, mas oscuro para llegar a 4,5:1 */
+  --accion-texto: #ffffff;  /* texto sobre un fondo --accion */
   --s2: #eb6834;  /* naranja */
   --s3: #1baf7a;  /* aqua */
   --s4: #eda100;  /* amarillo */
@@ -51,6 +53,8 @@
     --axis: #383835;
     --border: rgba(255, 255, 255, 0.10);
     --s1: #3987e5;
+    --accion: #3987e5;
+    --accion-texto: #0b0b0b;
     --s2: #d95926;
     --s3: #199e70;
     --s4: #c98500;
@@ -76,6 +80,8 @@
   --axis: #383835;
   --border: rgba(255, 255, 255, 0.10);
   --s1: #3987e5;
+  --accion: #3987e5;
+  --accion-texto: #0b0b0b;
   --s2: #d95926;
   --s3: #199e70;
   --s4: #c98500;
@@ -99,7 +105,7 @@ body {
   font-size: 15px;
   line-height: 1.5;
 }
-a { color: var(--s1); text-decoration: none; }
+a { color: var(--accion); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 header.pw {
@@ -145,7 +151,7 @@ header.pw nav a.activo, header.pw nav a:hover { background: var(--plane); color:
 }
 .nav-grupo:hover .submenu, .nav-grupo:focus-within .submenu, .nav-grupo.abierto .submenu { display: block; }
 .submenu a { display: flex; align-items: center; gap: 8px; padding: 7px 11px; border-radius: 6px; }
-.submenu a .ic { display: inline-flex; flex: none; color: var(--s1); }
+.submenu a .ic { display: inline-flex; flex: none; color: var(--accion); }
 .submenu a .ic svg { width: 16px; height: 16px; }
 
 /* ---------- boton hamburguesa: oculto en desktop, visible bajo el breakpoint mobile ---------- */
@@ -184,7 +190,7 @@ header.pw nav a.activo, header.pw nav a:hover { background: var(--plane); color:
   color: var(--ink-2);
   cursor: pointer;
 }
-.tema-toggle:hover { border-color: var(--s1); color: var(--s1); }
+.tema-toggle:hover { border-color: var(--accion); color: var(--accion); }
 .tema-toggle svg { width: 18px; height: 18px; display: block; }
 
 @media (max-width: 1050px) {
@@ -253,20 +259,20 @@ header.pw nav a.activo, header.pw nav a:hover { background: var(--plane); color:
   background: var(--plane);
   transition: border-color 150ms, transform 150ms;
 }
-.hero .ctas a.principal { background: var(--s1); border-color: var(--s1); color: #fff; }
+.hero .ctas a.principal { background: var(--accion); border-color: var(--accion); color: var(--accion-texto); }
 .hero .ctas a:hover { text-decoration: none; border-color: var(--s1); transform: translateY(-1px); }
 /* Boton de la capa comercial (pedido 723-A). Queda en el hero y en el pie comun; se marca
    con borde del color de acento sin robarle el primer lugar a 'Mi auto', que es la accion
    principal del sitio. */
-.hero .ctas a.solicitar { border-color: var(--s1); color: var(--s1); font-weight: 600; }
+.hero .ctas a.solicitar { border-color: var(--accion); color: var(--accion); font-weight: 600; }
 footer.pw a.solicitar-pie { display: inline-block; margin-top: 10px; padding: 7px 14px;
-  border: 1px solid var(--s1); border-radius: 8px; color: var(--s1); font-weight: 600; }
-footer.pw a.solicitar-pie:hover { text-decoration: none; background: var(--s1); color: #fff; }
+  border: 1px solid var(--accion); border-radius: 8px; color: var(--accion); font-weight: 600; }
+footer.pw a.solicitar-pie:hover { text-decoration: none; background: var(--accion); color: var(--accion-texto); }
 
 /* iconos de modulo */
-.icono-h1 { display: inline-flex; vertical-align: -4px; margin-right: 10px; color: var(--s1); }
+.icono-h1 { display: inline-flex; vertical-align: -4px; margin-right: 10px; color: var(--accion); }
 .icono-h1 svg { width: 26px; height: 26px; }
-.modulo-card .ic { display: inline-flex; color: var(--s1); margin-bottom: 8px; }
+.modulo-card .ic { display: inline-flex; color: var(--accion); margin-bottom: 8px; }
 .modulo-card .ic svg { width: 22px; height: 22px; }
 .modulo-card { transition: border-color 150ms, transform 150ms, box-shadow 150ms; }
 .modulo-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); }
@@ -613,17 +619,17 @@ footer.pw {
   font-size: 13.5px;
 }
 .pw-aviso-datos button {
-  border: 1px solid var(--s1); background: transparent; color: var(--s1);
+  border: 1px solid var(--accion); background: transparent; color: var(--accion);
   border-radius: 8px; padding: 5px 10px; font: inherit; cursor: pointer;
 }
-.pw-aviso-datos button:hover { background: var(--s1); color: var(--plane); }
+.pw-aviso-datos button:hover { background: var(--accion); color: var(--accion-texto); }
 .pw-aviso-datos button.cerrar { border-color: var(--border); color: var(--ink-3); padding: 2px 8px; }
 @media (max-width: 560px) { .pw-aviso-datos { left: 16px; right: 16px; transform: none; } }
 
 /* "Saltar al contenido": invisible hasta que el teclado lo enfoca (ver comun.js) */
 .saltar-al-contenido {
   position: fixed; top: -60px; left: 12px; z-index: 1300;
-  background: var(--s1); color: var(--plane); padding: 10px 14px; border-radius: 0 0 8px 8px;
+  background: var(--accion); color: var(--accion-texto); padding: 10px 14px; border-radius: 0 0 8px 8px;
   font-size: 14px; text-decoration: none; transition: top 120ms;
 }
 .saltar-al-contenido:focus { top: 0; }

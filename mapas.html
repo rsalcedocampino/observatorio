@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Un solo mapa para cruzar la red de carga, transmisión, generación renovable, almacenamiento, distribución eléctrica y datos del Censo.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261007a">
+<link rel="stylesheet" href="assets/estilo.css?v=261008a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -39,7 +39,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .capa-grupo-tit { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); }
   .capa-grupo-chips { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
   /* [CRUCE ACTIVO] resalta el cruce sugerido cuyo combo coincide con el estado actual del mapa */
-  .preset-btn.activo { border-color: var(--s1); box-shadow: inset 0 0 0 1px var(--s1); color: var(--s1); font-weight: 700; }
+  .preset-btn.activo { border-color: var(--s1); box-shadow: inset 0 0 0 1px var(--s1); color: var(--accion); font-weight: 700; }
 </style>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/mapa.js?v='+_pwv+'">')</script>
@@ -96,7 +96,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_distribucion.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/geo_lineas.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/postes_index.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261007a"></script>
+<script src="assets/comun.js?v=261008a"></script>
 <script>
 PW.montarNav("mapas.html"); const M = window.PW_DATA.mapa || {}; const RED = window.PW_DATA.c_redelec || { subestaciones: [] }; const CEN = window.PW_DATA.c_censoelec || { comunas: [] }; const DIST = window.PW_DATA.c_distribucion || { comunas: [] }; // [DISTRIBUCION SEC] km BT/MT por comuna (346, 25+ empresas)
 let LIN = window.PW_DATA.geo_lineas || null; const C = PW.color;

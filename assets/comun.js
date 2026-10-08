@@ -99,7 +99,7 @@
 
   const CSS = getComputedStyle(document.documentElement);
   function color(v) { return CSS.getPropertyValue(v).trim() || v; }
-  const SERIES = ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6"];
+  const SERIES = ["--s1", "--s2", "--s6", "--s3", "--s4", "--s5"];
 
   // ---------- iconos SVG por modulo (monocromos, stroke actual)
   const IC = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
@@ -1403,6 +1403,46 @@
       const n = (lc.geojson.features || []).length;
       control[`${lc.nombre}${n ? " (" + n + ")" : ""}`] = capaL;
       if (lc.visible) capaL.addTo(m);
+    });
+
+    // [HOVER FONDO] el canvas de puntos/lineas queda ENCIMA del canvas del pane "pw-comunas" (telon
+    //   comunal y demas poligonos de fondo) y recibe todos los eventos del mouse; Leaflet no los pasa
+    //   al de abajo, asi que con una capa de puntos encendida el tooltip del fondo no aparecia nunca.
+    //   Aqui se reenvia el movimiento al canvas de fondo cuando el de arriba no tiene nada bajo el
+    //   cursor; si lo tiene (un punto, una linea), manda ese y el fondo suelta su tooltip.
+    //   Usa los metodos internos del renderer Canvas de Leaflet 1.9 (_handleMouseHover/_handleMouseOut);
+    //   si una version futura los cambia, el typeof lo deja sin efecto y todo sigue como antes.
+    const fondoCanvas = () => {
+      const r = m._paneRenderers && m._paneRenderers["pw-comunas"];
+      return (r && r._container && typeof r._handleMouseHover === "function" &&
+              typeof r._handleMouseOut === "function") ? r : null;
+    };
+    //   `reenviando` corta la recursion: el renderer de fondo, al disparar su evento, lo propaga
+    //   tambien al mapa, y sin el candado este mismo manejador se volveria a llamar sin fin.
+    let reenviando = false;
+    const alFondo = fn => {
+      if (reenviando) return;
+      reenviando = true;
+      try { fn(); } finally { reenviando = false; }
+    };
+    m.on("mousemove", e => {
+      if (reenviando) return;
+      const bajo = fondoCanvas();
+      if (!bajo || !e.originalEvent || e.originalEvent.target !== renderer._container) return;
+      if (m.dragging.moving() || m._animatingZoom) return;
+      alFondo(() => {
+        if (renderer._hoveredLayer) bajo._handleMouseOut(e.originalEvent);
+        else bajo._handleMouseHover(e.originalEvent, e.layerPoint);
+      });
+    });
+    m.on("mouseout", e => {
+      // solo cuando el cursor SALE del mapa: Leaflet tambien propaga al mapa el "mouseout" de cada
+      // punto o linea (con un mousemove como evento original), y eso no debe soltar el fondo
+      const oe = e.originalEvent;
+      if (reenviando || !oe || oe.type !== "mouseout") return;
+      if (oe.relatedTarget && m.getContainer().contains(oe.relatedTarget)) return;
+      const bajo = fondoCanvas();
+      if (bajo) alFondo(() => bajo._handleMouseOut(oe));
     });
 
     // [CONTROLES] un solo selector: capas base (Mapa/Satélite/Relieve/Calles) siempre
