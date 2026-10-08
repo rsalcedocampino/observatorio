@@ -251,10 +251,11 @@ const part = D.participacion.map(p => ({ ym: p.ym.slice(0, 7), v: p.enchufables 
     .sort((a, b) => b[1] - a[1]); const principales = orden.slice(0, 4); const resto = orden.slice(4); const series = principales.map(([b, , v]) =>
     ({ nombre: b, valores: v.map((x, i) => Math.round(x * factor(T.anios[i]))) })); if (resto.length) {
     const suma = T.anios.map((a, i) =>
-      Math.round(resto.reduce((s, [, , v]) => s + v[i], 0) * factor(a))); series.push({ nombre: "Otros (" + resto.map(([b]) => b).join(", ") + ")", valores: suma }); }
+      Math.round(resto.reduce((s, [, , v]) => s + v[i], 0) * factor(a))); series.push({ nombre: "Otros", valores: suma }); }
   PW.lineas("g-tecnologia", { labels, series, fmtV: v => PW.fmt(v) + " unid.", alto: 300 }); document.getElementById("nota-tec").textContent =
     "* " + anioCurso + " anualizado con " + mesesCurso + " meses de datos. Se muestran las 4 " +
-    "tecnologias principales; el resto va agrupado en Otros."; })(); const vMes = D.ventas_enchufables.map(x => ({ ym: x.ym.slice(0, 7), u: x.unidades })); const desdeV = vMes.findIndex(x => x.ym >= "2020-01"); PW.columnas("g-ventas", {
+    "tecnologías principales; el resto va agrupado en Otros" +
+    (resto.length ? " (" + resto.map(([b]) => b).join(", ") + ")" : "") + "."; })(); const vMes = D.ventas_enchufables.map(x => ({ ym: x.ym.slice(0, 7), u: x.unidades })); const desdeV = vMes.findIndex(x => x.ym >= "2020-01"); PW.columnas("g-ventas", {
   labels: vMes.slice(desdeV).map(x => x.ym),
   valores: vMes.slice(desdeV).map(x => x.u),
   fmtV: x => PW.fmt(x) + " unid.",

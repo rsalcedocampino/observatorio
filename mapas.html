@@ -178,6 +178,8 @@ const PRESETS = [
     desc: "Dónde se genera energía solar y dónde se guarda en baterías." },
   { t: "Red de distribución (SEC)", on: [], ind: "km_bt",
     desc: "Kilómetros de red de baja tensión (BT) por comuna, del GIS de la SEC (todas las distribuidoras de Chile, 346 comunas)." },
+  { t: "Carga por región", on: ["carga", "regiones"], ind: "",
+    desc: "Los cargadores sobre las 16 regiones en color: cómo se reparte la red de carga en el territorio." },
   { t: "Ver todo", on: ["carga", "sub", "lin_a", "lin_m", "lin_b", "solar", "bess"], ind: "km_bt" },
   { t: "Limpiar", on: [], ind: "" },
 ]; let mapa = null, filtroTerr = {}, conteos = {}; function radio(base, val, div) {
@@ -451,7 +453,8 @@ function actualizarAvisoTramos() {
 
 function aplicarPreset(p) {
   CAPAS.forEach(c => { c.on = p.on.includes(c.k); }); if (p.ind !== undefined) document.getElementById("f-ind").value = p.ind; // "" = telon apagado
-  render(false); }
+  render(false); // la capa Regiones necesita geo_comunas, que se pide bajo demanda
+  if (on("regiones") && !window.PW_DATA.geo_comunas) PW.cargarGeoComunas().then(() => render(false)); }
 
 // Resalta el cruce sugerido cuyo combo (capas encendidas + telon) coincide con el estado ACTUAL,
 // venga de un click en el preset o de encender/apagar capas a mano. Solo los presets con `desc`
