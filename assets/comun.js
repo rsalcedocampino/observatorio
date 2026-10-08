@@ -512,6 +512,28 @@
     svg.appendChild(t);
   }
 
+  // [LINEA DEBIL] cinco tonos de la paleta no llegan a 3:1 como trazo de 2 px sobre el fondo claro
+  //   (2,1 a 2,7:1, medido por el Manual de Marca el 2026-10-08). Solo para el TRAZO, y solo en modo
+  //   claro, se usa una variante mas oscura del mismo tono (3,1 a 3,2:1). Barras, rellenos de area y
+  //   los tokens de estilo.css no cambian. La tabla va por valor resuelto y no por nombre de token
+  //   porque 9 de los 14 graficos afectados fijan el color a mano con PW.color("--s4") y a lineas()
+  //   le llega ya el hexadecimal. --warning y --serious valen lo mismo en oscuro, por eso el modo se
+  //   decide por la luminancia del fondo y no por el valor del color.
+  const LINEA_DEBIL = {
+    "#1baf7a": "#19a170", "#eda100": "#bf8200", "#e87ba4": "#e46192",
+    "#fab219": "#be8204", "#ec835a": "#e86735",
+  };
+  function fondoClaro() {
+    const h = /^#([0-9a-f]{6})$/i.exec(color("--plane"));
+    if (!h) return true;
+    const n = parseInt(h[1], 16);
+    return (0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) > 127;
+  }
+  function colorLinea(c) {
+    const k = String(c || "").trim().toLowerCase();
+    return (LINEA_DEBIL[k] && fondoClaro()) ? LINEA_DEBIL[k] : c;
+  }
+
   // ---------- grafico de lineas (series: [{nombre, valores}], labels: [..])
   function lineas(cont, cfg) {
     const el = typeof cont === "string" ? document.getElementById(cont) : cont;
@@ -536,6 +558,20 @@
       }
       const need = Math.ceil(Math.max(...ets.map(t => anchoTexto(t, 11)))) + 12;
       m.l = Math.max(m.l, Math.min(Math.round(W * 0.45), need));
+    }
+    // [ETIQUETA FINAL] con 3 o mas series el color solo no las separa (los pares mas cercanos de la
+    //   paleta se confunden en protanopia y deuteranopia): cada linea lleva su nombre escrito junto a
+    //   su ultimo punto. El margen derecho crece lo que mide el nombre mas largo, con tope de un
+    //   tercio del ancho (lo que no cabe se recorta con "..."). Bajo 480 px no hay etiquetas y queda
+    //   la leyenda, que se conserva siempre.
+    const ETQ_PX = 11, ETQ_SEP = 13, ETQ_CUADRO = 7;
+    const conEtiquetas = series.length >= 3 && W >= 480;
+    let etqMax = 0;
+    if (conEtiquetas) {
+      const largo = Math.max(...series.map(s => anchoTexto(s.nombre, ETQ_PX)));
+      // 6 de aire tras el punto + cuadro + 4 hasta el texto + 4 al borde
+      m.r = Math.min(Math.round(W / 3), Math.ceil(largo) + 6 + ETQ_CUADRO + 4 + 4);
+      etqMax = m.r - 6 - ETQ_CUADRO - 4 - 2;
     }
     const X = i => m.l + (W - m.l - m.r) * (labels.length === 1 ? 0.5 : i / (labels.length - 1));
     const Y = v => m.t + (H - m.t - m.b) * (1 - (v - minV) / (maxV - minV || 1));
@@ -582,8 +618,10 @@
           fill: color("--warning"), "fill-opacity": 0.14,
         }));
       });
+    const etiquetas = [];
     series.forEach((s, si) => {
-      const c = s.color || color(SERIES[si % SERIES.length]);
+      const cBase = s.color || color(SERIES[si % SERIES.length]);
+      const c = colorLinea(cBase);
       let d = "", pen = false, primero = null, ultimo = null;
       s.valores.forEach((v, i) => {
         if (v == null) { pen = false; return; }
@@ -596,7 +634,10 @@
       if (s.area && primero !== null && ultimo !== null && ultimo > primero) {
         const base = Y(minV);
         const dArea = d + `L${X(ultimo).toFixed(1)} ${base.toFixed(1)}L${X(primero).toFixed(1)} ${base.toFixed(1)}Z`;
-        svg.appendChild(svgEl("path", { d: dArea, fill: c, "fill-opacity": 0.12, stroke: "none" }));
+        svg.appendChild(svgEl("path", { d: dArea, fill: cBase, "fill-opacity": 0.12, stroke: "none" }));
+      }
+      if (conEtiquetas && ultimo !== null) {
+        etiquetas.push({ nombre: s.nombre, c, x: X(ultimo), y0: Y(s.valores[ultimo]), y: Y(s.valores[ultimo]) });
       }
       const atributos = { d, fill: "none", stroke: c, "stroke-width": 2, "stroke-linejoin": "round" };
       if (s.dash) atributos["stroke-dasharray"] = "6 5";
@@ -611,6 +652,39 @@
         });
       });
     });
+    if (etiquetas.length) {
+      // se ordenan por altura y se separan ETQ_SEP px hacia abajo; si el bloque se sale por abajo,
+      // se empuja entero hacia arriba. La que quedo lejos de su punto lleva una linea de union.
+      etiquetas.sort((a, b) => a.y0 - b.y0);
+      for (let k = 1; k < etiquetas.length; k++) {
+        etiquetas[k].y = Math.max(etiquetas[k].y, etiquetas[k - 1].y + ETQ_SEP);
+      }
+      const piso = H - m.b;
+      for (let k = etiquetas.length - 1; k >= 0; k--) {
+        const tope = k === etiquetas.length - 1 ? piso : etiquetas[k + 1].y - ETQ_SEP;
+        etiquetas[k].y = Math.min(etiquetas[k].y, tope);
+      }
+      etiquetas.forEach(e => {
+        const xc = e.x + 6;
+        if (Math.abs(e.y - e.y0) > 3) {
+          svg.appendChild(svgEl("line", {
+            x1: (e.x + 1).toFixed(1), y1: e.y0.toFixed(1), x2: (xc - 1).toFixed(1), y2: e.y.toFixed(1),
+            stroke: color("--ink-3"), "stroke-width": 1,
+          }));
+        }
+        svg.appendChild(svgEl("rect", {
+          x: xc.toFixed(1), y: (e.y - ETQ_CUADRO / 2).toFixed(1), width: ETQ_CUADRO, height: ETQ_CUADRO,
+          rx: 1.5, fill: e.c,
+        }));
+        const t = svgEl("text", {
+          x: (xc + ETQ_CUADRO + 4).toFixed(1), y: (e.y + 4).toFixed(1), "font-size": ETQ_PX,
+          fill: color("--ink-2"), class: "etq-serie",
+        });
+        // una serie que termina antes del final del eje tiene mas sitio a su derecha
+        t.textContent = recortarA(e.nombre, ETQ_PX, Math.max(etqMax, W - 2 - (xc + ETQ_CUADRO + 4)));
+        svg.appendChild(t);
+      });
+    }
     // separador vertical (ej. "Hoy"): cfg.lineaX = {i, texto}
     if (cfg.lineaX && cfg.lineaX.i != null && cfg.lineaX.i >= 0) {
       const x = X(cfg.lineaX.i);
@@ -658,7 +732,7 @@
       linea.setAttribute("x1", X(mejor)); linea.setAttribute("x2", X(mejor));
       linea.setAttribute("opacity", 1);
       const filas = series.map((s, si) => {
-        const c = s.color || color(SERIES[si % SERIES.length]);
+        const c = colorLinea(s.color || color(SERIES[si % SERIES.length]));
         const v = s.valores[mejor];
         return `<span style="color:${c}">●</span> ${s.nombre}: ${v == null ? "—" : (cfg.fmtV || (x2 => nf1.format(x2)))(v)}`;
       }).join("<br>");
@@ -672,7 +746,7 @@
       const ley = document.createElement("div");
       ley.className = "leyenda";
       series.forEach((s, si) => {
-        const c = s.color || color(SERIES[si % SERIES.length]);
+        const c = colorLinea(s.color || color(SERIES[si % SERIES.length]));
         const sp = document.createElement("span");
         sp.style.setProperty("--c", c);
         sp.textContent = s.nombre;
