@@ -23,9 +23,7 @@
   --warning: #fab219;
   --serious: #ec835a;
   --critical: #d03b3b;
-  --seq-100: #cde2fb;
   --seq-400: #3987e5;
-  --seq-700: #0d366b;
   /* Escala secuencial de 5 tramos (coropletas y su leyenda). En claro va de claro a oscuro
      sobre fondo blanco; en oscuro se invierte el sentido -- de oscuro a claro -- para que el
      tramo alto siga siendo el mas visible. Antes estaba fija en JS y el ultimo tramo

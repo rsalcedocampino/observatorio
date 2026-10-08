@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="El retrato demográfico y habitacional de Chile según los Censos 2002, 2017 y 2024 del INE, por región y por cada una de las 346 comunas.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261008c">
+<link rel="stylesheet" href="assets/estilo.css?v=261008d">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <style>
@@ -227,7 +227,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 
 <script>document.write('<script src="data/censo.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261008c"></script>
+<script src="assets/comun.js?v=261008d"></script>
 <script>
 PW.montarNav("censo.html"); const D = window.PW_DATA.censo; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; document.getElementById("fuente").textContent = D.nota; // ---------- indices + helpers ----------
 const comByCut = Object.fromEntries(D.comunas.map(c => [c.cut, c])); const cutByComuna = Object.fromEntries(D.comunas.map(c => [c.comuna, c.cut])); const regByName = Object.fromEntries(D.regiones.map(r => [r.region, r])); const VAR = D.variacion || {}; const serieCensada = (D.serie_nacional || []).filter(x => x.tipo === "censado"); const serieByAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x.poblacion])); const serieRowAno = Object.fromEntries(serieCensada.map(x => [String(x.ano), x])); // fila completa (var_pct, crec_anual)
@@ -328,8 +328,10 @@ function aplicar() {
     // la poblacion censada 2024 (daria +8,28% en todas las regiones, que no es crecimiento). Se
     // muestra contra la poblacion ESTIMADA 2024, en la misma escala. No hay desglose comunal: con
     // una comuna elegida se muestra su region y se dice.
-    const regP = com ? (comByCut[cutByComuna[com]] || {}).region : reg; const fp = regP ? (P25.regiones || {})[(regByName[regP] || {}).rcut] : P25.pais; const terrP = regP || "Chile"; if (fp) {
-      kpis.push([PW.fmt(fp.pob_2025), "habitantes", "Cifra 2025 proyectada · " + terrP + (com ? " (sin desglose comunal)" : ""), "proy"]); kpis.push([PW.fmt(fp.pob_2024_est), "población estimada 2024", "misma escala que la proyección · " + terrP, "proy"]); const vp = (fp.pob_2025 / fp.pob_2024_est - 1) * 100; kpis.push([(vp > 0 ? "+" : "") + PW.fmt(vp, 1) + "%", "variación estimada 2024 → 2025", terrP, "proy"]); } else kpis.push(["—", "habitantes", "sin proyección 2025 para " + terrP]);
+    const regP = com ? (comByCut[cutByComuna[com]] || {}).region : reg; const pc = com ? (P25.comunas || {})[cutByComuna[com]] : null; // si el dato trae la comuna, se muestra la comuna; si no, su region y se dice
+    const fp = pc ? { pob_2025: pc[0], pob_2024_est: pc[1] } : regP ? (P25.regiones || {})[(regByName[regP] || {}).rcut] : P25.pais; const terrP = pc ? com : (regP || "Chile"); if (fp) {
+      kpis.push([PW.fmt(fp.pob_2025), "habitantes", "Cifra 2025 proyectada · " + terrP + (com && !pc ? " (sin desglose comunal)" : ""), "proy"]); kpis.push([PW.fmt(fp.pob_2024_est), "población estimada 2024", "misma escala que la proyección · " + terrP, "proy"]); // por comuna se muestra la tasa del reparto (la del pais): en comunas muy chicas el redondeo a personas enteras la deformaria (65 y 65 daria 0%)
+      const fv = pc ? P25.pais : fp; const vp = (fv.pob_2025 / fv.pob_2024_est - 1) * 100; kpis.push([(vp > 0 ? "+" : "") + PW.fmt(vp, 1) + "%", "variación estimada 2024 → 2025", pc ? "tasa del reparto, igual para todas las comunas" : terrP, "proy"]); } else kpis.push(["—", "habitantes", "sin proyección 2025 para " + terrP]);
   } else if (ano === "2017") {
     kpis.push([pob != null ? PW.fmt(pob) : "—", "habitantes", "Censo 2017 · " + terr]); const v = varTerritorio(reg, com); if (v != null) kpis.push([(v > 0 ? "+" : "") + PW.fmt(v, 1) + "%", "variación 2017 → 2024", terr]); if ((reg || com) && pob != null && serieByAno["2017"])
       kpis.push([PW.fmt(100 * pob / serieByAno["2017"], 1) + "%", "del país en 2017", "participación"]); const r17 = serieRowAno["2017"]; if (r17 && r17.var_pct != null)
@@ -338,7 +340,7 @@ function aplicar() {
     const r02 = serieRowAno["2002"] || {}; kpis.push([PW.fmt(serieByAno["2002"]), "habitantes (país)", "Censo 2002" + ((reg || com) ? " · sin dato comunal homologable" : "")]); if (r02.var_pct != null)
       kpis.push([(r02.var_pct > 0 ? "+" : "") + PW.fmt(r02.var_pct, 1) + "%", "variación 1992 → 2002 (país)",
                  r02.crec_anual != null ? "crecimiento anual " + PW.fmt(r02.crec_anual, 1) + "%" : ""]); }
-  { const np = document.getElementById("nota-proy"); const tf = ano === "2025" ? (P25.fecha || "") : ""; np.textContent = tf; np.hidden = !tf; } // a que fecha corresponde la cifra 2025 (viene del dato)
+  { const np = document.getElementById("nota-proy"); const tf = ano === "2025" ? [P25.fecha, (com && (P25.comunas || {})[cutByComuna[com]]) ? P25.nota_comunas : ""].filter(Boolean).join(" ") : ""; np.textContent = tf; np.hidden = !tf; } // a que fecha corresponde la cifra 2025 (viene del dato)
   document.getElementById("kpis").innerHTML = kpis.map(d =>
     `<div class="kpi${d[3] ? " " + d[3] : ""}"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Edad: el desglose por tramo solo existe homologado para el Censo 2024
   // con "2025 (proyección)" solo cambia la poblacion: edad, mapa, top y tablas siguen siendo Censo 2024

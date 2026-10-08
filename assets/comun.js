@@ -214,24 +214,46 @@
     if (fijado === "dark" || fijado === "light") return fijado;
     return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
+  // [TRES ESTADOS] sistema -> claro -> oscuro -> sistema. Antes el boton solo alternaba claro/oscuro
+  // y nunca quitaba el atributo: quien lo pulsaba una vez ya no podia volver a seguir a su equipo.
+  // "sistema" es SIN atributo y SIN clave guardada, que es justo lo que el snippet del <head> y el
+  // CSS ya entienden como "seguir al sistema"; por eso no hubo que tocar ninguno de los dos.
+  const IC_MONITOR = IC('<rect x="3" y="4.5" width="18" height="12" rx="1.6"/><path d="M8.5 20h7M12 16.5V20"/>');
+  const TEMA_ORDEN = ["sistema", "light", "dark"];
+  const TEMA_NOMBRE = { sistema: "sistema", light: "claro", dark: "oscuro" };
+  const TEMA_ICONO = { sistema: IC_MONITOR, light: IC_SOL, dark: IC_LUNA };
+  function temaElegido() {
+    const fijado = document.documentElement.getAttribute("data-theme");
+    return (fijado === "dark" || fijado === "light") ? fijado : "sistema";
+  }
   function montarTema(btn) {
     if (!btn) return;
+    const siguiente = e => TEMA_ORDEN[(TEMA_ORDEN.indexOf(e) + 1) % TEMA_ORDEN.length];
     const pintar = () => {
-      const oscuro = temaEfectivo() === "dark";
-      // el boton anuncia la ACCION, no el estado actual: en oscuro ofrece pasar a claro
-      btn.innerHTML = oscuro ? IC_SOL : IC_LUNA;
-      const txt = oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro";
+      const estado = temaElegido();
+      // el icono muestra el ESTADO elegido y el texto dice ademas a cual pasa el clic
+      btn.innerHTML = TEMA_ICONO[estado];
+      const txt = "Modo: " + TEMA_NOMBRE[estado] + ". Pulsa para pasar a " + TEMA_NOMBRE[siguiente(estado)];
       btn.setAttribute("aria-label", txt);
       btn.setAttribute("title", txt);
     };
     btn.addEventListener("click", () => {
-      const nuevo = temaEfectivo() === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", nuevo);
+      const antes = temaEfectivo();
+      const nuevo = siguiente(temaElegido());
       let persistio = true;
       // localStorage puede fallar (ventana privada, cookies bloqueadas): el tema igual queda
       // aplicado en esta pagina, solo no se recuerda en la siguiente.
-      try { localStorage.setItem(TEMA_KEY, nuevo); } catch (e) { persistio = false; }
+      if (nuevo === "sistema") {
+        document.documentElement.removeAttribute("data-theme");
+        try { localStorage.removeItem(TEMA_KEY); } catch (e) { persistio = false; }
+      } else {
+        document.documentElement.setAttribute("data-theme", nuevo);
+        try { localStorage.setItem(TEMA_KEY, nuevo); } catch (e) { persistio = false; }
+      }
       pintar();
+      // si el modo que se VE no cambio (p. ej. de "claro" a "sistema" con el equipo en claro), no
+      // hay nada que redibujar y recargar seria un parpadeo gratuito
+      if (temaEfectivo() === antes) return;
       // El CSS cambia solo, pero graficos y mapas NO: sus colores se resuelven con PW.color() al
       // dibujar y quedan escritos como atributos SVG / tiles de Leaflet ya cargados, asi que
       // conservarian la paleta anterior hasta la proxima carga (verificado: una linea seguia en
@@ -1084,12 +1106,28 @@
   // [BASE ELEGIDA] base cartografica por defecto del sitio: "Calles" (OSM). La eleccion del usuario
   // PERSISTE entre re-renders (las paginas recrean el mapa al filtrar; sin esto, el selector de base
   // se reseteaba con cada filtro). Cada mapa nuevo arranca en la ultima base elegida en la pagina.
-  let baseElegida = "Calles";
+  // En modo OSCURO el arranque es "Mapa" (lienzo gris oscuro): "Calles" es clara en los dos modos y dejaba
+  // un rectangulo blanco en medio de la pagina oscura. `null` = el visitante aun no eligio en esta
+  // pagina; en cuanto elige una base en el selector, esa manda en los dos modos.
+  let baseElegida = null;
+  const baseInicial = (bases, oscuro) =>
+    bases[baseElegida || (oscuro ? "Mapa" : "Calles")] || bases["Calles"] || bases["Mapa"];
   function basesMapa(oscuro) {
     const bases = {};
-    bases["Mapa"] = L.tileLayer(
-      `https://{s}.basemaps.cartocdn.com/${oscuro ? "dark_all" : "light_all"}/{z}/{x}/{y}{r}.png`,
-      { maxZoom: 19, attribution: "© OpenStreetMap © CARTO" });
+    // [MAPA SIN CLAVE] la base "Mapa" era de CARTO (basemaps.cartocdn.com). El 2026-10-08 esas
+    //   baldosas llegaban con la marca "API KEY REQUIRED" cruzada, en claro y en oscuro y con
+    //   cualquier Referer (medido con curl): CARTO pide clave. Se cambia a los lienzos grises de
+    //   Esri, que no piden token y salen del mismo host que "Satélite", ya permitido en la CSP.
+    //   Son dos servicios por tema: la base y una capa de referencia con los nombres de lugares.
+    //   Su dato nativo llega a zoom 16; de ahi a 19 Leaflet amplia la ultima baldosa.
+    const esri = s => "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/" + s +
+      "/MapServer/tile/{z}/{y}/{x}";
+    const tonoG = oscuro ? "World_Dark_Gray" : "World_Light_Gray";
+    const optG = { maxZoom: 19, maxNativeZoom: 16, attribution: "© Esri, HERE, Garmin, © OpenStreetMap" };
+    bases["Mapa"] = L.layerGroup([
+      L.tileLayer(esri(tonoG + "_Base"), optG),
+      L.tileLayer(esri(tonoG + "_Reference"), optG),
+    ]);
     bases["Satélite"] = L.tileLayer(
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       { maxZoom: 19, attribution: "Imágenes © Esri, Maxar, Earthstar Geographics" });
@@ -1324,7 +1362,7 @@
       (raiz.dataset.theme !== "light" && window.matchMedia &&
        window.matchMedia("(prefers-color-scheme: dark)").matches);
     const bases = basesMapa(oscuro);
-    (bases[baseElegida] || bases["Calles"] || bases["Mapa"]).addTo(m);
+    baseInicial(bases, oscuro).addTo(m);
     m.on("baselayerchange", e => { baseElegida = e.name; });
     L.control.scale({ imperial: false, position: "bottomleft" }).addTo(m);
 
@@ -1827,7 +1865,7 @@
       (raiz.dataset.theme !== "light" && window.matchMedia &&
        window.matchMedia("(prefers-color-scheme: dark)").matches);
     const bases = basesMapa(oscuro);
-    (bases[baseElegida] || bases["Calles"] || bases["Mapa"]).addTo(m);
+    baseInicial(bases, oscuro).addTo(m);
     m.on("baselayerchange", e => { baseElegida = e.name; });
     L.control.scale({ imperial: false, position: "bottomleft" }).addTo(m);
     L.control.layers(bases, null, { collapsed: true }).addTo(m);
