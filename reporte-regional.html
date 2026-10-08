@@ -20,7 +20,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Reporte Regional — Energías Futuro</title>
-<meta name="description" content="Elige una región o una comuna y arma su dossier completo: parque enchufable, red de carga y brecha al 2035, energía y almacenamiento, resiliencia frente a...">
+<meta name="description" content="Dossier de una región o comuna: parque enchufable, red de carga y brecha al 2035, energía, resiliencia ante cortes, Censo 2024 y vulnerabilidad energética.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=261008b">
@@ -40,12 +40,12 @@ details.metodo-card[open] > summary::before, details.seccion[open] > summary::be
 .metodo-card code, .seccion code { background: var(--plane); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
 details.seccion { margin: 12px 0; }
 details.seccion > summary { padding: 4px 0; }
-.chip-terr { display:inline-block; margin:3px 6px 3px 0; padding:5px 11px; border:0; border-radius:16px; background:var(--s1); color:#fff; font-size:13px; cursor:pointer; }
+.chip-terr { display:inline-block; margin:3px 6px 3px 0; padding:5px 11px; border:0; border-radius:16px; background:var(--accion); color:var(--accion-texto); font-size:13px; cursor:pointer; }
 .chip-terr:hover { filter:brightness(1.08); }
 #dossier-estado { padding:16px; text-align:center; color:var(--ink-2); }
 #dossier-titulo { margin: 2px 0 2px; }
 #dossier-sub { color: var(--ink-2); font-size: 14px; margin: 0 0 12px; }
-#dossier-sub a { color: var(--s1); }
+#dossier-sub a { color: var(--accion); }
 .grupo-tit { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); margin: 16px 0 6px; }
 .grupo-tit:first-child { margin-top: 4px; }
 /* capa ejecutiva: veredicto + semaforo + posicion */
@@ -53,9 +53,9 @@ details.seccion > summary { padding: 4px 0; }
 .sem-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 2px; }
 .sem-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 16px; background: var(--plane); font-size: 12.5px; font-weight: 600; color: var(--ink-1); }
 .sem-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
-.pos-chip { display: inline-block; padding: 4px 10px; border-radius: 14px; background: var(--s1); color: #fff; font-size: 12.5px; font-weight: 600; margin: 2px 6px 2px 0; }
-.pos-chip.mal { background: var(--critical); }
-.pos-chip.ok { background: var(--good); }
+.pos-chip { display: inline-block; padding: 4px 10px; border-radius: 14px; background: var(--accion); color: var(--accion-texto); font-size: 12.5px; font-weight: 600; margin: 2px 6px 2px 0; }
+.pos-chip.mal { background: var(--critical); color: #fff; }
+.pos-chip.ok { background: var(--good); color: #fff; }
 #btn-imprimir { align-self: flex-start; white-space: nowrap; }
 /* one-pager imprimible: deja solo el dossier del territorio */
 @media print {
@@ -194,7 +194,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="kpis" id="kpis-socio" style="margin-top:10px"></div>
       <p class="nota" id="nota-socio" style="margin:8px 0 0"></p>
       <details style="margin-top:10px">
-        <summary style="cursor:pointer; font-size:14px; color:var(--s1)">Ver más indicadores del Censo</summary>
+        <summary style="cursor:pointer; font-size:14px; color:var(--accion)">Ver más indicadores del Censo</summary>
         <div id="t-censo-mas" style="margin-top:8px"></div>
       </details>
     </details>
