@@ -20,7 +20,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Mapas interactivos con capas — Energías Futuro</title>
-<meta name="description" content="Un solo mapa para cruzar la red de carga, transmisión, generación renovable, almacenamiento, distribución eléctrica y datos del Censo. Explora cruces...">
+<meta name="description" content="Un solo mapa para cruzar la red de carga, transmisión, generación renovable, almacenamiento, distribución eléctrica y datos del Censo.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=261007a">
@@ -77,6 +77,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div id="ley-comunas-wrap" class="nota" style="display:none;margin:6px 0 2px;align-items:center;gap:8px;flex-wrap:wrap">
       <span id="ley-comunas-tit" style="font-weight:600"></span><span id="ley-comunas"></span>
+    </div>
+    <div id="ley-reg-wrap" class="nota" style="display:none;margin:6px 0 2px;align-items:center;gap:8px;flex-wrap:wrap">
+      <span style="font-weight:600">Regiones:</span><span id="ley-reg"></span>
     </div>
     <p class="nota" id="ley-encoding"></p>
     <p class="nota pw-nota-precision">Los puntos del mapa pueden estar corridos por tipo de capa y año de actualización.</p>
@@ -164,6 +167,7 @@ const CAPAS = [
   { k: "mt",     nombre: "Red MT (media tensión)",  color: "#7c3aed",    on: false, g: "Distribución (CGE)" },
   { k: "bt",     nombre: "Red BT (baja tensión)",   color: "#ec4899",    on: false, g: "Distribución (CGE)" },
   { k: "concesion", nombre: "Área de concesión (SEC)", color: "--s1",    on: false, g: "Distribución (CGE)" },
+  { k: "regiones", nombre: "Regiones", color: "#9467bd", on: false, g: "Territorio" },
 ]; // El telon comunal (Censo/SEC) ya no es un chip: se enciende/apaga con el selector
 // "Telon de fondo por comuna" (opcion "— (apagado)" = off).
 const on = k => (CAPAS.find(c => c.k === k) || {}).on; // cruces sugeridos: cada uno arma una combinacion para responder una pregunta
@@ -211,6 +215,23 @@ function popupPlanta(p) {
 // [CONCESION] area de concesion por distribuidora (SEC capa 0). Color estable por empresa (hash->HSL); // carga DIFERIDA (~1 MB) la primera vez que se enciende el chip.
 function colorConcesion(emp) {
   let h = 0; const s = emp || ""; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360; return `hsl(${h}, 60%, 50%)`; }
+// [REGIONES] las 16 regiones como fondo categorico. La region de cada comuna viene en
+// geo_comunas.js (properties.region / rcut, del kit territorio_chile; CAMBIOS 1226). Los colores
+// alternan tono en orden norte-sur para que dos regiones vecinas no se confundan. Si llega una
+// copia cacheada del archivo anterior al 2026-10-08 (sin rcut), se cae a los 2 primeros digitos del CUT.
+const REG_ORDEN = ["15","01","02","03","04","05","13","06","07","16","08","09","14","10","11","12"];
+const REG_PAL = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#17becf",
+                 "#bcbd22","#7f7f7f","#aec7e8","#ffbb78","#98df8a","#ff9896","#c5b0d5","#c49c94"];
+const REG_COL = Object.fromEntries(REG_ORDEN.map((r, i) => [r, REG_PAL[i]]));
+const rcutDe = p => p.rcut || String(p.cut || "").slice(0, 2);
+const nomComuna = {}; (CEN.comunas || []).forEach(c => { nomComuna[String(c.cut).padStart(5, "0")] = c.comuna; });
+function nombresRegion() {  // rcut -> nombre, desde el propio geo_comunas
+  const G = window.PW_DATA.geo_comunas, nom = {}; if (G) G.features.forEach(f => { const p = f.properties; if (p.region) nom[rcutDe(p)] = p.region; }); return nom; }
+function pintarLeyendaRegiones() {
+  const wrap = document.getElementById("ley-reg-wrap"); const G = window.PW_DATA.geo_comunas;
+  if (!on("regiones") || !G) { wrap.style.display = "none"; return; }
+  const nom = nombresRegion(); const vis = REG_ORDEN.filter(r => !filtroTerr.rcut || r === filtroTerr.rcut);
+  PW.leyendaMapa("ley-reg", vis.map(r => [nom[r] || ("Región " + r), REG_COL[r]])); wrap.style.display = "flex"; }
 let concesionCargando = false; function asegurarConcesiones() {
   if (!on("concesion") || window.PW_DATA.geo_concesiones || concesionCargando) return; concesionCargando = true; const sc = document.createElement("script"); sc.src = "data/geo_concesiones.js?v=" + _pwv; sc.onload = () => { concesionCargando = false; render(false); }; document.head.appendChild(sc); }
 
@@ -277,7 +298,16 @@ function render(fit) {
     capas, lineas, comunas, sinSelector: true, sinCluster: true, alto: 580,
     centro: prev && !fit ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3],
     zoom: prev && !fit ? prev.z : 5,
-  }); if (mapa && fit && (filtroTerr.rcut || filtroTerr.com)) {
+  }); if (mapa && on("regiones") && window.PW_DATA.geo_comunas) { const nomR = nombresRegion();
+    const feats = window.PW_DATA.geo_comunas.features.filter(f => !filtroTerr.rcut || rcutDe(f.properties) === filtroTerr.rcut);
+    L.geoJSON(fc(feats), { pane: "pw-comunas", interactive: !ind,
+      style: f => { const col = REG_COL[rcutDe(f.properties)] || "#999999"; return ind
+        ? { color: col, weight: 1.6, opacity: 0.95, fill: false }
+        : { color: "#ffffff", weight: 0.6, opacity: 0.9, fillColor: col, fillOpacity: 0.5 }; },
+      onEachFeature: (f, c) => { const p = f.properties; c.bindTooltip(
+        PW.esc(nomComuna[p.cut] || p.comuna) + " · " + PW.esc(nomR[rcutDe(p)] || ("Región " + rcutDe(p))), { sticky: true }); },
+    }).addTo(mapa); }
+  if (mapa && fit && (filtroTerr.rcut || filtroTerr.com)) {
     // [ZOOM AL TERRITORIO] encuadrar SIEMPRE la region/comuna elegida usando sus poligonos
     // (geo_comunas), tengan o no capas activas. maxZoom evita sobre-zoom en comunas chicas.
     let b = null; const cutSel = filtroTerr.com ? cutDeComuna[norm(filtroTerr.com)] : null; if (cutSel) b = PW.boundsComunas([cutSel]); else if (filtroTerr.rcut) {
@@ -318,7 +348,7 @@ function pintarPanel() {
     g.items.push(c); }); el.innerHTML = grupos.map(g =>
     `<div class="capa-grupo"><span class="capa-grupo-tit">${g.g}</span>` +
     `<div class="capa-grupo-chips">${g.items.map(chip).join("")}</div></div>`).join(""); el.querySelectorAll(".capa-chip").forEach(ch => ch.addEventListener("click", () => {
-    const c = CAPAS.find(x => x.k === ch.dataset.k); c.on = !c.on; render(false); if (c.k === "postes") sincronizarPostes(); if (c.k === "mt" || c.k === "bt") sincronizarTramos(c.k); if (c.k === "concesion") asegurarConcesiones(); })); }
+    const c = CAPAS.find(x => x.k === ch.dataset.k); c.on = !c.on; render(false); if (c.k === "postes") sincronizarPostes(); if (c.k === "mt" || c.k === "bt") sincronizarTramos(c.k); if (c.k === "concesion") asegurarConcesiones(); if (c.k === "regiones" && c.on) PW.cargarGeoComunas().then(() => render(false)); })); }
 
 // [GUIA] regiones que SI tienen dato para una capa de distribucion (desde el indice, por conteo real)
 function regionesCon(key) {
@@ -384,11 +414,13 @@ function pintarContador(ind) {
   const transVis = on("lin_a") || on("lin_m") || on("lin_b"); const leyTWrap = document.getElementById("ley-transmision-wrap"); if (transVis) {
     PW.leyendaTransmision("ley-transmision", { nuevas: totNew > 0 }); leyTWrap.style.display = "flex"; } else {
     leyTWrap.style.display = "none"; }
-  pintarLeyendaComunas(ind);
+  pintarLeyendaComunas(ind); pintarLeyendaRegiones();
   document.getElementById("ley-encoding").innerHTML =
     "Tamaño del punto = magnitud: subestaciones por MVA, plantas solares por MW, BESS por MWh. " +
     (transVis && totNew ? "Líneas nuevas (KMZ 2019): " + PW.fmt(totNew) + " (complemento de voltaje + ausentes del troncal IDE). " : "") +
     (on("mt") || on("bt") ? "Red de distribución (GIS de la SEC, todas las distribuidoras): MT (media tensión) en violeta, BT (baja tensión) en rosado; por comuna (MT también por región). " : "") +
+    (on("regiones") ? (ind ? "Regiones: con el telón encendido se dibuja solo el borde de cada comuna en el color de su región. "
+      : "Regiones: cada color es una de las 16 regiones; el borde blanco separa comunas. ") : "") +
     (on("postes") ? "Postes de distribución: cobertura PARCIAL, no nacional (" + PW.fmt(Object.values(POSTES_IDX).filter(o => o.n > 0).length) + " de 346 comunas) — la SEC no publica postes; vienen de registros propios de cada distribuidora. " : "") +
     (!ind ? "Telón de fondo comunal apagado (elígelo en el selector para colorear las comunas)."
       : FUENTE_IND[ind] === "dist"
