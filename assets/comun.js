@@ -286,7 +286,7 @@
       }).join("");
       nav += `<div class="nav-grupo"><a class="${contiene ? "activo" : ""}" tabindex="0">${grupo}</a><div class="submenu">${sub}</div></div>`;
     });
-    h.innerHTML = `<a href="index.html" class="marca"><img src="assets/lockup-energias-futuro.svg" alt="Energías Futuro" width="123" height="36"></a>` +
+    h.innerHTML = `<a href="index.html" class="marca"><img src="assets/lockup-energias-futuro.svg" alt="Energías Futuro" width="150" height="44"></a>` +
       `<button type="button" class="nav-toggle" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>` +
       `<nav>${nav}</nav>` +
       `<button type="button" class="tema-toggle"></button>`;

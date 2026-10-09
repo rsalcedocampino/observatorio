@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Qué comunas combinan cortes frecuentes, energía cara y población vulnerable: un índice de 0 a 100 sobre las 346 comunas de Chile.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261009a">
+<link rel="stylesheet" href="assets/estilo.css?v=261009b">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
@@ -75,7 +75,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </main>
 <script>document.write('<script src="data/c_vulnerab.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261009a"></script>
+<script src="assets/comun.js?v=261009b"></script>
 <script>
 PW.montarNav("vulnerabilidad.html"); const D = PW_DATA.c_vulnerab; { const ns = document.getElementById("nota-sin-cortes"); if (ns && D.n_sin_cortes) ns.textContent = " Las " + D.n_sin_cortes + " comunas sin ningún registro de cortes en la SEC llevan «sin dato» en el pilar de cortes (no cero) y su índice se calcula con precio y social reponderados (25/60 y 35/60)."; } // Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
 // region) y hace foco/zoom a la seleccion (comuna: zoom a la comuna dentro de su region).
