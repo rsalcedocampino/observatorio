@@ -20,7 +20,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Camiones cero y baja emisión — Energías Futuro</title>
-<meta name="description" content="Cuántos camiones eléctricos y a gas natural licuado (GNL) circulan en Chile, en qué tramos de peso, y si la carga rápida pública les sirve.">
+<meta name="description" content="Camiones eléctricos y a GNL en Chile: cuántos son, su parte del mercado y si la carga rápida les sirve. Más los vehículos comerciales eléctricos.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=261009a">
@@ -36,8 +36,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <main>
   <h1>Camiones cero y baja emisión</h1>
   <p class="sub">Cuántos camiones eléctricos y a gas natural licuado (GNL) circulan en Chile, en
-  qué tramos de peso, y si la carga rápida pública les sirve. El transporte de carga pesada es el
-  eslabón más difícil de electrificar, y aquí es donde se ve por qué.</p>
+  qué tramos de peso, qué parte del mercado representan y si la carga rápida pública les sirve.
+  Aparte van los vehículos comerciales eléctricos: furgones y camiones chicos. El transporte de
+  carga pesada es el eslabón más difícil de electrificar, y aquí es donde se ve por qué.</p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
@@ -57,11 +58,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
+  <div class="tarjeta" id="card-penetracion" hidden>
+    <h2 style="margin-top:0">¿Cuánto pesan en el mercado?</h2>
+    <p id="txt-penetracion"></p>
+    <div id="g-penetracion"></div>
+    <p class="nota" id="nota-penetracion"></p>
+  </div>
+
   <div class="tarjeta">
     <h2 style="margin-top:0">El eslabón pesado</h2>
     <p id="hallazgo"></p>
     <div id="g-ventas"></div>
     <p class="nota">Serie mensual de <b>ventas</b> de camiones eléctricos (ANAC), acumulada por año.</p>
+  </div>
+
+  <div class="tarjeta" id="card-comercial" hidden>
+    <h2 style="margin-top:0">Vehículos comerciales eléctricos: furgones y camiones chicos</h2>
+    <p class="nota">Es un segmento aparte, más liviano que los camiones de esta página: sus cifras
+    <b>no se suman</b> a las de arriba.</p>
+    <div class="kpis" id="kpi-comercial"></div>
+    <div class="fila2">
+      <div>
+        <h3 style="margin-top:0">Inscripciones por año</h3>
+        <div id="g-comercial"></div>
+      </div>
+      <div>
+        <h3 style="margin-top:0">Participación en su mercado</h3>
+        <div id="g-comercial-pct"></div>
+      </div>
+    </div>
+    <p class="nota" id="nota-comercial"></p>
   </div>
 
   <div class="tarjeta">
@@ -124,6 +150,49 @@ const porAnioVentas = {}; (D.serie_mensual || []).forEach(m => {
   document.getElementById(id).innerHTML = (arr || []).map(x => `<li>${PW.esc(x)}</li>`).join(""); }; lista("lectura", D.cruce_lectura); lista("caveats", D.caveats); document.getElementById("fuentes").textContent =
   "Fuentes: " + Object.values(D.fuentes || {}).join(" | ") +
   (RED.fuente ? " | Red de carga: " + RED.fuente : ""); document.getElementById("fuente").textContent =
-  "Elaboración propia con datos de ANAC (ventas e inscripciones vía Observatorio Logístico) y de la red de carga pública en vivo."; </script>
+  "Elaboración propia con datos de ANAC (ventas e inscripciones vía Observatorio Logístico) y de la red de carga pública en vivo.";
+
+// ---------- Participacion en el mercado: camiones y vehiculos comerciales ----------
+// El año en curso es PARCIAL: el dato de origen corta el mercado total en el ultimo mes que tienen
+// las inscripciones electricas, para no dividir seis meses por siete. Aqui se rotula con "*" y se
+// dice hasta que mes llega; el corte no se recalcula en la pagina.
+const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const hastaIns = String((D.cobertura || {}).inscripciones_hasta || "");   // "2026-06-01"
+const anioParcial = /^\d{4}-(0[1-9]|1[01])/.test(hastaIns) ? hastaIns.slice(0, 4) : null;
+const mesParcial = anioParcial ? MESES[+hastaIns.slice(5, 7) - 1] : null;
+const rot = a => String(a) + (String(a) === anioParcial ? "*" : "");
+// PW.fmt redondea a 1 decimal y aqui las cifras son chicas: 2,97% se leia "3%" y 0,72% "0,7%"
+const pct1 = v => v == null ? "—" : Number(v).toLocaleString("es-CL", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
+const notaParcial = anioParcial ? " * " + anioParcial + " cubre de enero a " + mesParcial + ", en las inscripciones y en el mercado total." : "";
+
+(function () {   // camiones: electricos + GNL sobre Camion + Tractocamion
+  const filas = (D.por_anio || []).filter(x => x.mercado_total_inscripciones && x.penetracion_cero_baja_pct != null); if (!filas.length) return; document.getElementById("card-penetracion").hidden = false; const completos = filas.filter(x => String(x.anio) !== anioParcial); const u = (completos.length ? completos : filas).slice(-1)[0]; document.getElementById("txt-penetracion").innerHTML =
+    "En " + PW.esc(u.anio) + ", <b>" + pct1(u.penetracion_cero_baja_pct) + "</b> de los camiones inscritos fue eléctrico o a GNL: " +
+    PW.fmt((u.electrico_inscripciones || 0) + (u.gnl_inscripciones || 0)) + " de " + PW.fmt(u.mercado_total_inscripciones) +
+    ". Solo eléctricos: " + pct1(u.penetracion_electrico_pct) + "."; PW.lineas("g-penetracion", {
+    labels: filas.map(x => rot(x.anio)),
+    series: [
+      { nombre: "Eléctricos + GNL", valores: filas.map(x => x.penetracion_cero_baja_pct) },
+      { nombre: "Solo eléctricos", valores: filas.map(x => x.penetracion_electrico_pct) },
+    ],
+    alto: 240, fmtY: v => PW.fmt(v, 1) + "%", fmtV: pct1,
+  }); document.getElementById("nota-penetracion").textContent =
+    "Porcentaje de las inscripciones de cada año. El mercado total son los camiones y tractocamiones de todas las energías; no incluye chasis cabina ni carros bomba." + notaParcial; })();
+
+(function () {   // vehiculo comercial electrico: segmento aparte, con su propio denominador
+  const C = D.comercial; const filas = ((C || {}).por_anio || []); if (!filas.length) return; document.getElementById("card-comercial").hidden = false; const conPct = filas.filter(x => x.penetracion_electrico_pct != null); const completos = conPct.filter(x => String(x.anio) !== anioParcial); const u = (completos.length ? completos : conPct).slice(-1)[0]; const p = conPct.find(x => String(x.anio) === anioParcial); document.getElementById("kpi-comercial").innerHTML = [
+    [PW.fmt(C.total || 0), "inscritos en total", "acumulado desde " + PW.esc(filas[0].anio)],
+    u ? [PW.fmt(u.electrico_inscripciones), "inscritos en " + PW.esc(u.anio), pct1(u.penetracion_electrico_pct) + " de su mercado"] : null,
+    p ? [pct1(p.penetracion_electrico_pct), "de su mercado en " + PW.esc(p.anio) + "*", PW.fmt(p.electrico_inscripciones) + " de " + PW.fmt(p.mercado_total_inscripciones) + ", enero a " + mesParcial] : null,
+  ].filter(Boolean).map(kpi).join(""); PW.columnas("g-comercial", {
+    labels: filas.map(x => rot(x.anio)), valores: filas.map(x => x.electrico_inscripciones), alto: 220,
+    fmtV: v => PW.fmt(v) + " vehículos", color: PW.color("--s1"),
+  }); PW.lineas("g-comercial-pct", {
+    labels: conPct.map(x => rot(x.anio)),
+    series: [{ nombre: "Eléctricos sobre el total de vehículos comerciales", valores: conPct.map(x => x.penetracion_electrico_pct) }],
+    alto: 220, fmtY: v => PW.fmt(v, 1) + "%", fmtV: pct1,
+  }); document.getElementById("nota-comercial").textContent =
+    "Inscripciones de vehículos comerciales eléctricos. El porcentaje se calcula sobre todos los vehículos comerciales inscritos ese año, de cualquier energía." +
+    notaParcial + (D.fuentes && D.fuentes.vehiculo_comercial ? " Fuente: " + D.fuentes.vehiculo_comercial : ""); })(); </script>
 </body>
 </html>
