@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Dossier de una región o comuna: parque enchufable, red de carga y brecha al 2035, energía, resiliencia ante cortes, Censo 2024 y vulnerabilidad energética.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261008d">
+<link rel="stylesheet" href="assets/estilo.css?v=261009a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -264,7 +264,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/tracker.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/sitios.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261008d"></script>
+<script src="assets/comun.js?v=261009a"></script>
 <script>
 PW.montarNav("reporte-regional.html"); const D = PW_DATA.tracker; // Horizonte y criterio unicos para todo "necesarios/faltan 2035" (decision del usuario,
 // 2026-09-23): 1 punto de carga oficial por cada 10 EV. El control "Escenario" (abajo) queda
@@ -273,6 +273,16 @@ const ANIO_HOY = new Date().getFullYear(); const ANIOS_A_2035 = Math.max(1, 2035
 const COM_BY_CUT = {}; PW_DATA.sitios.comunas.forEach(c => { COM_BY_CUT[String(c.cut)] = c; }); const CUT_BY_NAME = {}; PW_DATA.sitios.comunas.forEach(c => { CUT_BY_NAME[String(c.cod_region).padStart(2, "0") + "|" + norm(c.comuna)] = String(c.cut); }); function kpiHTML(rows) {
   return rows.filter(Boolean).map(d =>
     `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`).join(""); }
+
+// Comunas de FLOTAS (hipotesis no verificada; hallazgo H1 de la entrada 1306, opcion (a) elegida por el usuario el 2026-10-09): el INE cuenta el parque electrico por
+// comuna de INSCRIPCION, y hay comunas con mas de 20 EV por 1.000 habitantes (y 500 o mas habitantes) cuyo parque probablemente son flotas de empresas inscritas ahi y no uso
+// residencial. Se marcan por los DATOS (no hay lista fija) y no se esconde ninguna cifra.
+const FLOTA_EV1000 = 20, FLOTA_POB_MIN = 500, FLOTA_REG_PCT = 15; const FLOTA_COM = {}, FLOTA_REG = {}; let FLOTA_NAC = null; (function () {
+  const cs = PW_DATA.sitios.comunas; const ev = cs.reduce((s, c) => s + (c.ev_parque || 0), 0), pob = cs.reduce((s, c) => s + (c.poblacion || 0), 0); FLOTA_NAC = pob ? 1000 * ev / pob : null; cs.forEach(c => {
+    if (c.ev_parque != null && c.poblacion >= FLOTA_POB_MIN && 1000 * c.ev_parque / c.poblacion > FLOTA_EV1000) {
+      FLOTA_COM[String(c.cut)] = { ev1000: 1000 * c.ev_parque / c.poblacion, ev: c.ev_parque }; const rc = String(c.cod_region).padStart(2, "0"); const g = FLOTA_REG[rc] || (FLOTA_REG[rc] = { ev: 0, comunas: [] }); g.ev += c.ev_parque; g.comunas.push(c.comuna); } }); })();
+function flotaPctReg(r) { const g = FLOTA_REG[r.rcut]; return g && r.parque_ev ? Math.round(100 * g.ev / r.parque_ev) : 0; }
+const TXT_FLOTAS = "Comunas de flotas: más de " + FLOTA_EV1000 + " EV por 1.000 habitantes y " + FLOTA_POB_MIN + " o más habitantes. El INE cuenta los vehículos por comuna de inscripción y es probable que ahí estén inscritas flotas de empresas y no uso residencial (hipótesis no verificada).";
 
 // grupos de indicadores del Censo para "ver más"
 const CENSO_GRUPOS = [
@@ -315,7 +325,7 @@ let REG_ESTADO = null, tabReg = null, tabEnergia = null; (function poblarFiltroR
   const regs = D.regiones; if (!regs || !regs.length) return; const parqueNacHoy = regs.reduce((s, r) => s + r.parque_ev, 0); const aniosFalt = ANIOS_A_2035; const regSel = document.getElementById("filtro-reg-tabla").value; const filasTodas = regs.map(r => {
     const share = r.parque_ev / parqueNacHoy; const parque2035 = Math.round(p2035Nac * share); const necesarios = Math.round(parque2035 / RATIO_OFICIAL); const necesarios_esc = Math.round(parque2035 / ratio); const cargPub = r.cargadores_pub || 0; // brecha sobre cargadores PUBLICOS (mismo universo que comuna)
     const faltan = Math.max(0, necesarios - cargPub); const ritmoReq = Math.round(faltan / Math.max(aniosFalt, 1)); const evPorCarg = cargPub ? +(r.parque_ev / cargPub).toFixed(1) : null; return {
-      rcut: r.rcut, region: r.region, parque_ev: r.parque_ev, parque_2035: parque2035,
+      rcut: r.rcut, region: r.region, parque_ev: r.parque_ev, flotas_pct: flotaPctReg(r), parque_2035: parque2035,
       ev_1000hab: r.poblacion ? +(1000 * r.parque_ev / r.poblacion).toFixed(2) : null,
       cargadores_hoy: r.cargadores_hoy, cargadores_pub: r.cargadores_pub, ev_por_carg: evPorCarg,
       necesarios_2035: necesarios, necesarios_esc, faltan, ritmo_actual: r.instalados_12m, ritmo_req: ritmoReq,
@@ -325,7 +335,7 @@ let REG_ESTADO = null, tabReg = null, tabEnergia = null; (function poblarFiltroR
     [enRitmo + " de " + filas.length, (filas.length === 1 ? "region" : "regiones") + " al ritmo requerido", "últimos 12 meses SEC"],
     [filas[0] ? filas[0].region : "—", regSel ? "region seleccionada" : "región con más parque EV", filas[0] ? PW.fmt(filas[0].parque_ev) + " vehículos" : ""],
   ]); const th = (t, f) => `<span title="${f}">${t}</span>`; const cols = [
-    { k: "region", titulo: "Región" },
+    { k: "region", titulo: "Región", fmt: (v, f) => PW.esc(v) + (f.flotas_pct >= FLOTA_REG_PCT ? ` <span class="pill" title="${PW.esc(TXT_FLOTAS)}">flotas ${f.flotas_pct}%</span>` : "") },
     { k: "parque_ev", titulo: th("Parque EV hoy", "Vehiculos electricos registrados (INE, permisos 2024; puede incluir hibridos)"), num: true, fmt: v => PW.fmt(v) },
     { k: "ev_1000hab", titulo: th("EV / 1.000 hab", "Parque EV / población regional (INE + Censo 2024)"), num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
     { k: "parque_2035", titulo: th("Parque 2035 proy.", "Proyección nacional repartida por participación actual"), num: true, fmt: v => PW.fmt(v) },
@@ -339,10 +349,10 @@ let REG_ESTADO = null, tabReg = null, tabEnergia = null; (function poblarFiltroR
     { k: "estado", titulo: "Estado", fmt: v => `<span class="${v === "En ritmo" ? "estado-ok" : "estado-mal"}">${v}</span>` },
   ]; if (tabReg) tabReg.actualizar(filas); else tabReg = PW.tabla("t-regiones", cols, filas, { orden: "faltan" }); document.getElementById("nota-reg").textContent =
     "Pasa el mouse por cada titulo de columna para ver su fuente. Parque " + (D.anio_parque || "") +
-    " (INE). \"Necesarios/Faltan/Ritmo\" usan el criterio oficial (10 EV/cargador); la columna \"Escenario\" (" + ratio + " EV/cargador) se edita arriba y es solo de referencia."; PW.barras("g-faltantes", {
+    " (INE). \"Necesarios/Faltan/Ritmo\" usan el criterio oficial (10 EV/cargador); la columna \"Escenario\" (" + ratio + " EV/cargador) se edita arriba y es solo de referencia. «flotas N%» = parte del parque de la región inscrita en comunas de flotas (se muestra desde " + FLOTA_REG_PCT + "%). " + TXT_FLOTAS + (FLOTA_NAC != null ? " Promedio nacional: " + PW.fmt(FLOTA_NAC, 1) + " EV por 1.000 habitantes." : ""); PW.barras("g-faltantes", {
     items: filas.filter(f => f.faltan > 0).sort((a, b) => b.faltan - a.faltan).map(f => ({
       nombre: f.region, valor: f.faltan,
-      extra: "Hoy: " + PW.fmt(f.cargadores_pub) + " públicos — necesarios 2035: " + PW.fmt(f.necesarios_2035),
+      extra: "Hoy: " + PW.fmt(f.cargadores_pub) + " públicos — necesarios 2035: " + PW.fmt(f.necesarios_2035) + (f.flotas_pct >= FLOTA_REG_PCT ? " — " + f.flotas_pct + "% del parque en comunas de flotas" : ""),
       color: f.estado === "En ritmo" ? PW.color("--s3") : PW.color("--s2"),
     })), fmtV: v => PW.fmt(v),
   }); refrescarEnergiaReg(filasTodas, regSel); REG_ESTADO = { filas: filasTodas, p2035Nac, ratio, parqueNacHoy }; renderResumenNacional(); }
@@ -368,7 +378,7 @@ function refrescarEnergiaReg(filasTodas, regSel) {
     { k: "demanda_2035", titulo: th("Demanda EV 2035 (GWh)", "Parque 2035 x km/año / km/kWh"), num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
   ]; if (tabEnergia) tabEnergia.actualizar(filas); else tabEnergia = PW.tabla("t-energia-reg", cols, filas, { orden: "demanda_2035" }); document.getElementById("nota-energia-reg").textContent =
     "Solar y almacenamiento: Coordinador + ACERA (operando vs pipeline). Gen. distribuida: net billing SEC. Demanda EV 2035 = parque proyectado x " +
-    PW.fmt(km) + " km/año / " + rend + " km/kWh."; }
+    PW.fmt(km) + " km/año / " + PW.fmt(rend, 1) + " km/kWh."; }
 
 function renderResumenNacional() {
   if (!REG_ESTADO) return; const filas = REG_ESTADO.filas; const VT = D.ventas_tecnologia || { buckets: {} }; const sumB = k => (VT.buckets && VT.buckets[k]) ? VT.buckets[k].reduce((s, v) => s + (v || 0), 0) : 0; const rv = D.red_viva || {}; const pob = D.regiones.reduce((s, r) => s + (r.poblacion || 0), 0); const comunas = PW_DATA.sitios.comunas; const comCon = comunas.filter(c => c.cargadores > 0).length; const comSin = comunas.filter(c => !c.cargadores).length; const top3 = comunas.filter(c => c.parque_total != null).sort((a, b) => b.parque_total - a.parque_total).slice(0, 3); const ve = D.ventas_enchufables || []; const ult = ve.length ? ve[ve.length - 1].ym : ""; const mesLegible = ult ? (MESES[+ult.slice(5, 7) - 1] + " " + ult.slice(0, 4)) : ""; const anioAct = ult ? ult.slice(0, 4) : ""; const ytd = ve.filter(x => x.ym >= anioAct + "-01").reduce((s, x) => s + (x.unidades || 0), 0); const ultUnid = ve.length ? ve[ve.length - 1].unidades : 0; const par = D.participacion || []; const pu = par.length ? par[par.length - 1] : {}; const nuevos12 = D.regiones.reduce((s, r) => s + (r.instalados_12m || 0), 0); const parqueEV = D.regiones.reduce((s, r) => s + r.parque_ev, 0); const cargHoy = D.regiones.reduce((s, r) => s + (r.cargadores_pub || 0), 0); const evCarg = cargHoy ? +(parqueEV / cargHoy).toFixed(1) : null; const habSin = comunas.filter(c => !c.cargadores).reduce((s, c) => s + (c.poblacion || 0), 0); const rm = D.regiones.find(r => r.rcut === "13"); const pctRM = (rm && parqueEV) ? +(100 * rm.parque_ev / parqueEV).toFixed(1) : null; document.getElementById("kpi-red").innerHTML = kpiHTML([
@@ -398,7 +408,8 @@ function renderResumenNacional() {
     "Red de carga: red viva (actualiza cada 15 min). Ventas EV: hasta " + mesLegible + ". " +
     "Población: Censo 2024. Parque de vehículos por comuna: INE, permisos de circulación " + (D.anio_parque || "") + "."; const topReg = filas.slice().sort((a, b) => b.faltan - a.faltan).slice(0, 5); document.getElementById("mini-ranking").innerHTML =
     `<p class="nota" style="margin:10px 0 6px">Regiones con mayor brecha de carga al 2035 (toca para ver su dossier):</p>` +
-    topReg.map(f => `<button class="chip-terr" data-rcut="${f.rcut}">${PW.esc(f.region)} · faltan ${PW.fmt(f.faltan)}</button>`).join(" "); }
+    topReg.map(f => `<button class="chip-terr" data-rcut="${f.rcut}">${PW.esc(f.region)} · faltan ${PW.fmt(f.faltan)}${f.flotas_pct >= FLOTA_REG_PCT ? " †" : ""}</button>`).join(" ") +
+    (topReg.some(f => f.flotas_pct >= FLOTA_REG_PCT) ? `<p class="nota" style="margin:8px 0 0">† El ${FLOTA_REG_PCT}% o más del parque de la región está inscrito en comunas de flotas (ver el ranking completo).</p>` : ""); }
 document.getElementById("mini-ranking").addEventListener("click", e => {
   const b = e.target.closest(".chip-terr"); if (b) seleccionar(b.dataset.rcut, null); }); function refrescarTodo() {
   const ratio = +document.getElementById("ratio-ev").value || 20; const p2035Nac = parqueProyectado2035(); if (p2035Nac == null) return; refrescarRegiones(p2035Nac, ratio); }
@@ -423,7 +434,7 @@ function construirIndices() {
   if (indicesListos) return; const C = PW_DATA.censo || {}, V = PW_DATA.c_vulnerab || {}, RI = PW_DATA.riesgo || {},
     RE = PW_DATA.c_redelec || {}, VP = PW_DATA.c_valorparque || {}, CE = PW_DATA.c_censoelec || {}, CO = PW_DATA.costo || {},
     IN = PW_DATA.infraestructura || {}, CC = PW_DATA.c_concentracion || {}, BC = PW_DATA.c_besscortes || {}, PE = PW_DATA.permisos || {}; CENSO_COM = byKey(C.comunas, c => String(c.cut)); CENSO_REG = byKey(C.regiones, r => String(r.rcut)); VULN_COM = byKey(V.comunas, c => String(c.cut)); VULN_REG = {}; (V.comunas || []).forEach(c => {
-    const rc = String(c.cut).padStart(5, "0").slice(0, 2); const g = VULN_REG[rc] || (VULN_REG[rc] = { comunas: [], pob: 0, suma: 0 }); g.comunas.push(c); g.pob += (c.poblacion || 0); g.suma += c.indice * (c.poblacion || 0); }); Object.keys(VULN_REG).forEach(rc => {
+    const rc = String(c.cut).padStart(5, "0").slice(0, 2); const g = VULN_REG[rc] || (VULN_REG[rc] = { comunas: [], pob: 0, suma: 0 }); g.comunas.push(c); if (c.sin_cortes) g.sinCortes = (g.sinCortes || 0) + 1; g.pob += (c.poblacion || 0); g.suma += c.indice * (c.poblacion || 0); }); Object.keys(VULN_REG).forEach(rc => {
     const g = VULN_REG[rc]; g.indice = g.pob ? +(g.suma / g.pob).toFixed(1) : null; g.altas = g.comunas.filter(c => c.indice >= 60).sort((a, b) => b.indice - a.indice); }); RIESGO_COM = byKey(RI.ranking, c => String(c.cut)); RIESGO_REG = byKey(RI.regiones, r => String(r.rcut)); // promedio comunal real de ch_por_hab (una vez): 109.0 vs el umbral fijo de 50 que antes
   // marcaba 249 de 329 comunas "sobre el promedio" (mediana real 85.2).
   const chVals = Object.values(RIESGO_COM).map(c => c.ch_por_hab).filter(v => v != null); RIESGO_COM_PROM = chVals.length ? chVals.reduce((s, v) => s + v, 0) / chVals.length : null; POT_COM = byKey(RE.potencial, c => String(c.cut)); RED_REG = byKey(RE.conexion_regiones, r => String(r.rcut)); VALOR_COM = byKey(VP.comunas, c => String(c.cut)); CENSOELEC_COM = byKey(CE.comunas, c => String(c.cut)); COSTO_COM = byKey(CO.comunas, c => String(c.cut)); INFRA_REG = byKey(IN.regiones, r => String(r.rcut)); CONC_REG = byKey(CC.regiones, r => String(r.rcut)); BESS_REG = byKey(BC.regiones, r => String(r.rcut)); PERMISOS_REG = byKey(PE.regiones, r => String(r.cod).padStart(2, "0")); const CA = PW_DATA.c_cartera || {}; CARTERA_REG = CA.regiones || {}; CARTERA_COM = CA.comunas || {}; PARQUE_TERR = PW_DATA.c_parqueterr || { region: {}, comuna: {}, anios: [] }; PELP_TERR = PW_DATA.c_pelp_territorio || null; PELP_TRANS = PW_DATA.c_pelp_transmision || null; // rollup de potencial renovable por region (patron VULN_REG)
@@ -453,13 +464,13 @@ let mapaTerr = null; async function renderDossier(rcut, cut) {
 
 function llenarEmov(ctx) {
   const { rcut, nivelComuna, com, filaReg } = ctx; let rows; if (nivelComuna) {
-    const p2035c = Math.round(REG_ESTADO.p2035Nac * (com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1))); const nec = Math.round(p2035c / RATIO_OFICIAL); const faltan = Math.max(0, nec - (com.cargadores || 0)); const val = VALOR_COM[ctx.cut]; rows = [
-      [PW.fmt(com.ev_parque), "vehículos enchufables", "INE " + (D.anio_parque || "")],
+    const sinEV = com.ev_parque == null; const p2035c = sinEV ? null : Math.round(REG_ESTADO.p2035Nac * (com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1))); const nec = sinEV ? null : Math.round(p2035c / RATIO_OFICIAL); const faltan = sinEV ? null : Math.max(0, nec - (com.cargadores || 0)); const val = VALOR_COM[ctx.cut]; rows = [
+      [sinEV ? "sin dato" : PW.fmt(com.ev_parque), "vehículos enchufables", sinEV ? "el INE no trae registro de esta comuna" : "INE " + (D.anio_parque || "")],
       val && val.pct_electrico != null ? [PW.fmt(val.pct_electrico, 1) + "%", "del parque es eléctrico", PW.fmt(val.total) + " vehículos totales"] : null,
       [PW.fmt(com.cargadores || 0), "cargadores de acceso público", (com.cargadores_restr ? PW.fmt(com.cargadores_restr) + " de acceso restringido · " : "") + com.estaciones + " estaciones · " + PW.fmt(com.conectores) + " conectores"],
       [com.ev_por_cargador != null ? PW.fmt(com.ev_por_cargador, 1) : "sin red", "EV por cargador", ""],
       [com.score != null ? PW.fmt(com.score, 0) + "/100" : "—", "score de oportunidad", "Selector de sitios"],
-      [PW.fmt(p2035c), "parque proyectado 2035", "faltarían ~" + PW.fmt(faltan) + " puntos de carga"],
+      [sinEV ? "sin dato" : PW.fmt(p2035c), "parque proyectado 2035", sinEV ? "sin parque de partida no se proyecta" : "faltarían ~" + PW.fmt(faltan) + " puntos de carga"],
     ]; } else {
     rows = [
       [PW.fmt(filaReg.parque_ev), "vehículos enchufables", "INE " + (D.anio_parque || "")],
@@ -472,17 +483,17 @@ function llenarEmov(ctx) {
 
 function llenarEnergia(ctx) {
   const { rcut, nivelComuna, cut } = ctx; const DEM = PW_DATA.c_demanda; const km = DEM ? DEM.supuestos.km_anuales : 15000, rend = DEM ? DEM.supuestos.rendimiento_km_kwh : 5.4; let rows; if (nivelComuna) {
-    const eC = (D.energia_com || {})[cut] || { solar_mw: 0, bess_mwh: 0, n_centrales: 0 }; const pot = POT_COM[cut]; const p2035c = Math.round(REG_ESTADO.p2035Nac * (ctx.com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1))); rows = [
+    const eC = (D.energia_com || {})[cut] || { solar_mw: 0, bess_mwh: 0, n_centrales: 0 }; const pot = POT_COM[cut]; const p2035c = ctx.com.ev_parque == null ? null : Math.round(REG_ESTADO.p2035Nac * (ctx.com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1))); rows = [
       [PW.fmt(eC.solar_mw, 1) + " MW", "solar en la comuna", (eC.n_centrales || 0) + " centrales"],
       [PW.fmt(eC.bess_mwh) + " MWh", "almacenamiento (BESS)", "operando + pipeline"],
       pot ? [PW.fmt(pot.total) + " MW", "potencial renovable instalable", "solar " + PW.fmt(pot.solar) + " · eólico " + PW.fmt(pot.eolico) + " · hidro " + PW.fmt(pot.hidro) + (pot.csp ? " · CSP " + PW.fmt(pot.csp) : "") + (pot.bombeo ? " · bombeo " + PW.fmt(pot.bombeo) : "")] : null,
-      [PW.fmt(p2035c * km / rend / 1e6, 2) + " GWh", "demanda EV proyectada 2035", km + " km · " + rend + " km/kWh"],
+      p2035c == null ? ["sin dato", "demanda EV proyectada 2035", "el INE no trae parque EV de esta comuna"] : [PW.fmt(p2035c * km / rend / 1e6, 2) + " GWh", "demanda EV proyectada 2035", PW.fmt(km) + " km · " + PW.fmt(rend, 1) + " km/kWh"],
     ]; } else {
     const eR = (D.energia_reg || {})[rcut] || {}; const bess = BESS_REG[rcut]; rows = [
       [PW.fmt(eR.solar_op_mw) + " MW", "solar operando", PW.fmt(eR.solar_pipe_mw) + " MW en pipeline"],
       [PW.fmt(eR.bess_op_mwh) + " MWh", "almacenamiento operando", PW.fmt(eR.bess_pipe_mwh) + " MWh en pipeline"],
       [PW.fmt(eR.gd_inst), "generación distribuida", PW.fmt(eR.gd_mw, 1) + " MW en techos (net billing)"],
-      [PW.fmt(ctx.filaReg.parque_2035 * km / rend / 1e6, 1) + " GWh", "demanda EV proyectada 2035", km + " km · " + rend + " km/kWh"],
+      [PW.fmt(ctx.filaReg.parque_2035 * km / rend / 1e6, 1) + " GWh", "demanda EV proyectada 2035", PW.fmt(km) + " km · " + PW.fmt(rend, 1) + " km/kWh"],
       bess ? [PW.fmt(bess.mwh) + " MWh", "cartera de almacenamiento (ACERA)", PW.fmt(bess.proyectos) + " proyectos"] : null,
     ]; }
   document.getElementById("kpis-energia").innerHTML = kpiHTML(rows.concat(filasHeadroomCosto(ctx))); }
@@ -578,14 +589,14 @@ function llenarVulnerab(ctx) {
     const v = VULN_COM[ctx.cut]; if (!v) { el.innerHTML = '<p class="nota">Sin índice de vulnerabilidad para esta comuna.</p>'; tAltas.innerHTML = ""; return; }
     el.innerHTML = kpiHTML([
       [PW.fmt(v.indice, 1) + " / 100", "vulnerabilidad energética", "mayor = más vulnerable"],
-      [PW.fmt(v.pilar_cortes, 0), "pilar cortes (40%)", "cliente-horas per cápita"],
+      v.sin_cortes ? ["sin dato", "pilar cortes (40%)", "sin registro de cortes en la SEC: índice con precio y social reponderados"] : [PW.fmt(v.pilar_cortes, 0), "pilar cortes (40%)", "cliente-horas per cápita"],
       [PW.fmt(v.pilar_precio, 0), "pilar precio (25%)", "precio de la energía"],
       [PW.fmt(v.pilar_social, 0), "pilar social (35%)", "sin luz · hacinamiento · escolaridad · edad"],
     ]); tAltas.innerHTML = ""; } else {
     const vr = VULN_REG[ctx.rcut]; if (!vr) { el.innerHTML = '<p class="nota">Sin datos.</p>'; tAltas.innerHTML = ""; return; }
     el.innerHTML = kpiHTML([
       [PW.fmt(vr.indice, 1) + " / 100", "vulnerabilidad energética (región)", "promedio ponderado por población"],
-      [vr.altas.length + " de " + vr.comunas.length, "comunas con índice ≥ 60", "vulnerabilidad alta"],
+      [vr.altas.length + " de " + vr.comunas.length, "comunas con índice ≥ 60", "vulnerabilidad alta" + (vr.sinCortes ? " · " + vr.sinCortes + (vr.sinCortes === 1 ? " comuna sin dato de cortes" : " comunas sin dato de cortes") : "")],
     ]); if (vr.altas.length) {
       PW.tabla("t-vulnerab-altas", [
         { k: "comuna", titulo: "Comuna" },
@@ -596,6 +607,10 @@ function llenarVulnerab(ctx) {
 // ===================== capa ejecutiva: veredicto + semaforo + posicion =====================
 const SEM_COL = { ok: "--good", warn: "--warning", bad: "--critical" }; function semBadge(nombre, estado, detalle) {
   return `<span class="sem-badge" title="${PW.esc(detalle || "")}"><span class="sem-dot" style="background:var(${SEM_COL[estado] || "--ink-3"})"></span>${PW.esc(nombre)}</span>`; }
+function avisoFlotas(ctx) {
+  const caja = h => `<div class="nota" style="margin:6px 0 10px;padding:8px 12px;border-left:3px solid var(--warning)">${h}</div>`; if (ctx.nivelComuna) {
+    const f = FLOTA_COM[ctx.cut]; return f ? caja(`<b>Comuna de flotas.</b> Registra ${PW.fmt(f.ev1000, 1)} EV por 1.000 habitantes (promedio nacional ${PW.fmt(FLOTA_NAC, 1)}). El INE cuenta los vehículos por comuna de inscripción y es probable que sean flotas de empresas inscritas aquí y no uso residencial (hipótesis no verificada): las cifras de brecha y de ritmo de esta comuna se leen con cautela.`) : ""; }
+  const g = FLOTA_REG[ctx.rcut]; const pct = flotaPctReg({ rcut: ctx.rcut, parque_ev: ctx.filaReg.parque_ev }); return g && pct >= FLOTA_REG_PCT ? caja(`<b>${pct}% del parque de la región</b> está inscrito en ${g.comunas.length === 1 ? "una comuna de flotas" : g.comunas.length + " comunas de flotas"} (${g.comunas.map(n => PW.esc(n)).join(", ")}). Es probable que sean flotas de empresas y no uso residencial (hipótesis no verificada); eso pesa en el parque de la región y en su puesto del ranking de brecha 2035.`) : ""; }
 function llenarVeredicto(ctx) {
   const cont = document.getElementById("dossier-veredicto"); const { rcut, cut, nivelComuna, com, filaReg } = ctx; const ratio = REG_ESTADO.ratio; const dims = []; let posHTML = ""; if (!nivelComuna) {
     const arrF = REG_ESTADO.filas.slice().sort((a, b) => b.faltan - a.faltan); const pos = arrF.findIndex(f => f.rcut === rcut) + 1, total = arrF.length; const arrR = Object.values(RIESGO_REG).filter(r => r.ch_por_hab != null).sort((a, b) => b.ch_por_hab - a.ch_por_hab); const rPos = RIESGO_REG[rcut] ? arrR.findIndex(r => String(r.rcut) === rcut) + 1 : 0; posHTML = `<span class="pos-chip ${pos <= 5 ? "mal" : (pos > total - 5 ? "ok" : "")}">Puesto ${pos} de ${total} en brecha de carga</span>` +
@@ -609,21 +624,21 @@ function llenarVeredicto(ctx) {
     else if ((eR.solar_op_mw || 0) === 0 && (eR.solar_pipe_mw || 0) === 0) { enE = "bad"; enF = "poca generación local"; }
     dims.push({ dim: "Energía", estado: enE, frase: enF, det: PW.fmt(eR.solar_op_mw || 0) + " MW solares · " + PW.fmt(eR.bess_op_mwh || 0) + " MWh BESS operando" }); const vr = VULN_REG[rcut]; if (vr) dims.push({ dim: "Vulnerabilidad", estado: vr.indice >= 60 ? "bad" : vr.indice >= 45 ? "warn" : "ok", frase: vr.indice >= 60 ? "vulnerabilidad energética alta" : vr.indice >= 45 ? "vulnerabilidad media" : "vulnerabilidad baja", det: "índice " + PW.fmt(vr.indice, 1) + "/100 · " + vr.altas.length + " comunas ≥60" }); } else {
     const comReg = PW_DATA.sitios.comunas.filter(c => String(c.cod_region).padStart(2, "0") === rcut && c.score != null).sort((a, b) => b.score - a.score); const posC = comReg.findIndex(c => String(c.cut) === cut) + 1; if (posC > 0) posHTML = `<span class="pos-chip ${posC <= 3 ? "ok" : ""}">Oportunidad ${posC} de ${comReg.length} en la región</span>`; let cE = "ok", cF = "red de carga en objetivo"; if (!com.cargadores && com.ev_parque > 0) { cE = "bad"; cF = "con vehículos EV y cero cargadores"; }
-    else if (!com.cargadores) { cE = "warn"; cF = "sin red pública (bajo parque)"; }
+    else if (!com.cargadores) { cE = "warn"; cF = com.ev_parque == null ? "sin red pública (sin dato de parque)" : "sin red pública (bajo parque)"; }
     else if (com.ev_por_cargador > RATIO_OFICIAL * 1.5) { cE = "bad"; cF = "red muy tensionada"; }
     else if (com.ev_por_cargador > RATIO_OFICIAL) { cE = "warn"; cF = "red algo tensionada"; }
     dims.push({ dim: "Carga", estado: cE, frase: cF, det: com.cargadores ? PW.fmt(com.ev_por_cargador, 1) + " EV/cargador" : "sin cargadores" }); const ce = CENSOELEC_COM[cut], ric = RIESGO_COM[cut]; let rE = "ok", rF = "cortes acotados"; if (ce && ce.pct_sin > 3) { rE = "bad"; rF = PW.fmt(ce.pct_sin, 1) + "% de viviendas sin electricidad"; }
     else if (ric && RIESGO_COM_PROM != null && ric.ch_por_hab > RIESGO_COM_PROM) { rE = "warn"; rF = "exposición a cortes sobre el promedio comunal"; }
     dims.push({ dim: "Resiliencia", estado: rE, frase: rF, det: ric ? PW.fmt(ric.ch_por_hab, 1) + " cliente-horas/hab" : "sin registro" }); const eC = (D.energia_com || {})[cut] || {}; let enE = "warn", enF = "poca generación local"; if (eC.solar_op_mw > 5) { enE = "ok"; enF = PW.fmt(eC.solar_op_mw, 0) + " MW solares en la comuna"; }
-    dims.push({ dim: "Energía", estado: enE, frase: enF, det: PW.fmt(eC.solar_op_mw || 0, 1) + " MW solares operando · " + PW.fmt(eC.bess_op_mwh || 0) + " MWh BESS operando" }); const v = VULN_COM[cut]; if (v) dims.push({ dim: "Vulnerabilidad", estado: v.indice >= 60 ? "bad" : v.indice >= 45 ? "warn" : "ok", frase: v.indice >= 60 ? "vulnerabilidad alta" : v.indice >= 45 ? "vulnerabilidad media" : "vulnerabilidad baja", det: "índice " + PW.fmt(v.indice, 1) + "/100" }); }
+    dims.push({ dim: "Energía", estado: enE, frase: enF, det: PW.fmt(eC.solar_op_mw || 0, 1) + " MW solares operando · " + PW.fmt(eC.bess_op_mwh || 0) + " MWh BESS operando" }); const v = VULN_COM[cut]; if (v) dims.push({ dim: "Vulnerabilidad", estado: v.indice >= 60 ? "bad" : v.indice >= 45 ? "warn" : "ok", frase: v.indice >= 60 ? "vulnerabilidad alta" : v.indice >= 45 ? "vulnerabilidad media" : "vulnerabilidad baja", det: "índice " + PW.fmt(v.indice, 1) + "/100" + (v.sin_cortes ? " · sin dato de cortes (índice con precio y social)" : "") }); }
 
   const orden = { bad: 0, warn: 1, ok: 2 }; const peores = dims.slice().sort((a, b) => orden[a.estado] - orden[b.estado]); const nombre = nivelComuna ? com.comuna : ctx.regNombre; const criticas = peores.filter(d => d.estado === "bad"); const alertas = peores.filter(d => d.estado === "warn"); let frase; if (criticas.length) frase = `<b>${PW.esc(nombre)}</b>: ${criticas.slice(0, 2).map(d => d.frase).join("; ")}` + (alertas.length ? `; ${alertas[0].frase}.` : "."); else if (alertas.length) frase = `<b>${PW.esc(nombre)}</b>: ${alertas.slice(0, 2).map(d => d.frase).join("; ")}` + (dims.some(d => d.estado === "ok") ? "; el resto en buen pie." : "."); else frase = `<b>${PW.esc(nombre)}</b>: sin alertas relevantes; carga, resiliencia y energía en buen pie.`; cont.innerHTML = `<div class="veredicto-line">${frase}</div>` +
-    (posHTML ? `<div style="margin:2px 0 8px">${posHTML}</div>` : "") +
+    (posHTML ? `<div style="margin:2px 0 8px">${posHTML}</div>` : "") + avisoFlotas(ctx) +
     `<div class="sem-row">${dims.map(d => semBadge(d.dim, d.estado, d.frase + " — " + d.det)).join("")}</div>`; }
 
 // ===================== proyeccion de carga al 2035 (trayectoria vs meta) =====================
 function llenarProyeccion(ctx) {
-  const { nivelComuna, com, filaReg } = ctx; let hoy, ritmoAct, ritmoReq, necesarios, parque2035; if (!nivelComuna) {
+  const { nivelComuna, com, filaReg } = ctx; if (nivelComuna && com.ev_parque == null) { document.getElementById("g-proyeccion").innerHTML = ""; document.getElementById("proy-sub").textContent = "Sin dato de parque eléctrico del INE para esta comuna: no se proyecta su brecha de carga al 2035."; return; } let hoy, ritmoAct, ritmoReq, necesarios, parque2035; if (!nivelComuna) {
     hoy = filaReg.cargadores_pub || 0; ritmoAct = filaReg.ritmo_actual; ritmoReq = filaReg.ritmo_req; necesarios = filaReg.necesarios_2035; parque2035 = filaReg.parque_2035; } else {
     hoy = com.cargadores || 0; parque2035 = Math.round(REG_ESTADO.p2035Nac * (com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1))); necesarios = Math.round(parque2035 / RATIO_OFICIAL); ritmoReq = Math.max(0, Math.round((necesarios - hoy) / ANIOS_A_2035)); ritmoAct = null; }
   const anios = []; for (let a = ANIO_HOY; a <= 2035; a++) anios.push(a); const series = [{ nombre: "Ritmo requerido", valores: anios.map(a => hoy + ritmoReq * (a - ANIO_HOY)), color: PW.color("--s1"), dash: true }]; if (ritmoAct != null) series.unshift({ nombre: "A este ritmo", valores: anios.map(a => hoy + ritmoAct * (a - ANIO_HOY)), color: PW.color(ritmoAct >= ritmoReq ? "--s3" : "--s2"), area: true }); PW.lineas("g-proyeccion", {
@@ -662,11 +677,11 @@ function llenarMeta(ctx) {
   const kel = document.getElementById("kpis-meta"), sub = document.getElementById("meta-sub"); const of = (PW_DATA.c_normativa || {}).oficiales || {}; const m2030 = of.cargadores_2030 || {}, m2035 = of.cargadores_2035 || {}; const { nivelComuna, com, filaReg, rcut, cut } = ctx; const pobNac = D.regiones.reduce((s, r) => s + (r.poblacion || 0), 0); let hoy, parque2035, pobShare; if (!nivelComuna) {
     hoy = filaReg.cargadores_pub || 0; parque2035 = filaReg.parque_2035; const reg = D.regiones.find(r => r.rcut === rcut) || {}; pobShare = pobNac ? (reg.poblacion || 0) / pobNac : 0; } else {
     hoy = com.cargadores || 0; parque2035 = Math.round(REG_ESTADO.p2035Nac * (com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1))); const censo = CENSO_COM[cut]; pobShare = pobNac && censo ? (censo.poblacion || 0) / pobNac : 0; }
-  const meta2030 = m2030.valor ? Math.round(m2030.valor * pobShare) : null; const meta2035 = Math.round(parque2035 / 10); // criterio oficial: 1 punto por cada 10 EV
+  const meta2030 = m2030.valor ? Math.round(m2030.valor * pobShare) : null; const meta2035 = (nivelComuna && com.ev_parque == null) ? null : Math.round(parque2035 / 10); // criterio oficial: 1 punto por cada 10 EV
   const ritmoAct = nivelComuna ? null : filaReg.ritmo_actual; const req2030 = meta2030 != null ? Math.max(0, Math.round((meta2030 - hoy) / Math.max(2030 - 2026, 1))) : null; const rows = []; if (meta2030 != null) {
-    rows.push([PW.fmt(meta2030), "meta 2030 (cuota del territorio)", "de 6.500 nacional · reparto por población"]); rows.push([PW.fmt(Math.max(0, meta2030 - hoy)), "faltan para 2030",
+    rows.push([PW.fmt(meta2030), "meta 2030 (cuota del territorio)", "de " + PW.fmt(m2030.valor) + " nacional · reparto por población"]); rows.push([PW.fmt(Math.max(0, meta2030 - hoy)), "faltan para 2030",
       (req2030 != null ? PW.fmt(req2030) + "/año requerido" : "") + (ritmoAct != null ? " · hoy " + PW.fmt(ritmoAct) + "/año" : "")]); }
-  rows.push([PW.fmt(meta2035), "meta 2035 (1 punto por 10 EV)", "hoy " + PW.fmt(hoy) + " · faltan " + PW.fmt(Math.max(0, meta2035 - hoy))]); kel.innerHTML = kpiHTML(rows); const vinc = []; if (m2030.vinculancia) vinc.push("2030 — " + m2030.vinculancia); if (m2035.vinculancia) vinc.push("2035 — " + m2035.vinculancia); sub.innerHTML = "Metas <b>nacionales</b> repartidas al territorio (estimación propia): 2030 por población, 2035 por el criterio oficial de 1 punto por cada 10 EV." +
+  rows.push(meta2035 == null ? ["sin dato", "meta 2035 (1 punto por 10 EV)", "sin parque EV de partida: el INE no trae esta comuna"] : [PW.fmt(meta2035), "meta 2035 (1 punto por 10 EV)", "hoy " + PW.fmt(hoy) + " · faltan " + PW.fmt(Math.max(0, meta2035 - hoy))]); kel.innerHTML = kpiHTML(rows); const vinc = []; if (m2030.vinculancia) vinc.push("2030 — " + m2030.vinculancia); if (m2035.vinculancia) vinc.push("2035 — " + m2035.vinculancia); sub.innerHTML = "Metas <b>nacionales</b> repartidas al territorio (estimación propia): 2030 por población, 2035 por el criterio oficial de 1 punto por cada 10 EV." +
     (vinc.length ? "<br>Vinculancia: " + PW.esc(vinc.join(" · ")) : ""); }
 
 // ===================== tendencia del parque electrico (serie territorial) =====================
@@ -704,8 +719,8 @@ function filasHeadroomCosto(ctx) {
     pot = POT_REG[rcut]; demGwh = filaReg.parque_2035 * km / rend / 1e6; }
   if (pot && pot.total > 0 && demGwh > 0) {
     const mwFlota = demGwh * 1000 / (8760 * CF_PLANTA); const veces = mwFlota > 0 ? pot.total / mwFlota : 0; // el potencial total ya se muestra en la rama COMUNA de llenarEnergia; a nivel region no -> agregarlo alli
-    if (!nivelComuna) rows.push([PW.fmt(pot.total, 0) + " MW", "potencial renovable instalable (región)", "techo físico (estudio MinEnergía), incluye bombeo marino"]); rows.push([veces >= 1000 ? "×" + PW.fmt(Math.round(veces / 1000)) + "k" : "×" + PW.fmt(Math.round(veces)),
-      "veces que el potencial TOTAL cubre la flota 2035", "sobre el potencial técnico total (incluye bombeo marino) · factor de planta " + CF_PLANTA]); }
+    if (!nivelComuna) rows.push([PW.fmt(pot.total, 0) + " MW", "potencial renovable instalable (región)", "techo físico (estudio MinEnergía), incluye bombeo marino"]); rows.push([veces >= 1000 ? "×" + PW.fmt(Math.round(veces / 1000)) + " mil" : "×" + PW.fmt(Math.round(veces)),
+      "veces que el potencial TOTAL cubre la flota 2035", "sobre el potencial técnico total (incluye bombeo marino) · factor de planta " + PW.fmt(CF_PLANTA * 100) + "%"]); }
   if (nivelComuna) {
     const co = COSTO_COM[cut]; if (co && co.pkwh != null) rows.push([PW.fmt(co.pkwh, 0) + " $/kWh", "precio de carga pública", (co.pkwh_n || 0) + " cargadores con tarifa"]); if (co && co.p93 != null) rows.push([PW.fmt(co.p93, 0) + " $/L", "bencina 93 en la comuna", co.pDI != null ? "diésel " + PW.fmt(co.pDI, 0) + " $/L" : ""]); }
   return rows; }
@@ -762,8 +777,8 @@ const _btnImp = document.getElementById("btn-imprimir"); if (_btnImp) _btnImp.ad
 function llenarComunasRegion(ctx) {
   const rcut = ctx.rcut; const comunas = PW_DATA.sitios.comunas.filter(c => String(c.cod_region).padStart(2, "0") === rcut); const filas = comunas.map(c => {
     const v = VULN_COM[String(c.cut)]; return { cut: String(c.cut), comuna: c.comuna, ev_parque: c.ev_parque, cargadores: c.cargadores, evpc: c.ev_por_cargador, score: c.score, vuln: v ? v.indice : null }; }); PW.tabla("t-comunas-region", [
-    { k: "comuna", titulo: "Comuna", fmt: (v, f) => `<a href="#" class="ir-comuna" data-cut="${f.cut}">${PW.esc(v)}</a>` },
-    { k: "ev_parque", titulo: "Parque EV", num: true, fmt: v => PW.fmt(v) },
+    { k: "comuna", titulo: "Comuna", fmt: (v, f) => `<a href="#" class="ir-comuna" data-cut="${f.cut}">${PW.esc(v)}</a>` + (FLOTA_COM[f.cut] ? ` <span class="pill" title="${PW.esc(TXT_FLOTAS)}">flotas</span>` : "") },
+    { k: "ev_parque", titulo: "Parque EV", num: true, fmt: v => v == null ? "sin dato" : PW.fmt(v) },
     { k: "cargadores", titulo: "Cargadores", num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
     { k: "evpc", titulo: "EV/cargador", num: true, fmt: v => v == null ? "sin red" : PW.fmt(v, 1) },
     { k: "score", titulo: "Oportunidad", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 0) },
@@ -775,7 +790,7 @@ document.getElementById("t-comunas-region").addEventListener("click", e => {
   const recos = []; const { rcut, nivelComuna, com } = ctx; const km = PW_DATA.c_demanda ? PW_DATA.c_demanda.supuestos.km_anuales : 15000; if (nivelComuna) {
     const cut = ctx.cut; const p2035c = Math.round(REG_ESTADO.p2035Nac * (com.ev_parque / Math.max(REG_ESTADO.parqueNacHoy, 1))); const nec = Math.round(p2035c / RATIO_OFICIAL), faltan = Math.max(0, nec - (com.cargadores || 0)); const eC = (D.energia_com || {})[cut] || {}; if (!com.cargadores && com.ev_parque > 0)
       recos.push(`<b>${PW.esc(com.comuna)} no tiene ningún cargador público</b> pese a registrar ${PW.fmt(com.ev_parque)} vehículos eléctricos: primera prioridad de instalación.`); else if (com.ev_por_cargador > RATIO_OFICIAL)
-      recos.push(`Hay <b>${PW.fmt(com.ev_por_cargador, 1)} EV por cargador</b>, sobre el criterio oficial (${RATIO_OFICIAL}): la red local ya está bajo presión.`); recos.push(`Con el parque proyectado 2035 (${PW.fmt(p2035c)}), la comuna requeriría del orden de <b>${PW.fmt(nec)} cargadores públicos</b>; hoy tiene ${PW.fmt(com.cargadores || 0)} (faltarían ~${PW.fmt(faltan)}).`); const dc = com.conectores_dc || 0; if (com.conectores && dc / Math.max(com.conectores, 1) < 0.25)
+      recos.push(`Hay <b>${PW.fmt(com.ev_por_cargador, 1)} EV por cargador</b>, sobre el criterio oficial (${RATIO_OFICIAL}): la red local ya está bajo presión.`); if (com.ev_parque != null) recos.push(`Con el parque proyectado 2035 (${PW.fmt(p2035c)}), la comuna requeriría del orden de <b>${PW.fmt(nec)} cargadores públicos</b>; hoy tiene ${PW.fmt(com.cargadores || 0)} (faltarían ~${PW.fmt(faltan)}).`); const dc = com.conectores_dc || 0; if (com.conectores && dc / Math.max(com.conectores, 1) < 0.25)
       recos.push(`Solo ${PW.fmt(dc)} de ${PW.fmt(com.conectores)} conectores son de carga rápida (DC): priorizar potencia para corredores y flotas.`); const co = COSTO_COM[cut]; if (co && co.pkwh != null && co.pkwh_max != null && co.pkwh >= co.pkwh_max * 0.95)
       recos.push(`El precio de carga local (${PW.fmt(co.pkwh)} $/kWh) está en el tope del rango: espacio para tarifas más competitivas.`); const ce = CENSOELEC_COM[cut]; if (ce && ce.pct_sin > 3)
       recos.push(`<b>${PW.fmt(ce.pct_sin, 1)}% de las viviendas sin electricidad de red</b>: la electrificación de la movilidad debe ir junto a la del hogar.`); if (com.cliente_horas_cortes > 1e6) {

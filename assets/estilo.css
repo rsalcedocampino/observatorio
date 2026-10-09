@@ -122,7 +122,7 @@ header.pw {
   z-index: 10;
 }
 header.pw .marca { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; font-size: 16px; color: var(--ink-1); white-space: nowrap; text-decoration: none; }
-header.pw .marca img { height: 28px; width: auto; display: block; }
+header.pw .marca img { height: 36px; width: auto; display: block; }  /* lockup completo: el minimo del manual de marca es 33 px */
 header.pw .marca:hover { text-decoration: none; }
 header.pw nav { display: flex; gap: 2px; flex-wrap: wrap; }
 header.pw nav a {
@@ -212,8 +212,8 @@ header.pw nav a.activo, header.pw nav a:hover { background: var(--plane); color:
     /* sin esto, en pantallas bajas los ultimos enlaces quedan fuera y no se alcanzan:
        la cabecera es sticky, asi que desplazar la pagina no los sube. 100dvh descuenta
        las barras del navegador movil; 100vh queda de respaldo para navegadores viejos. */
-    max-height: calc(100vh - 56px);
-    max-height: calc(100dvh - 56px);
+    max-height: calc(100vh - 65px);
+    max-height: calc(100dvh - 65px);
     overflow-y: auto;
     overscroll-behavior: contain;
   }

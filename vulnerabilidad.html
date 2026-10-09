@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Qué comunas combinan cortes frecuentes, energía cara y población vulnerable: un índice de 0 a 100 sobre las 346 comunas de Chile.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261008d">
+<link rel="stylesheet" href="assets/estilo.css?v=261009a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
@@ -71,13 +71,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="t-comunas"></div>
     <p class="nota">Cada pilar es un percentil 0-100 dentro del país. p93 con origen "regional"
     significa que la comuna no tiene estaciones de servicio con precio y usa el promedio de su
-    región.</p>
+    región.<span id="nota-sin-cortes"></span></p>
   </div>
 </main>
 <script>document.write('<script src="data/c_vulnerab.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261008d"></script>
+<script src="assets/comun.js?v=261009a"></script>
 <script>
-PW.montarNav("vulnerabilidad.html"); const D = PW_DATA.c_vulnerab; // Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
+PW.montarNav("vulnerabilidad.html"); const D = PW_DATA.c_vulnerab; { const ns = document.getElementById("nota-sin-cortes"); if (ns && D.n_sin_cortes) ns.textContent = " Las " + D.n_sin_cortes + " comunas sin ningún registro de cortes en la SEC llevan «sin dato» en el pilar de cortes (no cero) y su índice se calcula con precio y social reponderados (25/60 y 35/60)."; } // Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
 // region) y hace foco/zoom a la seleccion (comuna: zoom a la comuna dentro de su region).
 let MAPA = null; // [FICHA] El mapa (choropleth) por defecto solo muestra "comuna: número" al pasar el mouse,
 // sin decir QUE es ese numero. Aca se enriquece page-local: tooltip etiquetado + popup al clic
@@ -87,8 +87,8 @@ const byCut = Object.fromEntries(D.comunas.map(c => [c.cut, c])); const nivelIx 
     `<b>Índice de vulnerabilidad energética: ${PW.fmt(c.indice, 1)} / 100</b> &mdash; ${nivelIx(c.indice)}<br>` +
     `<small>Compuesto por percentiles: cortes 40% &middot; precio 25% &middot; social 35%. Mayor = más vulnerable.</small>` +
     `<hr style="margin:6px 0;border:0;border-top:1px solid var(--border)">` +
-    `Pilares (percentil 0-100): cortes <b>${PW.fmt(c.pilar_cortes, 0)}</b> &middot; precio <b>${PW.fmt(c.pilar_precio, 0)}</b> &middot; social <b>${PW.fmt(c.pilar_social, 0)}</b><br>` +
-    `Cortes 2017-2026: ${PW.fmt(c.ch_pc, 1)} cliente-horas por habitante<br>` +
+    `Pilares (percentil 0-100): cortes <b>${c.sin_cortes ? "sin dato" : PW.fmt(c.pilar_cortes, 0)}</b> &middot; precio <b>${PW.fmt(c.pilar_precio, 0)}</b> &middot; social <b>${PW.fmt(c.pilar_social, 0)}</b><br>` +
+    (c.sin_cortes ? `Cortes 2017-2026: sin registro en la SEC; índice calculado con precio y social reponderados<br>` : `Cortes 2017-2026: ${PW.fmt(c.ch_pc, 1)} cliente-horas por habitante<br>`) +
     `Bencina 93: ${c.p93 != null ? PW.clp(c.p93) : "—"}${rg}<br>` +
     `Sin electricidad: ${PW.fmt(c.sin_elec, 1)}% &middot; Hacinamiento: ${PW.fmt(c.hacina, 1)}%<br>` +
     `Escolaridad: ${PW.fmt(c.escolaridad, 1)} años &middot; 60+ años: ${PW.fmt(c.envejec, 1)}%<br>` +
@@ -115,7 +115,7 @@ const cols = [
   { k: "indice", titulo: "Índice", num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
   { k: "comuna", titulo: "Comuna" },
   { k: "region", titulo: "Región" },
-  { k: "pilar_cortes", titulo: "Cortes", num: true, fmt: v => PW.fmt(v, 1) },
+  { k: "pilar_cortes", titulo: "Cortes", num: true, fmt: (v, f) => f.sin_cortes ? "sin dato" : PW.fmt(v, 1) },
   { k: "pilar_precio", titulo: "Precio", num: true, fmt: v => PW.fmt(v, 1) },
   { k: "pilar_social", titulo: "Social", num: true, fmt: v => PW.fmt(v, 1) },
   { k: "ch_pc", titulo: "Cliente-h/hab", num: true, fmt: v => PW.fmt(v, 1) },
@@ -125,7 +125,7 @@ const cols = [
   const reg = selR.value; const com = selC.value; const filas = D.comunas.filter(c => (!reg || c.region === reg) && (!com || c.comuna === com)); pintarMapa(reg, com, filas); PW.barras("g-top", {
     items: filas.slice(0, 20).map(c => ({
       nombre: c.comuna, valor: c.indice,
-      extra: c.region + " — cortes " + PW.fmt(c.pilar_cortes) + " / precio " + PW.fmt(c.pilar_precio) + " / social " + PW.fmt(c.pilar_social),
+      extra: c.region + " — cortes " + (c.sin_cortes ? "sin dato" : PW.fmt(c.pilar_cortes)) + " / precio " + PW.fmt(c.pilar_precio) + " / social " + PW.fmt(c.pilar_social),
       color: c.indice >= 75 ? PW.color("--critical") : (c.indice >= 60 ? PW.color("--s2") : PW.color("--s1")),
     })),
     fmtV: v => PW.fmt(v, 1),

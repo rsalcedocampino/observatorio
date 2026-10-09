@@ -1,6 +1,6 @@
 PW_DATA.c_elasticidad_tarifas_detallado = {
-  "generado": "2026-10-03",
-  "nota": "Tarifas completas = PNP (valores de referencia, pendiente dato CNE oficial) + VAD (distribuidor) por segmento",
+  "generado": "2026-10-09",
+  "nota": "Tarifas completas = precio de nudo de referencia (pendiente dato CNE oficial) + VAD (distribuidor) por segmento",
   "segmentos_info": {
     "BT1": "Domiciliario",
     "BT2": "Comercial <50kW",

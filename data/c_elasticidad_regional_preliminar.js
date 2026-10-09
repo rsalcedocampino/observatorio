@@ -1,5 +1,5 @@
 /* Elasticidad Regional Preliminar: Tarifa Potencia × Stock EV
-   Fuente: INE Permisos + CNE PNP 2026
+   Fuente: INE Cuadro 4 + CNE precio de nudo de potencia de corto plazo (RE 247 Tabla 17, DS 4T/2026)
    Generado: generar_elasticidad_regional.py */
 
 window.ElasticidadRegional = {
@@ -9,7 +9,7 @@ window.ElasticidadRegional = {
     "tipo": "Análisis Descriptivo (sin causalidad)",
     "fuentes": {
       "stock_2024": "INE Cuadro 4 (real)",
-      "tarifa_potencia": "CNE PNP 2026",
+      "tarifa_potencia": "CNE, precio de nudo de potencia de corto plazo, subestaciones 220 kV (RE 247 Tabla 17; DS 4T/2026; reajustado al 1-abr-2026); promedio simple por región; unidad CLP/kW-mes",
       "ventas_h1_2026": "ANAC (datos agregados H1)"
     },
     "nota": "Preliminar. Esperando CSV mensual de ANAC para análisis causal completo.",
@@ -23,8 +23,8 @@ window.ElasticidadRegional = {
   "regiones": [
     {
       "cut": "01",
-      "region": "Arica-Parinacota",
-      "tarifa_potencia_kwm": 15.0,
+      "region": "Tarapacá",
+      "tarifa_potencia_kwm": 8604.91,
       "stock_2024": 303,
       "pct_stock_nacional": 0.9,
       "ventas_h1_2026_estimadas": 48,
@@ -33,7 +33,7 @@ window.ElasticidadRegional = {
     {
       "cut": "02",
       "region": "Antofagasta",
-      "tarifa_potencia_kwm": 14.2,
+      "tarifa_potencia_kwm": 8532.15,
       "stock_2024": 605,
       "pct_stock_nacional": 1.79,
       "ventas_h1_2026_estimadas": 96,
@@ -42,7 +42,7 @@ window.ElasticidadRegional = {
     {
       "cut": "03",
       "region": "Atacama",
-      "tarifa_potencia_kwm": 12.5,
+      "tarifa_potencia_kwm": 8511.16,
       "stock_2024": 247,
       "pct_stock_nacional": 0.73,
       "ventas_h1_2026_estimadas": 39,
@@ -51,7 +51,7 @@ window.ElasticidadRegional = {
     {
       "cut": "04",
       "region": "Coquimbo",
-      "tarifa_potencia_kwm": 10.5,
+      "tarifa_potencia_kwm": 8654.28,
       "stock_2024": 918,
       "pct_stock_nacional": 2.71,
       "ventas_h1_2026_estimadas": 147,
@@ -59,8 +59,8 @@ window.ElasticidadRegional = {
     },
     {
       "cut": "05",
-      "region": "Valparaiso",
-      "tarifa_potencia_kwm": 12.8,
+      "region": "Valparaíso",
+      "tarifa_potencia_kwm": 8649.55,
       "stock_2024": 2515,
       "pct_stock_nacional": 7.43,
       "ventas_h1_2026_estimadas": 403,
@@ -69,7 +69,7 @@ window.ElasticidadRegional = {
     {
       "cut": "06",
       "region": "O'Higgins",
-      "tarifa_potencia_kwm": 11.0,
+      "tarifa_potencia_kwm": 8767.81,
       "stock_2024": 976,
       "pct_stock_nacional": 2.88,
       "ventas_h1_2026_estimadas": 156,
@@ -78,7 +78,7 @@ window.ElasticidadRegional = {
     {
       "cut": "07",
       "region": "Maule",
-      "tarifa_potencia_kwm": 9.8,
+      "tarifa_potencia_kwm": null,
       "stock_2024": 3482,
       "pct_stock_nacional": 10.29,
       "ventas_h1_2026_estimadas": 557,
@@ -86,8 +86,8 @@ window.ElasticidadRegional = {
     },
     {
       "cut": "08",
-      "region": "Biobio",
-      "tarifa_potencia_kwm": 11.2,
+      "region": "Biobío",
+      "tarifa_potencia_kwm": null,
       "stock_2024": 1131,
       "pct_stock_nacional": 3.34,
       "ventas_h1_2026_estimadas": 181,
@@ -95,8 +95,8 @@ window.ElasticidadRegional = {
     },
     {
       "cut": "09",
-      "region": "Araucania",
-      "tarifa_potencia_kwm": 9.5,
+      "region": "La Araucanía",
+      "tarifa_potencia_kwm": null,
       "stock_2024": 348,
       "pct_stock_nacional": 1.03,
       "ventas_h1_2026_estimadas": 55,
@@ -105,7 +105,7 @@ window.ElasticidadRegional = {
     {
       "cut": "10",
       "region": "Los Lagos",
-      "tarifa_potencia_kwm": 8.8,
+      "tarifa_potencia_kwm": null,
       "stock_2024": 460,
       "pct_stock_nacional": 1.36,
       "ventas_h1_2026_estimadas": 73,
@@ -113,8 +113,8 @@ window.ElasticidadRegional = {
     },
     {
       "cut": "11",
-      "region": "Aysen",
-      "tarifa_potencia_kwm": 8.2,
+      "region": "Aysén",
+      "tarifa_potencia_kwm": null,
       "stock_2024": 108,
       "pct_stock_nacional": 0.32,
       "ventas_h1_2026_estimadas": 17,
@@ -123,7 +123,7 @@ window.ElasticidadRegional = {
     {
       "cut": "12",
       "region": "Magallanes",
-      "tarifa_potencia_kwm": 7.5,
+      "tarifa_potencia_kwm": null,
       "stock_2024": 201,
       "pct_stock_nacional": 0.59,
       "ventas_h1_2026_estimadas": 32,
@@ -132,7 +132,7 @@ window.ElasticidadRegional = {
     {
       "cut": "13",
       "region": "Metropolitana",
-      "tarifa_potencia_kwm": 13.5,
+      "tarifa_potencia_kwm": 8795.58,
       "stock_2024": 21971,
       "pct_stock_nacional": 64.9,
       "ventas_h1_2026_estimadas": 3520,
@@ -140,8 +140,8 @@ window.ElasticidadRegional = {
     },
     {
       "cut": "14",
-      "region": "Los Rios",
-      "tarifa_potencia_kwm": 9.2,
+      "region": "Los Ríos",
+      "tarifa_potencia_kwm": null,
       "stock_2024": 291,
       "pct_stock_nacional": 0.86,
       "ventas_h1_2026_estimadas": 46,
@@ -149,8 +149,8 @@ window.ElasticidadRegional = {
     },
     {
       "cut": "15",
-      "region": "Arica Interior",
-      "tarifa_potencia_kwm": 15.2,
+      "region": "Arica y Parinacota",
+      "tarifa_potencia_kwm": 8717.93,
       "stock_2024": 56,
       "pct_stock_nacional": 0.17,
       "ventas_h1_2026_estimadas": 8,
@@ -158,8 +158,8 @@ window.ElasticidadRegional = {
     },
     {
       "cut": "16",
-      "region": "Nuble",
-      "tarifa_potencia_kwm": 10.1,
+      "region": "Ñuble",
+      "tarifa_potencia_kwm": null,
       "stock_2024": 241,
       "pct_stock_nacional": 0.71,
       "ventas_h1_2026_estimadas": 38,
@@ -167,9 +167,8 @@ window.ElasticidadRegional = {
     }
   ],
   "hallazgos": {
-    "observacion_1": "RM domina 79.5% del stock nacional",
-    "observacion_2": "Arica-Parinacota y Arica Interior tienen tarifas más altas (15+), stock bajo",
-    "observacion_3": "Magallanes tiene tarifa más baja (7.5), stock muy bajo (0.6%)",
+    "observacion_1": "RM domina el stock nacional",
+    "observacion_2": "Tarifa de potencia de corto plazo disponible en 8 de 16 regiones; las demás quedan sin valor",
     "nota_critica": "Correlación tarifa-stock es DÉBIL en datos actuales (agregados). Necesita ventas mensuales por región para medir elasticidad real.",
     "recomendacion": "Cuando ANAC publique CSV, incluir análisis: Ventas ~ Tarifa + lag(1-6 meses)"
   }

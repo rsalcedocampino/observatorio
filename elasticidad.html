@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="¿Sube la adopción de enchufables cuando sube la bencina? Participación de mercado enchufable frente al precio real de la bencina 93.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261008d">
+<link rel="stylesheet" href="assets/estilo.css?v=261009a">
 <style>
   /* flex-wrap: a 360px los 5 botones median 587px en una fila de 320 y desbordaban la pagina
      entera (medido: scrollWidth 584 contra ventana 360). El color de esta barra no se toca. */
@@ -58,7 +58,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="tab-btn" hidden data-tab="tarifas">Tarifas de Electricidad (Regional)</button>
     <button class="tab-btn" data-tab="ev2025">Stock EV 2025 (Proyectado)</button>
     <button class="tab-btn" data-tab="pnp">Precios Nudo por Subestación</button>
-    <button class="tab-btn" data-tab="tarifas-detalle">Tarifa Final (PNP + VAD)</button>
+    <button class="tab-btn" data-tab="tarifas-detalle">Tarifa Final (valores de referencia)</button>
   <p class="nota" style="margin:.75rem 0 0">La vista <strong>Tarifas de Electricidad (Regional)</strong> sigue retirada: en su serie por categoría el valor domiciliario va de 0,78 a 72,77 $/kWh mientras el comercial va de 1.849 a 1.983 en los mismos meses, de modo que no pueden estar todos en la unidad que declaran. Vuelve cuando esté verificada.</p>
   </div>
 
@@ -158,7 +158,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p class="nota" id="nota-elasticidad-regional" style="font-size:0.85rem; color:var(--ink-2);"></p>
       <div id="t-elasticidad-regional"></div>
       <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">
-        Fuente: INE Cuadro 4 (stock 2024, real) + CNE PNP 2026 (tarifas) + ANAC H1 2026 (ventas agregadas).
+        <span id="fuente-elasticidad-regional">Fuente: INE Cuadro 4 (stock 2024, real) + tarifas de potencia de referencia (sin fuente oficial verificada) + ANAC H1 2026 (ventas agregadas).</span>
         Caveat: Tarifa × Stock muestra correlación, no causalidad (requiere ventas mensuales por región).
       </p>
     </div>
@@ -197,7 +197,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
-  <!-- TAB 4: Tarifa Final (PNP + VAD) -->
+  <!-- TAB 4: Tarifa Final (valores de referencia) -->
   <div id="tab-tarifas-detalle" class="tab-content">
     <p class="sub">Tarifa final al cliente = Precio Nudo + Valor Agregado Distribución (distribuidor). El Precio Nudo de esta vista es un valor de REFERENCIA, pendiente de reemplazo por el dato de la CNE: no confundir con el decreto vigente.
     Selecciona región, distribuidor y segmento para ver desglose completo: energía, potencia, cargos fijos y tarifa total.</p>
@@ -234,7 +234,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div id="tabla-tarifa-detalle"></div>
 
       <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color:var(--ink-2);">
-        Datos: PNP (CNE Decreto 2026-04) + VAD Regulado (SEC). Componentes: Energía ($/kWh) + Potencia ($/kW/mes) + Cargo fijo ($/mes).
+        Datos: precio de nudo de referencia + VAD de referencia; no corresponden al decreto vigente. Componentes: Energía ($/kWh) + Potencia ($/kW/mes) + Cargo fijo ($/mes).
         Nota: VAD en revisión - valores de referencia regulados. Verificar con distribuidor para tarifas vigentes actuales.
       </p>
     </div>
@@ -262,7 +262,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 })(); </script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261008d"></script>
+<script src="assets/comun.js?v=261009a"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -645,6 +645,9 @@ function cargarElasticidadRegional() {
   const CANON = Object.fromEntries((((window.PW_DATA || {}).c_ev_proyeccion || {}).regiones || [])
     .map(r => [String(r.cut).padStart(2, "0"), r.region]));
   if (nota) nota.textContent = "Análisis descriptivo (correlación). " + M.caveat; // Tabla: Elasticidad Regional
+  // La fuente de la tarifa se lee del DATO: si el archivo la declara, se cita tal cual; si no, queda el texto fijo
+  // que dice "sin fuente oficial verificada". Las regiones sin valor en la fuente van como "—" y se cuentan aqui.
+  { const fe = document.getElementById("fuente-elasticidad-regional"); const ft = (M.fuentes || {}).tarifa_potencia; const sinT = ERp.regiones.filter(r => r.tarifa_potencia_kwm == null).length; if (fe && ft) fe.textContent = "Fuente: INE Cuadro 4 (stock 2024, real). Tarifa de potencia: " + ft + ". Ventas: ANAC H1 2026 (agregadas)." + (sinT ? " " + sinT + " regiones no tienen valor en esa fuente y van sin dato." : ""); }
   const filas_elasticidad = ERp.regiones.map(r => ({
     region: CANON[String(r.cut).padStart(2, "0")] || r.region,
     tarifa: r.tarifa_potencia_kwm,
