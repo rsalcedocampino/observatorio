@@ -166,7 +166,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- TAB 4: Precios Nudo por Subestacion -->
   <div id="tab-pnp" class="tab-content">
-    <p class="sub">Precio Nudo Promedio (PNP) en subestaciones 220kV del Sistema Nacional de Transmisión.
+    <p class="sub">Precio de Nudo de Corto Plazo en subestaciones 220kV del Sistema Nacional de Transmisión.
     Elige una región para ver sus tarifas de energía ($/kWh) y potencia ($/kW/mes); cuando la región tiene distribuidoras establecidas en la fuente, puedes además filtrar por una.</p>
     <p class="nota" id="nota-pnp"></p>
 
@@ -190,7 +190,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div id="tabla-pnp"></div>
 
       <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color:var(--ink-2);">
-        Datos: Decreto PNP-2026-04 (CNE). Transmisión Nacional (220kV). El decreto se reemplaza
+        Datos: Precio de Nudo de Corto Plazo (CNE). Transmisión Nacional (220kV). El decreto se reemplaza
         cuando la CNE publica el siguiente; aquí se muestra el que está cargado, con su fecha.
         Nota: estos son precios de transmisión. Para tarifa final al cliente, sumar VAD distribuidor.
       </p>
@@ -362,7 +362,8 @@ const D = PW_DATA.c_elasticidad; document.getElementById("nota").textContent = "
   selReg.addEventListener("input", () => { poblarComunas(); pintar(); }); [selCom, selFecha].forEach(s => s.addEventListener("input", pintar)); poblarComunas(); pintar(); })(); // TAB 3: Precios Nudo por Subestación
 if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
   const DPNP = PW_DATA.c_elasticidad_tarifas_pnp; // Actualizar nota
-  document.getElementById("nota-pnp").textContent = "Actualizado " + (DPNP.generado || "").slice(0, 10) + ". " + DPNP.nota; // Llenar dropdown regiones
+  // se muestra la VIGENCIA del precio y no la fecha en que se genero el archivo: el archivo se regenera sin que el precio cambie, y "Actualizado hoy" sobre valores de abril inducia a error
+  document.getElementById("nota-pnp").textContent = (DPNP.vigencia ? "Vigencia: " + DPNP.vigencia + ". " : "Archivo generado el " + (DPNP.generado || "").slice(0, 10) + ". ") + DPNP.nota; // Llenar dropdown regiones
   const selRegion = document.getElementById("sel-region"); DPNP.regiones.forEach(r => {
     const opt = document.createElement("option"); opt.value = r.cut; opt.textContent = r.cut + " - " + r.nombre; selRegion.appendChild(opt); }); // Evento: cambio región
   selRegion.addEventListener("change", function() {

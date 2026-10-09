@@ -1,5 +1,5 @@
-/* Datos de Tarifas PNP por Subestación
-   Fuente: CNE Precio Nudo Promedio (PNP)
+/* Datos de Precio de Nudo de Corto Plazo por Subestación
+   Fuente: CNE, RE 247 Tabla 17 (DS 4T/2026)
    Generado: generar_datos_elasticidad_pnp.py */
 
 PW_DATA.c_elasticidad_tarifas_pnp = {
