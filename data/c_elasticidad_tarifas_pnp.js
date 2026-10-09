@@ -3,7 +3,8 @@
    Generado: generar_datos_elasticidad_pnp.py */
 
 PW_DATA.c_elasticidad_tarifas_pnp = {
-  generado: "2026-10-03",
+  generado: "2026-10-09",
+  vigencia: "Precio de Nudo de Corto Plazo, reajustado al 1-abr-2026 (DS 4T/2026; RE 247, Tabla 17)",
   nota: "Datos APR-2026 de Subestaciones 220kV. Mapeado a distribuidoras.",
   total_subestaciones: 34,
   subestaciones_por_region_dist: {
