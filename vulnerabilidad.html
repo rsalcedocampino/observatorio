@@ -77,7 +77,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>document.write('<script src="data/c_vulnerab.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=261009b"></script>
 <script>
-PW.montarNav("vulnerabilidad.html"); const D = PW_DATA.c_vulnerab; { const ns = document.getElementById("nota-sin-cortes"); if (ns && D.n_sin_cortes) ns.textContent = " Las " + D.n_sin_cortes + " comunas sin ningún registro de cortes en la SEC llevan «sin dato» en el pilar de cortes (no cero) y su índice se calcula con precio y social reponderados (25/60 y 35/60)."; } // Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
+PW.montarNav("vulnerabilidad.html"); const D = PW_DATA.c_vulnerab; // [SIN DATO DE CORTES] que se reviso para decirlo: el historico de la SEC y el registro propio en vivo. Las fechas vienen del dato
+// (cortes_cobertura); si no vienen, la frase queda sin ellas en vez de inventarlas.
+const COB = D.cortes_cobertura || {}; const MESES_V = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]; const mesTxt = ym => ym ? MESES_V[+String(ym).slice(5, 7) - 1] + " de " + String(ym).slice(0, 4) : ""; const DONDE_SE_BUSCO = "su histórico" + (COB.historico_desde && COB.historico_hasta ? " " + String(COB.historico_desde).slice(0, 4) + "–" + String(COB.historico_hasta).slice(0, 4) : "") + (COB.vivo_desde ? " ni en el registro en vivo desde " + mesTxt(COB.vivo_desde) : ""); const SIN_CORTES_TXT = "La SEC no informa cortes de esta comuna: no aparece en " + DONDE_SE_BUSCO + ".";
+{ const ns = document.getElementById("nota-sin-cortes"); if (ns && D.n_sin_cortes) ns.textContent = " La SEC no informa cortes de " + D.n_sin_cortes + " comunas: no aparecen en " + DONDE_SE_BUSCO + ". Llevan «sin dato» en el pilar de cortes (no cero) y su índice se calcula con precio y social reponderados (25/60 y 35/60)."; } // Choropleth del indice: se RECONSTRUYE al filtrar -> colorea la region elegida (quintiles de esa
 // region) y hace foco/zoom a la seleccion (comuna: zoom a la comuna dentro de su region).
 let MAPA = null; // [FICHA] El mapa (choropleth) por defecto solo muestra "comuna: número" al pasar el mouse,
 // sin decir QUE es ese numero. Aca se enriquece page-local: tooltip etiquetado + popup al clic
@@ -88,7 +91,7 @@ const byCut = Object.fromEntries(D.comunas.map(c => [c.cut, c])); const nivelIx 
     `<small>Compuesto por percentiles: cortes 40% &middot; precio 25% &middot; social 35%. Mayor = más vulnerable.</small>` +
     `<hr style="margin:6px 0;border:0;border-top:1px solid var(--border)">` +
     `Pilares (percentil 0-100): cortes <b>${c.sin_cortes ? "sin dato" : PW.fmt(c.pilar_cortes, 0)}</b> &middot; precio <b>${PW.fmt(c.pilar_precio, 0)}</b> &middot; social <b>${PW.fmt(c.pilar_social, 0)}</b><br>` +
-    (c.sin_cortes ? `Cortes 2017-2026: sin registro en la SEC; índice calculado con precio y social reponderados<br>` : `Cortes 2017-2026: ${PW.fmt(c.ch_pc, 1)} cliente-horas por habitante<br>`) +
+    (c.sin_cortes ? `${PW.esc(SIN_CORTES_TXT)} Índice calculado con precio y social reponderados.<br>` : `Cortes 2017-2026: ${PW.fmt(c.ch_pc, 1)} cliente-horas por habitante<br>`) +
     `Bencina 93: ${c.p93 != null ? PW.clp(c.p93) : "—"}${rg}<br>` +
     `Sin electricidad: ${PW.fmt(c.sin_elec, 1)}% &middot; Hacinamiento: ${PW.fmt(c.hacina, 1)}%<br>` +
     `Escolaridad: ${PW.fmt(c.escolaridad, 1)} años &middot; 60+ años: ${PW.fmt(c.envejec, 1)}%<br>` +
