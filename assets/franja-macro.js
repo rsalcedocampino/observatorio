@@ -74,7 +74,10 @@
       ".franja-macro .fm-f{color:var(--ink-3);font-size:11.5px}" +
       ".franja-macro .fm-viejo{color:var(--ink-baja);font-weight:600}" +
       ".franja-macro a.fm-mas{align-self:center;color:var(--accion);font-weight:600}" +
-      ".franja-macro .fm-nota{flex-basis:100%;color:var(--ink-3);font-size:11.5px;margin:0}";
+      ".franja-macro .fm-nota{flex-basis:100%;color:var(--ink-3);font-size:11.5px;margin:0}" +
+      // En telefono el rotulo va en su propia linea: asi no le quita lugar a los indicadores en
+      // la primera fila (medido a 375 px el 2026-10-12: tres indicadores bajan de 181 a 153 px).
+      "@media (max-width:520px){.franja-macro .fm-t{flex-basis:100%;margin:0}}";
     document.head.appendChild(st);
   }
 
