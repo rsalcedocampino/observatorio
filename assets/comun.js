@@ -287,7 +287,7 @@
       nav += `<div class="nav-grupo"><a class="${contiene ? "activo" : ""}" tabindex="0">${grupo}</a><div class="submenu">${sub}</div></div>`;
     });
     h.innerHTML = `<a href="index.html" class="marca"><img src="assets/lockup-energias-futuro.svg" alt="Energías Futuro" width="150" height="44"></a>` +
-      `<button type="button" class="nav-toggle" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>` +
+      `<button type="button" class="nav-toggle" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>` +
       `<nav>${nav}</nav>` +
       `<button type="button" class="tema-toggle"></button>`;
     // Accesibilidad: primer tabulador de la pagina. Sin esto, quien navega con teclado tiene que
@@ -317,6 +317,7 @@
       const abierto = navEl.classList.toggle("abierto");
       toggle.classList.toggle("activo", abierto);
       toggle.setAttribute("aria-expanded", abierto ? "true" : "false");
+      toggle.setAttribute("aria-label", abierto ? "Cerrar menú" : "Abrir menú");
       if (!abierto) navEl.querySelectorAll(".nav-grupo.abierto").forEach(g => g.classList.remove("abierto"));
     });
     navEl.querySelectorAll(".nav-grupo > a").forEach(a => {
@@ -333,6 +334,7 @@
       navEl.classList.remove("abierto");
       toggle.classList.remove("activo");
       toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Abrir menú");
       navEl.querySelectorAll(".nav-grupo.abierto").forEach(g => g.classList.remove("abierto"));
     });
     document.addEventListener("keydown", ev => {
@@ -340,6 +342,7 @@
       navEl.classList.remove("abierto");
       toggle.classList.remove("activo");
       toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Abrir menú");
       navEl.querySelectorAll(".nav-grupo.abierto").forEach(g => g.classList.remove("abierto"));
     });
 
