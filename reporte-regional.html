@@ -401,12 +401,12 @@ function renderResumenNacional() {
     [PW.fmt(comCon), "comunas con red de carga", "de " + comunas.length + " · con cargadores públicos"],
     [PW.fmt(comSin), "comunas sin red de carga", "de " + comunas.length + " · sin cargadores públicos"],
     [PW.fmt(habSin), "habitantes en comunas sin carga", "en las " + comSin + " comunas sin cargadores"],
-    top3.length >= 3 ? [PW.fmt(top3[0].parque_total), "comuna con más vehículos: " + PW.esc(top3[0].comuna), "2° " + PW.esc(top3[1].comuna) + " " + PW.fmt(top3[1].parque_total) + " · 3° " + PW.esc(top3[2].comuna) + " " + PW.fmt(top3[2].parque_total)] : null,
+    top3.length >= 3 ? [PW.fmt(top3[0].parque_total), "comuna con más permisos de circulación: " + PW.esc(top3[0].comuna), "2° " + PW.esc(top3[1].comuna) + " " + PW.fmt(top3[1].parque_total) + " · 3° " + PW.esc(top3[2].comuna) + " " + PW.fmt(top3[2].parque_total)] : null,
     [pctRM != null ? PW.fmt(pctRM, 1) + "%" : "—", "del parque EV está en la RM", "concentración de la electromovilidad"],
   ]); document.getElementById("resumen-nota").innerHTML =
     "Última actualización: datos generados el <b>" + D.generado + "</b>. " +
     "Red de carga: red viva (actualiza cada 15 min). Ventas EV: hasta " + mesLegible + ". " +
-    "Población: Censo 2024. Parque de vehículos por comuna: INE, permisos de circulación " + (D.anio_parque || "") + "."; const topReg = filas.slice().sort((a, b) => b.faltan - a.faltan).slice(0, 5); document.getElementById("mini-ranking").innerHTML =
+    "Población: Censo 2024. Vehículos por comuna: permisos de circulación emitidos por cada municipalidad (INE " + (D.anio_parque || "") + "); la comuna es la del permiso, no necesariamente donde circula el vehículo."; const topReg = filas.slice().sort((a, b) => b.faltan - a.faltan).slice(0, 5); document.getElementById("mini-ranking").innerHTML =
     `<p class="nota" style="margin:10px 0 6px">Regiones con mayor brecha de carga al 2035 (toca para ver su dossier):</p>` +
     topReg.map(f => `<button class="chip-terr" data-rcut="${f.rcut}">${PW.esc(f.region)} · faltan ${PW.fmt(f.faltan)}${f.flotas_pct >= FLOTA_REG_PCT ? " †" : ""}</button>`).join(" ") +
     (topReg.some(f => f.flotas_pct >= FLOTA_REG_PCT) ? `<p class="nota" style="margin:8px 0 0">† El ${FLOTA_REG_PCT}% o más del parque de la región está inscrito en comunas de flotas (ver el ranking completo).</p>` : ""); }
