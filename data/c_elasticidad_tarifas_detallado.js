@@ -1,5 +1,5 @@
-PW_DATA.c_elasticidad_tarifas_detallado = {
-  "generado": "2026-10-09",
+window.PW_DATA.c_elasticidad_tarifas_detallado = {
+  "generado": "2026-10-11",
   "nota": "Tarifas completas = precio de nudo de referencia (pendiente dato CNE oficial) + VAD (distribuidor) por segmento",
   "segmentos_info": {
     "BT1": "Domiciliario",
