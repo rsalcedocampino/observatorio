@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NM4KNK6H');</script>
+<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ'); </script>
+<!-- End Google tag (gtag.js) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Indicadores económicos — Energías Futuro</title>
+<meta name="description" content="Dólar, euro, yuan, UF, UTM, IPC, tasa de política monetaria, bonos a 10 años, cobre, litio, petróleo y combustibles: último valor, fecha y evolución mensual (Banco Central de Chile).">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261012c">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/macro.js?v='+_pwv+'">')</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<style>
+.ind-grupo { margin: 22px 0 8px; font-size: 15px; font-weight: 700; color: var(--ink-2); }
+.ind-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+@media (max-width: 520px) { .ind-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }
+.ind { text-align: left; font: inherit; color: var(--ink-1); cursor: pointer; background: var(--surface-1);
+  border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+.ind:hover { border-color: var(--ink-3); }
+.ind:focus-visible { outline: 2px solid var(--accion); outline-offset: 2px; }
+.ind[aria-pressed="true"] { border-color: var(--accion); box-shadow: inset 0 0 0 1px var(--accion); }
+.ind .n { font-size: 12.5px; color: var(--ink-2); }
+.ind .v { font-size: 23px; font-weight: 700; margin-top: 2px; overflow-wrap: anywhere; }
+.ind .u { font-size: 11.5px; color: var(--ink-3); }
+.ind .f { font-size: 11.5px; color: var(--ink-3); margin-top: 6px; }
+.ind .vars { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); margin-top: 6px; }
+.ind .vars b { font-weight: 600; }
+.ind .atraso { color: var(--ink-baja); font-weight: 600; }
+#g-titulo { margin: 0 0 2px; font-size: 16px; }
+#g-acl { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NM4KNK6H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main>
+  <h1>Indicadores económicos</h1>
+  <p class="sub">El contexto económico de la electromovilidad y la energía en Chile: monedas,
+  inflación, tasas de interés y materias primas. Cada tarjeta muestra el <b>último dato
+  publicado</b> con su fecha, porque no todas las series se actualizan al mismo ritmo. Toca una
+  tarjeta para ver su evolución mensual.
+  <span class="pill">Banco Central de Chile</span></p>
+
+  <div id="tarjetas"></div>
+
+  <div class="tarjeta" style="margin-top:22px">
+    <h2 id="g-titulo"></h2>
+    <p class="nota" id="g-acl"></p>
+    <div class="filtros">
+      <label>Indicador <select id="f-serie"></select></label>
+      <label>Período
+        <select id="f-per">
+          <option value="0">Desde 2016</option>
+          <option value="60">Últimos 5 años</option>
+          <option value="24" selected>Últimos 2 años</option>
+          <option value="12">Últimos 12 meses</option>
+        </select>
+      </label>
+    </div>
+    <div id="g-serie"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin:0 0 8px;font-size:16px">Todos los indicadores</h2>
+    <div id="t-ind"></div>
+  </div>
+
+  <p class="fuente" id="fuente"></p>
+</main>
+<script>document.write('<script src="data/macro.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=261012c"></script>
+<script>
+PW.montarNav("indicadores.html");
+const D = PW_DATA.macro;
+const S = {}; D.series.forEach(s => { S[s.clave] = s; });
+const DEC = { utm: 0, cobre: 3, diesel: 3 };
+const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+function g(id) { return document.getElementById(id); }
+function dec(s) { return DEC[s.clave] != null ? DEC[s.clave] : 2; }
+// PW.fmt solo da 0 o 1 decimal; aqui hacen falta 2 (monedas, tasas) y 3 (cobre, diesel).
+const NF = {};
+function n(v, d) {
+  if (v == null || Number.isNaN(v)) return "—";
+  NF[d] = NF[d] || new Intl.NumberFormat("es-CL", { minimumFractionDigits: d, maximumFractionDigits: d });
+  return NF[d].format(v);
+}
+function num(s, v) { return n(v, dec(s)); }
+// "2026-10-09" -> "9 oct 2026"; en las series mensuales solo "sep 2026"
+function fecha(s) {
+  const p = s.fecha.split("-");
+  const mes = MESES[+p[1] - 1] + " " + p[0];
+  return s.frecuencia === "mensual" ? mes : (+p[2]) + " " + mes;
+}
+// Variacion con signo: en las tasas son puntos porcentuales, no porcentaje.
+function variacion(s, v) {
+  if (v == null) return "—";
+  const signo = v > 0 ? "+" : (v < 0 ? "−" : "");
+  return signo + n(Math.abs(v), s.en_puntos ? 2 : 1) + (s.en_puntos ? " pts" : " %");
+}
+
+let actual = "usd";
+function tarjeta(s) {
+  const atraso = s.atrasada ? ` <span class="atraso">· sin actualizar hace ${s.dias_de_atraso} días</span>` : "";
+  return `<button type="button" class="ind" data-clave="${PW.esc(s.clave)}" aria-pressed="${s.clave === actual}">
+    <div class="n">${PW.esc(s.nombre)}</div>
+    <div class="v">${num(s, s.valor)}</div>
+    <div class="u">${PW.esc(s.unidad)}</div>
+    <div class="vars"><span>1 mes <b>${variacion(s, s.var_1m)}</b></span><span>12 meses <b>${variacion(s, s.var_12m)}</b></span></div>
+    <div class="f">Dato ${s.frecuencia === "mensual" ? "de" : "del"} ${fecha(s)}${atraso}</div>
+  </button>`;
+}
+function pintarTarjetas() {
+  g("tarjetas").innerHTML = D.grupos.map(gr =>
+    `<h2 class="ind-grupo">${PW.esc(gr.titulo)}</h2><div class="ind-grid">` +
+    gr.claves.filter(c => S[c]).map(c => tarjeta(S[c])).join("") + "</div>").join("");
+}
+
+function pintarGrafico() {
+  const s = S[actual];
+  const n = +g("f-per").value;
+  const desde = n ? Math.max(0, D.meses.length - n) : 0;
+  const labels = D.meses.slice(desde), valores = s.mensual.slice(desde);
+  const conDato = valores.filter(v => v != null);
+  g("g-titulo").textContent = s.nombre + " (" + s.unidad + ")";
+  g("g-acl").textContent = "Serie mensual: " + s.mensual_es + "." + (s.aclaracion ? " " + s.aclaracion : "");
+  if (!conDato.length) { g("g-serie").innerHTML = '<p class="nota">Sin datos en este periodo.</p>'; return; }
+  // El eje no parte de cero: con el dolar entre 900 y 1.000 la curva quedaria plana arriba.
+  const lo = Math.min(...conDato), hi = Math.max(...conDato), aire = (hi - lo) * 0.08 || Math.abs(hi) * 0.05 || 1;
+  PW.lineas("g-serie", {
+    labels, series: [{ nombre: s.nombre, valores }],
+    min: lo - aire, max: hi + aire, alto: 300,
+    fmtY: v => num(s, v), fmtV: v => num(s, v) + " " + s.unidad,
+  });
+}
+function elegir(clave) {
+  if (!S[clave]) return;
+  actual = clave;
+  g("f-serie").value = clave;
+  document.querySelectorAll(".ind").forEach(b => b.setAttribute("aria-pressed", b.dataset.clave === clave));
+  pintarGrafico();
+}
+
+g("f-serie").innerHTML = D.grupos.map(gr =>
+  `<optgroup label="${PW.esc(gr.titulo)}">` +
+  gr.claves.filter(c => S[c]).map(c => `<option value="${PW.esc(c)}">${PW.esc(S[c].nombre)}</option>`).join("") +
+  "</optgroup>").join("");
+pintarTarjetas();
+g("tarjetas").addEventListener("click", e => {
+  const b = e.target.closest(".ind");
+  if (!b) return;
+  elegir(b.dataset.clave);
+  g("g-titulo").scrollIntoView({ behavior: "smooth", block: "nearest" });
+});
+g("f-serie").addEventListener("change", e => elegir(e.target.value));
+g("f-per").addEventListener("change", pintarGrafico);
+elegir(actual);
+window.addEventListener("resize", pintarGrafico);
+
+PW.tabla("t-ind", [
+  { k: "nombre", titulo: "Indicador", fmt: v => `<b>${PW.esc(v)}</b>` },
+  { k: "valor", titulo: "Valor", num: true, fmt: (v, f) => num(f, v) },
+  { k: "unidad", titulo: "Unidad" },
+  { k: "fecha", titulo: "Fecha del dato", fmt: (v, f) => fecha(f) },
+  { k: "var_1m", titulo: "Var. 1 mes", num: true, fmt: (v, f) => variacion(f, v) },
+  { k: "var_12m", titulo: "Var. 12 meses", num: true, fmt: (v, f) => variacion(f, v) },
+  { k: "aclaracion", titulo: "Aclaración", fmt: v => PW.esc(v || "") },
+], D.series, { buscador: false, max: 50 });
+
+g("fuente").textContent = "Fuente: " + D.fuente + ". " + D.nota;
+</script>
+</body>
+</html>

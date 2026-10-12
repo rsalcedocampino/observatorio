@@ -58,6 +58,7 @@
       ["buses.html", "Buses eléctricos"],
       ["camiones.html", "Camiones cero y baja emisión"],
       ["inversion.html", "Inversión verde"],
+      ["indicadores.html", "Indicadores económicos"],
       ["radar.html", "Importaciones de vehículos"],
       ["homologaciones.html", "Radar de homologaciones"],
       ["baterias.html", "Importaciones de baterías de litio"],
@@ -128,6 +129,7 @@
   ICONOS["padron-ev.html"] = ICONOS["vehiculo.html"];
   ICONOS["homologaciones.html"] = ICONOS["vehiculo.html"];
   ICONOS["inversion.html"] = IC('<path d="M3 17l5-5 3 3 4-4.5"/><path d="M15 10.5h4v4"/><path d="M3 21h18"/>');
+  ICONOS["indicadores.html"] = IC('<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>');
   ICONOS["generacion.html"] = IC('<path d="M12 2v6M12 8l-4 6h8l-4 6"/><path d="M5 5l1.5 1.5M19 5l-1.5 1.5"/>');
   // vertimiento: la curva de generacion con la punta CORTADA en plano, que es literalmente lo
   // que pasa; la linea de puntos es el peak que se habria generado y se perdio.
