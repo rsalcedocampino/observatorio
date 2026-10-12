@@ -1,0 +1,14 @@
+# Observatorio Energías Futuro
+# Consulta de páginas y citas con fuente: permitidas.
+# Extracción masiva de data/*.js o reventa de los datos: no autorizada.
+# Datos o informes a medida: escribir al contacto del sitio.
+
+User-agent: *
+Allow: /
+
+# Entrenamiento de IA y recolectores masivos: no autorizados.
+User-agent: GPTBot
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: Google-Extended
+Disallow: /
