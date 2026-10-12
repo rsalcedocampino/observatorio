@@ -168,7 +168,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 PW.montarNav("carga-registro-mapa.html"); const D = window.PW_DATA.carga_mapa || {}; const PTS = (D.puntos || []).map(p => ({ ...p, lat: +p.lat, lon: +p.lon }))
   .filter(p => !Number.isNaN(p.lat) && !Number.isNaN(p.lon)); document.getElementById("nota").textContent =
   "Fuente: registro SEC (reporte EcoCarga)" + (D.actualizacion ? ", snapshot " + D.actualizacion : "") +
-  ". Georreferenciación y comuna geográfica generadas " + (D.generado || "—") + "."; const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; // color por categoria
+  ". Georreferenciación y comuna geográfica generadas " + (D.generado || "—") + "." +
+  // [SIN COORDENADA] registros vigentes que la SEC entrega sin coordenada: no se pueden dibujar.
+  ((D.sin_coordenada && D.sin_coordenada.registros > 0 && D.sin_coordenada.cargadores > 0)
+    ? " El mapa no incluye " + PW.fmt(D.sin_coordenada.cargadores) + (D.sin_coordenada.cargadores === 1 ? " cargador vigente que la SEC informa" : " cargadores vigentes que la SEC informa") + " sin coordenada; la pestaña de capacidad instalada sí " + (D.sin_coordenada.cargadores === 1 ? "lo cuenta." : "los cuenta.")
+    : ""); const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; // color por categoria
 const COLC = {
   "Publico": PW.color("--s2"),
   "Privado": PW.color("--s5"),
