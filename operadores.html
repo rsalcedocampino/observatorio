@@ -33,6 +33,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script>document.write('<link rel="preload" as="script" href="data/sitios.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/mapa_carga.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<style>.ev-corr { opacity: .7; } @media (max-width: 600px) { .ev-corr { display: none; } }</style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
@@ -202,7 +203,7 @@ const DS = PW_DATA.sitios; const ATIP = DS.atipicas || {}; const esAtipica = c =
   { k: "comuna", titulo: "Comuna" },
   { k: "region", titulo: "Región" },
   { k: "poblacion", titulo: "Población", num: true, fmt: v => PW.fmt(v) },
-  { k: "ev_parque", titulo: "Parque eléctrico", num: true, fmt: (v, f) => PW.fmt(v) + (esAtipica(f) ? ` <small style="opacity:.7">(corregido ${PW.fmt(f.ev_corregido)})</small>` : "") },
+  { k: "ev_parque", titulo: "Parque eléctrico", num: true, fmt: (v, f) => PW.fmt(v) + (esAtipica(f) ? ` <small class="ev-corr">(corregido ${PW.fmt(f.ev_corregido)})</small>` : "") },
   { k: "conectores", titulo: "Conectores", num: true, fmt: (v, f) => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
   { k: "conectores_dc", titulo: "DC", num: true },
   { k: "ev_por_conector", titulo: "EV por conector", num: true, fmt: v => v == null ? "sin oferta" : PW.fmt(v, 1) },
