@@ -76,7 +76,7 @@ window.EV2025Data = {
     },
     {
       "region_cut": "01",
-      "region": "Arica-Parinacota",
+      "region": "Tarapacá",
       "stock_2024": 303,
       "stock_2025_proyectado": 1275,
       "incremento": 972,
@@ -166,7 +166,7 @@ window.EV2025Data = {
     },
     {
       "region_cut": "15",
-      "region": "Arica Interior",
+      "region": "Arica y Parinacota",
       "stock_2024": 56,
       "stock_2025_proyectado": 149,
       "incremento": 93,
@@ -189,7 +189,7 @@ window.EV2025Data = {
     {
       "titulo": "Regiones con Mayor Crecimiento",
       "valor": "+320.8%",
-      "detalle": "Arica-Parinacota lidera crecimiento (pero desde base muy pequena)"
+      "detalle": "Tarapacá lidera crecimiento (pero desde base muy pequena)"
     },
     {
       "titulo": "Correlación Tarifa × Stock EV",
