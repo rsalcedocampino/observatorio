@@ -415,7 +415,7 @@ BUILD["solar"] = function () {
       kpi(PW.clp(inversion), "Inversión", np + " paneles") +
       kpi(payback == null ? "—" : PW.fmt(payback, 1) + " años", "Recuperación", "payback simple") +
       kpi(PW.fmt(co2Evit) + " kg", "CO2 evitado/año", ""); const facSum = ESTAC.reduce((a, b) => a + b, 0); const genMes = ESTAC.map(f => genAnual * f / facSum); // normalizado: los 12 meses suman la generación anual
-    PW.columnas("g-so-mes", { labels: MESES, valores: genMes, alto: 240, fmtV: v => PW.fmt(v) + " kWh", fmtY: PW.fmt, color: PW.color("--s4") }); const anos = [], flujo = []; for (let t = 0; t <= 10; t++) { anos.push(String(t)); flujo.push(-inversion + ahorroAnual * t); }
+    PW.lineas("g-so-mes", { labels: MESES, series: [{ nombre: "Generación solar", valores: genMes, color: PW.color("--s4") }, { nombre: "Consumo del EV", valores: MESES.map(() => consumoMes), color: PW.color("--s1") }], alto: 240, fmtY: PW.fmt, fmtV: v => PW.fmt(v) + " kWh" }); const anos = [], flujo = []; for (let t = 0; t <= 10; t++) { anos.push(String(t)); flujo.push(-inversion + ahorroAnual * t); }
     PW.lineas("g-so-pb", {
       labels: anos, series: [{ nombre: "Flujo acumulado", valores: flujo, color: PW.color("--s6"), area: true }],
       alto: 240, fmtY: PW.clp, fmtV: PW.clp, lineaY: { v: 0, texto: "se paga" },
