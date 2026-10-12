@@ -40,6 +40,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   por la columna que quieras y filtra por región, marca comercial o grupo dueño para encontrar
   dónde está más barato.
   <span class="pill">CNE</span></p>
+  <div class="franja-macro" data-claves="brent,gasolina,usd" data-nota="Petróleo y gasolina son precios internacionales, no el precio en bomba en Chile."></div>
 
   <div class="kpis" id="kpis"></div>
   <p class="nota" id="nota"></p>
@@ -62,6 +63,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=261012c"></script>
+<script>document.write('<script src="assets/franja-macro.js?v='+_pwv+'"><\/script>')</script>
 <script>
 PW.montarNav("combustible.html"); const D = PW_DATA.combustible; const EST = D.estaciones, T = D.totales; function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
 function g(id) { return document.getElementById(id); }

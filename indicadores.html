@@ -88,28 +88,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </main>
 <script>document.write('<script src="data/macro.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=261012c"></script>
+<script>document.write('<script src="assets/franja-macro.js?v='+_pwv+'"><\/script>')</script>
 <script>
 PW.montarNav("indicadores.html");
 const D = PW_DATA.macro;
 const S = {}; D.series.forEach(s => { S[s.clave] = s; });
 const DEC = { utm: 0, cobre: 3, diesel: 3 };
-const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 function g(id) { return document.getElementById(id); }
 function dec(s) { return DEC[s.clave] != null ? DEC[s.clave] : 2; }
 // PW.fmt solo da 0 o 1 decimal; aqui hacen falta 2 (monedas, tasas) y 3 (cobre, diesel).
-const NF = {};
-function n(v, d) {
-  if (v == null || Number.isNaN(v)) return "—";
-  NF[d] = NF[d] || new Intl.NumberFormat("es-CL", { minimumFractionDigits: d, maximumFractionDigits: d });
-  return NF[d].format(v);
-}
+// El formato de numeros y fechas vive en assets/franja-macro.js (PWMacro), compartido con las
+// franjas de contexto de las otras paginas: una sola copia.
+const n = PWMacro.num, fecha = PWMacro.fecha;
 function num(s, v) { return n(v, dec(s)); }
-// "2026-10-09" -> "9 oct 2026"; en las series mensuales solo "sep 2026"
-function fecha(s) {
-  const p = s.fecha.split("-");
-  const mes = MESES[+p[1] - 1] + " " + p[0];
-  return s.frecuencia === "mensual" ? mes : (+p[2]) + " " + mes;
-}
 // Variacion con signo: en las tasas son puntos porcentuales, no porcentaje.
 function variacion(s, v) {
   if (v == null) return "—";
