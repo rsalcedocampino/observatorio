@@ -48,8 +48,11 @@
   var FORMA = {
     usd: ["Dólar", "$", "", 2], eur: ["Euro", "$", "", 2], cny: ["Yuan", "$", "", 2],
     uf: ["UF", "$", "", 2], utm: ["UTM", "$", "", 0], ipc: ["IPC", "", "", 2],
-    tpm: ["Tasa de política monetaria", "", " %", 2],
-    bono10_cl: ["Bono Chile 10 años", "", " %", 2], bono10_us: ["Bono EE.UU. 10 años", "", " %", 2],
+    // Quinto elemento, opcional: nombre corto para telefono (bajo 520 px). El nombre oficial
+    // completo queda siempre en el title del enlace.
+    tpm: ["Tasa de política monetaria", "", " %", 2, "TPM"],
+    bono10_cl: ["Bono Chile 10 años", "", " %", 2, "Bono Chile 10a"],
+    bono10_us: ["Bono EE.UU. 10 años", "", " %", 2, "Bono EE.UU. 10a"],
     cobre: ["Cobre", "US$ ", " /lb", 3], litio: ["Litio", "US$ ", " /kg", 2],
     wti: ["Petróleo WTI", "US$ ", "", 2], brent: ["Petróleo Brent", "US$ ", "", 2],
     gas_natural: ["Gas natural", "US$ ", " /MMBtu", 2], carbon: ["Carbón", "US$ ", " /t", 2],
@@ -77,7 +80,11 @@
       ".franja-macro .fm-nota{flex-basis:100%;color:var(--ink-3);font-size:11.5px;margin:0}" +
       // En telefono el rotulo va en su propia linea: asi no le quita lugar a los indicadores en
       // la primera fila (medido a 375 px el 2026-10-12: tres indicadores bajan de 181 a 153 px).
-      "@media (max-width:520px){.franja-macro .fm-t{flex-basis:100%;margin:0}}";
+      // y los nombres largos se cambian por su version corta (inversion.html pasa de dos filas
+      // de indicadores a una).
+      ".franja-macro .fm-corto{display:none}" +
+      "@media (max-width:520px){.franja-macro .fm-t{flex-basis:100%;margin:0}" +
+      ".franja-macro .fm-largo{display:none}.franja-macro .fm-corto{display:inline}}";
     document.head.appendChild(st);
   }
 
@@ -97,7 +104,9 @@
         var viejo = s.atrasada ? ' <span class="fm-viejo">· sin actualizar hace ' + esc(s.dias_de_atraso) + " días</span>" : "";
         return '<a class="fm-c" href="indicadores.html" title="' + esc(s.nombre + " (" + s.unidad + ")" +
           (s.aclaracion ? ". " + s.aclaracion : "")) + '">' +
-          '<span class="fm-n">' + esc(f[0]) + "</span>" +
+          '<span class="fm-n">' + (f[4]
+            ? '<span class="fm-largo">' + esc(f[0]) + '</span><span class="fm-corto">' + esc(f[4]) + "</span>"
+            : esc(f[0])) + "</span>" +
           '<span class="fm-v">' + esc(f[1] + num(s.valor, f[3]) + f[2]) + "</span>" +
           '<span class="fm-f">' + esc(fecha(s)) + viejo + "</span></a>";
       }).filter(Boolean);
