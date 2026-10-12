@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="Lo que entra por la aduana anticipa lo que se venderá meses después: importaciones de vehículos electrificados por marca, modelo y propulsión.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261012a">
+<link rel="stylesheet" href="assets/estilo.css?v=261012b">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/radar.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -67,6 +67,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="nota">Quién trae estos vehículos, por razón social del importador (identidad por DIN de
     Aduana). La cobertura de identificación varía por categoría; el resto figura como importador
     confidencial en la fuente y queda fuera del ranking.</p>
+    <p class="nota" id="nota-inferidos" hidden></p>
+    <div id="ley-importadores" hidden></div>
     <div id="g-importadores"></div>
   </div>
 
@@ -79,7 +81,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 </main>
 <script>document.write('<script src="data/radar.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261012a"></script>
+<script src="assets/comun.js?v=261012b"></script>
 <script>
 PW.montarNav("radar.html"); const D = PW_DATA.radar; document.getElementById("nota").textContent =
   "Último mes publicado por la fuente: " + D.ultimo_mes + ". " + D.nota; const selC = document.getElementById("f-cat"); D.categorias.forEach(c => {
@@ -96,10 +98,26 @@ PW.montarNav("radar.html"); const D = PW_DATA.radar; document.getElementById("no
     })),
   }); PW.barras("g-paises", { items: G.paises_12m.map(p => ({ nombre: p.pais, valor: p.unidades })), color: PW.color("--s2") }); PW.barras("g-importadores", {
     items: (G.top_importadores_12m || []).map(i => ({
-      nombre: i.importador, valor: i.unidades, extra: "CIF: US$" + PW.fmt(i.cif_usd),
+      nombre: i.importador, valor: i.unidades, parte: i.unidades_inferidas || 0,
+      extra: (i.unidades_inferidas > 0 ? PW.fmt(i.unidades - i.unidades_inferidas) + " identificadas en la declaración · " + PW.fmt(i.unidades_inferidas) + " estimadas por marca<br>" : "") + "CIF: US$" + PW.fmt(i.cif_usd),
     })),
-    color: PW.color("--s4"),
-  }); const colsD = [
+    color: PW.color("--s4"), colorParte: PW.color("--s3"),
+  });
+  // [LEYENDA IMPORTADORES] dos colores, solo si la categoria tiene unidades estimadas
+  (function () {
+    const ley = document.getElementById("ley-importadores"); if (!ley) return; const hay = ((G.importadores_inferidos || {}).unidades > 0) && (G.top_importadores_12m || []).some(i => i.unidades_inferidas > 0);
+    if (!hay) { ley.hidden = true; ley.className = ""; ley.innerHTML = ""; return; }
+    PW.leyendaMapa(ley, [
+      ["Identificado: la declaración trae al importador o representante de la marca", PW.color("--s4")],
+      ["Estimado: la declaración no lo trae y se atribuye al importador o representante de esa marca", PW.color("--s3")],
+    ]); ley.hidden = false;
+  })();
+  // [IMPORTADOR ESTIMADO] unidades atribuidas por la marca, no por la declaracion: se dice cuantas.
+  (function () {
+    const el = document.getElementById("nota-inferidos"); const inf = G.importadores_inferidos || {}; if (!el) return; if (!(inf.unidades > 0)) { el.hidden = true; return; }
+    const con = (G.top_importadores_12m || []).filter(i => i.unidades_inferidas > 0).sort((a, b) => b.unidades_inferidas - a.unidades_inferidas);
+    el.hidden = false; el.textContent = "Este ranking incluye " + PW.fmt(inf.unidades) + " unidades estimadas: su declaración no trae el importador y se atribuyen al que importa al menos el 98% de esa marca." + (con.length ? " La mayor parte corresponde a " + con.slice(0, 3).map(i => i.importador + " (" + PW.fmt(i.unidades_inferidas) + " de sus " + PW.fmt(i.unidades) + ")").join(", ") + ". El detalle de cada barra indica cuántas son estimadas." : " Ninguna está entre los importadores que se muestran.");
+  })(); const colsD = [
     { k: "debut", titulo: "Debut" },
     { k: "marca", titulo: "Marca" },
     { k: "modelo", titulo: "Modelo" },

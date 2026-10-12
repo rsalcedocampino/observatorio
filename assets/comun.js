@@ -26,8 +26,8 @@
   // Agrupacion por intencion del visitante (no por origen del dato): 5 grupos + "Mapas" como
   // link directo (fuera de GRUPOS, ver montarNav) porque cruza 5 fuentes a la vez y no es "de"
   // ningun grupo. Reemplaza los 10 grupos por origen de dato que tenia el nav hasta 2026-09-16
-  // (ver CAMBIOS.md). infraestructura.html se mueve de "Energia" a "Red de carga": es capacidad
-  // de carga instalada (SEC), la portada ya lo agrupaba asi.
+  // (ver CAMBIOS.md). infraestructura.html ya no esta en el menu: hoy es una redireccion a
+  // carga-registro-mapa.html#capacidad, donde vive la capacidad de carga instalada (SEC).
   const GRUPOS = [
     ["Mi auto", [
       ["padron-ev.html", "Padrón EV"],
@@ -833,6 +833,15 @@
       const w = (W - m.l - m.r) * it.valor / maxV;
       const r = svgEl("rect", { x: m.l, y: y + 5, width: Math.max(w, 1.5), height: alto - 10, rx: 4, fill: c });
       svg.appendChild(r);
+      // [BARRA EN DOS PARTES] it.parte = porcion del valor que es de otra naturaleza (p.ej. unidades
+      // estimadas dentro de un total). La barra completa se pinta con cfg.colorParte y encima va el
+      // tramo "firme" (valor - parte) con el color normal, asi la parte queda al final de la barra.
+      // El tramo de encima no captura el raton: el tooltip sigue siendo el de la barra entera.
+      if (it.parte > 0 && it.valor > 0) {
+        r.setAttribute("fill", cfg.colorParte || color("--s3"));
+        const wFirme = w * Math.max(0, 1 - it.parte / it.valor);
+        if (wFirme >= 1) svg.appendChild(svgEl("rect", { x: m.l, y: y + 5, width: wFirme, height: alto - 10, rx: 4, fill: c, "pointer-events": "none" }));
+      }
       const tv = svgEl("text", { x: m.l + Math.max(w, 1.5) + 7, y: y + alto / 2 + 4, "font-size": 11.5, fill: color("--ink-2") });
       tv.textContent = (cfg.fmtV || (v => nf0.format(v)))(it.valor);
       svg.appendChild(tv);
