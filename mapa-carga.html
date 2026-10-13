@@ -94,7 +94,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="tarjeta">
     <h2 style="margin-top:0">Mapa en vivo: cargadores y cortes</h2>
     <p class="nota" id="cv-nota-mapa"></p>
-    <p class="nota" style="font-size:12px; opacity:0.85">💡 <b>Tip:</b> Alterna entre "Zonas con corte" (colores azul/amarillo por comuna) y "Red de carga" (puntos individuales de cargadores). Haz clic en un punto para ver detalles completos.</p>
+    <p class="nota" style="font-size:12px; opacity:0.85"><b>Consejo:</b> Alterna entre "Zonas con corte" (colores azul/amarillo por comuna) y "Red de carga" (puntos individuales de cargadores). Haz clic en un punto para ver detalles completos.</p>
     <div id="cv-filtros-cortes" class="filtros"></div>
     <div id="cv-panel-capas-cortes" class="capas-panel"></div>
     <div id="cv-mapa-cortes"></div>
@@ -327,7 +327,7 @@ document.getElementById("cv-kpis").innerHTML = [
   { k: "carga", nombre: "Red de carga (puntos)", col: "--s3", on: true },
 ]; const onCap = k => (CAP_CORTES.find(c => c.k === k) || {}).on; let mapaCortes = null; function popupCargaCorte(p) {
   const afx = afectadas.has(_norm(p.com)); return PW.popupEstacion(p) +
-    (afx ? `<div class="pop-detalle" style="color:var(--critical);font-weight:600">⚠️ Corte activo en ${PW.esc(p.com)}: posiblemente sin servicio.</div>` : "") +
+    (afx ? `<div class="pop-detalle" style="color:var(--critical);font-weight:600">Corte activo en ${PW.esc(p.com)}: posiblemente sin servicio.</div>` : "") +
     `<div class="pop-detalle" style="opacity:0.75; font-size:12px; margin-top:6px;">Datos actualizados: ${D.generado}</div>`; }
 // [FILTRO TERRITORIAL] los selectores Region/Comuna filtran los cargadores del mapa y hacen zoom
 // al territorio (patron 161: poligonos via PW.boundsComunas; limpiar vuelve a Chile).
