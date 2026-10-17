@@ -2024,6 +2024,34 @@
   //   - archivos: data/<dir>/<cut>.json = { n, [campo]:[...] }.
   //   - filtro: {cut?, rcut?} (cut resuelto por el consumidor; region solo si cfg.region).
   //   Devuelve { scope(filtro), sincronizar(filtro)->Promise, datos(filtro)->[...] , total(filtro) }.
+  // [MAPA] formato compacto "pl1" de tramos y postes (compactar_capas_red.py, 2026-10-16): cada
+  //   polilinea viene como "encoded polyline" (factor 1e5, lat primero). Se expande a lo mismo que
+  //   traia el formato viejo: tramos como pares [[lon,lat],[lon,lat]] y postes como [[lon,lat],...].
+  //   Un archivo sin fmt (formato viejo, o una cache del navegador) pasa sin tocar.
+  function _decPl(s) {
+    const pts = []; let i = 0, lat = 0, lon = 0;
+    while (i < s.length) {
+      for (let k = 0; k < 2; k++) {
+        let res = 0, sh = 0, b;
+        do { b = s.charCodeAt(i++) - 63; res |= (b & 0x1f) << sh; sh += 5; } while (b >= 0x20);
+        const v = (res & 1) ? ~(res >> 1) : (res >> 1);
+        if (k === 0) lat += v; else lon += v;
+      }
+      pts.push([lon / 1e5, lat / 1e5]);
+    }
+    return pts;
+  }
+  function _expandirPl1(d) {
+    if (!d || d.fmt !== "pl1") return d;
+    if (Array.isArray(d.l)) {
+      const segs = [];
+      for (const s of d.l) { const p = _decPl(s); for (let j = 1; j < p.length; j++) segs.push([p[j - 1], p[j]]); }
+      d.segs = segs; delete d.l;
+    }
+    if (typeof d.p === "string") { d.pts = _decPl(d.p); delete d.p; }
+    return d;
+  }
+
   function capaComunaOnDemand(cfg) {
     const cache = {}, cargando = {};
     function scope(filtro) {
@@ -2037,7 +2065,7 @@
       if (!faltan.length) return;
       await Promise.all(faltan.map(async c => {
         cargando[c] = true;
-        try { cache[c] = await fetch("data/" + cfg.dir + "/" + c + ".json").then(r => r.json()); }
+        try { cache[c] = _expandirPl1(await fetch("data/" + cfg.dir + "/" + c + ".json").then(r => r.json())); }
         catch (e) { cache[c] = null; }
         cargando[c] = false;
       }));
