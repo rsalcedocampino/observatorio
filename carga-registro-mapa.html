@@ -137,13 +137,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   ver <a href="carga-registro-mapa.html">el mapa del registro</a> y <a href="#capacidad">la capacidad instalada</a>.</p>
   <p class="nota" id="rp-nota"></p>
 
-  <h2>Fiscalización de la red pública (2025)</h2>
-  <p class="sub">Durante 2025 la SEC fiscalizó en terreno la operatividad de la infraestructura de recarga pública.</p>
+  <h2>Fiscalización y operatividad de la red pública</h2>
+  <div class="filtros"><label>Año <select id="rp-anio">
+    <option value="2026" selected>2026 (medición del observatorio)</option>
+    <option value="2025">2025 (fiscalización SEC)</option>
+  </select></label></div>
+  <p class="sub" id="rp-sub-fisc"></p>
   <div class="kpis" id="rp-kpi-fisc"></div>
   <div class="tarjeta">
     <h3 style="margin-top:0">Operatividad por macrozona</h3>
     <div id="rp-g-fisc"></div>
     <div id="rp-t-fisc"></div>
+    <p class="nota" id="rp-nota-fisc"></p>
   </div>
 
   <h2>Transporte público eléctrico</h2>
@@ -293,19 +298,64 @@ const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar"); PW.lineas("c
   if (id === "reporte" && !_hecho.reporte) {
     _hecho.reporte = true;
     if (!await PW.cargarDatos("reporte_sec")) return;
+    await PW.cargarDatos("operatividad_red");  // 2026: si falta, el selector lo dice y muestra 2025
     (function () {
 const D = window.PW_DATA.reporte_sec || {}; document.getElementById("rp-nota").textContent = "Fuente: " + (D.fuente || "SEC") + ". Datos " + (D.periodo || "2018-2025") + ". Generado " + (D.generado || "—") + "."; const kpiHTML = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; // --- Fiscalizacion ---
-const F = D.fiscalizacion || {}; document.getElementById("rp-kpi-fisc").innerHTML = [
-  [PW.fmt(F.total_instalaciones || 0), "instalaciones fiscalizadas", "en 2025"],
-  [(F.por_macrozona || []).length, "macrozonas", "+ RM"],
-].map(kpiHTML).join(""); if (window.PW && PW.barras) {
-  PW.barras("rp-g-fisc", { items: (F.por_macrozona || []).map(m => ({ nombre: m.macrozona, valor: m.operatividad_pct })), fmtV: v => PW.fmt(v, 1) + "%" }); }
-PW.tabla("rp-t-fisc", [
-  { k: "macrozona", titulo: "Macrozona" },
-  { k: "instalaciones", titulo: "Instalaciones", num: true, fmt: v => PW.fmt(v) },
-  { k: "operatividad_pct", titulo: "Operatividad", num: true,
-    fmt: v => v == null ? "—" : PW.fmt(v, 1) + "%" },
-], F.por_macrozona || [], { orden: "instalaciones" }); // --- Transporte publico ---
+// [FILTRO AÑO] 2025 = fiscalizacion en terreno de la SEC (unico año que publico: Reporte Nacional
+// 2026, p. 10); 2026 = operatividad medida por el observatorio con la misma definicion de
+// instalacion operativa (operatividad_red.js, generar_datos.py:modulo_operatividad_red). Son
+// mediciones distintas y se rotulan distinto; antes de 2025 no hay dato publicado.
+const F = D.fiscalizacion || {}, O = window.PW_DATA.operatividad_red || {};
+const pctFmt = v => v == null ? "—" : PW.fmt(v, 1) + "%";
+const fechaCorta = s => s ? s.slice(8, 10) + "-" + s.slice(5, 7) + "-" + s.slice(0, 4) : "—";
+function pintarFisc(anio) {
+  const sub = document.getElementById("rp-sub-fisc"), nota = document.getElementById("rp-nota-fisc");
+  if (anio === "2026" && O.disponible) {
+    sub.innerHTML = "Medición del observatorio entre el " + fechaCorta(O.desde) + " y el " + fechaCorta(O.hasta) +
+      ", con la definición de la SEC: una estación está <b>operativa</b> si al menos uno de sus cargadores " +
+      "está disponible. No es una fiscalización: lee el estado que informan los operadores cada 15 minutos.";
+    document.getElementById("rp-kpi-fisc").innerHTML = [
+      [PW.fmt(O.estaciones || 0), "estaciones observadas", "red pública identificada"],
+      [pctFmt(O.operatividad_pct), "operatividad nacional", "sobre las lecturas con estado conocido"],
+      [pctFmt((O.desglose_pct || {}).sin_comunicacion), "del tiempo sin comunicación", "no se sabe si funcionaban"],
+    ].map(kpiHTML).join("");
+    const filas = (O.macrozonas || []).map(m => Object.assign({}, m, m.desglose_pct || {}));
+    PW.barras("rp-g-fisc", { items: filas.filter(m => m.operatividad_pct != null)
+      .map(m => ({ nombre: m.macrozona, valor: m.operatividad_pct })), fmtV: v => PW.fmt(v, 1) + "%" });
+    PW.tabla("rp-t-fisc", [
+      { k: "macrozona", titulo: "Macrozona" },
+      { k: "estaciones", titulo: "Estaciones", num: true, fmt: v => PW.fmt(v) },
+      { k: "operatividad_pct", titulo: "Operatividad", num: true, fmt: pctFmt },
+      { k: "operativa", titulo: "Operativa", num: true, fmt: pctFmt },
+      { k: "no_disponible", titulo: "No disponible", num: true, fmt: pctFmt },
+      { k: "averiada", titulo: "Averiada", num: true, fmt: pctFmt },
+      { k: "sin_comunicacion", titulo: "Sin comunicación", num: true, fmt: pctFmt },
+    ], filas, { orden: "estaciones" });
+    nota.textContent = "Las cuatro últimas columnas reparten todas las lecturas de cada macrozona " +
+      "(más un resto de estado desconocido). " + (O.nota || "") +
+      " No es comparable punto por punto con 2025: la SEC inspeccionó en terreno una muestra de 122 instalaciones.";
+    return;
+  }
+  sub.textContent = "Durante 2025 la SEC fiscalizó en terreno la operatividad de la infraestructura de recarga pública." +
+    (anio === "2026" ? " La medición de 2026 no está disponible en este momento." : "");
+  document.getElementById("rp-kpi-fisc").innerHTML = [
+    [PW.fmt(F.total_instalaciones || 0), "instalaciones fiscalizadas", "en 2025"],
+    [(F.por_macrozona || []).length, "macrozonas", "+ RM"],
+  ].map(kpiHTML).join("");
+  PW.barras("rp-g-fisc", { items: (F.por_macrozona || []).map(m => ({ nombre: m.macrozona, valor: m.operatividad_pct })), fmtV: v => PW.fmt(v, 1) + "%" });
+  PW.tabla("rp-t-fisc", [
+    { k: "macrozona", titulo: "Macrozona" },
+    { k: "instalaciones", titulo: "Instalaciones", num: true, fmt: v => PW.fmt(v) },
+    { k: "operatividad_pct", titulo: "Operatividad", num: true, fmt: pctFmt },
+  ], F.por_macrozona || [], { orden: "instalaciones" });
+  nota.textContent = (F.datos_clave ? F.datos_clave + " " : "") +
+    "Macrozonas del reporte: Norte (Arica y Parinacota a Atacama), Centro (Coquimbo y Valparaíso), " +
+    "Metropolitana, Centro Sur (O'Higgins a Biobío) y Sur (La Araucanía a Los Lagos). " +
+    "Antes de 2025 la SEC no publicó resultados de fiscalización.";
+}
+const selAnio = document.getElementById("rp-anio");
+selAnio.addEventListener("change", () => pintarFisc(selAnio.value));
+pintarFisc(selAnio.value); // --- Transporte publico ---
 const T = D.transporte_publico || {}; const cctp = T.cctp || {}, elt = T.electroterminales || {}, bus = T.flota_buses_red || {}; document.getElementById("rp-kpi-tp").innerHTML = [
   [PW.fmt(cctp.cantidad_actual || 0), "centros de carga transporte público", (cctp.potencia_instalada_mw || 0) + " MW instalados"],
   [PW.fmt(elt.cantidad_actual || 0), "electroterminales", (elt.potencia_instalada_mw || 0) + " MW"],

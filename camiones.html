@@ -97,6 +97,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <ul id="lectura" class="nota"></ul>
   </div>
 
+  <section id="linea-base" hidden>
+    <h2>Línea base del parque pesado</h2>
+    <p class="sub">Camiones y buses en tres miradas: cuántos circulan, cuántos se venden y cuántos
+    se importan, y qué parte es eléctrica. Son mediciones distintas y no se suman entre sí.</p>
+    <div class="kpis" id="kpi-pesados"></div>
+
+    <div class="tarjeta">
+      <h3 style="margin-top:0">Ventas eléctricas: buses frente a camiones</h3>
+      <div id="g-pes-ventas"></div>
+      <p class="nota" id="nota-pes-ventas"></p>
+    </div>
+
+    <div class="fila2">
+      <div class="tarjeta">
+        <h3 style="margin-top:0">Parque pesado eléctrico por región</h3>
+        <div id="g-pes-region"></div>
+        <div id="t-pes-clase"></div>
+        <p class="nota" id="nota-pes-parque"></p>
+      </div>
+      <div class="tarjeta">
+        <h3 style="margin-top:0">Pesados importados, por tecnología</h3>
+        <div id="g-pes-imp"></div>
+        <div id="t-pes-cat"></div>
+        <p class="nota" id="nota-pes-imp"></p>
+      </div>
+    </div>
+  </section>
+
   <div class="tarjeta">
     <h2 style="margin-top:0">Cómo leer estas cifras</h2>
     <ul id="caveats" class="nota"></ul>
@@ -106,6 +134,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="fuente" id="fuente"></p>
 </main>
 <script>document.write('<script src="data/c_camiones.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_pesados.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=261017a"></script>
 <script>
 PW.montarNav("camiones.html"); const D = (window.PW_DATA && PW_DATA.c_camiones) || {}; const R = D.resumen || {}, RED = D.red_dc || {}; const kpi = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; document.getElementById("nota").textContent =
@@ -193,6 +222,74 @@ const notaParcial = anioParcial ? " * " + anioParcial + " cubre de enero a " + m
     alto: 220, fmtY: v => PW.fmt(v, 1) + "%", fmtV: pct1,
   }); document.getElementById("nota-comercial").textContent =
     "Inscripciones de vehículos comerciales eléctricos. El porcentaje se calcula sobre todos los vehículos comerciales inscritos ese año, de cualquier energía." +
-    notaParcial + (D.fuentes && D.fuentes.vehiculo_comercial ? " Fuente: " + D.fuentes.vehiculo_comercial : ""); })(); </script>
+    notaParcial + (D.fuentes && D.fuentes.vehiculo_comercial ? " Fuente: " + D.fuentes.vehiculo_comercial : ""); })();
+
+// [LINEA BASE PESADOS] parque (INE), ventas (ANAC) e importacion (Aduana) de camiones y buses
+// (c_pesados.js, generar_cruces.py:m_pesados). Si el archivo no llega, la seccion no se muestra.
+(function () {
+  const P = window.PW_DATA && PW_DATA.c_pesados; if (!P || !P.parque) return;
+  document.getElementById("linea-base").hidden = false;
+  // PW.fmt solo da 0 o 1 decimal; el parque electrico necesita 2 (0,13% vs 0,10%)
+  const pc = (v, d) => v == null ? "—" : (d === 2
+    ? v.toLocaleString("es-CL", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : PW.fmt(v, d == null ? 1 : d)) + "%";
+  const K = P.parque, V = P.ventas || {}, I = P.importacion || {};
+  const completo = arr => (arr || []).filter(x => !x.parcial).slice(-1)[0] || {};
+  const vb = completo(V.buses), vc = completo(V.camiones);
+  document.getElementById("kpi-pesados").innerHTML = [
+    [PW.fmt(K.total), "pesados en circulación", "camiones y buses, " + PW.esc(K.anio)],
+    [pc(K.pct, 2), "del parque pesado es eléctrico", PW.fmt(K.electrico) + " vehículos"],
+    [pc(K.rm_pct_de_electricos), "de los pesados eléctricos", "circula en la Región Metropolitana"],
+    [pc(vb.pct) + " / " + pc(vc.pct), "ventas eléctricas " + PW.esc(vb.anio || ""), "buses / camiones"],
+  ].map(kpi).join("");
+
+  // ventas: años de buses y camiones en un eje comun; un año sin dato queda en blanco, no en cero
+  const anios = [...new Set([...(V.buses || []), ...(V.camiones || [])].map(x => x.anio))].sort();
+  const val = (arr, a) => { const f = (arr || []).find(x => x.anio === a); return f ? f.pct : null; };
+  const parcial = [...(V.buses || []), ...(V.camiones || [])].find(x => x.parcial);
+  PW.lineas("g-pes-ventas", {
+    labels: anios.map(a => parcial && a === parcial.anio ? a + "*" : String(a)),
+    series: [
+      { nombre: "Buses", valores: anios.map(a => val(V.buses, a)) },
+      { nombre: "Camiones", valores: anios.map(a => val(V.camiones, a)) },
+    ],
+    alto: 260, fmtY: v => PW.fmt(v, 0) + "%", fmtV: v => pc(v),
+  });
+  document.getElementById("nota-pes-ventas").textContent =
+    "Porcentaje eléctrico de las ventas de cada año. Los buses suben por las licitaciones del " +
+    "transporte público; los camiones siguen bajo 1%. En 2019 y 2020 la ANAC no registró camiones eléctricos vendidos." +
+    (parcial ? " *" + parcial.anio + ": " + String(parcial.parcial).replace("acum ", "acumulado ").replace("ene-", "enero a ").replace("sep", "septiembre") + "." : "") +
+    " " + (V.fuente || "");
+
+  PW.barras("g-pes-region", {
+    items: (K.por_region || []).map(r => ({ nombre: r.region, valor: r.pct })),
+    fmtV: v => pc(v, 2),
+  });
+  PW.tabla("t-pes-clase", [
+    { k: "clase", titulo: "Clase" },
+    { k: "total", titulo: "En circulación", num: true, fmt: v => PW.fmt(v) },
+    { k: "electrico", titulo: "Eléctricos", num: true, fmt: v => PW.fmt(v) },
+    { k: "pct", titulo: "%", num: true, fmt: v => pc(v, 2) },
+  ], K.por_clase || [], { buscador: false, orden: "total" });
+  document.getElementById("nota-pes-parque").textContent =
+    "Parque en circulación " + K.anio + ", porcentaje eléctrico por región. " + (K.fuente || "");
+
+  PW.barras("g-pes-imp", {
+    items: (I.por_tecnologia || []).map(t => ({ nombre: t.nombre, valor: t.unidades })),
+    fmtV: v => PW.fmt(v),
+  });
+  PW.tabla("t-pes-cat", [
+    { k: "nombre", titulo: "Categoría" },
+    { k: "total", titulo: "Importados", num: true, fmt: v => PW.fmt(v) },
+    { k: "electrico", titulo: "Eléctricos", num: true, fmt: v => PW.fmt(v) },
+    { k: "pct", titulo: "%", num: true, fmt: v => pc(v, 1) },
+  ], I.por_categoria || [], { buscador: false, orden: "total" });
+  const mes = s => s ? s.slice(5, 7) + "/" + s.slice(0, 4) : "—";
+  document.getElementById("nota-pes-imp").textContent =
+    PW.fmt(I.total) + " pesados importados entre " + mes(I.desde) + " y " + mes(I.hasta) + "; " +
+    pc(I.pct_baja_emision) + " son eléctricos, híbridos o a hidrógeno. El " + pc(I.pct_sin_clasificar) +
+    " de los vehículos de carga y pasajeros importados no declara su peso y queda fuera. " +
+    (I.fuente || "") + " " + (P.nota || "");
+})(); </script>
 </body>
 </html>
