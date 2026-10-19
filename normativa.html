@@ -25,6 +25,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=261017a">
 <style>
+/* [PROCESO PLANEE] mesas como fichas cortas y documentos en dos columnas (page-local) */
+.pp-mesas { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 6px 0 14px; }
+.pp-mesas li { padding: 4px 12px; border: 1px solid var(--border); border-radius: 999px; font-size: 13px; background: var(--surface-1); }
+.pp-grupo { margin-top: 14px; }
+.pp-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px; list-style: none; padding: 0; margin: 6px 0 0; }
+.pp-lista li { padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-1); font-size: 13.5px; }
+.pp-lista .pp-anio { color: var(--ink-3); font-size: 12px; }
 .vin { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
 .vin-vinculante { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
 .vin-compromiso { background: color-mix(in srgb, var(--s1) 16%, transparent); color: var(--accion); }
@@ -135,12 +142,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Metas y marco legal</h1>
   <p class="sub">El marco legal y de metas de la electromovilidad y la energía en Chile:
   qué está comprometido, con qué fuerza jurídica, qué normas existen, dónde están los vacíos
-  y que viene en el radar legislativo. <span id="n-docs">—</span> documentos oficiales verificados.</p>
+  y que viene en el radar legislativo. <span id="n-docs">—</span> documentos oficiales verificados. <span id="pp-enlace" hidden>Ver también el <a href="#proceso-planee">proceso de elaboración del PLANEE 2028-2033</a>.</span></p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
 
-  <div class="tarjeta">
+  <div class="tarjeta" id="proceso-planee" hidden>
+    <h2 style="margin-top:0" id="pp-titulo">Proceso PLANEE 2028-2033</h2>
+    <p id="pp-intro"></p>
+    <div class="kpis" id="pp-metas"></div>
+    <p class="nota" id="pp-metrica"></p>
+    <h3>Mesas de trabajo</h3>
+    <ul class="pp-mesas" id="pp-mesas"></ul>
+    <div id="pp-docs"></div>
+    <p class="nota" id="pp-nota"></p>
+  </div>
+
+  <div class="tarjeta" id="ruta-2035">
     <h2 style="margin-top:0">Ruta a la Meta 2035: qué falta para llegar</h2>
     <p class="nota">Síntesis accionable de la Estrategia Nacional de Electromovilidad cruzada con las
     metas, leyes y brechas: las rutas críticas, las oportunidades, los desafíos, las acciones que aún
@@ -192,7 +210,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="t-metas"></div>
   </div>
 
-  <div class="tarjeta">
+  <div class="tarjeta" id="brechas-2035">
     <h2 style="margin-top:0">Mapa de brechas normativas para la meta 2035</h2>
     <!-- El conteo se lee del dato: crece con el barrido mensual de LeyChile, y clavado en el
          HTML envejece solo. Misma practica que el resto de las cifras vivas del sitio. -->
@@ -434,6 +452,28 @@ const MTZ = RUTA.matriz || []; const MCOLS = [["enlazadas", "enl", "Enlazado"], 
         `<div class="via">Vía: ${esc(i.via) || "—"}${i.instrumento ? " · instrumento: " + esc(i.instrumento) : ""}</div></div>`).join(""); }
     mtzDet.innerHTML = html; }
   mtzEl.addEventListener("click", e => { const c = e.target.closest(".mtz-cell"); if (c && !c.classList.contains("cero")) mtzMostrar(+c.dataset.r, c.dataset.k); }); mtzEl.addEventListener("keydown", e => { const c = e.target.closest(".mtz-cell"); if (c && !c.classList.contains("cero") && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); mtzMostrar(+c.dataset.r, c.dataset.k); } }); let bri = 0, bmax = -1; MTZ.forEach((row, ri) => { const n = (row.crear || []).length; if (n > bmax) { bmax = n; bri = ri; } }); mtzMostrar(bri, "crear"); }
+
+// [PROCESO PLANEE] subseccion #proceso-planee, curada por #10 (c_normativa.proceso_planee,
+// generar_cruces.py:m_normativa). Sin el dato, la subseccion y su enlace no se muestran.
+(function () {
+  const P = D && D.proceso_planee; if (!P || !(P.grupos || []).length) return;
+  document.getElementById("proceso-planee").hidden = false; document.getElementById("pp-enlace").hidden = false;
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || ""; };
+  set("pp-titulo", P.titulo); set("pp-intro", P.intro); set("pp-metrica", P.metrica);
+  document.getElementById("pp-metas").innerHTML = (P.metas || []).map(m =>
+    `<div class="kpi"><div class="v">${PW.esc(String(m.meta || "").replace(/ de intensidad energ[ée]tica/i, ""))}</div><div class="l">intensidad energética</div><div class="d">${PW.esc(m.horizonte)}</div></div>`).join("");
+  document.getElementById("pp-mesas").innerHTML = (P.mesas || []).map(m => `<li>${PW.esc(m)}</li>`).join("");
+  document.getElementById("pp-docs").innerHTML = (P.grupos || []).map(g =>
+    `<div class="pp-grupo"><h3 style="margin:0">${PW.esc(g.grupo)}</h3><ul class="pp-lista">` +
+    g.documentos.map(d => `<li>${d.url_pdf ? `<a href="${PW.esc(d.url_pdf)}" target="_blank" rel="noopener">${PW.esc(d.titulo)}</a>` : PW.esc(d.titulo)}` +
+      (d.anio ? ` <span class="pp-anio">${PW.esc(d.anio)}</span>` : "") + `</li>`).join("") + `</ul></div>`).join("");
+  document.getElementById("pp-nota").innerHTML = "Documentos oficiales del proceso; cada enlace abre el PDF respaldado en Drive. " +
+    "Relacionado: <a href=\"#brechas-2035\">brechas normativas para la meta 2035</a> y <a href=\"#ruta-2035\">ruta a la meta 2035</a>." +
+    (P.actualizado ? " Actualizado el " + PW.esc(P.actualizado) + "." : "");
+  // la subseccion se pinta despues de cargar: si se llego con el ancla, el navegador ya salto
+  // antes de que existiera el contenido y queda mal ubicado
+  if (location.hash === "#proceso-planee") document.getElementById("proceso-planee").scrollIntoView();
+})();
 </script>
 </body>
 </html>
