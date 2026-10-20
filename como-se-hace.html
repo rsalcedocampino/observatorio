@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Cómo se hace este observatorio — Energías Futuro</title>
+<meta name="description" content="De dónde salen los datos del Observatorio, cómo se procesan y para qué se usa la inteligencia artificial, siempre con supervisión humana.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261020a">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<main class="legal">
+  <h1>Cómo se hace este observatorio</h1>
+  <p class="sub">De dónde salen los datos, quién los procesa y qué papel cumple la inteligencia
+  artificial.</p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Los datos vienen de fuentes oficiales</h2>
+    <p>Cada cifra sale de una fuente pública: la Superintendencia de Electricidad y Combustibles
+    (SEC), el Coordinador Eléctrico Nacional, la Comisión Nacional de Energía (CNE), el Instituto
+    Nacional de Estadísticas (INE), el Servicio Nacional de Aduanas y el Banco Central, entre otras.
+    Cada página indica su fuente y su fecha.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Programas automáticos, sin inteligencia artificial</h2>
+    <p>Programas automáticos descargan los datos, los ordenan con criterios comunes (por ejemplo,
+    el código oficial de cada comuna, el tipo de conector o la tecnología de cada vehículo) y
+    publican el sitio cada 2 horas. En ese proceso no interviene ningún modelo de inteligencia
+    artificial.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Para qué se usa la inteligencia artificial</h2>
+    <p>Agentes de inteligencia artificial basados en Claude, de Anthropic, ayudan a construir,
+    mantener y revisar esos programas y las páginas del sitio, siempre con supervisión humana.
+    Ningún cambio en la estructura del sitio se publica sin la aprobación de una persona.</p>
+    <p><b>Ninguna cifra publicada la genera un modelo de inteligencia artificial.</b> Todas salen de
+    una fuente oficial y se pueden rastrear hasta ella.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Lo que falta o es preliminar se dice</h2>
+    <p>Cuando un dato no existe, está incompleto o es una estimación, la página lo rotula como tal
+    y explica por qué. Preferimos mostrar un hueco con su razón antes que completar un valor
+    supuesto.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">¿Encontraste un error?</h2>
+    <p>Si un dato te parece incorrecto o quieres cuestionarlo, escríbenos a
+    <a href="mailto:rsalcedocampino@gmail.com?subject=Reporte%20de%20dato%20-%20Observatorio">rsalcedocampino@gmail.com</a>
+    indicando la página y la cifra. Lo revisamos contra su fuente.</p>
+  </div>
+</main>
+<script src="assets/comun.js?v=261020a"></script>
+<script>PW.montarNav("como-se-hace.html");</script>
+</body>
+</html>

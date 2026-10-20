@@ -271,6 +271,45 @@
     pintar();
   }
 
+  // [CONSENTIMIENTO] aviso de cookies (Ley 21.719; pedido del usuario 2026-10-20). Google Analytics
+  //   y Tag Manager NO se cargan hasta que el visitante acepta: el bloque del <head> de cada pagina
+  //   (instalar_consentimiento.py) define window.pwCargarMedicion() y solo la llama si ya hay
+  //   pw_consent = "si". Aqui se pide la eleccion, se guarda y se puede cambiar desde el pie.
+  //   Rechazar despues de haber aceptado: se guarda "no", se avisa a gtag y se borran las cookies
+  //   _ga de este dominio; lo ya cargado en la pagina abierta sigue hasta recargar.
+  function _leerConsent() { try { return localStorage.getItem("pw_consent"); } catch (e) { return null; } }
+  function _guardarConsent(v) { try { localStorage.setItem("pw_consent", v); } catch (e) { /* modo privado */ } }
+  function _borrarCookiesGa() {
+    document.cookie.split(";").map(c => c.split("=")[0].trim()).filter(n => /^_ga(_|$)/.test(n)).forEach(n => {
+      const d = location.hostname.split(".").slice(-2).join(".");
+      ["", "; domain=" + location.hostname, "; domain=." + d].forEach(dom => {
+        document.cookie = n + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/" + dom;
+      });
+    });
+  }
+  function avisoCookies(forzar) {
+    const prev = document.getElementById("pw-cookies"); if (prev) prev.remove();
+    if (!forzar && _leerConsent()) return;
+    const b = document.createElement("div");
+    b.id = "pw-cookies"; b.className = "pw-cookies"; b.setAttribute("role", "dialog");
+    b.setAttribute("aria-label", "Aviso de cookies");
+    const actual = _leerConsent();
+    b.innerHTML = "<p>Usamos <b>Google Analytics</b> para contar visitas de forma agregada y saber qué " +
+      "páginas sirven más. Solo se activa si lo aceptas; puedes cambiar tu elección cuando quieras desde el pie de página. " +
+      "<a href='privacidad.html'>Más información</a>." +
+      (actual ? " Tu elección actual: <b>" + (actual === "si" ? "aceptada" : "rechazada") + "</b>." : "") + "</p>" +
+      "<div class='pw-cookies-btn'><button type='button' data-v='no'>Rechazar</button>" +
+      "<button type='button' data-v='si' class='primario'>Aceptar</button></div>";
+    b.addEventListener("click", e => {
+      const v = e.target && e.target.getAttribute && e.target.getAttribute("data-v"); if (!v) return;
+      _guardarConsent(v);
+      if (v === "si") { if (window.pwCargarMedicion) window.pwCargarMedicion(); }
+      else { if (window.gtag) window.gtag("consent", "update", { analytics_storage: "denied" }); _borrarCookiesGa(); }
+      b.remove();
+    });
+    document.body.appendChild(b);
+  }
+
   function montarNav(activa) {
     const h = document.createElement("header");
     h.className = "pw";
@@ -367,8 +406,14 @@
       "Elaboración propia.<br>" +
       // Capa comercial: un enlace, no un formulario. La CSP tiene `form-action 'none'`
       // desde la (661) y un `mailto:` no lo gobierna esa directiva.
-      "<a class='solicitar-pie' href='mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio'>Contacto</a>";
+      "<a class='solicitar-pie' href='mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio'>Contacto</a>" +
+      "<span class='pie-legal'><a href='como-se-hace.html'>Cómo se hace este observatorio</a> · " +
+      "<a href='privacidad.html'>Privacidad y cookies</a> · " +
+      "<button type='button' class='pie-cookies' id='pw-pie-cookies'>Preferencias de cookies</button></span>";
     document.body.appendChild(f);
+    const pc = document.getElementById("pw-pie-cookies");
+    if (pc) pc.addEventListener("click", () => avisoCookies(true));
+    avisoCookies(false);
 
     renderColaboradores(COLABORADORES);   // banda de logos arriba del pie (vacia -> no se muestra)
   }
@@ -2285,6 +2330,6 @@
   document.addEventListener("visibilitychange", revisarDatosNuevos);
   window.addEventListener("focus", revisarDatosNuevos);
 
-  window.PW = { montarNav, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto, ruedaSegura, pestanas, cargarDatos };
+  window.PW = { montarNav, avisoCookies, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto, ruedaSegura, pestanas, cargarDatos };
 })();
 
