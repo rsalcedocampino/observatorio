@@ -114,7 +114,7 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
 /* Responsive: permitir que las columnas de .fila2 colapsen en movil (evita scroll horizontal de la pagina) */
 .fila2 > * { min-width: 0; }
 .mtz-wrap { overflow-x: auto; }
-.mtz { display: grid; grid-template-columns: minmax(150px, 1.5fr) repeat(3, 1fr); gap: 6px; margin-top: 10px; min-width: 540px; }
+.mtz { display: grid; grid-template-columns: minmax(150px, 1.5fr) repeat(4, 1fr); gap: 6px; margin-top: 10px; min-width: 640px; }
 .mtz-h { font-size: 11.5px; font-weight: 600; color: var(--ink-2); padding: 4px 8px; text-align: center; }
 .mtz-h.eje { text-align: left; }
 .mtz-eje { font-size: 12.5px; font-weight: 600; padding: 8px; display: flex; align-items: center; border-top: 1px solid var(--border); }
@@ -125,6 +125,7 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
 .mtz-cell.enl { background: color-mix(in srgb, var(--good) 12%, transparent); color: var(--good); }
 .mtz-cell.cre { background: color-mix(in srgb, var(--critical) 12%, transparent); color: var(--critical); }
 .mtz-cell.mod { background: color-mix(in srgb, var(--warning) 20%, transparent); color: color-mix(in srgb, var(--warning) 75%, var(--ink-1)); }
+.mtz-cell.ope { background: color-mix(in srgb, var(--ink-2) 12%, transparent); color: var(--ink-1); }
 .mtz-cell.cero { opacity: .4; cursor: default; }
 .mtz-detalle { margin-top: 14px; }
 .mtz-det-item { padding: 8px 0; border-top: 1px solid var(--border); font-size: 12.5px; line-height: 1.4; }
@@ -187,10 +188,11 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
   </div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Matriz normativa por eje: qué está enlazado, qué falta crear y qué falta modificar</h2>
+    <h2 style="margin-top:0">Matriz normativa por eje: qué está enlazado, qué falta crear, qué falta modificar y qué frena la operación</h2>
     <p class="nota">Cada eje de la Estrategia cruzado con su estado legal: <b>enlazado</b> (leyes/decretos que
     ya lo sostienen), <b>falta crear</b> (vacío absoluto, o reglamento/plan comprometido sin dictar) y
-    <b>falta modificar</b> (norma que existe pero no sirve, o en conflicto). Toca una celda para ver el detalle.</p>
+    <b>falta modificar</b> (norma que existe pero no sirve, o en conflicto) y <b>operativa</b> (la norma existe y
+    sirve, pero sus plazos o su tramitación frenan los proyectos). Toca una celda para ver el detalle.</p>
     <div class="mtz-wrap"><div class="mtz" id="mtz"></div></div>
     <div class="mtz-detalle" id="mtz-detalle"></div>
   </div>
@@ -386,7 +388,7 @@ function pintarNormas() {
     { k: "Norma", titulo: "Norma", fmt: (v, r) => (r.doc_url
         ? `<a href="${r.doc_url}" target="_blank" rel="noopener" title="Ver o descargar el documento (Google Drive)">${v}</a>` : v)
         + (r.obligatoria_por_docs ? `<div class="nota" style="margin-top:4px">Texto no enlazado por derechos de autor. Obligatoria por: ` + r.obligatoria_por_docs.map(d => {
-            const lab = PW.esc(`DS ${d.numero}${d["Año"] ? "/" + d["Año"] : ""}${d.sigla || d.organismo ? " (" + (d.sigla || d.organismo) + ")" : ""}`);
+            const lab = PW.esc(`${/^\d/.test(d.numero) ? "DS " : ""}${d.numero}${d["Año"] ? "/" + d["Año"] : ""}${d.sigla || d.organismo ? " (" + (d.sigla || d.organismo) + ")" : ""}`);
             return d.doc_url ? `<a href="${PW.esc(d.doc_url)}" target="_blank" rel="noopener" title="Ver el decreto (Google Drive)">${lab}</a>` : lab; }).join(", ") + `</div>` : "") },
     { k: "Año", titulo: "Año" },
     { k: "Organismo", titulo: "Organismo" },
@@ -485,13 +487,14 @@ const tlSf = document.getElementById("ruta-sf"); if (sf.length) {
   tlSf.innerHTML = `<a id="tl-sf-link" role="button" tabindex="0">${sf.length} medidas sin año de término definido (s/f)</a> — no entran en el gráfico; toca para verlas en el detalle.`; const lk = document.getElementById("tl-sf-link"); const abrirSF = () => { tlChart.querySelectorAll(".tl-bar").forEach(b => b.classList.remove("sel")); pintarDetalle("s/f"); }; lk.addEventListener("click", abrirSF); lk.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirSF(); } }); } else { tlSf.textContent = ""; }
 
 const pico = ANIOS.reduce((best, a) => medPorAnio(a).length > medPorAnio(best).length ? a : best, ANIOS[0]); seleccionarAnio(pico); // Matriz normativa por eje: enlazado / falta crear / falta modificar
-const MTZ = RUTA.matriz || []; const MCOLS = [["enlazadas", "enl", "Enlazado"], ["crear", "cre", "Falta crear"], ["modificar", "mod", "Falta modificar"]]; const mtzEl = document.getElementById("mtz"); const mtzDet = document.getElementById("mtz-detalle"); if (mtzEl && MTZ.length) {
+const MTZ = RUTA.matriz || []; const MCOLS = [["enlazadas", "enl", "Enlazado"], ["crear", "cre", "Falta crear"], ["modificar", "mod", "Falta modificar"], ["operativa", "ope", "Operativa"]]; const mtzEl = document.getElementById("mtz"); const mtzDet = document.getElementById("mtz-detalle"); if (mtzEl && MTZ.length) {
   let h = `<div class="mtz-h eje">Eje estratégico</div>` + MCOLS.map(c => `<div class="mtz-h">${c[2]}</div>`).join(""); MTZ.forEach((row, ri) => {
     h += `<div class="mtz-eje">${esc(row.eje)}</div>`; MCOLS.forEach(([key, cls]) => {
       const n = (row[key] || []).length; const cero = n === 0 ? " cero" : ""; h += `<div class="mtz-cell ${cls}${cero}" data-r="${ri}" data-k="${key}"${n ? ` role="button" tabindex="0"` : ""}><span class="n">${n}</span></div>`; }); }); mtzEl.innerHTML = h; const TIT = {
     enlazadas: "Enlazado — leyes/decretos que ya lo sostienen",
     crear: "Falta crear — vacío absoluto o instrumento comprometido sin dictar",
     modificar: "Falta modificar — existe pero no sirve, o en conflicto",
+    operativa: "Operativa — la norma existe; el freno es de plazos o tramitación",
   }; function mtzMostrar(ri, key) {
     mtzEl.querySelectorAll(".mtz-cell").forEach(c => c.classList.remove("on")); const cell = mtzEl.querySelector(`[data-r="${ri}"][data-k="${key}"]`); if (cell) cell.classList.add("on"); const row = MTZ[ri], items = row[key] || []; let html = `<h3 style="margin:0 0 6px;font-size:14px">${esc(row.eje)} · ${TIT[key]} (${items.length})</h3>`; if (!items.length) {
       html += `<div class="mtz-det-item">Sin elementos en esta categoría para este eje.</div>`; } else if (key === "enlazadas") {

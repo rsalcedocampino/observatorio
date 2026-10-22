@@ -69,7 +69,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <h2 style="margin-top:0">El eslabón pesado</h2>
     <p id="hallazgo"></p>
     <div id="g-ventas"></div>
-    <p class="nota">Serie mensual de <b>ventas</b> de camiones eléctricos (ANAC), acumulada por año.</p>
+    <p class="nota">Serie mensual de <b>ventas</b> de camiones eléctricos (ANAC, Registro de Aduana y Representantes de Marca), acumulada por año.</p>
   </div>
 
   <div class="tarjeta" id="card-comercial" hidden>
@@ -179,7 +179,7 @@ const porAnioVentas = {}; (D.serie_mensual || []).forEach(m => {
   document.getElementById(id).innerHTML = (arr || []).map(x => `<li>${PW.esc(x)}</li>`).join(""); }; lista("lectura", D.cruce_lectura); lista("caveats", D.caveats); document.getElementById("fuentes").textContent =
   "Fuentes: " + Object.values(D.fuentes || {}).join(" | ") +
   (RED.fuente ? " | Red de carga: " + RED.fuente : ""); document.getElementById("fuente").textContent =
-  "Elaboración propia con datos de ANAC (ventas e inscripciones vía Observatorio Logístico) y de la red de carga pública en vivo.";
+  "Elaboración propia con datos de ventas (ANAC, Registro de Aduana y Representantes de Marca), inscripciones (ANAC vía Observatorio Logístico) y de la red de carga pública en vivo.";
 
 // ---------- Participacion en el mercado: camiones y vehiculos comerciales ----------
 // El año en curso es PARCIAL: el dato de origen corta el mercado total en el ultimo mes que tienen
