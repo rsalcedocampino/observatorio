@@ -360,8 +360,11 @@ function pintarNormas() {
     { k: "Eje_Estrategia", titulo: "Eje", fmt: (v, r) => {
         const e = ejesDeNorma(r); return e.length ? e.map(x => `<span class="pill" title="Eje ${x} · ${EJE_AB[x] || ""}">${x}</span>`).join(" ")
                         : `<span class="pill" title="Transversal (sin eje)">T</span>`; } },
-    { k: "Norma", titulo: "Norma", fmt: (v, r) => r.doc_url
-        ? `<a href="${r.doc_url}" target="_blank" rel="noopener" title="Ver o descargar el documento (Google Drive)">${v}</a>` : v },
+    { k: "Norma", titulo: "Norma", fmt: (v, r) => (r.doc_url
+        ? `<a href="${r.doc_url}" target="_blank" rel="noopener" title="Ver o descargar el documento (Google Drive)">${v}</a>` : v)
+        + (r.obligatoria_por_docs ? `<div class="nota" style="margin-top:4px">Texto no enlazado por derechos de autor. Obligatoria por: ` + r.obligatoria_por_docs.map(d => {
+            const lab = PW.esc(`DS ${d.numero}${d["Año"] ? "/" + d["Año"] : ""}${d.sigla || d.organismo ? " (" + (d.sigla || d.organismo) + ")" : ""}`);
+            return d.doc_url ? `<a href="${PW.esc(d.doc_url)}" target="_blank" rel="noopener" title="Ver el decreto (Google Drive)">${lab}</a>` : lab; }).join(", ") + `</div>` : "") },
     { k: "Año", titulo: "Año" },
     { k: "Organismo", titulo: "Organismo" },
     { k: "Materia", titulo: "Materia" },
