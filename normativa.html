@@ -274,6 +274,29 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
     <div id="t-normas"></div>
   </div>
 
+  <div class="tarjeta" id="relaciones-normas">
+    <h2 style="margin-top:0">Cómo se relacionan las normas</h2>
+    <p class="nota" id="rel-resumen">—</p>
+    <div class="filtros">
+      <label>Buscar <input type="search" id="busca-rel" placeholder="Norma, número, base..."></label>
+      <label>Relación <select id="f-rel-tipo">
+        <option value="">Todas</option>
+        <option value="reglamenta">Reglamenta a</option>
+        <option value="modifica">Modifica a</option>
+        <option value="complementa">Complementa a</option>
+        <option value="deroga">Deroga a</option>
+        <option value="se_apoya_en">Se apoya en</option>
+      </select></label>
+      <label>Verificación <select id="f-rel-conf">
+        <option value="">Todas</option>
+        <option value="verificada">Verificada</option>
+        <option value="parcial">Parcial</option>
+        <option value="supuesto">Supuesto, sin verificar</option>
+      </select></label>
+    </div>
+    <div id="t-relaciones"></div>
+  </div>
+
   <div class="fila2">
     <div class="tarjeta">
       <h2 style="margin-top:0">Benchmark internacional</h2>
@@ -371,6 +394,30 @@ function pintarNormas() {
     { k: "Relevancia_EV", titulo: "Relevancia EV" },
     { k: "Vacios", titulo: "Vacios" },
   ]; if (tNormas) tNormas.actualizar(filas); else tNormas = PW.tabla("t-normas", cols, filas, { max: 60, buscador: false }); }
+const REL = D.relaciones || []; const REL_TIPO = { reglamenta: "reglamenta a", modifica: "modifica a", complementa: "complementa a", deroga: "deroga a", se_apoya_en: "se apoya en" };
+const REL_CONF = { verificada: "Verificada", parcial: "Parcial", supuesto: "Supuesto, sin verificar" }; let tRel = null;
+function relNorma(e) {
+  const lab = PW.esc(e.nombre || e.numero), sub = `<div class="nota">${PW.esc(e.numero)}${e["Año"] ? " · " + PW.esc(e["Año"]) : ""}</div>`;
+  return (e.doc_url ? `<a href="${PW.esc(e.doc_url)}" target="_blank" rel="noopener" title="Ver el documento (Google Drive)">${lab}</a>` : lab) + sub; }
+function pintarRelaciones() {
+  if (!REL.length) { document.getElementById("relaciones-normas").style.display = "none"; return; }
+  const q = norm(document.getElementById("busca-rel").value), ft = document.getElementById("f-rel-tipo").value, fc = document.getElementById("f-rel-conf").value;
+  const filas = REL.filter(r => (!ft || r.tipo === ft) && (!fc || r.confianza === fc) && (!q || norm([r.origen.nombre, r.origen.numero, r.destino.nombre, r.destino.numero, r.base].join(" ")).includes(q)));
+  const cols = [
+    { k: "origen", titulo: "Norma", fmt: (v) => relNorma(v) },
+    { k: "tipo", titulo: "Relación", fmt: (v) => PW.esc(REL_TIPO[v] || v) },
+    { k: "destino", titulo: "Norma relacionada", fmt: (v) => relNorma(v) },
+    { k: "base", titulo: "Base o fuente", fmt: (v) => PW.esc(v || "—") },
+    { k: "confianza", titulo: "Verificación", fmt: (v) => `<span class="pill">${PW.esc(REL_CONF[v] || v || "—")}</span>` },
+    { k: "relevancia", titulo: "Relevancia EV" },
+  ]; if (tRel) tRel.actualizar(filas); else tRel = PW.tabla("t-relaciones", cols, filas, { max: 80, buscador: false }); }
+(function () {
+  if (!REL.length) return; const cuenta = {}; REL.forEach(r => [r.origen, r.destino].forEach(e => { const k = e.numero + "|" + e["Año"]; cuenta[k] = cuenta[k] || { e, n: 0 }; cuenta[k].n++; }));
+  const top = Object.values(cuenta).sort((a, b) => b.n - a.n).slice(0, 4).map(c => `${PW.esc(c.e.nombre || c.e.numero)} (${c.n})`).join(", ");
+  const nc = t => REL.filter(r => r.confianza === t).length;
+  document.getElementById("rel-resumen").innerHTML = `${PW.fmt(REL.length)} relaciones entre normas de la biblioteca: cuál reglamenta, modifica, complementa, deroga o se apoya en otra. ` +
+    `Cada una indica su base: ${PW.fmt(nc("verificada"))} verificadas, ${PW.fmt(nc("parcial"))} parciales y ${PW.fmt(nc("supuesto"))} supuestas, aún sin verificar. Las más conectadas: ${top}.`; })();
+["busca-rel", "f-rel-tipo", "f-rel-conf"].forEach(id => document.getElementById(id).addEventListener("input", pintarRelaciones)); pintarRelaciones();
 document.getElementById("busca-norma").addEventListener("input", pintarNormas); document.getElementById("f-norma-eje").addEventListener("input", pintarNormas); pintarNormas(); PW.tabla("t-internacional", D.internacional.length ? Object.keys(D.internacional[0]).slice(0, 4).map(k => ({ k, titulo: k.replace(/_/g, " ") })) : [], D.internacional, {}); let tCifras = null; function pintarCifras() {
   const q = norm(document.getElementById("busca-cifra").value); const filas = D.cifras.filter(c => !q || norm(c.Indicador + " " + c.Fuente).includes(q)); const cols = [
     { k: "Indicador", titulo: "Indicador" },
