@@ -7,7 +7,7 @@
       "sinCargador"
     ],
     "bytes": 16594,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "baterias.js": {
     "filas": 140,
@@ -27,7 +27,7 @@
       "ultimo_mes"
     ],
     "bytes": 18967,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "brechas.js": {
     "filas": 73,
@@ -43,7 +43,7 @@
       "region"
     ],
     "bytes": 10230,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "calculadora.js": {
     "filas": 346,
@@ -60,7 +60,7 @@
       "total_carg"
     ],
     "bytes": 47255,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "cargadores_importacion.js": {
     "filas": 87,
@@ -77,7 +77,7 @@
       "ultimo_mes"
     ],
     "bytes": 7576,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "carga_mapa.js": {
     "filas": 4599,
@@ -92,7 +92,7 @@
       "sin_coordenada"
     ],
     "bytes": 1082350,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "censo.js": {
     "filas": 346,
@@ -115,7 +115,7 @@
       "variacion"
     ],
     "bytes": 562030,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "combustible.js": {
     "filas": 1804,
@@ -127,7 +127,7 @@
       "totales"
     ],
     "bytes": 290036,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "conectores_anual.js": {
     "filas": 9,
@@ -149,7 +149,7 @@
       "unidad"
     ],
     "bytes": 812,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "coords_region.js": {
     "filas": 2,
@@ -173,7 +173,7 @@
       "Ñuble"
     ],
     "bytes": 613,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "cortes.js": {
     "filas": 15,
@@ -190,8 +190,8 @@
       "top_eventos",
       "vivo"
     ],
-    "bytes": 47820,
-    "timestamp": "2026-10-23 12:45"
+    "bytes": 48443,
+    "timestamp": "2026-10-23 14:45"
   },
   "costo.js": {
     "filas": 311,
@@ -204,7 +204,7 @@
       "nota"
     ],
     "bytes": 62929,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_autonomia.js": {
     "filas": 279,
@@ -217,7 +217,7 @@
       "puntos"
     ],
     "bytes": 40702,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_bencina93_serie.js": {
     "filas": 36,
@@ -231,7 +231,7 @@
       "por_region"
     ],
     "bytes": 662050,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_besscortes.js": {
     "filas": 20,
@@ -244,7 +244,7 @@
       "top_comunas"
     ],
     "bytes": 4071,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_bodegaje.js": {
     "filas": 1162,
@@ -256,7 +256,7 @@
       "v"
     ],
     "bytes": 365122,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_buses.js": {
     "filas": 105,
@@ -272,7 +272,7 @@
       "ventas_categoria"
     ],
     "bytes": 8965,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_camiones.js": {
     "filas": 44,
@@ -296,7 +296,7 @@
       "tramo_fuente"
     ],
     "bytes": 7915,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_cartera.js": {
     "filas": 0,
@@ -310,7 +310,7 @@
       "regiones"
     ],
     "bytes": 80281,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_ccge.js": {
     "filas": 1869,
@@ -321,7 +321,7 @@
       "v"
     ],
     "bytes": 143144,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_censoelec.js": {
     "filas": 345,
@@ -335,7 +335,7 @@
       "nota"
     ],
     "bytes": 61482,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_co2.js": {
     "filas": 17,
@@ -348,7 +348,7 @@
       "unidad"
     ],
     "bytes": 696,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_concentracion.js": {
     "filas": 16,
@@ -360,7 +360,7 @@
       "regiones"
     ],
     "bytes": 2896,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_conectred.js": {
     "filas": 7,
@@ -376,7 +376,7 @@
       "ventana"
     ],
     "bytes": 1495,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_demanda.js": {
     "filas": 16,
@@ -390,7 +390,7 @@
       "supuestos"
     ],
     "bytes": 1823,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_distribucion.js": {
     "filas": 346,
@@ -401,7 +401,7 @@
       "generado"
     ],
     "bytes": 54587,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_duales.js": {
     "filas": 183,
@@ -413,7 +413,7 @@
       "pares"
     ],
     "bytes": 35135,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_elasticidad.js": {
     "filas": 36,
@@ -425,7 +425,7 @@
       "participacion"
     ],
     "bytes": 2478,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_elasticidad_tarifas_detallado.js": {
     "filas": 0,
@@ -437,7 +437,7 @@
       "tarifas"
     ],
     "bytes": 10159,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_elasticidad_tarifas_pnp.js": {
     "filas": 8,
@@ -452,7 +452,7 @@
       "vigencia"
     ],
     "bytes": 6711,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_ev_proyeccion.js": {
     "filas": 16,
@@ -465,7 +465,7 @@
       "totales"
     ],
     "bytes": 2952,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_fichacober.js": {
     "filas": 29,
@@ -481,7 +481,7 @@
       "unidades"
     ],
     "bytes": 2537,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_gd.js": {
     "filas": 17,
@@ -495,7 +495,7 @@
       "total"
     ],
     "bytes": 2257,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_genmix.js": {
     "filas": 29,
@@ -510,7 +510,7 @@
       "unidad"
     ],
     "bytes": 2809,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_grupoauto.js": {
     "filas": 41,
@@ -523,7 +523,7 @@
       "total_ev"
     ],
     "bytes": 3982,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_homologaciones.js": {
     "filas": 349,
@@ -541,7 +541,7 @@
       "ultimo"
     ],
     "bytes": 40770,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_horaverde.js": {
     "filas": 2,
@@ -553,7 +553,7 @@
       "perfiles"
     ],
     "bytes": 3074,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_integracion.js": {
     "filas": 65,
@@ -565,7 +565,7 @@
       "totales"
     ],
     "bytes": 5431,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_normativa.js": {
     "filas": 112,
@@ -590,7 +590,7 @@
       "ruta_2035"
     ],
     "bytes": 266720,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_padron_ev.js": {
     "filas": 847,
@@ -602,7 +602,7 @@
       "v"
     ],
     "bytes": 547448,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_parqueterr.js": {
     "filas": 9,
@@ -615,7 +615,7 @@
       "region"
     ],
     "bytes": 27603,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_pelp.js": {
     "filas": 21,
@@ -633,7 +633,7 @@
       "real"
     ],
     "bytes": 5052,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_pelp_territorio.js": {
     "filas": 4,
@@ -649,7 +649,7 @@
       "tecnologias"
     ],
     "bytes": 35575,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_pelp_transmision.js": {
     "filas": 3,
@@ -664,7 +664,7 @@
       "por_region"
     ],
     "bytes": 3121,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_pesados.js": {
     "filas": 0,
@@ -677,7 +677,7 @@
       "ventas"
     ],
     "bytes": 6229,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_petroleras.js": {
     "filas": 33,
@@ -689,7 +689,7 @@
       "totales"
     ],
     "bytes": 3929,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_probcortes.js": {
     "filas": 326,
@@ -702,7 +702,7 @@
       "regiones"
     ],
     "bytes": 78812,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_redelec.js": {
     "filas": 1008,
@@ -717,7 +717,7 @@
       "subestaciones"
     ],
     "bytes": 230151,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_resiliencia.js": {
     "filas": 60,
@@ -731,7 +731,7 @@
       "nota"
     ],
     "bytes": 10827,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_rotacion.js": {
     "filas": 76,
@@ -743,7 +743,7 @@
       "nota"
     ],
     "bytes": 9398,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_seguros.js": {
     "filas": 270,
@@ -761,7 +761,7 @@
       "valores"
     ],
     "bytes": 88781,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_tco.js": {
     "filas": 3747,
@@ -774,7 +774,7 @@
       "v"
     ],
     "bytes": 1900328,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_transmision_region.js": {
     "filas": 16,
@@ -786,7 +786,7 @@
       "total_lineas"
     ],
     "bytes": 1330,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_valorparque.js": {
     "filas": 343,
@@ -803,7 +803,7 @@
       "tipos_ultimo_anio"
     ],
     "bytes": 556767,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_ventas.js": {
     "filas": 3110,
@@ -824,7 +824,7 @@
       "top_modelos"
     ],
     "bytes": 237151,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_vertimiento.js": {
     "filas": 40,
@@ -844,7 +844,7 @@
       "sin_region"
     ],
     "bytes": 16375,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "c_vulnerab.js": {
     "filas": 346,
@@ -858,7 +858,7 @@
       "pesos"
     ],
     "bytes": 98471,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "edad_nacional.js": {
     "filas": 19,
@@ -869,7 +869,7 @@
       "n"
     ],
     "bytes": 822,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "ficha_comunal.js": {
     "filas": 346,
@@ -887,7 +887,7 @@
       "r"
     ],
     "bytes": 70470,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "generacion.js": {
     "filas": 2112,
@@ -899,7 +899,7 @@
       "totales"
     ],
     "bytes": 518118,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "geo_comunas.js": {
     "filas": 345,
@@ -912,7 +912,7 @@
       "type"
     ],
     "bytes": 4112249,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "geo_concesiones.js": {
     "filas": 25,
@@ -924,7 +924,7 @@
       "type"
     ],
     "bytes": 994350,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "geo_lineas.js": {
     "filas": 1283,
@@ -937,7 +937,7 @@
       "type"
     ],
     "bytes": 429006,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "horas.js": {
     "filas": 24,
@@ -962,7 +962,7 @@
       "semanas_disponibles"
     ],
     "bytes": 109204,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "infraestructura.js": {
     "filas": 93,
@@ -980,7 +980,7 @@
       "zonas"
     ],
     "bytes": 8172,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "inversion.js": {
     "filas": 116,
@@ -992,7 +992,7 @@
       "totales"
     ],
     "bytes": 99337,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "macro.js": {
     "filas": 129,
@@ -1006,7 +1006,7 @@
       "series"
     ],
     "bytes": 20873,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "mapa.js": {
     "filas": 1719,
@@ -1021,7 +1021,7 @@
       "solar"
     ],
     "bytes": 1254369,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "mapa_bess.js": {
     "filas": 419,
@@ -1032,7 +1032,7 @@
       "nota"
     ],
     "bytes": 147402,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "mapa_carga.js": {
     "filas": 658,
@@ -1043,7 +1043,7 @@
       "nota"
     ],
     "bytes": 263947,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "operadores.js": {
     "filas": 20,
@@ -1056,7 +1056,7 @@
       "rango_historico_utc"
     ],
     "bytes": 5605,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "operatividad_red.js": {
     "filas": 5,
@@ -1076,7 +1076,7 @@
       "operatividad_pct"
     ],
     "bytes": 2330,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "permisos.js": {
     "filas": 17,
@@ -1091,7 +1091,7 @@
       "totales"
     ],
     "bytes": 14617,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "postes_index.js": {
     "filas": 0,
@@ -1445,7 +1445,7 @@
       "16305"
     ],
     "bytes": 31605,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "radar.js": {
     "filas": 140,
@@ -1460,7 +1460,7 @@
       "ultimo_mes"
     ],
     "bytes": 64739,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "reporte_sec.js": {
     "filas": 0,
@@ -1475,7 +1475,7 @@
       "transporte_publico"
     ],
     "bytes": 3561,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "rescate.js": {
     "filas": 612,
@@ -1486,7 +1486,7 @@
       "vehiculos"
     ],
     "bytes": 717368,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "resumen.js": {
     "filas": 0,
@@ -1498,7 +1498,7 @@
       "nota"
     ],
     "bytes": 1464,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "riesgo.js": {
     "filas": 3287,
@@ -1517,7 +1517,7 @@
       "regiones"
     ],
     "bytes": 815676,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "sitios.js": {
     "filas": 346,
@@ -1532,7 +1532,7 @@
       "sin_ine"
     ],
     "bytes": 124412,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "solar_region.js": {
     "filas": 14,
@@ -1542,7 +1542,7 @@
       "mw"
     ],
     "bytes": 339,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "top_comunas_labels.js": {
     "filas": 20,
@@ -1555,7 +1555,7 @@
       "region"
     ],
     "bytes": 1999,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "tracker.js": {
     "filas": 91,
@@ -1576,7 +1576,7 @@
       "ventas_tecnologia"
     ],
     "bytes": 51100,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "vehiculo.js": {
     "filas": 1172,
@@ -1588,7 +1588,7 @@
       "nota"
     ],
     "bytes": 355547,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   },
   "ventas_marca.js": {
     "filas": 0,
@@ -1669,6 +1669,6 @@
       "ZNA"
     ],
     "bytes": 19151,
-    "timestamp": "2026-10-23 12:45"
+    "timestamp": "2026-10-23 14:45"
   }
 }
