@@ -66,6 +66,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <div class="filtros"><label>Región <select id="proy-region"></select></label></div>
     <div id="proy-chart"></div>
     <div class="leyenda" id="proy-leyenda"></div>
+      <p class="nota" id="proy-ajuste"></p>
     <p class="nota" id="proy-metodo"></p>
   </div>
 
@@ -126,13 +127,19 @@ g("ano-ult").textContent = T.ano; g("ano-reg").textContent = T.ano; g("ano-tipo"
     const sx = a => o.x + (a - XMIN) / (XMAX - XMIN) * o.w; const sy = v => o.y + o.h - v / o.ymax * o.h; const fmt = o.ymax >= 1e6 ? (v => (v / 1e6).toFixed(1) + "M") : o.ymax >= 1e3 ? (v => (v / 1e3).toFixed(0) + "k") : (v => "" + Math.round(v)); let s = `<text x="${o.x}" y="${o.y - 11}" font-size="14" font-weight="700" fill="${PW.color("--ink-1")}">${PW.esc(o.title)}</text>`; for (let i = 0; i <= 5; i++) {
       const v = o.ymax * i / 5, yy = sy(v); s += `<line x1="${o.x}" y1="${yy.toFixed(1)}" x2="${o.x + o.w}" y2="${yy.toFixed(1)}" stroke="${PW.color("--grid")}"/>`; s += `<text x="${o.x - 8}" y="${(yy + 4).toFixed(1)}" font-size="10.5" fill="${PW.color("--ink-3")}" text-anchor="end">${fmt(v)}</text>`; }
     for (let a = XMIN; a <= XMAX; a++) if (a % 2 === 0 || a === XMAX)
-      s += `<text x="${sx(a).toFixed(1)}" y="${o.y + o.h + 16}" font-size="10" fill="${PW.color("--ink-3")}" text-anchor="middle">${a}</text>`; s += `<polyline points="${o.serie.map(([a, v]) => sx(a).toFixed(1) + "," + sy(v).toFixed(1)).join(" ")}" fill="none" stroke="${PW.color("--ink-2")}" stroke-width="2.4"/>`; o.serie.forEach(([a, v]) => s += `<circle cx="${sx(a).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.3" fill="${PW.color("--ink-2")}"/>`); const [la, lv] = o.serie[o.serie.length - 1], xa = sx(la), xb = sx(XMAX); escOn.forEach(e => {
+      s += `<text x="${sx(a).toFixed(1)}" y="${o.y + o.h + 16}" font-size="10" fill="${PW.color("--ink-3")}" text-anchor="middle">${a}</text>`; s += `<polyline points="${o.serie.map(([a, v]) => sx(a).toFixed(1) + "," + sy(v).toFixed(1)).join(" ")}" fill="none" stroke="${PW.color("--ink-2")}" stroke-width="2.4"/>`; o.serie.forEach(([a, v]) => s += `<circle cx="${sx(a).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.3" fill="${PW.color("--ink-2")}"/>`); const [la, lv0] = o.serie[o.serie.length - 1], xa = sx(la), xb = sx(XMAX); const lv = o.ancla != null ? o.ancla : lv0; if (o.ancla != null && o.ancla !== lv0) {
+      s += `<circle cx="${xa.toFixed(1)}" cy="${sy(lv).toFixed(1)}" r="4" fill="${PW.color("--surface-1")}" stroke="${PW.color("--ink-1")}" stroke-width="1.8"/>`;
+      s += `<text x="${(xa - 8).toFixed(1)}" y="${(sy(lv) + 16).toFixed(1)}" font-size="10.5" fill="${PW.color("--ink-2")}" text-anchor="end">${la} ajustado ${PW.fmt(lv)}</text>`; } escOn.forEach(e => {
       const v = o.proj[e], c = PW.color(ESC_COLOR[e]); s += `<line x1="${xa.toFixed(1)}" y1="${sy(lv).toFixed(1)}" x2="${xb.toFixed(1)}" y2="${sy(v).toFixed(1)}" stroke="${c}" stroke-width="2.2" stroke-dasharray="6 4"/>`; s += `<circle cx="${xb.toFixed(1)}" cy="${sy(v).toFixed(1)}" r="4.5" fill="${c}" stroke="${PW.color("--surface-1")}" stroke-width="1.5"/>`; }); return s; }
   function pintarProyeccion() {
     const v = selReg.value, esNac = !v; const Dp = esNac ? PY.nacional : PY.regiones[v]; const nom = esNac ? "Nacional" : v; const m1 = esNac ? "Parque total" : "Motorizados"; const ymax1 = niceCeil(Math.max(...Dp.serie1.map(p => p[1]).concat(Object.values(Dp.band1))) * 1.05); const ymax2 = niceCeil(Math.max(...Dp.serie2.map(p => p[1]).concat(Object.values(Dp.band2))) * 1.05); g("proy-chart").innerHTML = `<svg viewBox="0 0 920 600">` +
       panelSVG({ x: 74, y: 52, w: 780, h: 200, ymax: ymax1, serie: Dp.serie1, proj: Dp.band1, title: m1 + " — " + nom }) +
-      panelSVG({ x: 74, y: 360, w: 780, h: 200, ymax: ymax2, serie: Dp.serie2, proj: Dp.band2, title: "Vehículos eléctricos — " + nom }) +
-      `</svg>`; g("proy-leyenda").innerHTML = [...escOn].map(e =>
+      panelSVG({ x: 74, y: 360, w: 780, h: 200, ymax: ymax2, serie: Dp.serie2, proj: Dp.band2, title: "Vehículos eléctricos — " + nom,
+        ancla: (!esNac && Dp.elecExceso) ? Dp.elec2024Ajustado : null }) +
+      `</svg>`; { const na = g("proy-ajuste"); if (na) na.innerHTML = (!esNac && Dp.elecExceso) ? "En " + PW.esc(nom) + " el INE registra " + PW.fmt(Dp.serie2[Dp.serie2.length - 1][1]) +
+        " eléctricos en " + Dp.serie2[Dp.serie2.length - 1][0] + ", pero " + PW.fmt(Dp.elecExceso) + " son inscripciones atípicas (probablemente de flotas; causa no verificada). " +
+        "La proyección parte de la base ajustada, " + PW.fmt(Dp.elec2024Ajustado) + " (punto hueco), y esas inscripciones se cuentan en una línea nacional aparte" +
+        (PY.flotaAtipicas ? " (" + PW.fmt(PY.flotaAtipicas.electrico_2024) + " en todo el país; [SUPUESTO] constantes en 2025)" : "") + "." : ""; } g("proy-leyenda").innerHTML = [...escOn].map(e =>
       `<span style="--c:${PW.color(ESC_COLOR[e])}">${ESC_NOMBRE[e]} ${PY.growth[e]}: ` +
       `${m1} ${PW.fmt(Dp.band1[e])} · Eléctrico ${PW.fmt(Dp.band2[e])}</span>`).join("") ||
       `<span>Selecciona un escenario.</span>`; }

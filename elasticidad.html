@@ -484,21 +484,35 @@ function cargarTabEV2025() {
     [D.regiones.length, "regiones cubiertas", "nombre canónico del kit CUT"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("kpis-ev2025").innerHTML = kpis_html; // Tabla principal: stock por region, con la banda a la vista -- es una proyeccion y el
   // rango es parte del resultado, no una nota al pie.
+  // Reparto ajustado (#23, 2026-10-24): si el dato trae la linea de inscripciones atipicas, cada region
+  // se compara AJUSTADO contra ajustado (base 2024 sin esas inscripciones) y el INE crudo va en su
+  // propia columna; asi una region con flotas no aparece "cayendo". Sin esa linea, todo queda como antes.
+  const FL = D.flota_atipicas; const aj = r => (FL && r.stock_2024_ajustado != null) ? r.stock_2024_ajustado : r.stock_2024;
   const filas_ev = D.regiones.map(r => ({
     region: r.region,
     stock_2024: r.stock_2024,
+    stock_2024_aj: aj(r),
     stock_2025: r.p2025,
     rango: r.p2025_baja.toLocaleString() + " – " + r.p2025_alta.toLocaleString(),
-    incremento: r.p2025 - r.stock_2024,
-    crecimiento: r.stock_2024 ? PW.fmt(100 * (r.p2025 - r.stock_2024) / r.stock_2024, 1) + "%" : "—",
-  })); PW.tabla("t-ev2025", [
+    incremento: r.p2025 - aj(r),
+    crecimiento: aj(r) ? PW.fmt(100 * (r.p2025 - aj(r)) / aj(r), 1) + "%" : "—",
+  }));
+  if (FL) filas_ev.push({ region: "Inscripciones atípicas, sin región", stock_2024: null, stock_2024_aj: FL.stock_2024,
+    stock_2025: FL.p2025, rango: "supuesto: constante", incremento: FL.p2025 - FL.stock_2024, crecimiento: "—" });
+  const colsEv = [
     { k: "region", titulo: "Región", num: false },
-    { k: "stock_2024", titulo: "Stock 2024 (REAL)", num: true, fmt: v => v.toLocaleString() },
+    { k: "stock_2024", titulo: FL ? "Stock 2024 (INE)" : "Stock 2024 (REAL)", num: true, fmt: v => v == null ? "—" : v.toLocaleString() },
     { k: "stock_2025", titulo: "Stock 2025 (central)", num: true, fmt: v => v.toLocaleString() },
     { k: "rango", titulo: "Banda 2025", num: false },
     { k: "incremento", titulo: "Incremento unidades", num: true, fmt: v => v.toLocaleString() },
     { k: "crecimiento", titulo: "Crecimiento %", num: false },
-  ], filas_ev, { max: 20 }); // Tabla: Correlacion Tarifa × Stock
+  ]; if (FL) colsEv.splice(2, 0, { k: "stock_2024_aj", titulo: "Stock 2024 ajustado", num: true, fmt: v => v.toLocaleString() });
+  PW.tabla("t-ev2025", colsEv, filas_ev, { max: 20 });
+  if (FL) { const cont = document.getElementById("t-ev2025"); if (cont) cont.insertAdjacentHTML("beforeend",
+    '<p class="nota" style="margin:8px 0 0">' + PW.fmt(FL.stock_2024) + " inscripciones atípicas (probablemente de flotas; causa no verificada) " +
+    "no se asignan a ninguna región y van en su propia fila. [SUPUESTO] Se mantienen constantes en 2025. El incremento y el crecimiento de cada región " +
+    "se calculan sobre su stock 2024 ajustado, sin esas inscripciones. " + (D.nota_regional ? PW.esc(D.nota_regional) : "") + "</p>"); }
+  // Tabla: Correlacion Tarifa × Stock
   const filas_correlacion = D.regiones.filter(r => r.tarifa_potencia != null).map(r => ({
     region: r.region,
     tarifa_potencia: r.tarifa_potencia,
