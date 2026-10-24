@@ -5,20 +5,20 @@
 window.ElasticidadRegional = {
   "metadata": {
     "titulo": "Elasticidad Regional Preliminar: Tarifa Potencia × Stock EV",
-    "fecha_generacion": "2026-10-12",
+    "fecha_generacion": "2026-10-24",
     "tipo": "Análisis Descriptivo (sin causalidad)",
     "fuentes": {
       "stock_2024": "INE Cuadro 4 (real)",
       "tarifa_potencia": "CNE, precio de nudo de potencia de corto plazo, subestaciones 220 kV (RE 247 Tabla 17; DS 4T/2026; reajustado al 1-abr-2026); promedio simple por región; unidad CLP/kW-mes",
-      "ventas_h1_2026": "ANAC (datos agregados H1)"
+      "ventas_h1_2026": "Planilla de ventas Venta Vehiculos EV (ANAC, Registro de Aduana y Representantes de Marca): BEV y PHEV, ene-jun 2026. Sin desglose por región"
     },
     "nota": "Preliminar. Esperando CSV mensual de ANAC para análisis causal completo.",
     "caveat": "Tarifa × Stock es correlación, no causalidad (falta ventas por región/mes)"
   },
   "resumen_nacional": {
     "stock_2024": 33853,
-    "ventas_h1_2026": 5425,
-    "ratio_stock_ventas": 6.2
+    "ventas_h1_2026_bev": 5425,
+    "ventas_h1_2026_phev": 4553
   },
   "regiones": [
     {
@@ -27,8 +27,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": 8604.91,
       "stock_2024": 303,
       "pct_stock_nacional": 0.9,
-      "ventas_h1_2026_estimadas": 48,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "02",
@@ -36,8 +35,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": 8532.15,
       "stock_2024": 605,
       "pct_stock_nacional": 1.79,
-      "ventas_h1_2026_estimadas": 96,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "03",
@@ -45,8 +43,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": 8511.16,
       "stock_2024": 247,
       "pct_stock_nacional": 0.73,
-      "ventas_h1_2026_estimadas": 39,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "04",
@@ -54,8 +51,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": 8654.28,
       "stock_2024": 918,
       "pct_stock_nacional": 2.71,
-      "ventas_h1_2026_estimadas": 147,
-      "ratio_stock_ventas": 6.2
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "05",
@@ -63,8 +59,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": 8649.55,
       "stock_2024": 2515,
       "pct_stock_nacional": 7.43,
-      "ventas_h1_2026_estimadas": 403,
-      "ratio_stock_ventas": 6.2
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "06",
@@ -72,8 +67,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": 8767.81,
       "stock_2024": 976,
       "pct_stock_nacional": 2.88,
-      "ventas_h1_2026_estimadas": 156,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "07",
@@ -81,8 +75,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": null,
       "stock_2024": 3482,
       "pct_stock_nacional": 10.29,
-      "ventas_h1_2026_estimadas": 557,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "08",
@@ -90,8 +83,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": null,
       "stock_2024": 1131,
       "pct_stock_nacional": 3.34,
-      "ventas_h1_2026_estimadas": 181,
-      "ratio_stock_ventas": 6.2
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "09",
@@ -99,8 +91,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": null,
       "stock_2024": 348,
       "pct_stock_nacional": 1.03,
-      "ventas_h1_2026_estimadas": 55,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "10",
@@ -108,8 +99,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": null,
       "stock_2024": 460,
       "pct_stock_nacional": 1.36,
-      "ventas_h1_2026_estimadas": 73,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "11",
@@ -117,8 +107,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": null,
       "stock_2024": 108,
       "pct_stock_nacional": 0.32,
-      "ventas_h1_2026_estimadas": 17,
-      "ratio_stock_ventas": 6.4
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "12",
@@ -126,8 +115,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": null,
       "stock_2024": 201,
       "pct_stock_nacional": 0.59,
-      "ventas_h1_2026_estimadas": 32,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "13",
@@ -135,8 +123,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": 8795.58,
       "stock_2024": 21971,
       "pct_stock_nacional": 64.9,
-      "ventas_h1_2026_estimadas": 3520,
-      "ratio_stock_ventas": 6.2
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "14",
@@ -144,8 +131,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": null,
       "stock_2024": 291,
       "pct_stock_nacional": 0.86,
-      "ventas_h1_2026_estimadas": 46,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "15",
@@ -153,8 +139,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": 8717.93,
       "stock_2024": 56,
       "pct_stock_nacional": 0.17,
-      "ventas_h1_2026_estimadas": 8,
-      "ratio_stock_ventas": 7.0
+      "ventas_h1_2026_estimadas": null
     },
     {
       "cut": "16",
@@ -162,8 +147,7 @@ window.ElasticidadRegional = {
       "tarifa_potencia_kwm": null,
       "stock_2024": 241,
       "pct_stock_nacional": 0.71,
-      "ventas_h1_2026_estimadas": 38,
-      "ratio_stock_ventas": 6.3
+      "ventas_h1_2026_estimadas": null
     }
   ],
   "hallazgos": {
