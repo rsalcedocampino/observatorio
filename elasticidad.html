@@ -154,11 +154,11 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <div class="tarjeta">
       <h2 style="margin-top:0">PRELIMINAR: Elasticidad Regional (Tarifa × Stock)</h2>
       <p class="nota">Análisis descriptivo de correlación entre tarifa de potencia y stock de EVs por región (2024-2026).
-      <span style="color:#d32f2f; font-weight:bold;"> PRELIMINAR:</span> Esperando datos mensuales de ANAC para análisis causal completo.</p>
+      <span style="color:#d32f2f; font-weight:bold;"> PRELIMINAR:</span> el análisis causal requiere ventas mensuales por región, que hoy no se publican.</p>
       <p class="nota" id="nota-elasticidad-regional" style="font-size:0.85rem; color:var(--ink-2);"></p>
       <div id="t-elasticidad-regional"></div>
       <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">
-        <span id="fuente-elasticidad-regional">Fuente: INE Cuadro 4 (stock 2024, real) + tarifas de potencia de referencia (sin fuente oficial verificada) + ANAC H1 2026 (ventas agregadas).</span>
+        <span id="fuente-elasticidad-regional">Fuente: INE Cuadro 4 (stock 2024, real) + tarifas de potencia de referencia (sin fuente oficial verificada).</span>
         Caveat: Tarifa × Stock muestra correlación, no causalidad (requiere ventas mensuales por región).
       </p>
     </div>
@@ -647,19 +647,23 @@ function cargarElasticidadRegional() {
   if (nota) nota.textContent = "Análisis descriptivo (correlación). " + M.caveat; // Tabla: Elasticidad Regional
   // La fuente de la tarifa se lee del DATO: si el archivo la declara, se cita tal cual; si no, queda el texto fijo
   // que dice "sin fuente oficial verificada". Las regiones sin valor en la fuente van como "—" y se cuentan aqui.
-  { const fe = document.getElementById("fuente-elasticidad-regional"); const ft = (M.fuentes || {}).tarifa_potencia; const sinT = ERp.regiones.filter(r => r.tarifa_potencia_kwm == null).length; if (fe && ft) fe.textContent = "Fuente: INE Cuadro 4 (stock 2024, real). Tarifa de potencia: " + ft + ". Ventas: ANAC H1 2026 (agregadas)." + (sinT ? " " + sinT + " regiones no tienen valor en esa fuente y van sin dato." : ""); }
+  // Ventas ene-jun 2026 SOLO nacionales y separadas BEV/PHEV (decision del usuario 2026-10-24, via #08): las
+  // ventas por region que traia el archivo estaban escritas a mano y no cuadraban con la fuente; se retiraron.
+  // Si el dato aun no trae el desglose nacional, no se menciona ninguna venta.
+  const RN = ERp.resumen_nacional || {}; const vBev = RN.ventas_h1_2026_bev, vPhev = RN.ventas_h1_2026_phev;
+  const hayV = vBev != null && vPhev != null;
+  { const fe = document.getElementById("fuente-elasticidad-regional"); const ft = (M.fuentes || {}).tarifa_potencia; const sinT = ERp.regiones.filter(r => r.tarifa_potencia_kwm == null).length; if (fe && ft) fe.textContent = "Fuente: INE Cuadro 4 (stock 2024, real). Tarifa de potencia: " + ft + "." + (hayV ? " Ventas enero a junio de 2026, nacionales: ANAC, Registro de Aduana y Representantes de Marca." : "") + (sinT ? " " + sinT + " regiones no tienen valor en esa fuente y van sin dato." : ""); }
+  if (nota && hayV) nota.textContent += " Ventas nacionales de enero a junio de 2026: " + PW.fmt(vBev) + " eléctricos (BEV) y " + PW.fmt(vPhev) + " híbridos enchufables (PHEV). No hay ventas por región con fuente verificable, por eso la tabla no las muestra.";
   const filas_elasticidad = ERp.regiones.map(r => ({
     region: CANON[String(r.cut).padStart(2, "0")] || r.region,
     tarifa: r.tarifa_potencia_kwm,
     stock_2024: r.stock_2024,
-    pct_nacional: r.pct_stock_nacional.toFixed(1),
-    ventas_h1: r.ventas_h1_2026_estimadas,
+    pct_nacional: r.pct_stock_nacional == null ? "—" : r.pct_stock_nacional.toFixed(1),
   })); PW.tabla("t-elasticidad-regional", [
     { k: "region", titulo: "Región", num: false },
     { k: "tarifa", titulo: "Tarifa Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 2) },
-    { k: "stock_2024", titulo: "Stock 2024 (Real)", num: true, fmt: v => v.toLocaleString() },
+    { k: "stock_2024", titulo: "Stock 2024 (Real)", num: true, fmt: v => v == null ? "—" : PW.fmt(v) },
     { k: "pct_nacional", titulo: "% Parque", num: false },
-    { k: "ventas_h1", titulo: "Ventas H1 2026 (Est.)", num: true, fmt: v => v.toLocaleString() },
   ], filas_elasticidad, { max: 20 }); }
 
 // Llamar elasticidad regional
