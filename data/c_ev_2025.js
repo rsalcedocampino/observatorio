@@ -1,9 +1,9 @@
-// Tarifas por región y stock EV 2024 (INE)
+// Tarifas por región y stock eléctrico e híbrido 2024 (INE, registro municipal)
 
 window.EV2025Data = {
   "metadata": {
-    "titulo": "Tarifas de electricidad por región y stock EV 2024 (INE)",
-    "fecha_generacion": "2026-10-12",
+    "titulo": "Tarifas de electricidad por región y stock eléctrico e híbrido 2024 (INE, registro municipal)",
+    "fecha_generacion": "2026-10-24",
     "vigencia_tarifas": "2026-08-01",
     "total_2024_real": 33853,
     "cobertura_regiones": 16,
