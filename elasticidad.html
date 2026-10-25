@@ -94,10 +94,9 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 
   <!-- TAB 3: Stock de EVs 2025 -->
   <div id="tab-ev2025" class="tab-content">
-    <p class="sub">Proyección de stock de vehículos eléctricos por región (2024-2025), a partir de los Permisos de
-    Circulación del INE: 2024 es el último dato real publicado, y 2025 se proyecta con las ventas de
-    electrificados del año y una tasa de captura de 0,80 a 1,00 — el mismo método del módulo Parque de
-    vehículos, que es el único del sitio con método documentado y backtest. Por eso se publica con banda.</p>
+    <p class="sub">Proyección de stock de vehículos eléctricos e híbridos por región (2024-2025), a partir de los
+    Permisos de Circulación del INE: 2024 es el último dato real publicado y 2025 es una proyección, con el mismo
+    método del módulo Parque de vehículos (se describe abajo). Por eso se publica con banda.</p>
     <p class="nota" id="nota-ev2025"></p>
 
     <div class="kpis" id="kpis-ev2025"></div>
@@ -108,8 +107,8 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
       banda baja y alta. Se reemplaza por el dato real cuando el INE publique los Permisos 2025.</p>
       <div id="t-ev2025"></div>
       <p class="nota" style="margin-top:1rem; font-size:0.85rem; color:var(--ink-2);">
-        Datos 2024: INE, Permisos de Circulación (reales). Proyección 2025: ventas de electrificados por tasa
-        de captura (módulo Parque de vehículos). Se actualiza cuando el INE publique los datos 2025.
+        Datos 2024: INE, Permisos de Circulación (reales). Proyección 2025: módulo Parque de vehículos, con el
+        método descrito arriba. Se actualiza cuando el INE publique los datos 2025.
       </p>
     </div>
 
@@ -480,7 +479,7 @@ function cargarTabEV2025() {
     [T.p2025.toLocaleString(), "Stock 2025 (PROYECTADO)",
      "banda " + T.p2025_baja.toLocaleString() + " a " + T.p2025_alta.toLocaleString()],
     ["+" + (T.p2025 - T.stock_2024).toLocaleString(), "Incremento esperado",
-     "±" + Math.round(banda / 2).toLocaleString() + " según la tasa de captura"],
+     "±" + PW.fmt(Math.round(banda / 2)) + " (banda de la proyección)"],
     [D.regiones.length, "regiones cubiertas", "nombre canónico del kit CUT"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("kpis-ev2025").innerHTML = kpis_html; // Tabla principal: stock por region, con la banda a la vista -- es una proyeccion y el
   // rango es parte del resultado, no una nota al pie.
