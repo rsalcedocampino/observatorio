@@ -90,6 +90,23 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
     con extrapolación lineal simple se muestra en las tarjetas de arriba).</p>
   </div>
 
+  <div class="tarjeta" id="comparacion-iea">
+    <h2 style="margin-top:0">¿Por qué la IEA dice 4% y aquí 2,8%?</h2>
+    <p class="nota">Para 2025 la Agencia Internacional de Energía (IEA, Global EV Data Explorer del Global EV Outlook
+    2026) informa para Chile 8.800 autos enchufables vendidos (BEV y PHEV) y una participación de 4%. El Observatorio
+    cuenta 8.751: los vehículos eléctricos contados prácticamente coinciden. La diferencia está en el mercado sobre el
+    que se calcula el porcentaje.</p>
+    <div id="t-iea"></div>
+    <p class="nota">La IEA no publica el total de ventas que usa para Chile. Se deduce de sus dos cifras: 8.800 vendidos
+    con una participación redondeada a 4% implica un mercado de entre unos 196.000 y 251.000 vehículos. Eso calza con
+    autos de pasajeros y SUV (212.977, con lo que la participación da 4,1%) y no con el total de livianos y medianos de
+    ANAC (310.598), que incluye además 63.429 camionetas y 34.192 vehículos comerciales, casi sin oferta eléctrica. Es
+    una deducción, no un dato publicado por la IEA: su definición general de "autos" incluye camionetas livianas, pero
+    para Chile la cifra calza con un mercado sin ellas. Fuentes: ventas de ANAC, Registro de Aduana y Representantes de
+    Marca; segmentos de mercado de ANAC; IEA, Global EV Data Explorer (consultado el 25 de octubre de 2026). Enero a
+    diciembre de 2025.</p>
+  </div>
+
   <div class="fila2">
     <div class="tarjeta">
       <h2 style="margin-top:0">Ventas anuales por tecnología</h2>
@@ -372,6 +389,19 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque); 
     objetivo: "Escenarios PELP 2020-2040",
     llegada: solar ? "va como '" + solar.escenario + "'" : "—",
     color: "var(--s1)", texto: "Ver detalle",
-  }; pintarSemaforo(); })(); ["meta-pct", "meta-anio"].forEach(id => document.getElementById(id).addEventListener("input", refrescarPart)); ["meta-carg", "meta-carg-anio"].forEach(id => document.getElementById(id).addEventListener("input", refrescarInfra)); refrescarPart(); refrescarInfra(); </script>
+  }; pintarSemaforo(); })(); ["meta-pct", "meta-anio"].forEach(id => document.getElementById(id).addEventListener("input", refrescarPart)); ["meta-carg", "meta-carg-anio"].forEach(id => document.getElementById(id).addEventListener("input", refrescarInfra)); refrescarPart(); refrescarInfra(); // [COMPARACION IEA] datos cerrados de 2025 entregados por "#20 - Venta Vehiculos EV" (2026-10-24):
+// Es un año terminado, por eso va fijo y no se recalcula. La hipotesis de que la IEA excluye
+// camionetas resulto falsa (su definicion de car incluye light trucks): no se publica.
+PW.tabla("t-iea", [
+  { k: "m", titulo: "Medida" },
+  { k: "n", titulo: "Enchufables (BEV y PHEV)" },
+  { k: "d", titulo: "Mercado sobre el que se calcula" },
+  { k: "p", titulo: "2025" },
+], [
+  { m: "Observatorio, todo el mercado liviano", n: "8.751", d: "Livianos y medianos de ANAC: 310.598 (pasajeros, SUV, camionetas y comerciales)", p: "2,8%" },
+  { m: "Observatorio, sin camionetas ni comerciales", n: "8.751", d: "Pasajeros y SUV: 212.977", p: "4,1%" },
+  { m: "IEA", n: "8.800", d: "No publicado; deducido entre unos 196.000 y 251.000", p: "4%" },
+], { buscador: false });
+</script>
 </body>
 </html>

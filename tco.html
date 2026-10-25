@@ -82,7 +82,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
       <label>km/año <input type="number" id="c-km" value="20000" min="1000" step="1000"></label>
       <label>Años <input type="number" id="c-ny" value="5" min="1" max="15"></label>
       <label>$/kWh <input type="number" id="c-kwh" value="180" min="1"></label>
-      <label>$/L <input type="text" inputmode="numeric" class="miles" id="c-litro" value="1.539"></label>
+      <label>$/L <input type="text" inputmode="numeric" class="miles" id="c-litro" value="1.578"></label>
     </div>
     <details class="ajustes"><summary>Ajustar valores del eléctrico (seguro, mantención, permiso...)</summary>
       <div class="filtros">
@@ -125,7 +125,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
       <label>año <select id="mv-yr"></select></label>
       <label>km/año <input type="number" id="mv-km" value="20000" min="1000" step="1000"></label>
       <label>$/kWh <input type="number" id="mv-kwh" value="180" min="1"></label>
-      <label>$/L <input type="text" inputmode="numeric" class="miles" id="mv-litro" value="1.539"></label>
+      <label>$/L <input type="text" inputmode="numeric" class="miles" id="mv-litro" value="1.578"></label>
       <label>Años <input type="number" id="mv-ny" value="5" min="1" max="15"></label>
       <label>Presupuesto máx (opcional) <input type="text" inputmode="numeric" class="miles" id="mv-pmax" placeholder="sin límite"></label>
     </div>
@@ -202,7 +202,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>document.write('<script src="assets/franja-macro.js?v='+_pwv+'"><\/script>')</script>
 <script>
 PW.montarNav("tco.html"); let D = PW_DATA.c_tco; let V = D.v, P0 = D.p, E0 = D.e; const g = id => document.getElementById(id); // [MILES] los campos de dinero (clase "miles") son type=text y muestran puntos de miles; // numIn les quita los puntos antes de parsear (los campos con decimales, p.ej. km/kWh, NO llevan la clase).
-const numIn = (id, def) => { const el = g(id); if (!el) return def; const x = parseFloat(el.classList.contains("miles") ? el.value.replace(/\./g, "") : el.value); return isFinite(x) ? x : def; }; const fmtMiles = n => (isFinite(n) ? Math.round(n).toLocaleString("es-CL") : ""); document.querySelectorAll("input.miles").forEach(el => {
+const numIn = (id, def) => { const el = g(id); if (!el) return def; const x = parseFloat(el.classList.contains("miles") ? el.value.replace(/\./g, "") : el.value); return isFinite(x) ? x : def; }; const fmtMiles = n => (isFinite(n) ? Math.round(n).toLocaleString("es-CL") : ""); const precargarSupuestos = () => { const fijar = (ids, v) => ids.forEach(id => { const el = g(id); if (el) el.value = v; }); fijar(["c-km", "mv-km", "rc-km", "so-km"], Math.round(P0.kmm * 12)); fijar(["c-kwh", "mv-kwh", "rc-kwh", "so-kwh"], Math.round(E0.e_rm)); fijar(["c-litro", "mv-litro"], fmtMiles(E0.b93)); }; precargarSupuestos(); document.querySelectorAll("input.miles").forEach(el => {
   el.addEventListener("input", () => {
     const d = el.value.replace(/\D/g, ""); el.value = d ? fmtMiles(+d) : ""; }); }); g("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + (D.nota || ""); // -------- pools --------
 const _esPoolEv = x => x.pr > 0 && ((x.tp === "BEV" && x.ke > 0) || (x.tp === "PHEV" && x.ke > 0 && x.kl > 0)); const _esPoolIce = x => x.pr > 0 && (x.tp === "ICE" || x.tp === "HEV" || x.tp === "MHEV") && x.kl > 0; let POOL_EV = V.filter(_esPoolEv); let POOL_ICE = V.filter(_esPoolIce); // -------- motor de cálculo TCO --------
