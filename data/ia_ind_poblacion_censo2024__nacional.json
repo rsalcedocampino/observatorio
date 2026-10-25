@@ -1,0 +1,1 @@
+{"esquema":"ia-v1","id":"poblacion_censo2024","nivel":"nacional","fecha_corte":"2024","filas":[{"nivel":"nacional","codigo":"CL","nombre":"Chile","periodo":"2024","valores":{"poblacion":18480432,"hogares":6596527,"viviendas":6408172,"edad_promedio":38.0,"pct_65_mas":14.0},"granularidad":"censal"}]}

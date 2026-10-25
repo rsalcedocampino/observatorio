@@ -2332,4 +2332,18 @@
 
   window.PW = { montarNav, avisoCookies, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto, ruedaSegura, pestanas, cargarDatos };
 })();
-
+// [ASISTENTE DE DATOS] (#71, publicado con la palabra del usuario el 2026-10-25). Carga solo el cargador
+// chico del boton (assets/agente-boton.js); el asistente completo (agente.js) se baja al tocarlo. Sin
+// ia_catalogo.json publicado el boton no aparece. No se abre solo, no tapa el aviso de cookies y no envia
+// nada fuera del sitio. data-opiniones NO se pone: el usuario aun no elige donde se guardan las opiniones.
+window.addEventListener('load', function () {
+  var cj = document.querySelector('script[src*="comun.js"]');
+  var ver = (cj && (cj.src.match(/[?&]v=([^&]+)/) || [])[1]) || '';
+  var s = document.createElement('script');
+  s.src = 'assets/agente-boton.js' + (ver ? '?v=' + ver : '');
+  s.async = true;
+  s.setAttribute('data-ef-asistente-boton', '');
+  s.setAttribute('data-apertura', 'nunca');
+  s.setAttribute('data-no-tapar', '#pw-cookies');
+  document.head.appendChild(s);
+});

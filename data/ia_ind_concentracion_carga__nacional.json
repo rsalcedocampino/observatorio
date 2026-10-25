@@ -1,0 +1,1 @@
+{"esquema":"ia-v1","id":"concentracion_carga","nivel":"nacional","fecha_corte":"2026-10-23","filas":[{"nivel":"nacional","codigo":"CL","nombre":"Chile","periodo":"2026-10-23","valores":{"hhi":3940.0,"estaciones_consideradas":513,"jugadores":10,"participacion_lider_pct":50.9},"etiquetas":{"lider":"Copec","nivel_concentracion":"concentrado"}}]}

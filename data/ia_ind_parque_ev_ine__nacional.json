@@ -1,0 +1,1 @@
+{"esquema":"ia-v1","id":"parque_ev_ine","nivel":"nacional","fecha_corte":"2024","filas":[{"nivel":"nacional","codigo":"CL","nombre":"Chile","periodo":"2024","valores":{"parque_electrico":33853},"granularidad":"anual","nota":"El total nacional incluye inscripciones atípicas de flotas de empresas en varias comunas: la cifra del INE sobrestima los vehículos que circulan."}]}

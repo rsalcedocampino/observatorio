@@ -1,0 +1,1 @@
+{"esquema":"ia-v1","id":"precio_combustibles","nivel":"nacional","fecha_corte":"2026-10-25","filas":[{"nivel":"nacional","codigo":"CL","nombre":"Chile","periodo":"2026-10-25","valores":{"bencina_93":1578,"diesel":1589},"granularidad":"corte del sitio"}]}

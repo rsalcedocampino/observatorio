@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Cuánto se vende, de qué tecnología y qué marca lidera: el pulso mensual del mercado de vehículos electrificados livianos y medianos en Chile.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261020a">
+<link rel="stylesheet" href="assets/estilo.css?v=261025a">
 <style>
   .part { display: flex; align-items: center; gap: 9px; }
   .part .n { min-width: 92px; text-align: right; font-variant-numeric: tabular-nums; }
@@ -93,7 +93,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 </main>
 
 <script>document.write('<script src="data/c_ventas.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261020a"></script>
+<script src="assets/comun.js?v=261025a"></script>
 <script>
 PW.montarNav("ventas.html"); const D = PW_DATA.c_ventas; const K = D.kpis; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; const lider = D.marcas[0]; const varTxt = K.var_mes_pct == null ? "sin dato el mes anterior" :
   (K.var_mes_pct >= 0 ? "+" : "") + PW.fmt(K.var_mes_pct, 1) + "% vs. mes anterior"; document.getElementById("kpis").innerHTML = [
