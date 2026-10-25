@@ -312,17 +312,21 @@ function attachHoverComuna(map) {
     const c = comunaEn(map.mouseEventToLatLng(ev)); if (!c) { ocultar(); return; }
     const p = map.mouseEventToContainerPoint(ev); card.innerHTML = tipComuna(c.cut, c.comuna, valoresCorte[c.cut]); card.style.left = p.x + "px"; card.style.top = p.y + "px"; card.style.transform = "translate(-50%, calc(-100% - 12px))"; card.style.display = ""; }); cont.addEventListener("mouseleave", ocultar); }
 
+// Lectura vencida (#22): la SEC no respondio y se muestra la ultima lectura buena; no se dice "ahora".
+const VE = D.vivo_estado || {}; const ahoraV = VE.obsoleto ? "en la última lectura" : "ahora"; const avisoVivo = VE.obsoleto && VE.aviso ? " " + VE.aviso : "";
+// Sin lectura en vivo (la SEC no respondio y no hay lectura previa): no se puede decir que no hay cortes.
+const sinLectura = !V || V.clientes == null; const SIN_LECT = "La SEC no está entregando la lectura en vivo en este momento; no se sabe cuántos clientes están sin luz.";
 document.getElementById("cv-kpis").innerHTML = [
-  [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + D.hora_sec],
-  [PW.fmt(V.pct_pais, 2) + "%", "del país sin suministro", PW.fmt(V.n_comunas) + " comunas afectadas"],
+  [sinLectura ? "s/d" : PW.fmt(V.clientes), "clientes sin luz " + ahoraV, sinLectura ? "sin lectura de la SEC" : "SEC " + D.hora_sec],
+  [sinLectura ? "s/d" : PW.fmt(V.pct_pais, 2) + "%", "del país sin suministro", sinLectura ? "sin lectura de la SEC" : PW.fmt(V.n_comunas) + " comunas afectadas"],
   [PW.fmt(nCarga), "estaciones de carga", PW.fmt(nCargaPub) + " de acceso público"],
   [hayComunal ? PW.fmt(nCargAfectVivo) : "s/d", "estaciones en zona de corte",
    "en comuna sin luz según la SEC · " + PW.fmt(nCargAfect) + " con corte confirmado por la distribuidora"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("cv-nota-mapa").textContent =
-  V.clientes > 0
-    ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
+  sinLectura ? SIN_LECT + " El mapa muestra la red de carga sobre el territorio." : V.clientes > 0
+    ? PW.fmt(V.n_comunas) + " comunas con corte " + ahoraV + " (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
       (nCargAfect ? " " + PW.fmt(nCargAfect) + " estaciones están en comunas con corte confirmado por la distribuidora." : "")
-    : "Sin cortes relevantes ahora (SEC " + D.hora_sec + "): el mapa muestra la red de carga sobre el territorio."; const CAP_CORTES = [
+    : "Sin cortes relevantes " + ahoraV + " (SEC " + D.hora_sec + "): el mapa muestra la red de carga sobre el territorio."; const CAP_CORTES = [
   { k: "cortes", nombre: "Zonas con corte (mapa de calor)", col: "--seq-400", on: true },
   { k: "carga", nombre: "Red de carga (puntos)", col: "--s3", on: true },
 ]; const onCap = k => (CAP_CORTES.find(c => c.k === k) || {}).on; let mapaCortes = null; function popupCargaCorte(p) {
@@ -391,10 +395,10 @@ const _title = s => (s || "").toLowerCase()
     nombre: r.region, valor: r.clientes,
   })),
   fmtV: v => PW.fmt(v),
-}); document.getElementById("cv-nota-vivo").textContent =
+}); document.getElementById("cv-nota-vivo").textContent = sinLectura ? SIN_LECT :
   V.clientes > 0
     ? PW.fmt(V.clientes) + " clientes sin luz en " + PW.fmt(V.n_comunas) + " comunas al momento de la última lectura de la SEC (" + D.hora_sec + ")."
-    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + D.hora_sec + ")."; // Por empresa distribuidora (en vivo, best-effort: puede faltar el bloque)
+    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + D.hora_sec + ")."; document.getElementById("cv-nota-vivo").textContent += avisoVivo; // Por empresa distribuidora (en vivo, best-effort: puede faltar el bloque)
 const DI = D.distribuidoras; if (DI && (DI.por_grupo || []).length) {
   document.getElementById("cv-card-dist").style.display = ""; const cap = DI.capturado ? DI.capturado.slice(0, 16).replace("T", " ") : "s/f"; document.getElementById("cv-dist-head").textContent =
     "Snapshot " + cap + " · " + (DI.cobertura || "") + " · " +

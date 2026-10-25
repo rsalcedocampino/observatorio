@@ -503,7 +503,7 @@ function llenarEnergia(ctx) {
 function llenarResiliencia(ctx) {
   const { rcut, nivelComuna, cut } = ctx; let rows; if (nivelComuna) {
     const ri = RIESGO_COM[cut], ce = CENSOELEC_COM[cut]; const cortes = PW_DATA.cortes || {}; const vivoCom = ((cortes.vivo && cortes.vivo.por_comuna) || []).find(x => String(x.cut) === cut); const distCom = ((cortes.distribuidoras && cortes.distribuidoras.por_comuna) || []).find(x => String(x.cut) === cut); rows = [
-      vivoCom ? [PW.fmt(vivoCom.clientes), "clientes sin luz AHORA", (distCom && distCom.empresa ? distCom.empresa : "") + (cortes.hora_sec ? " · " + cortes.hora_sec.slice(11, 16) : "")] : null,
+      vivoCom ? [PW.fmt(vivoCom.clientes), (cortes.vivo_estado || {}).obsoleto ? "clientes sin luz (última lectura)" : "clientes sin luz AHORA", (distCom && distCom.empresa ? distCom.empresa : "") + (cortes.hora_sec ? " · " + cortes.hora_sec.slice(11, 16) : "")] : null,
       ri ? [PW.fmt(Math.round((ri.cliente_horas || 0) / 1e3)) + "k", "cliente-horas sin luz (2017-2026)", PW.fmt(ri.ch_por_hab, 1) + " por habitante"] : ["—", "cliente-horas sin luz", "sin registro"],
       ri ? [PW.fmt(ri.peak_clientes), "peak de clientes afectados", PW.fmt(ri.horas_afectada) + " horas con corte"] : null,
       ce ? [PW.fmt(ce.pct_sin, 1) + "%", "viviendas sin electricidad", PW.fmt(ce.viviendas) + " viviendas"] : null,

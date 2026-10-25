@@ -231,22 +231,24 @@ PW.montarNav("riesgo.html"); const D = PW_DATA.riesgo; const DC = window.PW_DATA
 // PARTE 1 — EN VIVO (cortes.js: foto SEC del momento)
 // ============================================================
 (function vivo() {
-  const estado = document.getElementById("vivo-estado"); if (!DC || !DC.vivo) {
+  const estado = document.getElementById("vivo-estado"); if (!DC || !DC.vivo || DC.vivo.clientes == null) {
     estado.textContent = "sin datos en vivo"; document.getElementById("nota-vivo-head").textContent =
       "La foto en vivo de la SEC no está disponible en este momento."; document.getElementById("kpis-vivo").style.display = "none"; return; }
+  // Lectura vencida (#22): la SEC no respondio y se muestra la ultima lectura buena; no se dice "ahora".
+  const VE = DC.vivo_estado || {}; const ahora = VE.obsoleto ? "en la última lectura" : "ahora"; const avisoVivo = VE.obsoleto && VE.aviso ? " " + VE.aviso : "";
   const V = DC.vivo; const hayCorte = (V.clientes || 0) > 0; estado.textContent = hayCorte ? PW.fmt(V.clientes) + " sin luz" : "sin cortes relevantes"; estado.style.color = hayCorte ? "var(--critical)" : "var(--good)"; estado.style.borderColor = hayCorte ? "var(--critical)" : "var(--good)"; estado.style.fontWeight = "600"; document.getElementById("nota-vivo-head").textContent =
     "Fuente: " + (DC.fuente || "SEC") + " · lectura en vivo " + (DC.hora_sec || "—") +
     " · generado " + (DC.generado || "—") + "."; document.getElementById("kpis-vivo").innerHTML = [
-    [PW.fmt(V.clientes), "clientes sin luz ahora", "SEC " + (DC.hora_sec || "")],
+    [PW.fmt(V.clientes), "clientes sin luz " + ahora, "SEC " + (DC.hora_sec || "")],
     [PW.fmt(V.pct_pais, 2) + "%", "del país sin suministro", ""],
-    [PW.fmt(V.n_comunas), "comunas con corte ahora", "de 346 en el país"],
+    [PW.fmt(V.n_comunas), "comunas con corte " + ahora, "de 346 en el país"],
   ].map(kpiHTML).join(""); const conCorte = (V.por_region || []).filter(r => (r.clientes || 0) > 0)
     .sort((a, b) => b.clientes - a.clientes); PW.barras("g-vivo", {
     items: conCorte.map(r => ({ nombre: r.region, valor: r.clientes, color: PW.color("--critical") })),
     fmtV: v => PW.fmt(v),
   }); document.getElementById("nota-vivo").textContent = hayCorte
     ? PW.fmt(V.clientes) + " clientes sin luz en " + PW.fmt(V.n_comunas) + " comunas al momento de la última lectura de la SEC (" + DC.hora_sec + ")."
-    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + (DC.hora_sec || "—") + ")."; // Por empresa distribuidora (best-effort: el bloque puede faltar)
+    : "Sin cortes relevantes al momento de la última lectura de la SEC (" + (DC.hora_sec || "—") + ")."; document.getElementById("nota-vivo").textContent += avisoVivo; // Por empresa distribuidora (best-effort: el bloque puede faltar)
   const DI = DC.distribuidoras; if (DI && (DI.por_grupo || []).length) {
     document.getElementById("card-dist").style.display = ""; const cap = DI.capturado ? DI.capturado.slice(0, 16).replace("T", " ") : "s/f"; document.getElementById("dist-head").textContent =
       "Snapshot " + cap + " · " + (DI.cobertura || "") + " · " +
@@ -334,12 +336,12 @@ function mapaVivo() {
       const c = comunaEn(map.mouseEventToLatLng(ev)); if (!c) { ocultar(); return; }
       const p = map.mouseEventToContainerPoint(ev); card.innerHTML = tipComuna(c.cut, c.comuna); card.style.left = p.x + "px"; card.style.top = p.y + "px"; card.style.transform = "translate(-50%, calc(-100% - 12px))"; card.style.display = ""; }); cont.addEventListener("mouseleave", ocultar); }
 
-  document.getElementById("nota-mapa").textContent =
+  document.getElementById("nota-mapa").textContent = (!V || V.clientes == null) ? "La SEC no está entregando la lectura en vivo en este momento; no se sabe cuántos clientes están sin luz. El mapa muestra la red de carga sobre el territorio." :
     V.clientes > 0
-      ? PW.fmt(V.n_comunas) + " comunas con corte ahora (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
+      ? PW.fmt(V.n_comunas) + " comunas con corte " + ((DC.vivo_estado || {}).obsoleto ? "en la última lectura" : "ahora") + " (" + PW.fmt(V.clientes) + " clientes sin luz). Azul = sin luz (más intenso = más clientes); amarillo claro = con luz." +
         (nCargAfectVivo ? " " + PW.fmt(nCargAfectVivo) + " estaciones de carga están en comunas sin luz según la SEC, de las cuales "
           + PW.fmt(nCargAfect) + " en comunas con corte confirmado por la distribuidora." : "")
-      : "Sin cortes relevantes ahora (SEC " + (DC.hora_sec || "—") + "): el mapa muestra la red de carga sobre el territorio."; const CAP_CORTES = [
+      : "Sin cortes relevantes " + ((DC.vivo_estado || {}).obsoleto ? "en la última lectura" : "ahora") + " (SEC " + (DC.hora_sec || "—") + "): el mapa muestra la red de carga sobre el territorio."; const CAP_CORTES = [
     { k: "cortes", nombre: "Cortes en vivo", col: "--seq-400", on: true },
     { k: "carga", nombre: "Cargadores", col: "--s3", on: true },
   ]; const onCap = k => (CAP_CORTES.find(c => c.k === k) || {}).on; let mapaCortes = null; function popupCargaCorte(p) {
