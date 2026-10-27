@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Curvas de carga — Energías Futuro</title>
+<meta name="description" content="Por qué un auto eléctrico no carga siempre a la misma velocidad: la curva de carga general de varios modelos, por qué en ruta conviene llegar a cerca del 80 % y qué fija el tiempo real; elige tu auto y estima el tiempo de carga con las cifras del catálogo.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261026a">
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_curva_general.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_carga_modelos.js?v='+_pwv+'">')</script>
+<style>
+.etq{display:inline-block;padding:1px 8px;margin-right:6px;border-radius:999px;font-size:12px;font-weight:700;line-height:1.5;color:#0b0b0b;background:var(--c);vertical-align:1px}
+.etq-dc,.tipo-dc{--c:var(--s2)}
+.etq-ac,.tipo-ac{--c:var(--s3)}
+.tipo-carga{border-left:4px solid var(--c);padding:2px 0 2px 14px;margin:20px 0}
+.tipo-carga h3,.dos-col h3{margin:0 0 6px}
+.dos-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:18px;margin:12px 0}
+.dos-col>div{border-left:4px solid var(--c);padding-left:14px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Curvas de carga</h1>
+  <p class="sub">Un auto eléctrico no carga siempre a la misma velocidad: la batería acepta más potencia cuando
+  está vacía y menos cuando se acerca a llenarse. Esa relación entre el nivel de la batería y la potencia que
+  entra es la curva de carga. Entenderla ayuda a elegir dónde parar y cuánto cargar en un viaje.</p>
+  <p class="nota" id="alcance">Explicación general de divulgación, con una curva general armada con curvas publicadas de varios modelos y una
+  estimación del tiempo de carga de cada auto con las cifras del catálogo del Observatorio. No es la curva de un auto en particular: cada uno
+  tiene la suya, que además cambia con la temperatura de la batería y con el cargador.</p>
+  <p style="margin:-4px 0 14px"><a href="#proyeccion">Ir directo al selector: elige tu auto y estima su tiempo de carga</a></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">¿Qué es la curva de carga?</h2>
+    <p>En el eje horizontal va el nivel de la batería; en el vertical, la potencia que recibe el auto. Con la
+    batería baja, la potencia sube hasta el máximo que el auto acepta; se mantiene un tramo y, al acercarse a
+    llenarse, baja para proteger la batería. Esta curva es la de la carga rápida (DC); la carga AC no la sigue (ver más abajo).</p>
+    <div id="g-curva"></div>
+    <div class="leyenda" id="ley-curva"></div>
+    <p id="datos-curva" style="margin:10px 0 0"></p>
+    <p class="nota" id="n-curva"></p>
+  </div>
+
+  <details class="tarjeta" id="detalle-curva" hidden>
+    <summary>Las cifras de la curva general y los modelos que la componen</summary>
+    <div id="t-curva" style="margin-top:10px"></div>
+    <p class="nota" id="n-metodo"></p>
+    <div id="t-modelos" style="margin-top:10px"></div>
+    <p class="nota" id="n-modelos"></p>
+  </details>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Por qué en ruta conviene cargar hasta cerca del 80 %</h2>
+    <ul>
+      <li>En un cargador rápido, el tramo entre más o menos 10 % y 80 % es el más veloz. El último tramo, hasta
+      100 %, suele ir mucho más lento: cada minuto adicional rinde pocos kilómetros.</li>
+      <li>Si vas a seguir el viaje, a menudo conviene parar más veces y cargar menos cada vez, en lugar de
+      esperar a llenar la batería.</li>
+      <li>Dejar libre el punto antes ayuda a quien espera para cargar.</li>
+      <li>Lo que importa para planificar es la potencia media del tramo que vas a cargar, más que el máximo
+      que anuncia el auto o el cargador.</li>
+    </ul>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Carga AC y carga DC: no son lo mismo</h2>
+    <p>La batería guarda la energía en corriente continua y la red entrega corriente alterna. Quién hace esa conversión cambia cómo se carga:</p>
+    <div class="dos-col">
+      <div class="tipo-dc">
+        <h3><span class="etq etq-dc">DC</span> Carga rápida, en corriente continua</h3>
+        <ul>
+          <li>Es la de las estaciones rápidas de carretera y de ciudad.</li>
+          <li>La estación convierte la corriente y la entrega directo a la batería; el auto acepta la potencia que su curva permite en cada nivel de carga. Por eso aquí manda la curva de carga.</li>
+          <li>Clases habituales de cargador: 50, 150 y 350 kW. El auto nunca recibe más de lo que acepta.</li>
+        </ul>
+      </div>
+      <div class="tipo-ac">
+        <h3><span class="etq etq-ac">AC</span> Carga lenta, en corriente alterna</h3>
+        <ul>
+          <li>Es la de casa y la de las estaciones de carga lenta, para cuando el auto queda detenido varias horas.</li>
+          <li>La conversión la hace el cargador que el auto trae a bordo, y ese cargador fija la potencia. Aquí se calcula con potencia constante, la menor entre la del punto de carga y la del auto: no hay curva ni rango.</li>
+          <li>Clases habituales de cargador: 7,4 kW en casa y 22 kW en estaciones públicas.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="nota">En esta página las cifras de cada tipo van separadas y con su etiqueta, DC y AC, como en el <a href="mapa-carga.html">mapa de la red de carga</a>.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Qué fija el tiempo real de una carga</h2>
+    <p>Mandan tres límites a la vez, y cuenta el más bajo:</p>
+    <ul>
+      <li><strong>La potencia del cargador.</strong> Es un máximo: no es lo que recibirá tu auto en todo momento.</li>
+      <li><strong>La potencia que acepta el auto.</strong> En carga DC (rápida) la fija el auto, según el nivel de su batería;
+      en carga AC la limita el cargador que el auto trae a bordo. El auto nunca recibe más de lo que
+      acepta, aunque el cargador sea más potente.</li>
+      <li><strong>La curva de carga.</strong> Depende del nivel de la batería y de su temperatura, y es propia de la carga DC.</li>
+    </ul>
+    <p>Si un cargador reparte su potencia entre dos autos que cargan a la vez, cada uno recibe menos. Para ver
+    qué estaciones hay y con qué potencia, mira la <a href="mapa-carga.html">Red de carga en vivo</a>; para
+    elegir cuándo cargar, <a href="horas.html">Mejor hora</a>.</p>
+  </div>
+
+  <div class="tarjeta" id="proyeccion">
+    <h2 style="margin-top:0" id="titulo-proyeccion">Elige tu auto y estima el tiempo de carga</h2>
+    <p class="nota" style="margin-top:0" id="intro-proyeccion"></p>
+    <div class="filtros" id="selector-modelo">
+      <label>Marca <select id="c-marca" style="max-width:100%"></select></label>
+      <label style="flex:1 1 100%;min-width:0">Modelo y versión <select id="c-modelo" style="width:100%;max-width:100%;box-sizing:border-box" disabled><option value="">Primero elige la marca</option></select></label>
+    </div>
+    <p class="nota" id="resumen-conectores" style="margin:0 0 8px"></p>
+    <div id="detalle-modelo" aria-live="polite"></div>
+    <div class="filtros">
+      <label>Batería (kWh) <input type="number" id="c-bateria" min="1" max="300" step="0.1"></label>
+      <label><span class="etq etq-dc">DC</span> Potencia máxima del auto en carga rápida (kW) <input type="number" id="c-dc" min="1" max="1000" step="1"></label>
+      <label><span class="etq etq-ac">AC</span> Potencia máxima del auto en carga lenta (kW) <input type="number" id="c-ac" min="1" max="100" step="0.1"></label>
+    </div>
+    <div class="filtros">
+      <label>Desde (%) <input type="number" id="c-desde" value="10" min="0" max="99" step="1"></label>
+      <label>Hasta (%) <input type="number" id="c-hasta" value="80" min="1" max="100" step="1"></label>
+      <label>Otro cargador (kW, opcional) <input type="number" id="c-otro" min="1" max="1000" step="0.1"></label>
+      <label>Tipo de ese cargador
+        <select id="c-otro-tipo"><option value="DC">DC, carga rápida</option><option value="AC">AC, corriente alterna</option></select></label>
+    </div>
+    <p class="nota" id="energia-linea" aria-live="polite"></p>
+    <div id="resumen-auto" style="font-size:1.05rem;margin:10px 0 6px" aria-live="polite"></div>
+
+    <section class="tipo-carga tipo-dc" id="seccion-dc" hidden>
+      <h3><span class="etq etq-dc">DC</span> Carga rápida, en corriente continua</h3>
+      <p class="nota" id="n-dc-intro" style="margin-top:0"></p>
+      <div id="t-dc"></div>
+      <div id="bloque-grafico" hidden>
+        <h4 style="margin:14px 0 6px">Potencia que recibiría tu auto en DC, nivel por nivel</h4>
+        <div class="filtros"><label>Cargador del gráfico <select id="c-graf"></select></label></div>
+        <div id="g-auto"></div>
+        <div class="leyenda" id="ley-auto"></div>
+        <p class="nota" id="n-auto"></p>
+      </div>
+    </section>
+
+    <section class="tipo-carga tipo-ac" id="seccion-ac" hidden>
+      <h3><span class="etq etq-ac">AC</span> Carga lenta, en corriente alterna</h3>
+      <p class="nota" style="margin-top:0">El cargador que el auto trae a bordo convierte la corriente y fija la potencia: aquí se calcula con potencia constante, la menor entre la del punto de carga y la del auto, sin curva ni rango.</p>
+      <div id="t-ac"></div>
+    </section>
+
+    <div id="bloque-versiones" hidden>
+      <h3 style="margin:18px 0 6px">Versiones de este modelo</h3>
+      <p class="nota" id="n-versiones" style="margin-top:0"></p>
+      <div id="t-versiones"></div>
+    </div>
+    <p class="nota" id="n-calculo"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Para leer más</h2>
+    <ul>
+      <li><a href="https://electroverse.com/es-ES/community/ev-blogs-and-guides/que-es-la-curva-de-carga" target="_blank" rel="noopener noreferrer">Octopus Electroverse: ¿Qué es la curva de carga?</a>
+      (agosto de 2024, actualizado en octubre de 2025). Explicación general; incluye ejemplos de curvas de varios modelos.</li>
+      <li><a href="https://www.repsol.es/particulares/asesoramiento-consumo/curva-carga-coche-electrico/" target="_blank" rel="noopener noreferrer">Repsol (España): Curva de carga del vehículo eléctrico, ¿qué factores afectan a la carga?</a>
+      (julio de 2025, actualizado en junio de 2026). Explicación general de la curva y de si todos los autos tienen la misma.</li>
+      <li><a href="https://www.epa.gov/system/files/documents/2024-06/mstrs-spr-mtg-dc-fast-chrg-consumer-info-2024-05-30.pdf" target="_blank" rel="noopener noreferrer">EPA de EE. UU. (Aaron Sobel): «DC Fast Charging: Information for Consumers»</a>
+      (30 de mayo de 2024, PDF en inglés). Fuente oficial de la forma general: la diapositiva 5 dice que las curvas varían pero tienden a concentrar la carga rápida al comienzo y a bajarla al llenarse;
+      la 6, que planificar un viaje tiende a cargar entre un nivel bajo y 80 %, donde se carga más rápido; y la 9, que muchos autos bajan a potencias muy bajas después de cerca de 80 %.
+      Sus curvas de ejemplo son de terceros y no se reproducen aquí.</li>
+    </ul>
+    <p class="nota">Esta página es una explicación general y una estimación con supuestos simples; no sustituye
+    la ficha técnica de tu auto ni la información del cargador que vayas a usar.</p>
+  </div>
+</main>
+<script>document.write('<script src="data/c_curva_general.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_carga_modelos.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=261026a"></script>
+<script>
+PW.montarNav("curvas-de-carga.html");
+
+// ---- curva general (modulo c_curva_general): porcentaje de la potencia maxima de cada auto, por nivel de bateria. Cada cifra sale del registro de curvas.
+const G = (window.PW_DATA || {}).c_curva_general;
+
+// ==== CALCULO (inicio): sin DOM. La prueba extrae este bloque de la pagina y lo compara con un calculo independiente hecho en Python.
+// tipos de cargador habituales: potencias nominales de cada clase, no cifras de ninguna estacion en particular
+const CARGADORES = [
+  { nombre: "AC en casa (7,4 kW)", corriente: "AC", kw: 7.4 },
+  { nombre: "AC pública (22 kW)", corriente: "AC", kw: 22 },
+  { nombre: "DC rápida (50 kW)", corriente: "DC", kw: 50 },
+  { nombre: "DC rápida (150 kW)", corriente: "DC", kw: 150 },
+  { nombre: "DC ultrarrápida (350 kW)", corriente: "DC", kw: 350 },
+];
+
+// la curva general solo se usa si cubre de 0 a 100 % sin huecos de mas de 10 puntos y sus percentiles estan en orden; si no, no hay curva
+function curvaUsable(niveles) {
+  if (!Array.isArray(niveles)) return [];
+  const c = niveles.filter(n => n && [n.soc, n.mediana, n.p25, n.p75, n.minimo, n.maximo].every(Number.isFinite)).sort((a, b) => a.soc - b.soc);
+  if (c.length < 3 || c[0].soc !== 0 || c[c.length - 1].soc !== 100) return [];
+  for (let i = 1; i < c.length; i++) if (c[i].soc - c[i - 1].soc > 10) return [];
+  if (c.some(n => !(0 <= n.minimo && n.minimo <= n.p25 && n.p25 <= n.mediana && n.mediana <= n.p75 && n.p75 <= n.maximo && n.maximo <= 100))) return [];
+  return c;
+}
+const CURVA = curvaUsable(G && G.niveles);
+const HAY_CURVA = CURVA.length > 0;
+
+// parte (0 a 1) de su potencia maxima que recibe el auto a ese nivel de bateria: interpolacion lineal entre los niveles de la curva
+// (sin curva vale 1: potencia maxima constante, que da el tiempo minimo teorico)
+function factor(soc, clave) {
+  if (!HAY_CURVA) return 1;
+  if (soc <= CURVA[0].soc) return CURVA[0][clave] / 100;
+  const ult = CURVA[CURVA.length - 1];
+  if (soc >= ult.soc) return ult[clave] / 100;
+  let i = 1;
+  while (CURVA[i].soc < soc) i++;
+  const a = CURVA[i - 1], b = CURVA[i];
+  return (a[clave] + (b[clave] - a[clave]) * (soc - a.soc) / (b.soc - a.soc)) / 100;
+}
+
+// potencia (kW) que recibe el auto a un nivel de bateria en carga rapida (DC): la menor entre la del cargador y la curva escalada por la maxima del auto
+function potenciaDC(soc, pAuto, pCargador, clave) {
+  return Math.min(pCargador, factor(soc, clave) * pAuto);
+}
+
+// minutos de "desde" a "hasta" en carga rapida (DC): se suma el tiempo de cada paso de 1 % de bateria (el ultimo, el resto), con la potencia en el
+// punto medio del paso: la menor entre la del cargador y la curva escalada por la maxima del auto. "limitado" es la parte del tramo en que manda el cargador.
+function integrarDC(bateriaKwh, pAuto, pCargador, desde, hasta, clave) {
+  let min = 0, limitado = 0, total = 0, s = desde;
+  while (s < hasta - 1e-9) {
+    const b = Math.min(s + 1, hasta), medio = (s + b) / 2;
+    const deCurva = factor(medio, clave) * pAuto;
+    const p = potenciaDC(medio, pAuto, pCargador, clave);
+    if (!(p > 0)) return null;
+    min += bateriaKwh * (b - s) / 100 / p * 60;
+    total += b - s;
+    if (pCargador < deCurva) limitado += b - s;
+    s = b;
+  }
+  return { min, limitado: total > 0 ? limitado / total : 0 };
+}
+
+function proyeccion(bateriaKwh, dcAuto, acAuto, desde, hasta, otro) {
+  const ok = v => v !== null && v !== undefined && Number.isFinite(v);
+  if (![bateriaKwh, desde, hasta].every(ok) || !(bateriaKwh > 0) || desde < 0 || hasta > 100 || !(hasta > desde)) return { valido: false };
+  const energia = bateriaKwh * (hasta - desde) / 100;
+  const filas = CARGADORES.concat(otro ? [otro] : []).map(ch => {
+    const auto = ch.corriente === "DC" ? dcAuto : acAuto;
+    const vacia = { cargador: ch.nombre, corriente: ch.corriente, kw: ch.kw, uso: null, minutos: null, rapido: null, lento: null, media: null, limita: null, limitado: null };
+    if (!ok(auto) || !(auto > 0)) return vacia;
+    const uso = Math.min(auto, ch.kw);
+    if (ch.corriente !== "DC") {        // AC (corriente alterna): la potencia la fija el cargador que el auto trae a bordo; se supone constante, sin rango
+      return { cargador: ch.nombre, corriente: ch.corriente, kw: ch.kw, uso, minutos: energia / uso * 60, rapido: null, lento: null, media: uso,
+               limita: auto <= ch.kw ? "el auto" : "el cargador", limitado: auto <= ch.kw ? 0 : 1 };
+    }
+    const c = integrarDC(bateriaKwh, auto, ch.kw, desde, hasta, "mediana");
+    const r = HAY_CURVA ? integrarDC(bateriaKwh, auto, ch.kw, desde, hasta, "p75") : null;     // la curva del cuarto de arriba de los modelos: la mas rapida
+    const l = HAY_CURVA ? integrarDC(bateriaKwh, auto, ch.kw, desde, hasta, "p25") : null;     // la del cuarto de abajo: la mas lenta
+    if (!c || (HAY_CURVA && (!r || !l))) return vacia;
+    return { cargador: ch.nombre, corriente: ch.corriente, kw: ch.kw, uso, minutos: c.min, rapido: r ? r.min : null, lento: l ? l.min : null, media: energia / c.min * 60,
+             limita: c.limitado <= 0 ? "el auto" : (c.limitado >= 1 ? "el cargador" : "el cargador al comienzo y luego el auto"), limitado: c.limitado };
+  });
+  return { valido: true, energia, filas };
+}
+
+// lo esencial del resultado: la fila DC (rapida) mas veloz (con empate, la de menos potencia), la primera de AC con dato y si dos cargadores DC dan
+// el mismo tiempo porque el auto acepta menos que ambos (un cargador mas potente que el auto no ahorra tiempo)
+function resumenAuto(p, dcAuto) {
+  const ok = v => v !== null && v !== undefined && Number.isFinite(v);
+  const dc = p.filas.filter(f => f.corriente === "DC" && ok(f.minutos));
+  const ac = p.filas.filter(f => f.corriente !== "DC" && ok(f.minutos));
+  let rapida = null;
+  dc.forEach(f => { if (!rapida || f.minutos < rapida.minutos - 1e-9 || (Math.abs(f.minutos - rapida.minutos) <= 1e-9 && f.kw < rapida.kw)) rapida = f; });
+  const sinGanancia = ok(dcAuto) && dc.some((a, i) => dc.some((b, j) => i < j && Math.abs(a.minutos - b.minutos) <= 1e-6 * Math.max(a.minutos, 1) && Math.max(a.kw, b.kw) > dcAuto + 1e-9));
+  return { rapida, casa: ac.length ? ac[0] : null, sinGanancia };
+}
+// ==== CALCULO (fin)
+
+function textoTiempo(min) {
+  if (min < 1) return "menos de 1 min";
+  const r = Math.round(min);
+  return r < 60 ? PW.fmt(r) + " min" : Math.floor(r / 60) + " h " + String(r % 60).padStart(2, "0") + " min";
+}
+function textoRango(rapido, lento) {
+  const a = textoTiempo(rapido), b = textoTiempo(lento);
+  return a === b ? "cerca de " + a : a + " a " + b;
+}
+const pc = v => PW.fmt(v, 0) + " %";
+
+// ---- esquema sin cifras: solo si no hay curva general. La forma general de la curva de carga; no es una medicion ni corresponde a ningun modelo.
+const FORMA = [[0, 0.60], [0.05, 0.85], [0.10, 1], [0.30, 1], [0.40, 0.98], [0.50, 0.92], [0.60, 0.80], [0.70, 0.65], [0.80, 0.50], [0.85, 0.30], [0.90, 0.18], [0.95, 0.12], [1, 0.08]];
+function dibujarEsquema() {
+  const W = 640, H = 280, IZQ = 40, DER = 16, SUP = 16, INF = 52;
+  const x = p => IZQ + p * (W - IZQ - DER);
+  const y = v => SUP + (1 - v) * (H - SUP - INF);
+  const linea = FORMA.map(([p, v], i) => (i ? "L" : "M") + x(p).toFixed(1) + " " + y(v).toFixed(1)).join(" ");
+  const area = linea + " L" + x(1).toFixed(1) + " " + y(0).toFixed(1) + " L" + x(0).toFixed(1) + " " + y(0).toFixed(1) + " Z";
+  const f12 = ' fill="var(--ink-2)" font-size="12"';
+  document.getElementById("g-curva").innerHTML =
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="Esquema sin cifras: la potencia de carga sube al comienzo, se mantiene en el máximo un tramo y baja de forma cada vez más marcada al acercarse a llenar la batería. Una línea punteada marca cerca del 80 %.">' +
+    '<line x1="' + IZQ + '" x2="' + (W - DER) + '" y1="' + y(0) + '" y2="' + y(0) + '" stroke="var(--axis)"/>' +
+    '<line x1="' + IZQ + '" x2="' + IZQ + '" y1="' + y(1) + '" y2="' + y(0) + '" stroke="var(--axis)"/>' +
+    '<path d="' + area + '" fill="var(--s1)" opacity="0.12"/>' +
+    '<path d="' + linea + '" fill="none" stroke="var(--s1)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>' +
+    '<line x1="' + x(0.8) + '" x2="' + x(0.8) + '" y1="' + y(1) + '" y2="' + y(0) + '" stroke="var(--ink-3)" stroke-dasharray="5 4"/>' +
+    '<text x="' + (x(0.8) + 6) + '" y="' + (y(1) + 12) + '"' + f12 + '>cerca del 80 %</text>' +
+    '<text x="' + IZQ + '" y="' + (H - INF + 18) + '"' + f12 + '>Batería casi vacía</text>' +
+    '<text x="' + (W - DER) + '" y="' + (H - INF + 18) + '" text-anchor="end"' + f12 + '>Batería llena</text>' +
+    '<text x="' + (IZQ + (W - IZQ - DER) / 2) + '" y="' + (H - 8) + '" text-anchor="middle"' + f12 + '>Nivel de la batería</text>' +
+    '<text x="12" y="' + (SUP + (H - SUP - INF) / 2) + '" text-anchor="middle"' + f12 + ' transform="rotate(-90 12 ' + (SUP + (H - SUP - INF) / 2) + ')">Potencia que recibe el auto</text>' +
+    '</svg>';
+}
+
+// ---- curva general dibujada con las cifras del modulo: mediana de los modelos, mitad central de los modelos y extremos del registro
+function dibujarCurva() {
+  const cont = document.getElementById("g-curva");
+  const W = Math.max(300, Math.min(700, cont.clientWidth || 640)), H = W < 480 ? 270 : 320;
+  const IZQ = 52, DER = 14, SUP = 14, INF = 58;
+  const x = s => IZQ + (s / 100) * (W - IZQ - DER);
+  const y = v => SUP + (1 - v / 100) * (H - SUP - INF);
+  const p = (s, v) => x(s).toFixed(1) + " " + y(v).toFixed(1);
+  const linea = clave => CURVA.map((n, i) => (i ? "L" : "M") + p(n.soc, n[clave])).join(" ");
+  const banda = (alta, baja) => linea(alta) + " " + CURVA.slice().reverse().map(n => "L" + p(n.soc, n[baja])).join(" ") + " Z";
+  const t12 = ' fill="var(--ink-2)" font-size="12"';
+  let s = "";
+  [0, 25, 50, 75, 100].forEach(v => {
+    s += '<line x1="' + IZQ + '" x2="' + (W - DER) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="' + (v === 0 ? "var(--axis)" : "var(--grid)") + '"/>' +
+         '<text x="' + (IZQ - 6) + '" y="' + (y(v) + 4).toFixed(1) + '" text-anchor="end"' + t12 + '>' + v + ' %</text>';
+  });
+  const paso = W < 480 ? 20 : 10;
+  for (let b = 0; b <= 100; b += paso) s += '<text x="' + x(b).toFixed(1) + '" y="' + (H - INF + 16) + '" text-anchor="middle"' + t12 + '>' + b + '</text>';
+  s += '<path d="' + banda("maximo", "minimo") + '" fill="var(--seq-1)" opacity="0.85"/>' +
+       '<path d="' + banda("p75", "p25") + '" fill="var(--seq-2)" opacity="0.85"/>' +
+       '<line x1="' + x(80).toFixed(1) + '" x2="' + x(80).toFixed(1) + '" y1="' + y(100).toFixed(1) + '" y2="' + y(0).toFixed(1) + '" stroke="var(--ink-3)" stroke-dasharray="5 4"/>' +
+       '<path d="' + linea("mediana") + '" fill="none" stroke="var(--s1)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>';
+  CURVA.forEach(n => {
+    const tip = "Batería en " + n.soc + " %: la mediana de los modelos recibe " + pc(n.mediana) + " de su potencia máxima; la mitad central de los modelos, entre " +
+      pc(n.p25) + " y " + pc(n.p75) + "; extremos del registro, " + pc(n.minimo) + " y " + pc(n.maximo) + " (" + n.modelos + " modelos, " + n.curvas + " curvas).";
+    s += '<circle cx="' + x(n.soc).toFixed(1) + '" cy="' + y(n.mediana).toFixed(1) + '" r="4" fill="var(--s1)"><title>' + PW.esc(tip) + '</title></circle>';
+  });
+  s += '<text x="' + (x(80) + 6).toFixed(1) + '" y="' + (y(100) + 12).toFixed(1) + '"' + t12 + '>cerca del 80 %</text>' +
+       '<text x="' + (IZQ + (W - IZQ - DER) / 2) + '" y="' + (H - 10) + '" text-anchor="middle"' + t12 + '>Nivel de la batería (%)</text>' +
+       '<text x="12" y="' + (SUP + (H - SUP - INF) / 2) + '" text-anchor="middle"' + t12 + ' transform="rotate(-90 12 ' + (SUP + (H - SUP - INF) / 2) + ')">Potencia (% del máximo del auto)</text>';
+  const claves = [10, 50, 80, 100].map(b => CURVA.find(n => n.soc === b)).filter(Boolean);
+  const alt = "Curva general de la carga rápida (DC), como porcentaje de la potencia máxima de cada auto. Mediana de los modelos: " +
+    claves.map(n => "con la batería en " + n.soc + " %, " + pc(n.mediana)).join("; ") + ".";
+  cont.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" style="max-width:100%;height:auto" role="img" aria-label="' + PW.esc(alt) + '">' + s + '</svg>';
+}
+
+function pintarCurva() {
+  const alcance = document.getElementById("alcance");
+  if (!HAY_CURVA) {
+    dibujarEsquema();
+    document.getElementById("n-curva").textContent = "Esquema de la forma general, sin cifras: no corresponde a ningún modelo ni es una medición. La curva real cambia de un auto a otro y con la temperatura de la batería.";
+    alcance.textContent = "Explicación general de divulgación, con un esquema sin cifras y una proyección del tiempo mínimo de carga con las cifras del catálogo de cada modelo. No trae curvas medidas por modelo: cada auto tiene su propia curva, que además cambia con la temperatura de la batería.";
+    return;
+  }
+  dibujarCurva();
+  let t;
+  window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => { dibujarCurva(); dibujarAuto(); }, 120); });
+  const rotulos = (G.fuentes || []).map(f => f.rotulo).filter(Boolean);
+  const dat = b => CURVA.find(n => n.soc === b);
+  const hitos = [50, 80, 90, 100].map(dat).filter(Boolean);
+  const n80 = dat(80);
+  document.getElementById("ley-curva").innerHTML =
+    '<span style="--c:var(--s1)">Mediana de los modelos</span>' +
+    '<span style="--c:var(--seq-2)">Mitad central de los modelos</span>' +
+    '<span style="--c:var(--seq-1)">Extremos del registro (la curva más baja y la más alta)</span>';
+  if (hitos.length) {
+    document.getElementById("datos-curva").textContent = "Con la batería en " + hitos[0].soc + " %, el modelo mediano recibe " + pc(hitos[0].mediana) + " de su potencia máxima" +
+      hitos.slice(1).map(n => "; en " + n.soc + " %, " + pc(n.mediana)).join("") + "." +
+      (n80 ? " En 80 %, la mitad central de los modelos recibe entre " + pc(n80.p25) + " y " + pc(n80.p75) + "." : "");
+  }
+  document.getElementById("n-curva").textContent = "Curva general de la carga rápida (DC): " + G.n_modelos + " modelos y " + G.n_curvas + " curvas, cada una dividida por su propia potencia máxima. " +
+    (rotulos.length ? "Fuente de las curvas: " + rotulos.join("; ") + ". " : "") +
+    "Describe la forma típica, no la de un auto en particular: no sabemos con qué cargador ni a qué temperatura se midió cada curva.";
+  alcance.textContent = "Explicación general de divulgación, con una curva general armada con curvas publicadas de " + G.n_modelos + " modelos y una estimación del tiempo de carga de cada auto con las cifras del catálogo del Observatorio. " +
+    "No es la curva de un auto en particular: cada uno tiene la suya, que además cambia con la temperatura de la batería y con el cargador.";
+  // cifras de la curva
+  document.getElementById("detalle-curva").hidden = false;
+  PW.tabla("t-curva", [
+    { k: "soc", titulo: "Nivel de la batería", num: true, fmt: v => pc(v) },
+    { k: "mediana", titulo: "Mediana de los modelos", prio: true, num: true, fmt: v => pc(v) },
+    { k: "central", titulo: "Mitad central de los modelos", prio: true, num: true, fmt: (v, f) => pc(f.p25) + " a " + pc(f.p75) },
+    { k: "extremos", titulo: "Extremos del registro", num: true, fmt: (v, f) => pc(f.minimo) + " a " + pc(f.maximo) },
+    { k: "modelos", titulo: "Modelos", num: true, fmt: v => PW.fmt(v) },
+    { k: "curvas", titulo: "Curvas", num: true, fmt: v => PW.fmt(v) },
+  ], CURVA.map(n => Object.assign({ central: n.p25, extremos: n.minimo }, n)), { buscador: false, orden: "soc", asc: true });
+  const porMarca = {};
+  (G.modelos || []).forEach(m => { porMarca[m.marca] = (porMarca[m.marca] || 0) + m.curvas; });
+  const [marcaTop, curvasTop] = Object.entries(porMarca).sort((a, b) => b[1] - a[1])[0] || ["", 0];
+  document.getElementById("n-metodo").textContent = "Cómo se calculó: cada curva se divide por su propia potencia máxima; para cada nivel de la batería, cada modelo aporta la mediana de sus curvas y la curva general es la mediana de los modelos. " +
+    "Cada modelo cuenta una vez" + (curvasTop / G.n_curvas >= 0.3 ? ": " + marcaTop + " aporta " + curvasTop + " de las " + G.n_curvas + " curvas y, si cada curva contara una vez, su forma mandaría sobre las demás" : ", aunque tenga varias versiones") +
+    ". Los extremos son la curva más baja y la más alta del registro en ese nivel. Se dejaron fuera las curvas que la fuente marca como estimadas y las que repiten la de otra versión del mismo modelo. Sin interpolar ni estimar ningún punto. " +
+    "Un nivel con menos de " + G.min_modelos + " modelos no se calcula.";
+  // modelos que componen la curva, con su estado en Chile
+  const estados = G.estados_chile || {};
+  PW.tabla("t-modelos", [
+    { k: "marca", titulo: "Marca", fmt: v => PW.esc(v) },
+    { k: "modelo", titulo: "Modelo", fmt: v => PW.esc(v) },
+    { k: "curvas", titulo: "Curvas", num: true, fmt: v => PW.fmt(v) },
+    { k: "chile", titulo: "En Chile", fmt: v => PW.esc(estados[v] || "sin dato") },
+  ], (G.modelos || []).map(m => Object.assign({}, m)), { buscador: false });
+  const cuenta = {};
+  (G.modelos || []).forEach(m => { const k = estados[m.chile] || "sin dato"; cuenta[k] = (cuenta[k] || 0) + 1; });
+  document.getElementById("n-modelos").textContent = "Estado en Chile de los " + G.n_modelos + " modelos: " + Object.entries(cuenta).map(([k, v]) => k + " (" + v + ")").join("; ") +
+    ". Se calcula cruzando cada modelo con el padrón de vehículos, las ventas y las importaciones del Observatorio; un modelo que no se vende en Chile se muestra igual, con esa indicación. " +
+    "Una versión puede ser de otro mercado o de otra batería que la que se vende aquí.";
+}
+
+// ---- catalogo de modelos (modulo c_carga_modelos): cifras del catalogo con el origen de cada una.
+const M = (window.PW_DATA || {}).c_carga_modelos;
+let FILAS = [];
+if (M && Array.isArray(M.campos) && Array.isArray(M.filas) && M.filas.length) {
+  FILAS = M.filas.map(f => { const o = {}; M.campos.forEach((n, i) => { o[n] = f[i]; }); return o; });
+}
+
+const leer = id => { const s = document.getElementById(id).value.trim(); return s === "" ? null : Number(s); };
+// el cargador que la persona escribe, si lo escribió: el mismo para la tabla, el resumen, el gráfico y las versiones
+function leerOtro() {
+  const kwOtro = leer("c-otro"), tipoOtro = document.getElementById("c-otro-tipo").value;
+  return kwOtro > 0 ? { nombre: "Tu cargador (" + PW.fmt(kwOtro, 1) + " kW, " + tipoOtro + ")", corriente: tipoOtro, kw: kwOtro } : null;
+}
+let elegido = null;   // configuracion del catalogo que llena los campos; se suelta apenas la persona cambia un dato
+
+function anios(r) { return r.y0 && r.y1 ? (r.y0 === r.y1 ? String(r.y0) : r.y0 + "-" + r.y1) : "sin año"; }
+// marca y modelo juntos, sin repetir la marca cuando el padrón ya la trae en el modelo («BYD SEALION», «FIAT 600E»)
+function nombreDe(r) { return r.md.toLowerCase().startsWith(r.mk.toLowerCase() + " ") ? r.md : r.mk + " " + r.md; }
+// conectores del auto: «AC y DC» si el catalogo trae conector DC (puede usar carga rapida) y «solo AC» si no lo trae (el catalogo marca que no carga en DC)
+const tieneDC = r => !!r.cdc;
+const textoConectores = r => tieneDC(r) ? "AC y DC" : "solo AC";
+const insignias = r => etq("AC") + (tieneDC(r) ? etq("DC") : "");
+function origenTexto(codigo) { return (M && M.origenes && M.origenes[codigo]) || "sin dato"; }
+function detalleDe(r) {
+  const o = x => PW.esc(origenTexto(x));
+  const lineas = [];
+  lineas.push(insignias(r) + (tieneDC(r) ? "<strong>Conector AC y DC</strong>: carga en casa y en estaciones lentas (AC) y también en estaciones rápidas (DC)."
+    : "<strong>Solo conector AC</strong>: no puede usar cargadores rápidos DC."));
+  if (r.vr) lineas.push("Versiones del padrón: " + PW.esc(r.vr) + ".");
+  lineas.push("Batería: " + PW.fmt(r.bt, 1) + " kWh (fuente: " + o(r.bo) + ").");
+  lineas.push("Carga DC (rápida, corriente continua): " + (r.pdc ? PW.fmt(r.pdc, 1) + " kW (fuente: " + o(r.pod) + ")."
+    : (r.pod === "no-aplica" ? "este modelo no carga en DC." : "sin dato en el catálogo.")));
+  lineas.push("Carga AC (corriente alterna): " + (r.pac ? PW.fmt(r.pac, 1) + " kW (fuente: " + o(r.poa) + ")." : "sin dato en el catálogo."));
+  if (r.au) lineas.push("Autonomía declarada: " + PW.fmt(r.au) + " km (fuente: " + o(r.bo) + "; el ciclo de medición lo define cada fabricante).");
+  const con = [r.cdc ? "DC " + PW.esc(r.cdc) : null, r.cac ? "AC " + PW.esc(r.cac) : null].filter(Boolean);
+  if (con.length) lineas.push("Conectores: " + con.join(", ") + ".");
+  let html = '<p class="nota" style="margin-top:0"><strong>' + PW.esc(nombreDe(r)) + "</strong> (" + anios(r) + ", " +
+    (r.tp === "BEV" ? "eléctrico" : "híbrido enchufable") + ")<br>" + lineas.join("<br>");
+  if (r.eu) html += '<br><a href="https://drive.google.com/file/d/' + encodeURIComponent(r.eu) + '/view" target="_blank" rel="noopener noreferrer">Etiqueta de eficiencia energética oficial</a>';
+  html += "</p>";
+  const avisos = [];
+  if (r.rv & 2) avisos.push("La potencia de carga DC (" + PW.fmt(r.pdc, 1) + " kW) supera los " + PW.fmt(M.rango_dc_kw[1]) + " kW, el umbral con que el Observatorio revisa esta cifra: está por confirmar y puede ser la capacidad del cargador y no la del auto. Si la real es menor, los tiempos con cargadores potentes serán mayores.");
+  if (r.rv & 1) avisos.push("La potencia de carga AC (" + PW.fmt(r.pac, 1) + " kW) está fuera de " + PW.fmt(M.rango_ac_kw[0], 1) + " a " + PW.fmt(M.rango_ac_kw[1]) + " kW, el rango con que el Observatorio revisa esta cifra: está por confirmar.");
+  if ((r.pdc && r.pod === "cat") || (r.pac && r.poa === "cat")) avisos.push("La potencia de carga de este modelo viene del catálogo interno del Observatorio, que no declara su fuente: confírmala con la ficha de tu auto.");
+  if (r.poa === "web-baja" || r.pod === "web-baja") avisos.push("Alguna de las potencias de carga viene de una investigación con confianza baja.");
+  if (!r.pdc && r.pod === "faltante") avisos.push("El catálogo no trae la potencia de carga DC (rápida) de este modelo: escríbela abajo si la conoces.");
+  if (avisos.length) html += '<p class="nota" role="note" style="margin-top:0"><strong>Ojo:</strong> ' + avisos.map(PW.esc).join(" ") + "</p>";
+  return html;
+}
+
+// indicador de conectores del catálogo, o de la marca elegida: cuántas versiones tienen conector AC y DC y cuántas solo AC
+function pintarConectores() {
+  const marca = document.getElementById("c-marca").value;
+  const lista = marca ? FILAS.filter(r => r.mk === marca) : FILAS;
+  const conDC = lista.filter(tieneDC).length, soloAC = lista.length - conDC;
+  document.getElementById("resumen-conectores").innerHTML = "<strong>" + (marca ? PW.esc(marca) : "Catálogo") + "</strong>: " + PW.fmt(lista.length) + " versiones. " +
+    etq("AC") + etq("DC") + PW.fmt(conDC) + " con conector AC y DC (pueden usar carga rápida). " + etq("AC") + PW.fmt(soloAC) + " solo con conector AC" + (soloAC ? " (sin carga rápida)" : "") + ".";
+}
+
+function limpiarResultado() {
+  ["t-dc", "t-ac", "resumen-auto", "n-calculo"].forEach(id => { document.getElementById(id).innerHTML = ""; });
+  ["seccion-dc", "seccion-ac", "bloque-grafico", "bloque-versiones"].forEach(id => { document.getElementById(id).hidden = true; });
+  grafAuto = null; ultimo = null;
+}
+
+// etiqueta de color de cada tipo de carga (como en el mapa de carga del sitio: DC y AC con colores distintos) y potencia con su unidad
+const etq = t => '<span class="etq etq-' + t.toLowerCase() + '">' + t + "</span> ";
+const potTxt = v => PW.fmt(v, v < 20 ? 1 : 0) + " kW";
+
+// ---- resumen del resultado, antes de las tablas: una linea por tipo de carga, la DC (rapida) y la AC (lenta), cada una con su etiqueta
+function pintarResumen(p, desde, hasta) {
+  const dc = leer("c-dc");
+  const r = resumenAuto(p, dc);
+  const nombre = elegido ? PW.esc(nombreDe(elegido)) : "tu auto";
+  const lineas = [];
+  if (r.rapida) {
+    const f = r.rapida;
+    let s = etq("DC") + "De " + PW.fmt(desde) + " % a " + PW.fmt(hasta) + " %, " + nombre + (HAY_CURVA ? " tarda " : " tarda como mínimo ") + "<strong>" + textoTiempo(f.minutos) +
+      "</strong> con un cargador rápido de " + potTxt(f.kw);
+    if (f.rapido != null && textoTiempo(f.rapido) !== textoTiempo(f.lento)) s += " (entre " + textoTiempo(f.rapido) + " y " + textoTiempo(f.lento) + ")";
+    s += ".";
+    if (r.sinGanancia) s += " Como tu auto acepta como máximo " + potTxt(dc) + " en DC, un cargador de más de " + potTxt(dc) + " no baja el tiempo.";
+    lineas.push(s);
+  }
+  if (!r.rapida && elegido && !tieneDC(elegido)) lineas.push(etq("DC") + nombre + " no tiene conector DC: solo puede cargar en AC, sin carga rápida.");
+  if (r.casa) lineas.push(etq("AC") + "En casa, con un cargador de " + potTxt(r.casa.kw) + ", " + nombre + " tarda <strong>" + textoTiempo(r.casa.minutos) + "</strong> (potencia constante, sin rango).");
+  document.getElementById("resumen-auto").innerHTML = lineas.map(l => '<p style="margin:4px 0">' + l + "</p>").join("");
+}
+
+// ---- gráfico de la potencia estimada del auto con un cargador DC: la curva general escalada por la máxima del auto y limitada por el cargador
+let grafAuto = null, ultimo = null;
+function pintarGrafico(p, desde, hasta) {
+  const bloque = document.getElementById("bloque-grafico"), sel = document.getElementById("c-graf");
+  const dc = leer("c-dc");
+  const filas = p.filas.map((f, i) => [f, i]).filter(([f]) => f.corriente === "DC" && f.minutos != null);
+  if (!HAY_CURVA || !(dc > 0) || !filas.length) { bloque.hidden = true; grafAuto = null; return; }
+  const previo = sel.value;
+  sel.innerHTML = filas.map(([f, i]) => '<option value="' + i + '">' + PW.esc(f.cargador) + "</option>").join("");
+  const porDefecto = String(p.filas.indexOf(resumenAuto(p, dc).rapida));
+  sel.value = filas.some(([, i]) => String(i) === previo) ? previo : porDefecto;
+  const fila = p.filas[Number(sel.value)];
+  grafAuto = { dc, fila, desde, hasta, nombre: elegido ? nombreDe(elegido) : "tu auto" };
+  bloque.hidden = false;
+  dibujarAuto();
+  document.getElementById("ley-auto").innerHTML =
+    '<span style="--c:var(--s1)">Estimación central</span>' +
+    '<span style="--c:var(--seq-2)">Rango (curvas del cuarto de arriba y del cuarto de abajo de los modelos)</span>' +
+    '<span style="--c:var(--ink-3)">Tramo que cargas (' + PW.fmt(desde) + " a " + PW.fmt(hasta) + " %)</span>" +
+    (fila.kw < dc ? '<span style="--c:var(--ink-2)">Límite del cargador (línea de puntos)</span>' : "");
+  document.getElementById("n-auto").textContent = "Con el cargador DC de " + potTxt(fila.kw) + ", de " + PW.fmt(desde) + " % a " + PW.fmt(hasta) + " %: unos " + textoTiempo(fila.minutos) +
+    (fila.rapido != null && textoTiempo(fila.rapido) !== textoTiempo(fila.lento) ? " (entre " + textoTiempo(fila.rapido) + " y " + textoTiempo(fila.lento) + ")" : "") +
+    ". La curva es la curva general escalada por la potencia máxima DC de tu auto (" + potTxt(dc) + ") y cortada donde manda el cargador; no es una medición de tu auto.";
+}
+
+function dibujarAuto() {
+  const cont = document.getElementById("g-auto");
+  if (!grafAuto || !HAY_CURVA) { cont.innerHTML = ""; return; }
+  const { dc, fila, desde, hasta, nombre } = grafAuto, kw = fila.kw;
+  const W = Math.max(300, Math.min(700, cont.clientWidth || 640)), H = W < 480 ? 270 : 320;
+  const IZQ = 52, DER = 14, SUP = 16, INF = 58;
+  const paso = dc <= 60 ? 10 : dc <= 120 ? 20 : dc <= 260 ? 50 : 100;
+  const ymax = Math.ceil(dc / paso) * paso;
+  const x = s => IZQ + (s / 100) * (W - IZQ - DER);
+  const y = v => SUP + (1 - v / ymax) * (H - SUP - INF);
+  const pt = (s, v) => x(s).toFixed(1) + " " + y(v).toFixed(1);
+  const socs = [];
+  for (let s = 0; s <= 100; s += 2) socs.push(s);
+  const serie = clave => socs.map(s => [s, potenciaDC(s, dc, kw, clave)]);
+  const linea = pts => pts.map(([s, v], i) => (i ? "L" : "M") + pt(s, v)).join(" ");
+  const alta = serie("p75"), baja = serie("p25");
+  const banda = linea(alta) + " " + baja.slice().reverse().map(([s, v]) => "L" + pt(s, v)).join(" ") + " Z";
+  const t12 = ' fill="var(--ink-2)" font-size="12"';
+  let g = '<rect x="' + x(desde).toFixed(1) + '" y="' + y(ymax).toFixed(1) + '" width="' + (x(hasta) - x(desde)).toFixed(1) + '" height="' + (y(0) - y(ymax)).toFixed(1) + '" fill="var(--ink-3)" opacity="0.2"/>';
+  for (let v = 0; v <= ymax + 1e-9; v += paso) {
+    g += '<line x1="' + IZQ + '" x2="' + (W - DER) + '" y1="' + y(v).toFixed(1) + '" y2="' + y(v).toFixed(1) + '" stroke="' + (v === 0 ? "var(--axis)" : "var(--grid)") + '"/>' +
+         '<text x="' + (IZQ - 6) + '" y="' + (y(v) + 4).toFixed(1) + '" text-anchor="end"' + t12 + '>' + v + '</text>';
+  }
+  const pasoX = W < 480 ? 20 : 10;
+  for (let b = 0; b <= 100; b += pasoX) g += '<text x="' + x(b).toFixed(1) + '" y="' + (H - INF + 16) + '" text-anchor="middle"' + t12 + '>' + b + '</text>';
+  if (kw < dc) {
+    g += '<line x1="' + IZQ + '" x2="' + (W - DER) + '" y1="' + y(kw).toFixed(1) + '" y2="' + y(kw).toFixed(1) + '" stroke="var(--ink-3)" stroke-dasharray="5 4"/>' +
+         '<text x="' + (W - DER - 4) + '" y="' + (y(kw) - 5).toFixed(1) + '" text-anchor="end"' + t12 + '>Cargador: ' + potTxt(kw) + '</text>';
+  }
+  g += '<path d="' + banda + '" fill="var(--seq-2)" opacity="0.85"/>' +
+       '<path d="' + linea(serie("mediana")) + '" fill="none" stroke="var(--s1)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>';
+  const kwTxt = v => PW.fmt(Math.round(v)) + " kW";
+  for (let s = 0; s <= 100; s += 10) {
+    const c = potenciaDC(s, dc, kw, "mediana"), a = potenciaDC(s, dc, kw, "p75"), b = potenciaDC(s, dc, kw, "p25");
+    const tip = "Batería en " + s + " %: unos " + kwTxt(c) + " (entre " + kwTxt(b) + " y " + kwTxt(a) + ").";
+    g += '<circle cx="' + x(s).toFixed(1) + '" cy="' + y(c).toFixed(1) + '" r="4" fill="var(--s1)"><title>' + PW.esc(tip) + '</title></circle>';
+  }
+  g += '<text x="' + (IZQ + (W - IZQ - DER) / 2) + '" y="' + (H - 10) + '" text-anchor="middle"' + t12 + '>Nivel de la batería (%)</text>' +
+       '<text x="12" y="' + (SUP + (H - SUP - INF) / 2) + '" text-anchor="middle"' + t12 + ' transform="rotate(-90 12 ' + (SUP + (H - SUP - INF) / 2) + ')">Potencia (kW)</text>';
+  const alt = "Potencia estimada de " + nombre + " con un cargador DC de " + potTxt(kw) + ": " +
+    [10, 50, 80].map(s => "con la batería en " + s + " %, unos " + kwTxt(potenciaDC(s, dc, kw, "mediana"))).join("; ") + ".";
+  cont.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" style="max-width:100%;height:auto" role="img" aria-label="' + PW.esc(alt) + '">' + g + '</svg>';
+}
+
+// ---- versiones del mismo modelo, con la que elegiste como base: los mismos datos declarados y la misma estimación para cada una, en DC y en AC
+function pintarVersiones() {
+  const bloque = document.getElementById("bloque-versiones");
+  const hermanas = elegido ? FILAS.filter(x => x.mk === elegido.mk && x.md === elegido.md && x.tp === elegido.tp) : [];
+  if (!ultimo || hermanas.length < 2) { bloque.hidden = true; return; }
+  const { desde, hasta } = ultimo, otro = leerOtro();
+  const nombreDC = (grafAuto && grafAuto.fila.cargador) || "DC rápida (150 kW)", nombreAC = "AC en casa (7,4 kW)";
+  const calc = (x, nombre) => {
+    const p = proyeccion(x.bt, x.pdc, x.pac, desde, hasta, otro);
+    const f = p.valido ? p.filas.find(y => y.cargador === nombre) : null;
+    return f && f.minutos != null ? f : null;
+  };
+  const baseDC = calc(elegido, nombreDC), baseAC = calc(elegido, nombreAC);
+  const porConfirmarV = (f, x) => !!f && ((f.corriente === "DC" && (x.rv & 2) && f.limitado < 1) || (f.corriente === "AC" && (x.rv & 1) && f.limita === "el auto"));
+  const filas = hermanas.map(x => {
+    const d = calc(x, nombreDC), a = calc(x, nombreAC);
+    return { i: FILAS.indexOf(x), version: x.vr || x.md, anios: anios(x), dcc: tieneDC(x), bt: x.bt, au: x.au, pdc: x.pdc, pac: x.pac,
+             minDC: d ? d.minutos : null, difDC: d && baseDC ? d.minutos - baseDC.minutos : null, pcDC: porConfirmarV(d, x),
+             minAC: a ? a.minutos : null, difAC: a && baseAC ? a.minutos - baseAC.minutos : null, pcAC: porConfirmarV(a, x), base: x === elegido };
+  });
+  const textoDif = v => { const m = Math.round(v); return m === 0 ? "igual que la base" : (m > 0 ? "+" : "−") + textoTiempo(Math.abs(m)); };
+  const tiempo = (min, dif, pc, base) => min == null ? "sin dato" : textoTiempo(min) + (base || dif == null ? "" : " (" + textoDif(dif) + ")") + (pc ? " (por confirmar)" : "");
+  PW.tabla("t-versiones", [
+    { k: "version", titulo: "Versión", fmt: (v, f) => PW.esc(v) + " (" + f.anios + ")" + (f.base ? " <strong>· base</strong>" : "") },
+    { k: "dcc", titulo: "Conectores", fmt: (v, f) => f.dcc ? etq("AC") + etq("DC") : etq("AC") + "solo AC" },
+    { k: "bt", titulo: "Batería", num: true, fmt: v => PW.fmt(v, 1) + " kWh" },
+    { k: "au", titulo: "Autonomía declarada", num: true, fmt: v => v ? PW.fmt(v) + " km" : "—" },
+    { k: "pdc", titulo: "Potencia DC", num: true, fmt: v => v ? PW.fmt(v, 0) + " kW" : "—" },
+    { k: "pac", titulo: "Potencia AC", num: true, fmt: v => v ? potTxt(v) : "—" },
+    { k: "minDC", titulo: "Tiempo DC", prio: true, num: true, fmt: (v, f) => f.dcc ? tiempo(v, f.difDC, f.pcDC, f.base) : "sin conector DC" },
+    { k: "minAC", titulo: "Tiempo AC", prio: true, num: true, fmt: (v, f) => tiempo(v, f.difAC, f.pcAC, f.base) },
+    { k: "i", titulo: "Elegir", fmt: (v, f) => f.base ? "" : '<button type="button" class="pill" data-i="' + v + '">Usar como base</button>' },
+  ], filas, { buscador: false, orden: "bt", asc: true });
+  document.getElementById("n-versiones").textContent = "Tiempo de " + PW.fmt(desde) + " % a " + PW.fmt(hasta) + " % en carga DC con «" + nombreDC + "» y en carga AC con «" + nombreAC + "», estimado con el mismo método de arriba para cada versión. " +
+    "La base es la versión que elegiste: entre paréntesis, cuánto más o menos tarda cada una. La batería y la autonomía las declara el fabricante o el importador en el padrón oficial de Consumo Vehicular; " +
+    "la potencia de carga viene del catálogo del Observatorio (sin fuente declarada por valor) o de una investigación web: confírmala con la ficha del fabricante.";
+  bloque.hidden = false;
+}
+
+function pintar() {
+  const desde = leer("c-desde"), hasta = leer("c-hasta");
+  const otro = leerOtro();
+  const bat = leer("c-bateria");
+  const linea = document.getElementById("energia-linea"), nota = document.getElementById("n-calculo");
+  if (bat === null) {
+    linea.textContent = "Elige un auto o escribe la batería y las potencias de tu auto para ver el cálculo.";
+    limpiarResultado(); return;
+  }
+  const dc = leer("c-dc"), ac = leer("c-ac");
+  const p = proyeccion(bat, dc, ac, desde, hasta, otro);
+  if (!p.valido) {
+    linea.textContent = "Revisa los datos: la batería debe ser mayor que cero y «Hasta» debe ser mayor que «Desde» (entre 0 y 100 %).";
+    limpiarResultado(); return;
+  }
+  let t = "Energía que entra: " + PW.fmt(p.energia, 1) + " kWh, de " + PW.fmt(desde) + " % a " + PW.fmt(hasta) + " %.";
+  if (elegido && elegido.au) t += " Equivale a unos " + PW.fmt(elegido.au * (hasta - desde) / 100) + " km de la autonomía declarada (" + PW.fmt(elegido.au) + " km a 100 %); el rendimiento real cambia con la velocidad, el clima y la carga.";
+  linea.textContent = t;
+  // si el auto es quien limita en algun tramo y su cifra de carga esta por confirmar (fuera del rango que valida el catalogo), el tiempo se rotula asi
+  const porConfirmar = f => !!elegido && ((f.corriente === "DC" && (elegido.rv & 2) && f.limitado < 1) || (f.corriente === "AC" && (elegido.rv & 1) && f.limita === "el auto"));
+  const aviso = texto => '<p class="nota" role="note">' + PW.esc(texto) + "</p>";
+  document.getElementById("seccion-dc").hidden = false;
+  document.getElementById("seccion-ac").hidden = false;
+  // carga DC (rapida): sigue la curva de carga; con curva hay estimacion y rango, sin curva solo el minimo teorico
+  document.getElementById("n-dc-intro").textContent = HAY_CURVA
+    ? "La estación convierte la corriente y la entrega directo a la batería; el auto acepta la potencia que su curva permite en cada nivel de carga. Aquí se aplica la curva general de arriba y se da un rango. La potencia media es la energía que entra dividida por el tiempo estimado."
+    : "La estación convierte la corriente y la entrega directo a la batería. Sin la curva general el resultado es un mínimo: supone que el auto recibe su potencia máxima durante todo el tramo.";
+  if (!(dc > 0)) {
+    document.getElementById("t-dc").innerHTML = aviso(elegido && !tieneDC(elegido) ? "Este modelo solo tiene conector AC: no puede usar cargadores rápidos DC." : "Falta la potencia máxima DC del auto: escríbela arriba si la conoces.");
+  } else {
+    const cols = [
+      { k: "cargador", titulo: "Cargador DC", fmt: v => PW.esc(v) },
+      { k: "minutos", titulo: HAY_CURVA ? "Tiempo estimado" : "Tiempo mínimo", prio: true, num: true,
+        fmt: (v, f) => v == null ? "sin dato del auto" : textoTiempo(v) + (porConfirmar(f) ? " (por confirmar)" : "") },
+    ];
+    if (HAY_CURVA) cols.push({ k: "lento", titulo: "Rango (mitad central de los modelos)", prio: true, num: true, fmt: (v, f) => f.rapido == null ? "—" : textoRango(f.rapido, f.lento) });
+    cols.push({ k: "media", titulo: "Potencia media", num: true, fmt: v => v == null ? "—" : potTxt(v) });
+    cols.push({ k: "limita", titulo: "Lo limita", fmt: (v, f) => v ? PW.esc(v) + (porConfirmar(f) ? " (cifra por confirmar)" : "") : "—" });
+    PW.tabla("t-dc", cols, p.filas.filter(f => f.corriente === "DC"), { buscador: false });
+  }
+  // carga AC (lenta): la potencia la fija el cargador que el auto trae a bordo; se supone constante, sin curva ni rango
+  if (!(ac > 0)) {
+    document.getElementById("t-ac").innerHTML = aviso("Falta la potencia máxima AC del auto: escríbela arriba si la conoces.");
+  } else {
+    PW.tabla("t-ac", [
+      { k: "cargador", titulo: "Cargador AC", fmt: v => PW.esc(v) },
+      { k: "minutos", titulo: "Tiempo", prio: true, num: true, fmt: (v, f) => v == null ? "sin dato del auto" : textoTiempo(v) + (porConfirmar(f) ? " (por confirmar)" : "") },
+      { k: "media", titulo: "Potencia que recibe", num: true, fmt: v => v == null ? "—" : potTxt(v) },
+      { k: "limita", titulo: "Lo limita", fmt: (v, f) => v ? PW.esc(v) + (porConfirmar(f) ? " (cifra por confirmar)" : "") : "—" },
+    ], p.filas.filter(f => f.corriente === "AC"), { buscador: false });
+  }
+  ultimo = { p, desde, hasta };
+  pintarResumen(p, desde, hasta);
+  pintarGrafico(p, desde, hasta);
+  pintarVersiones();
+  nota.textContent = HAY_CURVA
+    ? "Es una estimación, no una medición de tu auto. En DC aplica la curva general de arriba (mediana de " + G.n_modelos + " modelos) a la potencia máxima DC de tu auto, limitada por la del cargador, y suma el tiempo de cada tramo de 1 % de batería; " +
+      "el rango va de la curva del cuarto de arriba de los modelos a la del cuarto de abajo (nivel por nivel de la batería): deja dentro a cerca de la mitad de los modelos, y hay autos más rápidos y más lentos. " +
+      "En AC supone potencia constante, por eso no lleva rango. La potencia real depende además de la temperatura de la batería, de su estado y de si el cargador reparte potencia con otro auto. Las potencias de cada tipo de cargador son las nominales habituales de su clase."
+    : "Es un mínimo en DC: en la práctica será mayor, porque la potencia baja a medida que sube la carga (el esquema de arriba). Para estimarlo mejor, usa la potencia media del tramo que informe el fabricante o una prueba, en lugar de la máxima. En AC se supone potencia constante. Las potencias de cada tipo de cargador son las nominales habituales de su clase.";
+}
+
+function elegir(r) {
+  elegido = r;
+  const so = document.getElementById("c-modelo"), i = FILAS.indexOf(r);
+  if (i >= 0 && document.getElementById("c-marca").value === r.mk && so.value !== String(i)) so.value = String(i);
+  document.getElementById("c-bateria").value = r.bt;
+  document.getElementById("c-dc").value = r.pdc || "";
+  document.getElementById("c-ac").value = r.pac || "";
+  document.getElementById("detalle-modelo").innerHTML = detalleDe(r);
+  pintar();
+}
+
+pintarCurva();
+document.getElementById("titulo-proyeccion").textContent = HAY_CURVA ? "Elige tu auto y estima el tiempo de carga" : "Elige tu auto y calcula el tiempo mínimo de carga";
+document.getElementById("intro-proyeccion").textContent = "Elige tu auto y se completan la batería y las potencias máximas de carga AC y DC con las cifras del catálogo del Observatorio, o escribe tus propios datos. " +
+  "La batería y la autonomía vienen del padrón oficial de Consumo Vehicular; la potencia de carga, del catálogo interno del Observatorio (que no declara la fuente de cada valor) o de una investigación web por modelo con su confianza: confírmala con la ficha de tu auto. Cada cifra dice de dónde sale. " +
+  (HAY_CURVA ? "El tiempo se estima con la curva general de arriba, con un rango." : "El resultado es un mínimo: supone que el auto recibe su potencia máxima durante todo el tramo.");
+
+if (FILAS.length) {
+  const sm = document.getElementById("c-marca"), so = document.getElementById("c-modelo");
+  const marcas = [...new Set(FILAS.map(r => r.mk))].sort((a, b) => a.localeCompare(b, "es"));
+  sm.innerHTML = '<option value="">Elige una marca</option>' + marcas.map(m => "<option>" + PW.esc(m) + "</option>").join("");
+  sm.addEventListener("input", () => {
+    const lista = FILAS.map((r, i) => [r, i]).filter(([r]) => r.mk === sm.value);
+    const grupos = [];                                   // las versiones de cada modelo juntas: FILAS viene ordenada por marca, modelo y tipo
+    lista.forEach(([r, i]) => {
+      const k = r.md + "|" + r.tp, ult = grupos[grupos.length - 1];
+      if (ult && ult.k === k) ult.items.push([r, i]); else grupos.push({ k, md: r.md, items: [[r, i]] });
+    });
+    const marcaConectores = g => { const n = g.items.filter(([r]) => tieneDC(r)).length; return n === g.items.length ? "AC y DC" : (n === 0 ? "solo AC" : "AC y DC en " + n + " de " + g.items.length); };
+    so.innerHTML = '<option value="">' + (sm.value ? "Elige un modelo y su versión" : "Primero elige la marca") + "</option>" + grupos.map(g =>
+      '<optgroup label="' + PW.esc(g.md + (g.items.length > 1 ? " · " + g.items.length + " versiones" : "") + " · " + marcaConectores(g)) + '">' + g.items.map(([r, i]) =>
+        '<option value="' + i + '">' + PW.esc(r.md) + (r.vr ? " — " + PW.esc(r.vr) : "") + " (" + anios(r) + ") · " + (r.tp === "BEV" ? "eléctrico" : "híbrido enchufable") + " · " + textoConectores(r) + " · " + PW.fmt(r.bt, 1) + " kWh" +
+        (r.pdc ? " · DC " + PW.fmt(r.pdc, 1) + " kW" : "") + (r.pac ? " · AC " + PW.fmt(r.pac, 1) + " kW" : "") + "</option>").join("") + "</optgroup>").join("");
+    so.disabled = !sm.value;
+    pintarConectores();
+  });
+  so.addEventListener("input", () => { if (so.value !== "") elegir(FILAS[Number(so.value)]); });
+  pintarConectores();
+} else {
+  document.getElementById("selector-modelo").style.display = "none";
+  document.getElementById("resumen-conectores").style.display = "none";
+}
+["c-bateria", "c-dc", "c-ac"].forEach(id => document.getElementById(id).addEventListener("input", () => {
+  if (elegido) { elegido = null; document.getElementById("detalle-modelo").innerHTML = '<p class="nota" style="margin-top:0">Cambiaste los datos del modelo elegido: el cálculo usa los tuyos.</p>'; }
+  pintar();
+}));
+["c-desde", "c-hasta", "c-otro", "c-otro-tipo"].forEach(id => document.getElementById(id).addEventListener("input", pintar));
+document.getElementById("c-graf").addEventListener("input", () => { if (ultimo) { pintarGrafico(ultimo.p, ultimo.desde, ultimo.hasta); pintarVersiones(); } });
+document.getElementById("t-versiones").addEventListener("click", e => {
+  const b = e.target.closest("button[data-i]");
+  if (b && FILAS[Number(b.dataset.i)]) elegir(FILAS[Number(b.dataset.i)]);
+});
+pintar();
+</script>
+</body>
+</html>

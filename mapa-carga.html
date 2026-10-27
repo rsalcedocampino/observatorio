@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Mapa interactivo de la red de carga de Chile: cada punto es una estación, con su operador, conectores, potencia, estado, dirección y horario.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261025a">
+<link rel="stylesheet" href="assets/estilo.css?v=261026a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -51,6 +51,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   SEC (agregados por región y potencia) ver <a href="carga-registro-mapa.html#capacidad">Infraestructura declarada
   (SEC)</a>.</p>
   <p class="nota" id="nota"></p>
+  <p class="nota" id="aviso-fuentes" hidden style="border-left:3px solid var(--warning); padding-left:8px"></p>
 
   <div class="kpis" id="kpis"></div>
 
@@ -123,8 +124,11 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   </section>
 </main>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261025a"></script>
+<script>document.write('<script src="data/fuentes_carga.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=261026a"></script>
 <script>
+// Operadores cuyo feed no responde (#13): sus estaciones van con la ultima lectura buena y se avisa.
+{ const FC = (window.PW_DATA || {}).fuentes_carga || {}; const av = document.getElementById("aviso-fuentes"); if (av && (FC.avisos || []).length) { av.textContent = FC.avisos.join(" "); av.hidden = false; } }
 PW.montarNav("mapa-carga.html"); const MAPA = window.PW_DATA.mapa_carga || {}; // subconjunto liviano de mapa.js: solo carga (ver CAMBIOS 357)
 const CARGA = (MAPA.carga || []).map(p => ({
   // _kw = null cuando la fuente no trae potencia, NO 0: con "|| 0" los 54 puntos sin dato

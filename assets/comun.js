@@ -50,6 +50,7 @@
       ["autonomia.html", "Brecha de cobertura"],
       ["duales.html", "Estaciones duales"],
       ["conectores-red.html", "Conectores flota-red"],
+      ["curvas-de-carga.html", "Curvas de carga"],
     ]],
     ["Mercado e inversión", [
       ["ventas.html", "Ventas de vehículos EV"],
@@ -166,6 +167,7 @@
   ICONOS["mapa-carga.html"] = IC('<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>');
   ICONOS["carga-registro-mapa.html"] = IC('<path d="M12 21s-6.5-5.6-6.5-10.4A6.5 6.5 0 0 1 12 4a6.5 6.5 0 0 1 6.5 6.6C18.5 15.4 12 21 12 21z"/><path d="M12.6 7.5L10 11.2h3l-.6 3 2.6-3.7h-3z"/>');
   ICONOS["cargadores-importacion.html"] = IC('<path d="M8 3v5M16 3v5"/><rect x="6" y="8" width="12" height="7" rx="2"/><path d="M12 15v3"/><path d="M9 18h6"/>');
+  ICONOS["curvas-de-carga.html"] = IC('<path d="M4 4v16h16"/><path d="M6 16c1.4-5 3-8 5-8h3c2 0 3.2 3 5 8"/>');
   function icono(pagina) { return ICONOS[pagina] || ""; }
 
   // ---------- colaboradores (empresas / instituciones): banda de logos ARRIBA del pie.
