@@ -400,7 +400,7 @@
     f.innerHTML = "<strong>Desarrollado por <a href='https://www.linkedin.com/in/rsalcedoc/' target='_blank' rel='noopener'>Rodrigo Salcedo Campino</a> - Energías Futuro</strong><br>" +
       "Fuentes oficiales: ACERA, ANB (Academia Nacional de Bomberos), BCN – LeyChile, " +
       "CMF (Comisión para el Mercado Financiero), CNE (Comisión Nacional de Energía), " +
-      "Coordinador Eléctrico Nacional, Euro NCAP, INE (Instituto Nacional de Estadísticas), " +
+      "Coordinador Eléctrico Nacional, Euro NCAP, IEA (Agencia Internacional de Energía), INE (Instituto Nacional de Estadísticas), " +
       "Ministerio de Energía (EcoCarga / PELP / IDE), SEC (Superintendencia de Electricidad " +
       "y Combustibles), Servicio Nacional de Aduanas y los operadores de carga. Cada cifra es " +
       "trazable a su fuente y está homologada por comuna (CUT INE), tipo de conector, estado " +

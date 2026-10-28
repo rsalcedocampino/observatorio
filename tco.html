@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Compara el costo real de un vehículo eléctrico frente a uno a combustión: compra, energía, mantención, seguro, permiso de circulación e impuesto verde.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261026a">
+<link rel="stylesheet" href="assets/estilo.css?v=261028a">
 <style>
 .pestanas { display: flex; gap: 2px; flex-wrap: wrap; margin: 16px 0 4px; border-bottom: 1px solid var(--border); }
 .pestanas button { background: none; border: 0; padding: 8px 14px; font: inherit; color: var(--ink-2); cursor: pointer; border-radius: 8px 8px 0 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
@@ -198,7 +198,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 </main>
 
 <script>document.write('<script src="data/c_tco.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261026a"></script>
+<script src="assets/comun.js?v=261028a"></script>
 <script>document.write('<script src="assets/franja-macro.js?v='+_pwv+'"><\/script>')</script>
 <script>
 PW.montarNav("tco.html"); let D = PW_DATA.c_tco; let V = D.v, P0 = D.p, E0 = D.e; const g = id => document.getElementById(id); // [MILES] los campos de dinero (clase "miles") son type=text y muestran puntos de miles; // numIn les quita los puntos antes de parsear (los campos con decimales, p.ej. km/kWh, NO llevan la clase).
