@@ -72,6 +72,16 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <p class="nota">Serie mensual de <b>ventas</b> de camiones eléctricos (ANAC, Registro de Aduana y Representantes de Marca), acumulada por año.</p>
   </div>
 
+  <div class="tarjeta" id="card-marcas" hidden>
+    <h2 style="margin-top:0">¿Quién vende camiones eléctricos?</h2>
+    <p id="txt-marcas"></p>
+    <div class="fila2">
+      <div id="g-marcas"></div>
+      <div id="t-marcas"></div>
+    </div>
+    <p class="nota" id="nota-marcas"></p>
+  </div>
+
   <div class="tarjeta" id="card-comercial" hidden>
     <h2 style="margin-top:0">Vehículos comerciales eléctricos: furgones y camiones chicos</h2>
     <p class="nota">Es un segmento aparte, más liviano que los camiones de esta página: sus cifras
@@ -207,6 +217,26 @@ const notaParcial = anioParcial ? " * " + anioParcial + " cubre de enero a " + m
     alto: 240, fmtY: v => PW.fmt(v, 1) + "%", fmtV: pct1,
   }); document.getElementById("nota-penetracion").textContent =
     "Porcentaje de las inscripciones de cada año. El mercado total son los camiones y tractocamiones de todas las energías; no incluye chasis cabina ni carros bomba." + notaParcial; })();
+
+(function () {   // ventas por marca y segmento (c_camiones.por_marca, export de #20 desde 2025-03)
+  const M = D.por_marca; if (!M || !(M.marcas || []).length) return; document.getElementById("card-marcas").hidden = false;
+  const NOM = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+  const mes = ym => NOM[Number(String(ym).slice(5, 7)) - 1] + " de " + String(ym).slice(0, 4);
+  const L = M.marcas[0]; const seg = k => M.marcas.reduce((s, x) => s + (x[k] || 0), 0);
+  document.getElementById("txt-marcas").textContent = "Entre " + mes(M.desde) + " y " + mes(M.hasta) + " se vendieron " +
+    PW.fmt(M.total) + " camiones eléctricos de " + M.marcas.length + " marcas. Lidera " + L.marca + " con " + PW.fmt(L.total) +
+    ". Por segmento: " + PW.fmt(seg("liviano")) + " livianos, " + PW.fmt(seg("mediano")) + " medianos y " + PW.fmt(seg("pesado")) + " pesados.";
+  PW.barras("g-marcas", { items: M.marcas.slice(0, 12).map(x => ({ nombre: x.marca, valor: x.total })), fmtV: v => PW.fmt(v) + " camiones" });
+  PW.tabla("t-marcas", [
+    { k: "marca", titulo: "Marca" },
+    { k: "liviano", titulo: "Livianos", num: true, fmt: v => PW.fmt(v) },
+    { k: "mediano", titulo: "Medianos", num: true, fmt: v => PW.fmt(v) },
+    { k: "pesado", titulo: "Pesados", num: true, fmt: v => PW.fmt(v) },
+    { k: "total", titulo: "Total", num: true, fmt: v => PW.fmt(v) },
+  ], M.marcas, { orden: "total" });
+  document.getElementById("nota-marcas").textContent = "Ventas de camiones eléctricos por marca y segmento (ANAC, Registro de Aduana y " +
+    "Representantes de Marca). El detalle por marca existe desde " + mes(M.desde) + "; antes la fuente solo trae el total del mes, " +
+    "que sí está en el resto de la página."; })();
 
 (function () {   // vehiculo comercial electrico: segmento aparte, con su propio denominador
   const C = D.comercial; const filas = ((C || {}).por_anio || []); if (!filas.length) return; document.getElementById("card-comercial").hidden = false; const conPct = filas.filter(x => x.penetracion_electrico_pct != null); const completos = conPct.filter(x => String(x.anio) !== anioParcial); const u = (completos.length ? completos : conPct).slice(-1)[0]; const p = conPct.find(x => String(x.anio) === anioParcial); document.getElementById("kpi-comercial").innerHTML = [
