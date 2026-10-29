@@ -84,6 +84,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 
   <div class="tarjeta">
     <h2 style="margin-top:0" id="t-modelos-titulo">Modelos más vendidos</h2>
+    <p class="nota" id="nota-modelos-atraso" hidden></p>
     <div id="t-modelos"></div>
     <p class="nota">La fuente solo publica este ranking para algunos meses recientes, no para
     todo el histórico. ¿Ficha completa de un modelo? → <a href="padron-ev.html">Padrón EV</a>.</p>
@@ -191,12 +192,25 @@ function pintarMarcas() {
       ": la fuente no trae desglose por marca esos meses."; }
 }
 
+// ranking de modelos: la fuente puede traer el ultimo mes solo por marca (sep-2026, CAMBIOS 1582);
+// entonces el ranking queda en el ultimo mes con modelo y se dice, en vez de parecer desactualizado
+const MES_NOM = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const mesLargo = ym => MES_NOM[Number(String(ym).slice(5, 7)) - 1] + " de " + String(ym).slice(0, 4);
+(function () {
+  const tm = D.top_modelos.mes, um = K.ultimo_mes, el = document.getElementById("nota-modelos-atraso");
+  if (!tm || !um || String(tm).slice(0, 7) >= String(um).slice(0, 7)) return;
+  el.textContent = "Es el último mes con detalle por modelo. Para " + mesLargo(um) +
+    " la fuente por ahora informa las ventas solo por marca (ver el ranking de marcas más arriba).";
+  el.hidden = false;
+})();
+
 function pintarModelos() {
-  const marca = selMarca.value; const modelos = marca ? D.top_modelos.modelos.filter(m => m.marca === marca) : D.top_modelos.modelos; if (!modelos.length) {
+  const marca = selMarca.value; const modelos = marca ? D.top_modelos.modelos.filter(m => m.marca === marca) : D.top_modelos.modelos;
+  document.getElementById("t-modelos-titulo").textContent =
+    "Modelos más vendidos — " + (D.top_modelos.mes ? mesLargo(D.top_modelos.mes) : "sin dato") + (marca ? " · " + marca : ""); if (!modelos.length) {
     document.getElementById("t-modelos").innerHTML =
       '<p class="nota">' + (marca ? "Sin modelos de " + marca + " en el mes disponible." : "Sin dato disponible.") + "</p>"; return; }
-  document.getElementById("t-modelos-titulo").textContent =
-    "Modelos más vendidos — " + D.top_modelos.mes.slice(0, 7) + (marca ? " · " + marca : ""); PW.tabla("t-modelos", [
+  PW.tabla("t-modelos", [
     { k: "marca", titulo: "Marca" },
     { k: "modelo", titulo: "Modelo" },
     { k: "unidades", titulo: "Unidades", num: true, fmt: v => PW.fmt(v) },
