@@ -751,6 +751,7 @@ async function consultar(env, args) {
             ` Períodos disponibles: ${resumenPeriodos(ps)}.`,
           { periodos: ps, notas: ind.advertencias.slice(0, 2) });
       }
+      if (a.top) cand = cand.filter((f) => f.codigo !== "todas");
       cand.sort((x, y) => (a.orden === "menor" ? x.valores[medida] - y.valores[medida] : y.valores[medida] - x.valores[medida]) || x.nombre.localeCompare(y.nombre, "es"));
       const elegidas = cand.slice(0, a.top);
       filas.push(...elegidas);
@@ -4976,6 +4977,9 @@ function ajustarPuntajes(res, q, ctx) {
   if (/\b(anos|anual|anuales|por ano|este ano|en el ano|del ano|al ano|durante el ano)\b/.test(q)) sumar("ventas_electrificados_anual", 5);
   if (/\b(ahora|en este momento|en vivo|hoy|actualmente|en estos momentos)\b/.test(q)) { sumar("cortes_en_vivo", 3); sumar("estado_conectores_ahora", 3); }
   if (k.stock && /\b(autos?|vehiculos?|electricos?)\b/.test(q) && !k.conPesados) sumar("parque_ev_ine", 4);
+  // «penetracion de electricos», «adopcion de EVs»: es la fraccion del parque en circulacion, no ventas ni generacion electrica
+  if (/\bpenetracion\b/.test(q) && /\b(electric[ao]s?|electrificad\w*|evs?\b|bevs?\b|phevs?\b)\b/.test(q)) { agregar("parque_ev_ine"); sumar("parque_ev_ine", 25); sumar("ventas_electrificados_anual", -16); sumar("generacion_electrica", -10); }
+  if (/\badopcion\b/.test(q) && /\b(electric[ao]s?|electrificad\w*|evs?\b|bevs?\b|phevs?\b)\b/.test(q) && !k.ventas) { agregar("parque_ev_ine"); sumar("parque_ev_ine", 25); sumar("ventas_electrificados_anual", -16); sumar("generacion_electrica", -8); }
   if (k.importa) { sumar("importaciones_electrificados", 4); sumar("pesados_importacion", 2); }
   if (k.conPesados && k.stock) agregar("pesados_parque");              // «cuantos tractocamiones hay»: ese nombre solo esta en las importaciones, pero el parque de pesados es el que cuenta lo que circula
   if (k.conPesados) { sumar("pesados_parque", 4); sumar("pesados_importacion", 4); }
@@ -5856,7 +5860,6 @@ function crearDialogo(env) {
         hay = true;
       }
     }
-    if (hay) extra.push({ tipo: "avisos", verificar: false, calculado: true, items: ["Son cálculos del asistente con las cifras publicadas de cada mes (suma, diferencia y porcentaje): el sitio no publica estos totales ni estas variaciones."] });
     return extra;
   }
 
