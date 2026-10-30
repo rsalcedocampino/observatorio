@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Puntos de interés y servicios — Energías Futuro</title>
+<meta name="description" content="Mapa de turismo, naturaleza protegida, patrimonio cultural, salud, vialidad y destinos turísticos de Chile. Datos SERNATUR, MINSAL, CONAF, CMN y MOP.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261029a">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<script src="data/pois.js?v='+_pwv+'">\x3c/script>')</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<style>
+#mapa-pois { border-radius: 6px; }
+.resumen-tabla th, .resumen-tabla td { padding: 5px 10px; font-size: 0.85rem; }
+.resumen-tabla td:not(:first-child) { text-align: right; }
+.cat-filtro { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
+.det-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.det-tab { padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--borde); cursor: pointer; font-size: 0.85rem; background: none; }
+.det-tab.activo { background: var(--acento); color: #fff; border-color: var(--acento); }
+</style>
+</head>
+<body>
+<main>
+  <div class="tab-nav" id="pestanas" role="tablist">
+    <button class="tab-btn activo" data-tab="mapa">Mapa</button>
+    <button class="tab-btn" data-tab="region">Por región</button>
+    <button class="tab-btn" data-tab="detalle">Por categoría</button>
+  </div>
+
+  <!-- ===== PESTAÑA MAPA ===== -->
+  <section class="tab-content activo" id="mapa">
+    <h1>Puntos de interés y servicios</h1>
+    <p class="hero-sub">Turismo, naturaleza protegida, patrimonio, salud, vialidad, aeropuertos, museos, centrales el&eacute;ctricas y escuelas de Chile. Fuentes oficiales y OpenStreetMap.</p>
+    <div id="mapa-pois"></div>
+    <p class="fuente-nota" id="fuente-mapa"></p>
+  </section>
+
+  <!-- ===== PESTAÑA POR REGIÓN ===== -->
+  <section class="tab-content" id="region">
+    <h2>Cobertura por región</h2>
+    <p class="hero-sub">Conteo de puntos de cada categoría por región. Haz clic en una fila para centrar el mapa en esa región.</p>
+    <div id="cont-resumen"></div>
+  </section>
+
+  <!-- ===== PESTAÑA POR CATEGORÍA ===== -->
+  <section class="tab-content" id="detalle">
+    <h2>Detalle por categoría</h2>
+    <div class="det-tabs" id="det-tabs"></div>
+    <div class="cat-filtro">
+      <label>Región: <select id="sel-region" style="margin-left:4px"></select></label>
+      <span id="det-fecha" style="font-size:0.8rem;opacity:.6"></span>
+      <span id="det-conteo" style="margin-left:auto;font-size:0.85rem;opacity:.7"></span>
+    </div>
+    <div id="cont-detalle"></div>
+  </section>
+</main>
+
+<script src="assets/comun.js?v=261029a"></script>
+<script>
+PW.montarNav(document.querySelector("main"), "pois.html");
+
+// ---- Colores por capa ----
+const CAPAS_DEF = [
+  { k: "turismo",     label: "Turismo",             color: "#e67e22", campo: "t" },
+  { k: "naturaleza",  label: "Naturaleza (SNASPE)",  color: "#27ae60", campo: "t" },
+  { k: "patrimonio",  label: "Patrimonio (CMN)",     color: "#8e44ad", campo: "c" },
+  { k: "salud",       label: "Salud",                color: "#e84393", campo: "t" },
+  { k: "vialidad",    label: "Zonas de descanso",    color: "#7f8c8d", campo: "n" },
+  { k: "destinos",    label: "Destinos turísticos",  color: "#2980b9", campo: "c" },
+  { k: "zoit",        label: "ZOIT",                 color: "#16a085", campo: "n" },
+  { k: "circuitos",   label: "Circuitos",            color: "#c0392b", campo: "n" },
+  { k: "aeropuertos", label: "Aeropuertos",          color: "#1abc9c", campo: "iata" },
+  { k: "museos",      label: "Museos y cultura",     color: "#d35400", campo: "t" },
+  { k: "centrales",   label: "Centrales eléctricas", color: "#f39c12", campo: "t" },
+  { k: "escuelas",    label: "Educación",            color: "#3498db", campo: "d" },
+];
+
+// ---- Tablas de detalle ----
+const COLS_DETALLE = {
+  turismo:     [{ k: "n", titulo: "Nombre" }, { k: "t", titulo: "Tipo" }],
+  naturaleza:  [{ k: "n", titulo: "Nombre" }, { k: "t", titulo: "Tipo" }, { k: "km2", titulo: "km²", num: true, fmt: v => PW.fmt(v, 1) }],
+  patrimonio:  [{ k: "n", titulo: "Nombre" }, { k: "c", titulo: "Categoría" }],
+  salud:       [{ k: "n", titulo: "Nombre" }, { k: "t", titulo: "Tipo" }, { k: "d", titulo: "Dependencia" }],
+  vialidad:    [{ k: "n", titulo: "Nombre" }, { k: "c", titulo: "Contrato" }, { k: "km", titulo: "Km", num: true, fmt: v => PW.fmt(v, 1) }],
+  destinos:    [{ k: "n", titulo: "Nombre" }, { k: "c", titulo: "Categoría" }],
+  zoit:        [{ k: "n", titulo: "Nombre" }],
+  circuitos:   [{ k: "n", titulo: "Nombre" }],
+  aeropuertos: [{ k: "n", titulo: "Nombre" }, { k: "iata", titulo: "IATA" }],
+  museos:      [{ k: "n", titulo: "Nombre" }, { k: "t", titulo: "Tipo" }],
+  centrales:   [{ k: "n", titulo: "Nombre" }, { k: "t", titulo: "Tecnología" }, { k: "mw", titulo: "MW", num: true, fmt: v => PW.fmt(v, 1) }],
+  escuelas:    [{ k: "n", titulo: "Nombre" }, { k: "d", titulo: "Dependencia" }],
+};
+
+const NOMBRES_REGION = {
+  "01":"Tarapacá","02":"Antofagasta","03":"Atacama","04":"Coquimbo",
+  "05":"Valparaíso","06":"O'Higgins","07":"Maule","08":"Biobío",
+  "09":"La Araucanía","10":"Los Lagos","11":"Aysén","12":"Magallanes",
+  "13":"Metropolitana","14":"Los Ríos","15":"Arica y Parinacota","16":"Ñuble",
+};
+
+// Mapa via PW.mapa() (tiles Esri, clustering integrado)
+let mapaObj = null;
+
+function iniciarMapa(datos) {
+  const capas = CAPAS_DEF.map(({ k, label, color, campo }) => ({
+    nombre: label,
+    color: color,
+    visible: true,
+    puntos: (datos[k] || []).map(p => {
+      const sub = p[campo] ? PW.esc(p[campo]) : "";
+      return {
+        lat: p.lat,
+        lon: p.lon,
+        color: color,
+        popup: `<b>${PW.esc(p.n || "(sin nombre)")}</b>${sub ? "<br>" + sub : ""}`,
+        tip: p.n || "",
+      };
+    }),
+  }));
+  mapaObj = PW.mapa("mapa-pois", {
+    alto: 580,
+    centro: [-35.5, -71.5],
+    zoom: 5,
+    capas: capas,
+  });
+}
+
+function montarResumen(datos) {
+  const resumen = datos.resumen || [];
+  const cols = [
+    { k: "rn", titulo: "Región" },
+    { k: "nt", titulo: "Turismo", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "nnl", titulo: "Naturaleza", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "np", titulo: "Patrimonio", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "ns", titulo: "Salud", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "nv", titulo: "Vialidad", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "nd", titulo: "Destinos", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "nz", titulo: "ZOIT", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "nae", titulo: "Aerop.", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "nmu", titulo: "Museos", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "nce", titulo: "Centrales", num: true, fmt: v => PW.fmt(v, 0) },
+    { k: "nes", titulo: "Escuelas", num: true, fmt: v => PW.fmt(v, 0) },
+  ];
+  PW.tabla("cont-resumen", cols, resumen, { clase: "resumen-tabla" });
+}
+
+function montarDetTabs() {
+  const cont = document.getElementById("det-tabs");
+  CAPAS_DEF.forEach(({ k, label, color }, i) => {
+    const btn = document.createElement("button");
+    btn.className = "det-tab" + (i === 0 ? " activo" : "");
+    btn.textContent = label;
+    btn.dataset.k = k;
+    btn.style.setProperty("--acento-local", color);
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".det-tab").forEach(b => b.classList.remove("activo"));
+      btn.classList.add("activo");
+      renderDetalle();
+    });
+    cont.appendChild(btn);
+  });
+}
+
+function renderDetalle() {
+  const datos = window.PW_DATA && window.PW_DATA.pois;
+  if (!datos) return;
+  const k = document.querySelector(".det-tab.activo")?.dataset.k || "turismo";
+  const region = document.getElementById("sel-region")?.value || "";
+  const todos = datos[k] || [];
+  const filtrados = region ? todos.filter(x => x.r === region) : todos;
+  const fechas = (datos._meta && datos._meta.fechas) || {};
+  const f = fechas[k];
+  document.getElementById("det-fecha").textContent = f || "";
+  document.getElementById("det-conteo").textContent = `${PW.fmt(filtrados.length, 0)} de ${PW.fmt(todos.length, 0)}`;
+  const cols = COLS_DETALLE[k] || [{ k: "n", titulo: "Nombre" }];
+  PW.tabla("cont-detalle", cols, filtrados.slice(0, 500));
+  if (filtrados.length > 500) {
+    const nota = document.createElement("p");
+    nota.style.cssText = "font-size:.8rem;opacity:.6;margin-top:6px";
+    nota.textContent = `Mostrando los primeros 500 de ${PW.fmt(filtrados.length, 0)}. Filtra por región para ver más.`;
+    document.getElementById("cont-detalle").appendChild(nota);
+  }
+}
+
+function montarSelRegion() {
+  const sel = document.getElementById("sel-region");
+  const opt0 = document.createElement("option");
+  opt0.value = "";
+  opt0.textContent = "Todas";
+  sel.appendChild(opt0);
+  Object.entries(NOMBRES_REGION).sort().forEach(([k, v]) => {
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.textContent = v;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener("input", renderDetalle);
+}
+
+function init() {
+  const datos = window.PW_DATA && window.PW_DATA.pois;
+  if (!datos) {
+    setTimeout(init, 80);
+    return;
+  }
+  const meta = datos._meta || {};
+  document.getElementById("fuente-mapa").textContent =
+    "Fuente: " + (meta.fuente || "") + " — datos a " + (meta.fecha || "");
+  iniciarMapa(datos);
+  montarResumen(datos);
+  montarDetTabs();
+  montarSelRegion();
+  renderDetalle();
+
+  // Navegación entre pestañas
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.tab;
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("activo", b === btn));
+      document.querySelectorAll(".tab-content").forEach(s => s.classList.toggle("activo", s.id === id));
+      if (id === "mapa") setTimeout(() => mapaObj && mapaObj.invalidateSize(), 50);
+    });
+  });
+}
+init();
+</script>
+</body>
+</html>
