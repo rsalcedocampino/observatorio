@@ -28,21 +28,29 @@ const INSTRUCCIONES =
   "tambien_publicado. Las cifras del texto usan el formato chileno (punto para los miles, coma para los decimales: 1.234 es mil doscientos treinta " +
   "y cuatro); los campos numéricos de structuredContent traen el número exacto. No hay descarga masiva: las consultas son puntuales.";
 
-// Limites estructurales (acotan lo que puede salir en cada llamada) y de uso. Se pueden ajustar con variables de entorno.
+// Limites estructurales (acotan lo que puede salir en cada llamada) y de uso. Se pueden ajustar con variables de entorno (LIM_<NOMBRE>).
+//
+// REGLA DEL USUARIO (2026-10-30): «nunca sobrepasar lo gratuito de los sistemas externos». Cada limite sale de una cuota de un plan gratuito, verificada en la documentacion oficial
+// el 2026-10-30 (cuadro completo y fuentes en documentos/LIMITES_GRATUITOS.md); pruebas/limites_gratis.test.mjs impide subirlos por sobre ella sin querer:
+//   Cloudflare Workers, plan Free: 100.000 peticiones al dia (reinicio 00:00 UTC), 10 ms de CPU por peticion, 50 subpeticiones por peticion.
+//   Durable Objects, plan Free (solo SQLite): 100.000 peticiones, 13.000 GB-s y 100.000 filas escritas al dia.
+//   Workers Logs: 200.000 eventos al dia.   GitHub Pages (de donde se leen los datos): 100 GB al mes de ancho de banda, limite blando.
 const LIMITES_BASE = {
   cuerpo_max_bytes: 16384,        // tamano maximo de la peticion
   texto_max: 80,                  // largo maximo de un texto de entrada (entidad, busqueda)
   filas_max: 24,                  // filas por respuesta
   top_max: 20,                    // tamano maximo de un ranking
   ultimos_max: 24,                // periodos maximos en una serie
-  respuesta_max_bytes: 60000,     // tamano maximo del JSON de una respuesta
-  por_minuto: 120,                // peticiones por minuto por origen (los asistentes en la nube comparten rangos de IP: no ajustar a la baja sin medir)
-  global_por_minuto: 1500,        // peticiones por minuto en total (por ubicacion de Cloudflare)
-  justo_por_minuto: 10,           // si el total se agota, quien lleva hasta esto en el minuto igual se atiende (el limite global no deja fuera a quien usa poco)
+  respuesta_max_bytes: 40000,     // CPU (10 ms): acota el JSON que se arma y se serializa en cada respuesta (las reales miden menos de 16 KB)
+  presupuesto_diario: 60000,      // peticiones que se ACEPTAN por dia UTC en total (ver presupuesto.js): 60 % de las 100.000 gratuitas; el 40 % restante cubre las que se rechazan, que tambien cuentan
+  por_minuto: 30,                 // por origen. Sostenido todo el dia seria 43.200 (72 % del presupuesto): un solo origen no lo agota en menos de 33 horas. Claude y ChatGPT comparten rangos de IP: subirlo exige subir tambien el presupuesto
+  global_por_minuto: 60,          // por ubicacion de Cloudflare (el contador no suma entre ubicaciones): alisa las rafagas; el tope del dia lo pone el presupuesto
+  justo_por_minuto: 6,            // si el total por minuto se agota, quien lleva hasta esto en el minuto igual se atiende (el limite global no deja fuera a quien usa poco)
   ttl_datos_ms: 300000,           // cuanto se reutiliza un archivo de datos dentro del mismo proceso
   ttl_viejo_max_ms: 3600000,      // cuanto se tolera servir un archivo viejo si el sitio no responde
   timeout_datos_ms: 8000,         // espera maxima al sitio
-  datos_max_bytes: 1500000,       // tamano maximo aceptado de un archivo de datos
+  datos_max_bytes: 450000,        // CPU (10 ms): un archivo mas grande no se analiza; es el mismo tope con que generar_ia.py avisa (MAX_PARTE_BYTES). Hoy el mayor mide menos de 310 KB
+  ttl_borde_s: 3600,              // cuanto guarda la cache de Cloudflare cada archivo del sitio: acota lo que se le pide a GitHub Pages (el sitio renueva sus datos cada 2 h)
   antiguedad_aviso_h: 36,         // si el catalogo lleva mas horas sin regenerarse, cada respuesta lo advierte (el sitio lo renueva cada 2 h)
   antiguedad_error_h: 72,         // si lleva mas, /health informa falla
 };
@@ -416,7 +424,7 @@ class ErrorConsulta extends Error {
   }
 }
 
-const NIVELES = ["nacional", "region", "comuna", "operador", "categoria", "tecnologia", "clase", "marca", "modelo"];
+const NIVELES = ["nacional", "region", "comuna", "operador", "categoria", "tecnologia", "clase", "marca", "modelo", "meta"];      // «meta»: metas_oficiales (ampliacion del catalogo, latente)
 const CLAVES = ["indicador", "entidad", "nivel", "periodo", "ultimos", "top", "orden", "medida"];
 const NOMBRES_NACIONAL = new Set(["chile", "pais", "nacional", "total pais", "todo el pais", "a nivel nacional", "total nacional", "total"]);
 const PARADA = new Set(("de la el en los las y por cuantos cuantas cuanto cuanta hay que es son del al a un una para con cual cuales como donde " +
@@ -587,8 +595,8 @@ function seleccionar(ind, nivel, filas, codigos, a) {
   return { filas: sel, disponibles: periodosOrdenados(base), criterio: "último período disponible" };
 }
 
-function coincideNombre(texto, f) {
-  const q = norm(texto);
+// `q`: el texto ya normalizado. Quien recorre muchas filas (tco_vehiculos trae 940) lo calcula una vez: antes se normalizaba otra vez en cada fila (CPU del plan gratuito, 10 ms por peticion).
+function coincideNombre(texto, f, q = norm(texto)) {
   if (!q) return false;
   const n = norm(f.nombre);
   return n === q || norm(f.codigo) === q || (q.length >= 3 && (n.startsWith(q) || n.includes(q))) || (f.etiquetas && Object.values(f.etiquetas).some((v) => norm(v) === q));
@@ -627,7 +635,7 @@ async function resolverObjetivos(env, ind, a) {
         for (const nv of ind.niveles.filter((n) => !["nacional", "region", "comuna"].includes(n))) {
           if (a.nivel && a.nivel !== nv) continue;
           const { parte } = await obtenerParte(env, ind, nv);
-          let hit = parte.filas.filter((f) => coincideNombre(a.entidad, f));
+          let hit = parte.filas.filter((f) => coincideNombre(a.entidad, f, qn));
           // un nombre exacto manda sobre los que solo lo contienen («Térmica» no trae también «Geotérmica»)
           const exactos = hit.filter((f) => norm(f.nombre) === qn || norm(f.codigo) === qn);
           if (exactos.length) hit = exactos;
@@ -1787,15 +1795,17 @@ function bloquePaginasTco(env, cuales = ["comparador"], titulo = "Para revisar e
 const sinDatoConPagina = (env, t, siguientes = [], cuales = ["comparador"], titulo = undefined) => ({ tipo: "sin_dato", bloques: [texto(t), bloquePaginasTco(env, cuales, titulo)], opciones: siguientes });
 
 // Crea la funcion que comprueba y entrega una respuesta. `marca` es la clave que queda en `depuracion` («vehiculo», «normativa»).
+// `firmaDefecto` puede ser una cadena fija (p.ej. "Cleme") o una funcion sin argumentos que devuelve una cadena (para seleccion aleatoria por llamada).
 // `resultado` son los datos de los que salen las cifras (filas usadas, supuestos, resultado de la cuenta): ninguna cifra de un bloque `verificar` puede faltar ahi.
-function crearResponder(marca) {
+function crearResponder(marca, firmaDefecto = null) {
   return function responder({ entendi, bloques, resultado, opciones = [], siguientes = [], depuracion = {}, previo = null }, estado) {
     const sinRespaldo = cifrasSinRespaldo(bloques, resultado);
     if (sinRespaldo.length) {
       return { tipo: "sin_dato", bloques: [texto("No pude armar esa respuesta con seguridad. Prueba con otra pregunta.")], opciones: [], depuracion: { [marca]: true, sinRespaldo } };
     }
     if (previo && estado) estado.previo = previo;
-    return { tipo: "respuesta", entendi, bloques, opciones, siguientes, verificacion: { ok: true, sinRespaldo: [] }, depuracion: { [marca]: true, ...depuracion } };
+    const firma = typeof firmaDefecto === "function" ? firmaDefecto() : firmaDefecto;
+    return { tipo: "respuesta", ...(firma ? { firma } : {}), entendi, bloques, opciones, siguientes, verificacion: { ok: true, sinRespaldo: [] }, depuracion: { [marca]: true, ...depuracion } };
   };
 }
 return { texto, nota, sinDato, PESTANAS_TCO, bloquePaginasTco, sinDatoConPagina, crearResponder };
@@ -2179,7 +2189,7 @@ const EJEMPLOS_VEHICULOS = [
 const preguntaChip = (p) => ({ etiqueta: p, accion: { pregunta: p } });
 
 // Comprueba y entrega. `resultado` son los datos de los que salen las cifras (filas usadas, supuestos, resultado de la cuenta).
-const responder = crearResponder("vehiculo");
+const responder = crearResponder("vehiculo", "Cleme");
 
 function notasDeCoincidencia(sinCubrir, filas) {
   const out = [];
@@ -2823,6 +2833,36 @@ async function ejecutarVehiculo(env, interp, original, estado) {
 }
 return { EJEMPLOS_VEHICULOS, ejecutarVehiculo };
 })();
+__mod["agente_web/src/personajes.js"] = (function () {
+// Asigna un personaje (Yoyo, Cleme o Colo) segun el indicador para la firma «-- Nombre» al final de cada respuesta.
+// Yoyo: energia (carga, precios, generacion, cortes). Cleme: electromovilidad (vehiculos EV, ventas EV). Colo: transporte (pesados, buses, camiones, territorio).
+const YOYO = new Set([
+  "red_carga_viva", "registro_sec_carga", "estado_conectores_ahora", "operadores_carga", "concentracion_carga",
+  "precio_bencina93", "precio_combustibles", "precio_kwh_carga",
+  "generacion_electrica", "capacidad_sen", "proyeccion_pelp",
+  "cortes_en_vivo", "cortes_historico",
+]);
+const CLEME = new Set([
+  "ventas_enchufables_mensual", "ventas_electrificados_anual", "ventas_marca", "ventas_modelo_mes",
+  "parque_ev_ine", "importaciones_electrificados", "proyeccion_parque",
+]);
+const COLO = new Set([
+  "pesados_parque", "pesados_importacion",
+  "ventas_buses_mensual", "ventas_camiones_mensual",
+  "proyeccion_transporte_publico", "proyeccion_poblacion",
+  "poblacion_censo2024",
+]);
+const TODOS = ["Yoyo", "Cleme", "Colo"];
+
+function personajeDe(indicadorId) {
+  if (!indicadorId) return TODOS[Math.floor(Math.random() * 3)];
+  if (YOYO.has(indicadorId)) return "Yoyo";
+  if (CLEME.has(indicadorId)) return "Cleme";
+  if (COLO.has(indicadorId)) return "Colo";
+  return TODOS[Math.floor(Math.random() * 3)];
+}
+return { personajeDe };
+})();
 __mod["agente_web/src/nlu_norm.js"] = (function () {
 // Comprension (sin IA) de preguntas sobre leyes, decretos y normas: una norma por su numero («ley 21.505», «decreto 114»), normas por tema («normas de cargadores»),
 // metas y su fuerza juridica, brechas legales, proyectos de ley en seguimiento y normas de bodegaje. Devuelve una intencion ya armada (normas encontradas, tema
@@ -3116,13 +3156,14 @@ __mod["agente_web/src/dialogo_norm.js"] = (function () {
 // Respuestas del asistente sobre leyes, decretos y normas: arma las tarjetas segun la intencion que dejo nlu_norm.js. Cada respuesta se comprueba antes de mostrarse
 // (ninguna cifra puede faltar en los datos usados) y, cuando el catalogo no tiene todo lo que se pide, recomienda las paginas del menu del sitio que sirven para profundizar.
 const { crearResponder, nota, sinDato, texto } = __req("agente_web/src/bloques.js");
+const { personajeDe } = __req("agente_web/src/personajes.js");
 const { ErrorNormativa, bloqueLista, bloqueNorma, bloquePaginas, bloqueVacios, bloquesDecretos, bloquesDocumento, datosMarco, datosNav, indiceNormas, normaPorRef, paginasDeTemas, paginasParecidas, palabrasClave } = __req("agente_web/src/normativa.js");
 const { urlExterna } = __req("agente_web/src/enlaces.js");
 const { temasDeNorma } = __req("agente_web/src/nlu_norm.js");
 const { fmtNumero } = __req("servidor/src/util.js");
 const { urlPublica } = __req("servidor/src/config.js");
 
-const responder = crearResponder("normativa");
+const responder = crearResponder("normativa", personajeDe);
 const chip = (etiqueta, norma) => ({ etiqueta, accion: { norma } });
 const refN = (r) => ({ i: r._i, k: r._k });
 
@@ -5547,6 +5588,7 @@ const { FAMILIAS, INDICADORES_MENSUALES_DE_VENTAS, familiaDeLaRespuesta } = __re
 const { interpretar, limpiarPregunta } = __req("agente_web/src/nlu.js");
 const { ojoClave } = __req("agente_web/src/ojo_clave.js");
 const { bloquesDeRespaldo, bloquesDeResultado, cifrasSinRespaldo } = __req("agente_web/src/respuesta.js");
+const { personajeDe } = __req("agente_web/src/personajes.js");
 
 // Las preguntas armadas (estos ejemplos, los botones de «También puedes preguntar» y las sugerencias) no nombran marcas ni modelos (decision del usuario, 2026-10-22): las que necesitan un
 // vehiculo piden «la marca o el modelo» y lo escribe la persona. Lo vigila preguntas_armadas.test.mjs.
@@ -6057,7 +6099,7 @@ function crearDialogo(env) {
       ? [`¿Cuántos cargadores hay en ${interp.ficha.nombre}?`, `¿Cuántos autos eléctricos hay en ${interp.ficha.nombre}?`, `¿Cuántas horas sin luz ha tenido ${interp.ficha.nombre}?`].map((p) => ({ etiqueta: p, accion: { pregunta: p } }))
       : chipsDeVentas || [...chipsDeOrden, ...chipsDeProyeccion, ...sugerirSiguientes(interp.indicador, rs, original)].slice(0, 3);
     return {
-      tipo: "respuesta", entendi, bloques: final, opciones, siguientes, verificacion: { ok: sinRespaldo.length === 0, sinRespaldo },
+      tipo: "respuesta", firma: personajeDe(interp.indicador), entendi, bloques: final, opciones, siguientes, verificacion: { ok: sinRespaldo.length === 0, sinRespaldo },
       depuracion: { indicador: interp.indicador, consultas: interp.consultas, notas: interp.notas, puntajes: interp.puntajes },
       _ventasDe: ventasDe, _periodoUnico: periodoUnico,       // para ejecutarPorSeparado (no se dibujan)
     };
@@ -6088,7 +6130,7 @@ function crearDialogo(env) {
     const v = primera._ventasDe;
     const chips = v ? await siguientesDeVentas(cat, "hibridos", v.ultimo, v.modo, original) : null;
     return {
-      tipo: "respuesta", entendi: `${primera.entendi} · HEV y PHEV por separado`, bloques, opciones: primera.opciones, siguientes: chips || primera.siguientes,
+      tipo: "respuesta", firma: personajeDe(interp.indicador), entendi: `${primera.entendi} · HEV y PHEV por separado`, bloques, opciones: primera.opciones, siguientes: chips || primera.siguientes,
       verificacion: { ok: buenas.every((x) => x.r.verificacion.ok), sinRespaldo: buenas.flatMap((x) => x.r.verificacion.sinRespaldo) },
       depuracion: { indicador: interp.indicador, consultas: interp.partes.flatMap((p) => p.consultas), notas: interp.notas, puntajes: interp.puntajes },
     };
@@ -6141,11 +6183,11 @@ function crearDialogo(env) {
       case "vacia":
         return { tipo: "vacia", bloques: [texto("Escribe tu pregunta, por ejemplo: «¿Cuántos cargadores hay en el Biobío?»")], opciones: opcionesEjemplos().slice(0, 3) };
       case "saludo":
-        return { tipo: "saludo", bloques: [texto("¡Hola! Somos Yoyo y Cleme. Pregúntanos sobre los datos de Energías Futuro:")], opciones: opcionesEjemplos() };
+        return { tipo: "saludo", bloques: [texto("¡Hola! Somos Yoyo, Cleme y Colo. Pregúntanos sobre los datos de Energías Futuro:")], opciones: opcionesEjemplos() };
       case "gracias":
         return { tipo: "gracias", bloques: [texto("¡De nada! Si quieres, pregunta otra cosa.")], opciones: opcionesEjemplos().slice(0, 3) };
       case "identidad":
-        return { tipo: "identidad", bloques: [texto("Somos Yoyo y Cleme, el asistente de datos de Energías Futuro. Funcionamos con reglas simples, sin inteligencia artificial: entendemos preguntas sobre los datos que el sitio ya publicó y te mostramos la respuesta. Prueba con una pregunta:")], opciones: opcionesEjemplos() };
+        return { tipo: "identidad", bloques: [texto("Somos Yoyo, Cleme y Colo, el asistente de datos de Energías Futuro. Funcionamos con reglas simples, sin inteligencia artificial: entendemos preguntas sobre los datos que el sitio ya publicó y te mostramos la respuesta. Prueba con una pregunta:")], opciones: opcionesEjemplos() };
       case "ayuda": {
         const porTema = new Map();
         for (const i of cat.indicadores) porTema.set(i.tema, (porTema.get(i.tema) || 0) + 1);
@@ -6332,6 +6374,7 @@ const ESTILOS = ESTILOS_BASE + `.globo {
 .burbuja > * + * { margin-top: 11px; }
 .burbuja p { margin: 0; overflow-wrap: anywhere; }
 .entendi { margin: 0 0 5px 4px; font-size: 12px; color: var(--ef-tinta2); }
+.firma { margin: 4px 0 0; font-size: 11px; color: var(--ef-tinta3); text-align: right; }
 
 .nota { font-size: 13px; color: var(--ef-tinta2); border-left: 3px solid var(--ef-eje); padding-left: 10px; }
 .avisos { font-size: 13px; color: var(--ef-tinta2); border-left: 3px solid var(--ef-aviso); padding-left: 10px; }
@@ -6596,7 +6639,7 @@ const TEXTOS = {
   subtitulo: "Cifras publicadas por Energías Futuro",
   lanzador: "Asistente de datos",
   globo: "¿Tienes una pregunta sobre los datos? Pregúntanos.",
-  saludo: "Hola, somos Yoyo y Cleme — dos curiosos de la energía, el transporte y la electromovilidad. Pregúntanos lo que quieras sobre los datos del observatorio.",
+  saludo: "Hola, somos Yoyo, Cleme y Colo — curiosos de la energía, la electromovilidad y el transporte. Pregúntanos lo que quieras sobre los datos del observatorio.",
   pie: "Respondemos con cifras ya publicadas en este sitio; los cálculos (costo de uso, totales y variaciones de ventas) van marcados.",
   placeholder: "Escribe tu pregunta",
   error: "Tuvimos un problema para responder. Intenta de nuevo en unos minutos.",
@@ -6834,6 +6877,7 @@ function montar(cfg = configDeLaPagina()) {
       const nodo = dibujarBloque(b, env);
       if (nodo) burbuja.append(nodo);
     }
+    if (resp.firma) burbuja.append(h("p", { class: "firma", texto: `— ${resp.firma}` }));
     const m = h("div", { class: "msg a" }, resp.entendi ? h("p", { class: "entendi", texto: resp.entendi }) : null, burbuja, dibujarOpinion(resp, msg));
     const chips = (opciones) => h("div", { class: "chips" }, opciones.map((o) => h("button", { type: "button", class: "chip", texto: o.etiqueta, onclick: () => elegir(o) })));
     if (conChips && resp.opciones && resp.opciones.length) m.append(chips(resp.opciones));
