@@ -2396,7 +2396,7 @@ async function segurosMercado(env, interp, estado) {
     entendi: "Entendí tu pregunta como: seguros para vehículos eléctricos",
     bloques: [
       { tipo: "tabla", verificar: true, titulo: "Aseguradoras y seguros específicos para vehículos eléctricos", subtitulo: "Matriz de seguros y coberturas", columnas: ["Aseguradora", "Producto específico para EV"], filas: seg.aseguradoras.map((a) => [a.nombre, a.oferta_ev ? "Sí" : "No"]) },
-      nota("Que una aseguradora no tenga un producto específico no significa que no asegure eléctricos: el seguro automotriz corriente también se contrata para ellos. Pregúntame por una cobertura, por ejemplo «¿qué seguros cubren la batería?», o por el seguro de un modelo escribiendo «seguro de» y su marca y modelo."),
+      nota("Que una aseguradora no tenga un producto específico no significa que no asegure eléctricos: el seguro automotriz corriente también se contrata para ellos. Pregúntanos por una cobertura, por ejemplo «¿qué seguros cubren la batería?», o por el seguro de un modelo escribiendo «seguro de» y su marca y modelo."),
     ],
     resultado: { aseguradoras: seg.aseguradoras }, siguientes: sugerencias, depuracion: { intencion: "seguros" },
   }, estado);
@@ -6141,11 +6141,11 @@ function crearDialogo(env) {
       case "vacia":
         return { tipo: "vacia", bloques: [texto("Escribe tu pregunta, por ejemplo: «¿Cuántos cargadores hay en el Biobío?»")], opciones: opcionesEjemplos().slice(0, 3) };
       case "saludo":
-        return { tipo: "saludo", bloques: [texto("¡Hola! Respondo con las cifras que publica Energías Futuro. Prueba con una pregunta:")], opciones: opcionesEjemplos() };
+        return { tipo: "saludo", bloques: [texto("¡Hola! Somos Yoyo y Cleme. Pregúntanos sobre los datos de Energías Futuro:")], opciones: opcionesEjemplos() };
       case "gracias":
         return { tipo: "gracias", bloques: [texto("¡De nada! Si quieres, pregunta otra cosa.")], opciones: opcionesEjemplos().slice(0, 3) };
       case "identidad":
-        return { tipo: "identidad", bloques: [texto("Soy el asistente de datos de Energías Futuro. Funciono con reglas simples, sin inteligencia artificial: entiendo preguntas sobre los datos que el sitio ya publicó y te muestro la respuesta. Prueba con una pregunta:")], opciones: opcionesEjemplos() };
+        return { tipo: "identidad", bloques: [texto("Somos Yoyo y Cleme, el asistente de datos de Energías Futuro. Funcionamos con reglas simples, sin inteligencia artificial: entendemos preguntas sobre los datos que el sitio ya publicó y te mostramos la respuesta. Prueba con una pregunta:")], opciones: opcionesEjemplos() };
       case "ayuda": {
         const porTema = new Map();
         for (const i of cat.indicadores) porTema.set(i.tema, (porTema.get(i.tema) || 0) + 1);
@@ -6595,11 +6595,11 @@ const TEXTOS = {
   titulo: "Asistente de datos",
   subtitulo: "Cifras publicadas por Energías Futuro",
   lanzador: "Asistente de datos",
-  globo: "¿Tienes una pregunta sobre los datos? Pregúntame.",
-  saludo: "Hola. Soy el asistente de datos de Energías Futuro. Pregúntame por cargadores, autos eléctricos y sus modelos, precios, energía, cortes de luz, leyes y normas. Elige una pregunta o escribe la tuya:",
-  pie: "Respondo con cifras ya publicadas en este sitio; los cálculos (costo de uso, totales y variaciones de ventas) van marcados. Funciono con reglas simples, no con inteligencia artificial.",
+  globo: "¿Tienes una pregunta sobre los datos? Pregúntanos.",
+  saludo: "Hola, somos Yoyo y Cleme — dos curiosos de la energía, el transporte y la electromovilidad. Pregúntanos lo que quieras sobre los datos del observatorio.",
+  pie: "Respondemos con cifras ya publicadas en este sitio; los cálculos (costo de uso, totales y variaciones de ventas) van marcados.",
   placeholder: "Escribe tu pregunta",
-  error: "Tuve un problema para responder. Intenta de nuevo en unos minutos.",
+  error: "Tuvimos un problema para responder. Intenta de nuevo en unos minutos.",
   opinionPregunta: "¿Te sirvió?",
   opinionSi: "Sí",
   opinionNo: "No",
