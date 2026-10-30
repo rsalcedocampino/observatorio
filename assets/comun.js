@@ -57,6 +57,7 @@
       ["rotacion.html", "Rotación de inventario"],
       ["elasticidad.html", "Elasticidad bencina-EV"],
       ["buses.html", "Buses eléctricos"],
+      ["tco-buses.html", "TCO de buses urbanos"],
       ["camiones.html", "Camiones cero y baja emisión"],
       ["inversion.html", "Inversión verde"],
       ["indicadores.html", "Indicadores económicos"],
@@ -144,6 +145,7 @@
   ICONOS["autonomia.html"] = ICONOS["_pin"];
   ICONOS["conectores-red.html"] = ICONOS["operadores.html"];
   ICONOS["tco.html"] = ICONOS["costo.html"];
+  ICONOS["tco-buses.html"] = ICONOS["tco.html"];
   ICONOS["resiliencia.html"] = ICONOS["riesgo.html"];
   ICONOS["probabilidad-cortes.html"] = ICONOS["riesgo.html"];
   ICONOS["red-electrica.html"] = ICONOS["operadores.html"];

@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Dónde un eléctrico promedio se queda sin punto de carga en ruta: distancia entre estaciones con carga DC frente a la autonomía real del catálogo.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261029b">
+<link rel="stylesheet" href="assets/estilo.css?v=261030a">
 <style>
 @media (max-width: 768px) {
   .fila2 { grid-template-columns: 1fr !important; }
@@ -104,7 +104,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   </div>
 </main>
 <script>document.write('<script src="data/c_autonomia.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261029b"></script>
+<script src="assets/comun.js?v=261030a"></script>
 <script>
 function initAut() {
   if (typeof PW === "undefined") {
@@ -124,6 +124,10 @@ D.brechas.forEach((b, i) => { b._i = i; }); document.getElementById("nota").text
     const pDesde = D.puntos.find(p => b.desde.includes(p.n)); const pHasta = D.puntos.find(p => b.hasta.includes(p.n)); if (pDesde && pHasta) {
       const reg = pDesde.reg; if (!brechasPorReg[reg]) brechasPorReg[reg] = 0; brechasPorReg[reg] = Math.max(brechasPorReg[reg], b.km); }
   }); return brechasPorReg; }
+
+function centroRegion(reg) {
+  const ps = D.puntos.filter(p => p.reg === reg && isFinite(p.lat) && isFinite(p.lon)); if (!ps.length) return null;
+  return [ps.reduce((s, p) => s + p.lat, 0) / ps.length, ps.reduce((s, p) => s + p.lon, 0) / ps.length]; }
 
 function colorPorBrecha(km, maxKm = 400) {
   if (km === 0) return "#22c55e"; // verde
@@ -146,11 +150,13 @@ function filtrarPorRegion() {
     capas.push({
       nombre: "Brechas por región",
       puntos: Object.entries(brechasPorReg).map(([reg, km]) => {
-        const coord = PW_DATA.coords_region && PW_DATA.coords_region[reg] ? PW_DATA.coords_region[reg] : [-33, -71]; return {
+        // Antes leia PW_DATA.coords_region, que esta pagina nunca carga: las 16 regiones caian
+        // en [-33, -71]. Ahora el centro sale de las propias estaciones DC de la region.
+        const coord = centroRegion(reg); if (!coord) return null; return {
           lat: coord[0], lon: coord[1], r: 25,
           color: colorPorBrecha(km),
           popup: `<b>${reg}</b><br>Mayor brecha: ${PW.fmt(km)} km`,
-        }; }),
+        }; }).filter(Boolean),
     }); }
 
   // Capa de puntos DC

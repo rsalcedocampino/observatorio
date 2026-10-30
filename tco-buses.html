@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>TCO de buses urbanos — Energías Futuro</title>
+<meta name="description" content="Costo total de un bus urbano eléctrico frente a uno diésel para un operador de ruta fija: energía, mantención, seguro, permiso y depreciación.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261030a">
+<style>
+.filtros input[type=number] { min-width: 0; width: 120px; }
+.filtros input.miles { min-width: 0; width: 140px; }
+.faltan { margin: 6px 0 0; font-size: 13px; color: var(--critical); }
+.kpi .v.estado-mal { color: var(--critical); }
+</style>
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<main>
+  <h1>Costo total de un bus urbano</h1>
+  <p class="sub">Para un operador de ruta fija: cuánto cuesta, en su vida útil, un bus urbano eléctrico
+  frente a uno diésel. Suma energía, mantención, seguro, permiso y depreciación. Los supuestos de la ruta
+  se pueden cambiar.</p>
+  <p class="nota" id="nota"></p>
+  <p class="faltan" id="sin-datos" hidden>No hay datos de buses cargados. Vuelve a intentarlo más tarde.</p>
+
+  <h2>1. Ruta y operación</h2>
+  <div class="filtros">
+    <label>Km por día de la ruta <input id="b-km" type="number" min="1" step="1"></label>
+    <label>Días de operación al año <input id="b-dias" type="number" min="1" max="366" step="1"></label>
+    <label>Años de análisis <input id="b-anios" type="number" min="1" max="20" step="1"></label>
+  </div>
+  <div class="filtros">
+    <label>Tarifa de carga en depósito (CLP/kWh) <input id="b-tarifa" type="number" min="0" step="1"></label>
+    <label>Pérdidas de carga (%) <input id="b-perd" type="number" min="0" max="50" step="1"></label>
+    <label>Valor residual al final (% del precio neto) <input id="b-res" type="number" min="0" max="100" step="1"></label>
+  </div>
+  <div class="filtros">
+    <label><input id="b-iva" type="checkbox"> Recupero el IVA del bus (IVA crédito)</label>
+  </div>
+
+  <h2>2. Bus y costos</h2>
+  <div class="filtros">
+    <label>Modelo <select id="b-modelo"></select></label>
+    <label>Precio de compra por bus (CLP, con IVA) <input id="b-precio" type="text" class="miles" inputmode="numeric"></label>
+  </div>
+  <div class="filtros">
+    <label>Consumo eléctrico propio (kWh/km, opcional) <input id="b-kwh" type="number" min="0" step="0.01"></label>
+  </div>
+  <div class="filtros">
+    <label>Mantención (CLP por km) <input id="b-mant" type="text" class="miles" inputmode="numeric"></label>
+    <label>Seguro anual (CLP) <input id="b-seguro" type="text" class="miles" inputmode="numeric"></label>
+    <label>Permiso de circulación anual (CLP) <input id="b-permiso" type="text" class="miles" inputmode="numeric"></label>
+  </div>
+  <div class="filtros">
+    <label>Consumo diésel de referencia (L/km) <input id="b-diesel-l" type="number" min="0" step="0.01"></label>
+  </div>
+  <p class="faltan" id="faltan"></p>
+
+  <h2>3. Resultado</h2>
+  <div class="kpis" id="k-bus"></div>
+  <div id="desglose"></div>
+  <p class="nota" id="comp-energia"></p>
+  <p class="nota" id="aviso-ruta"></p>
+
+  <h2>4. Modelos con los mismos supuestos</h2>
+  <p class="nota">Cada fila usa la ruta y los costos de arriba. Ninguna fuente trae precio por bus: todas las filas
+  usan el precio que ingresas en la sección 2. Si un modelo no declara consumo, usa el que ingresas en esa misma sección.</p>
+  <div id="t-modelos"></div>
+
+  <h2>5. Fuentes y límites</h2>
+  <div id="fuentes"></div>
+  <p class="nota">No incluye: infraestructura de carga en depósito, potencia contratada, reemplazo de batería,
+  financiamiento ni el tratamiento tributario de cada operador.</p>
+</main>
+<script>document.write('<script src="data/c_tco_buses.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_tco.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=261030a"></script>
+<script>
+PW.montarNav("tco-buses.html");
+const g = id => document.getElementById(id);
+const D = window.PW_DATA && window.PW_DATA.c_tco_buses;
+const C = (window.PW_DATA && window.PW_DATA.c_tco) || { e: {} };
+
+// Lee un campo numérico. Con la clase "miles" quita los puntos. Campo vacío = valor por defecto.
+const numIn = (id, def) => {
+  const el = g(id); if (!el) return def;
+  const t = el.classList.contains("miles") ? el.value.replace(/\./g, "") : el.value;
+  if (String(t).trim() === "") return def;
+  const x = parseFloat(t); return isFinite(x) ? x : def;
+};
+const miles = el => el.addEventListener("input", () => {
+  const d = el.value.replace(/\D/g, ""); el.value = d ? Math.round(+d).toLocaleString("es-CL") : "";
+});
+const kpi = (v, l, d, cls) => `<div class="kpi"><div class="v ${cls || ""}">${PW.esc(v)}</div><div class="l">${PW.esc(l)}</div>${d ? `<div class="d">${PW.esc(d)}</div>` : ""}</div>`;
+
+if (!D || !D.modelos || !D.modelos.length) {
+  g("sin-datos").hidden = false;
+} else {
+  const S = D.supuestos, M = D.modelos;
+  g("nota").textContent = "Datos del " + (D.generado || "") + ". " + (D.nota || "");
+
+  // Valores de partida desde el dato (supuestos del operador, editables).
+  g("b-km").value = S.km_dia; g("b-dias").value = S.dias_anio; g("b-anios").value = S.anios;
+  g("b-tarifa").value = S.tarifa_deposito; g("b-perd").value = S.perdidas_pct; g("b-res").value = S.residual_pct;
+  g("b-iva").checked = !!S.iva_recuperable;
+  g("b-modelo").innerHTML = M.map(m => `<option value="${PW.esc(m.id)}">${PW.esc(m.marca + " " + m.modelo + (m.version ? " (" + m.version + ")" : ""))}</option>`).join("");
+  ["b-precio", "b-mant", "b-seguro", "b-permiso"].forEach(id => miles(g(id)));
+
+  let tDesglose = null, tModelos = null;
+  const modeloSel = () => M.find(m => m.id === g("b-modelo").value) || M[0];
+  // Solo reemplaza el precio si la fuente trae uno: si no, se conserva lo que ingresó el usuario.
+  const cargarPrecio = () => { const m = modeloSel(); if (m.precio != null) g("b-precio").value = Math.round(m.precio).toLocaleString("es-CL"); };
+
+  // Costos del periodo para un bus. Un costo sin fuente ni entrada cuenta como 0 y se avisa en "faltan".
+  // El total solo existe si hay precio y consumo.
+  // kwhOver: consumo propio del operador (kWh/km). Si es null se usa el del modelo.
+  function calcular(m, precioBruto, kwhOver) {
+    const km = numIn("b-km", S.km_dia), dias = numIn("b-dias", S.dias_anio), anios = numIn("b-anios", S.anios);
+    const tarifa = numIn("b-tarifa", S.tarifa_deposito), perd = numIn("b-perd", S.perdidas_pct);
+    const resPct = numIn("b-res", S.residual_pct) / 100;
+    const kmAnio = km * dias;
+    const precioNeto = precioBruto == null ? null : (g("b-iva").checked ? precioBruto / (1 + S.iva_pct / 100) : precioBruto);
+    const kwh = kwhOver != null ? kwhOver : m.kwh_km;
+    const kwhAnio = kwh ? kmAnio * kwh * (1 + perd / 100) : null;
+    const energiaAnio = kwhAnio == null ? null : kwhAnio * tarifa;
+    const mantAnio = (numIn("b-mant", 0)) * kmAnio;
+    const fijosAnio = numIn("b-seguro", 0) + numIn("b-permiso", 0);
+    const depreciacion = precioNeto == null ? null : precioNeto * (1 - resPct);
+    const total = (energiaAnio == null || depreciacion == null) ? null : (energiaAnio + mantAnio + fijosAnio) * anios + depreciacion;
+    return {
+      kmAnio, kwhAnio, energiaAnio, mantAnio, fijosAnio, precioNeto, depreciacion, total,
+      porKm: total == null ? null : total / (kmAnio * anios),
+      mensual: total == null ? null : total / (anios * 12),
+      anios,
+    };
+  }
+
+  function faltantes(m, precio, kwhOver) {
+    const f = [];
+    if (precio == null) f.push("precio de compra");
+    if (kwhOver == null && !m.kwh_km) f.push("consumo eléctrico (kWh/km)");
+    if (numIn("b-mant", null) == null) f.push("mantención por km");
+    if (numIn("b-seguro", null) == null) f.push("seguro anual");
+    if (numIn("b-permiso", null) == null) f.push("permiso anual");
+    return f;
+  }
+
+  function render() {
+    const m = modeloSel();
+    const precio = numIn("b-precio", null);
+    const kwhOver = numIn("b-kwh", null);
+    const r = calcular(m, precio, kwhOver);
+    const f = faltantes(m, precio, kwhOver);
+    g("faltan").textContent = f.length ? "Falta para el costo total: " + f.join(", ") + ". Un costo que falta cuenta como cero." : "";
+
+    const fmtCLP = v => v == null ? "—" : PW.clp(v);
+    g("k-bus").innerHTML =
+      kpi(fmtCLP(r.total), "Costo total del período", r.anios + " años") +
+      kpi(fmtCLP(r.porKm), "Costo por km", "CLP por km") +
+      kpi(fmtCLP(r.mensual), "Costo mensual", "promedio del período") +
+      kpi(r.kwhAnio == null ? "—" : PW.fmt(r.kwhAnio, 0) + " kWh", "Energía al año", "con pérdidas de carga");
+
+    const filas = [
+      { c: "Energía (carga en depósito)", v: r.energiaAnio == null ? null : r.energiaAnio * r.anios },
+      { c: "Mantención", v: r.mantAnio * r.anios },
+      { c: "Seguro y permiso", v: r.fijosAnio * r.anios },
+      { c: "Depreciación neta (precio neto menos residual)", v: r.depreciacion },
+      { c: "Total del período", v: r.total },
+    ].map(x => ({ ...x, a: x.v == null ? null : x.v / r.anios }));
+    if (tDesglose) tDesglose.actualizar(filas);
+    else tDesglose = PW.tabla("desglose", [
+      { k: "c", titulo: "Concepto" },
+      { k: "v", titulo: "Período (CLP)", num: true, fmt: PW.clp },
+      { k: "a", titulo: "Por año (CLP)", num: true, fmt: PW.clp },
+    ], filas, { buscador: false });
+
+    // Energía por km frente a diésel, solo si se ingresó el consumo diésel y hay precio del combustible.
+    const litrosKm = numIn("b-diesel-l", null), die = C.e && C.e.die;
+    if (litrosKm != null && die && r.energiaAnio != null) {
+      const elec = r.energiaAnio / r.kmAnio, dsl = litrosKm * die;
+      g("comp-energia").textContent = "Energía por km: eléctrico " + PW.clp(elec) + " frente a diésel " + PW.clp(dsl) +
+        " (diésel a " + PW.clp(die) + " por litro, mediana nacional CNE). Solo compara energía, no el costo total.";
+    } else {
+      g("comp-energia").textContent = "";
+    }
+
+    g("aviso-ruta").textContent = (m.autonomia_km && m.autonomia_km < numIn("b-km", S.km_dia))
+      ? "Atención: la autonomía declarada de " + m.autonomia_km + " km no cubre los " + numIn("b-km", S.km_dia) + " km diarios. Requiere recarga en ruta o de oportunidad."
+      : "";
+
+    // Ninguna fuente trae precio por bus: la tabla usa el precio que ingresas para todos los modelos,
+    // y el consumo propio solo donde el modelo no declara uno.
+    const filasM = M.map(x => {
+      const precioUsado = x.precio != null ? x.precio : precio;
+      const rr = calcular(x, precioUsado, x.kwh_km ? null : kwhOver);
+      return { modelo: x.marca + " " + x.modelo, pasajeros: x.pasajeros, bateria_kwh: x.bateria_kwh, autonomia_km: x.autonomia_km,
+        kwh_km: x.kwh_km != null ? x.kwh_km : kwhOver, precio: precioUsado, porKm: rr.porKm, total: rr.total };
+    });
+    if (tModelos) tModelos.actualizar(filasM);
+    else tModelos = PW.tabla("t-modelos", [
+      { k: "modelo", titulo: "Modelo" },
+      { k: "pasajeros", titulo: "Pasajeros", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 0) },
+      { k: "bateria_kwh", titulo: "Batería (kWh)", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 0) },
+      { k: "autonomia_km", titulo: "Autonomía (km)", num: true, fmt: v => v == null ? "—" : PW.fmt(v, 0) },
+      { k: "kwh_km", titulo: "kWh/km", num: true, fmt: v => v == null ? "—" : v.toLocaleString("es-CL", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+      { k: "precio", titulo: "Precio usado (CLP)", num: true, fmt: PW.clp },
+      { k: "porKm", titulo: "Costo por km (CLP)", num: true, fmt: PW.clp },
+      { k: "total", titulo: "Costo total (CLP)", num: true, fmt: PW.clp },
+    ], filasM, { buscador: false });
+  }
+
+  g("b-modelo").addEventListener("change", () => { cargarPrecio(); render(); });
+  document.querySelectorAll("input, select").forEach(el => el.addEventListener("input", render));
+  document.querySelectorAll("input[type=checkbox]").forEach(el => el.addEventListener("change", render));
+
+  cargarPrecio();
+  g("fuentes").innerHTML =
+    "<h3>Detalle por modelo</h3><ul>" + M.map(m => "<li><b>" + PW.esc(m.marca + " " + m.modelo) + ":</b> consumo " +
+      PW.esc(m.kwh_km_origen || "no declarado") + ". Fuente: " + PW.esc(m.fuente_datos) +
+      (m.notas ? ". " + PW.esc(m.notas) : "") + "</li>").join("") + "</ul>" +
+    "<h3>Fuentes generales</h3><ul>" + (D.fuentes || []).map(t => "<li>" + PW.esc(t) + "</li>").join("") + "</ul>";
+  render();
+}
+</script>
+</body>
+</html>
