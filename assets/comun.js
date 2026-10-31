@@ -42,6 +42,7 @@
       ["rescate.html", "Fichas de rescate"],
       ["fichacober.html", "Cobertura de rescate"],
       ["seguros.html", "Coberturas EV"],
+      ["seguros-energia.html", "Seguros de proyectos de energía"],
     ]],
     ["Red de carga", [
       ["mapa-carga.html", "Red de carga en vivo"],
@@ -155,6 +156,7 @@
   ICONOS["bodegaje.html"] = ICONOS["normativa.html"];
   ICONOS["acuerdo-electromovilidad.html"] = ICONOS["normativa.html"];
   ICONOS["seguros.html"] = IC('<path d="M12 3l8 3v6c0 4.5-3.4 7.8-8 9-4.6-1.2-8-4.5-8-9V6z"/><path d="M12 8v7M14.6 9.8c-.5-.7-1.4-1.2-2.6-1.2-1.4 0-2.5.8-2.5 1.9 0 2.4 5 1.4 5 3.8 0 1.1-1.1 1.9-2.5 1.9-1.2 0-2.1-.5-2.6-1.2"/>');
+  ICONOS["seguros-energia.html"] = ICONOS["seguros.html"];
   ICONOS["vulnerabilidad.html"] = ICONOS["riesgo.html"];
   ICONOS["bess-cortes.html"] = ICONOS["baterias.html"];
   ICONOS["demanda-ev.html"] = ICONOS["operadores.html"];

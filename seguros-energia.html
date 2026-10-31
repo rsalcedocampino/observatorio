@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Seguros para proyectos de energía — Energías Futuro</title>
+<meta name="description" content="Quién asegura un proyecto solar, eólico, de almacenamiento en baterías o de generación en Chile: aseguradoras, reaseguradoras, corredores y garantías, con su fuente.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<style>
+.fases { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 8px; }
+.fase { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; background: var(--plane); }
+.fase h3 { margin: 0 0 6px; font-size: 14px; color: var(--ink-1); }
+.fase p { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+.cadena { margin: 10px 0 0; padding-left: 20px; color: var(--ink-2); font-size: 13.5px; line-height: 1.55; }
+.hallazgo { border-left: 3px solid var(--s1); padding: 8px 14px; margin: 10px 0; color: var(--ink-2); font-size: 14px; }
+.hallazgo b { color: var(--ink-1); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.ev-medido { border-color: var(--good); color: var(--good-texto); }
+.ev-por_confirmar { border-color: var(--warning); }
+td.nota-actor { min-width: 240px; font-size: 12.5px; color: var(--ink-2); }
+td.nota-actor a { white-space: nowrap; }
+</style>
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_seguros_energia.js?v='+_pwv+'">')</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<main>
+  <h1>Seguros para proyectos de energía</h1>
+  <p class="sub">Quién asegura un parque solar o eólico, un sistema de almacenamiento en
+  baterías (BESS) o una planta de generación en Chile: aseguradoras, reaseguradoras, corredores
+  y compañías de garantías, cada una con su fuente. Los seguros de vehículos eléctricos están en
+  <a href="seguros.html">Coberturas EV</a>.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Cómo se asegura un proyecto de energía</h2>
+    <p class="nota">No es una sola póliza: es un programa que acompaña al proyecto por fases.</p>
+    <div class="fases">
+      <div class="fase"><h3>Construcción y montaje</h3><p><b>Todo riesgo de construcción y
+      montaje (CAR/EAR)</b> protege la obra. Su extensión <b>DSU/ALOP</b> paga el ingreso perdido
+      si un daño atrasa la puesta en marcha; los bancos suelen exigirla. Se suma el transporte
+      de los equipos grandes.</p></div>
+      <div class="fase"><h3>Operación</h3><p><b>Todo riesgo operacional</b> (daño material),
+      <b>avería de maquinaria</b>, <b>lucro cesante</b> tras un daño y <b>responsabilidad
+      civil</b>.</p></div>
+      <div class="fase"><h3>Clima y recurso</h3><p>Las <b>coberturas paramétricas</b> pagan un
+      monto fijo si un índice (sol, viento, lluvia) cae bajo un umbral, sin peritaje. La CMF ya
+      tiene un marco para ellas.</p></div>
+      <div class="fase"><h3>Garantías</h3><p><b>Pólizas de garantía o caución</b>: fiel
+      cumplimiento, anticipo, contrato EPC, conexión a la red y PPA. Sin ellas el proyecto no
+      llega al cierre financiero.</p></div>
+    </div>
+    <p class="nota" style="margin-top:14px">Cómo se coloca el riesgo, paso a paso:</p>
+    <ol class="cadena">
+      <li>El dueño del proyecto o su contratista define qué necesita asegurar.</li>
+      <li>Un corredor arma el programa y los límites que exige el banco.</li>
+      <li>Una aseguradora local emite la póliza y se queda con una parte del riesgo.</li>
+      <li>El resto va al reaseguro: Londres (Lloyd's) y reaseguradoras globales.</li>
+      <li>Las garantías corren en paralelo, con compañías de caución.</li>
+    </ol>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Quién asegura qué</h2>
+    <p class="nota">Que un actor aparezca no significa que hoy acepte cualquier proyecto: la
+    capacidad se confirma caso a caso. La columna Evidencia dice de dónde sale cada fila.</p>
+    <div class="filtros">
+      <label>Tipo de proyecto <select id="f-seg"><option value="">Todos</option></select></label>
+      <label>Función <select id="f-fun"><option value="">Todas</option></select></label>
+      <label>Presencia en Chile <select id="f-pre"><option value="">Todas</option></select></label>
+      <label>Evidencia <select id="f-evi"><option value="">Toda</option></select></label>
+    </div>
+    <p class="nota" id="n-filtrados"></p>
+    <div id="t-actores" class="scroll-x"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Tamaño de las compañías en Chile</h2>
+    <p class="nota">Prima directa total de seguros generales, primer semestre de 2025, en
+    millones de pesos (CMF). Incluye todos los ramos, no solo energía: mide el tamaño de la
+    compañía, no su negocio en energía.</p>
+    <div id="g-prima"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Lo que hay que saber</h2>
+    <div class="hallazgo">En la CMF, un proyecto de energía se asegura por dos ramos: <b>Ingeniería</b>,
+    que incluye literalmente el todo riesgo de construcción y montaje, y <b>Garantía y
+    Crédito</b>, el de las cauciones.</div>
+    <div class="hallazgo">El riesgo grande <b>no lo retiene la aseguradora chilena</b>: lo cede al
+    reaseguro. Por eso las compañías internacionales pesan aunque el proyecto esté en Chile.</div>
+    <div class="hallazgo">El <b>almacenamiento en baterías</b> es hoy el riesgo más delicado del
+    sector por el incendio por fuga térmica. Hay capacidad, pero se suscribe caso a caso y se
+    mira la química, el monitoreo y la ingeniería de la planta.</div>
+    <div class="hallazgo">Las <b>primas y tarifas reales</b> de parques y baterías en Chile no son
+    públicas: se obtienen cotizando con un corredor. Esta página no las muestra.</div>
+  </div>
+</main>
+<script>document.write('<script src="data/c_seguros_energia.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=261030b"></script>
+<script>
+PW.montarNav("seguros-energia.html");
+const D = PW_DATA.c_seguros_energia;
+const esc = PW.esc;
+const FUNCION = { aseguradora: "Aseguradora", reaseguradora: "Reaseguradora", corredor: "Corredor",
+  mga: "Agencia suscriptora (MGA)", regulador: "Regulador" };
+const PRESENCIA = { si: "Opera en Chile", via_reaseguro: "Vía reaseguro", regulador: "Regulador" };
+const EVIDENCIA = { medido: "Cifra CMF", sitio_oficial: "Sitio oficial", prensa: "Prensa o informe",
+  por_confirmar: "Por confirmar" };
+// Etiqueta corta de cobertura: lo que va antes del parentesis o la barra del catalogo.
+const cobCorta = id => (D.coberturas[id] || id).split(" (")[0].split(" / ")[0];
+const segNombre = Object.fromEntries(D.segmentos.map(s => [s.id, s.nombre]));
+const SEGS = D.segmentos.filter(s => s.id !== "auto_ev");
+
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
+
+const enChile = D.actores.filter(a => a.presencia === "si");
+const garantias = D.actores.filter(a => a.segmentos.includes("garantias") && a.presencia === "si");
+const bess = D.actores.filter(a => a.segmentos.includes("bess"));
+document.getElementById("kpis").innerHTML = [
+  [D.actores.length, "actores con fuente", "aseguradoras, reaseguradoras, corredores y regulador"],
+  [enChile.length, "operan en Chile", D.actores.filter(a => a.presencia === "via_reaseguro").length + " más llegan por reaseguro"],
+  [garantias.length, "dan garantías en Chile", "cauciones para el cierre financiero"],
+  [bess.length, "cubren baterías (BESS)", "el riesgo que hoy se mira con más cuidado"],
+].map(d => `<div class="kpi"><div class="v">${PW.fmt(d[0])}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");
+
+function llenar(id, pares) {
+  const sel = document.getElementById(id);
+  pares.forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); });
+  sel.addEventListener("input", pintar);
+}
+const usados = k => [...new Set(D.actores.map(a => a[k]))];
+llenar("f-seg", SEGS.map(s => [s.id, s.nombre]));
+llenar("f-fun", usados("funcion").map(v => [v, FUNCION[v] || v]));
+llenar("f-pre", usados("presencia").map(v => [v, PRESENCIA[v] || v]));
+llenar("f-evi", usados("evidencia").map(v => [v, EVIDENCIA[v] || v]));
+
+const ORDEN_PRE = { si: 0, via_reaseguro: 1, regulador: 2 };
+function pintar() {
+  const seg = document.getElementById("f-seg").value, fun = document.getElementById("f-fun").value,
+    pre = document.getElementById("f-pre").value, evi = document.getElementById("f-evi").value;
+  const filas = D.actores
+    .filter(a => (!seg || a.segmentos.includes(seg)) && (!fun || a.funcion === fun) &&
+      (!pre || a.presencia === pre) && (!evi || a.evidencia === evi))
+    .sort((a, b) => (ORDEN_PRE[a.presencia] ?? 9) - (ORDEN_PRE[b.presencia] ?? 9) ||
+      (b.prima_mmclp || 0) - (a.prima_mmclp || 0) || a.nombre.localeCompare(b.nombre, "es"));
+  document.getElementById("n-filtrados").textContent = filas.length + " de " + D.actores.length + " actores.";
+  const chips = (ids, nombre) => `<div class="chips">${ids.map(i => `<span class="pill">${esc(nombre(i))}</span>`).join("")}</div>`;
+  const fuente = a => a.fuente ? (a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.fuente)}</a>` : esc(a.fuente)) : "";
+  document.getElementById("t-actores").innerHTML = `<table class="pw"><thead><tr><th>Actor</th><th>Función</th>` +
+    `<th>Tipo de proyecto</th><th>Coberturas</th><th>Presencia en Chile</th><th>Evidencia</th><th>Nota y fuente</th></tr></thead><tbody>` +
+    filas.map(a => `<tr><td><b>${esc(a.nombre)}</b></td><td>${esc(FUNCION[a.funcion] || a.funcion)}</td>` +
+      `<td>${chips(a.segmentos.filter(s => s !== "auto_ev"), s => segNombre[s] || s)}</td>` +
+      `<td>${chips(a.coberturas, cobCorta)}</td>` +
+      `<td>${esc(PRESENCIA[a.presencia] || a.presencia)}</td>` +
+      `<td><span class="pill ev-${esc(a.evidencia)}">${esc(EVIDENCIA[a.evidencia] || a.evidencia)}</span></td>` +
+      `<td class="nota-actor">${esc(a.nota || "")}${a.fuente ? "<br>Fuente: " + fuente(a) : ""}</td></tr>`).join("") +
+    `</tbody></table>`;
+}
+pintar();
+
+const conPrima = D.actores.filter(a => a.prima_mmclp != null).sort((a, b) => b.prima_mmclp - a.prima_mmclp);
+PW.barras("g-prima", {
+  items: conPrima.map(a => ({ nombre: a.nombre, valor: a.prima_mmclp })),
+  fmtV: v => PW.fmt(v) + " MM$",
+});
+</script>
+</body>
+</html>
