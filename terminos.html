@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Términos de uso — Energías Futuro</title>
+<meta name="description" content="Condiciones de uso del conector de datos de Energías Futuro: qué no está permitido, cómo citar las cifras, límites de uso y naturaleza de los datos.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261031c">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<main class="legal">
+  <h1>Términos de uso</h1>
+  <p class="sub">Condiciones de uso del conector de datos de Energías Futuro.</p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">1. Qué es el conector</h2>
+    <p>El conector de Energías Futuro (Observatorio de electromovilidad, transporte y energía en
+    Chile) permite que herramientas de inteligencia artificial (por ejemplo, Claude o ChatGPT)
+    consulten las cifras que Energías Futuro ya publica en su sitio, y las citen con su definición,
+    universo, fuente y fecha de corte. Las cifras las producen programas deterministas que leen
+    fuentes oficiales; el conector no usa inteligencia artificial para generar ni estimar ninguna
+    cifra.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">2. Qué no está permitido</h2>
+    <ul>
+      <li>La extracción masiva o sistemática de los datos, por el conector o por cualquier otro medio.</li>
+      <li>La reventa o redistribución de los datos, completos o en parte sustancial.</li>
+      <li>El uso de los datos o de las respuestas del conector para entrenar, ajustar o evaluar
+      modelos de inteligencia artificial.</li>
+      <li>Presentar las cifras sin su fuente o su fecha de corte, o cambiando su significado (por
+      ejemplo, llamar «autos eléctricos» a un total que incluye híbridos que no se enchufan).</li>
+      <li>Eludir los límites de uso del servicio.</li>
+    </ul>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">3. Cómo citar</h2>
+    <p><i>Fuente: Energías Futuro (observatorio.energiasfuturo.com), con datos de «fuente
+    original del indicador». Corte: «fecha de corte».</i></p>
+    <p>Cada respuesta del conector trae la cita sugerida con esos datos ya completados.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">4. Límites de uso</h2>
+    <p>El servicio limita la cantidad de consultas por minuto y el tamaño de cada respuesta.
+    Energías Futuro puede cambiar los límites, suspender el acceso o retirar el servicio en
+    cualquier momento, sin aviso previo. El servicio se ofrece sin garantía de
+    disponibilidad.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">5. Naturaleza de los datos</h2>
+    <p>Las cifras provienen de fuentes oficiales procesadas por Energías Futuro. Pueden tener
+    rezagos respecto de la fuente, y distintos indicadores pueden dar cifras diferentes para una
+    misma palabra porque miden universos distintos (por ejemplo, los cargadores de la red en vivo y
+    los declarados a la SEC). Cada indicador explica su definición y sus advertencias. Se entregan
+    «tal como están», sin garantía, y no constituyen asesoría de ningún tipo.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">6. Datos o informes a medida</h2>
+    <p>Para datos completos, informes a medida o usos distintos de los descritos aquí, escribir al
+    contacto del sitio (enlace «Contacto» al pie de cada página).</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">7. Cambios</h2>
+    <p>Estas condiciones pueden cambiar. La versión vigente es la publicada en el sitio.</p>
+  </div>
+
+  <p class="nota">Última actualización: octubre de 2026.</p>
+</main>
+<script src="assets/comun.js?v=261031c"></script>
+<script>PW.montarNav("terminos.html");</script>
+</body>
+</html>

@@ -421,6 +421,7 @@
       "<a class='solicitar-pie' href='mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio'>Contacto</a>" +
       "<span class='pie-legal'><a href='como-se-hace.html'>Cómo se hace este observatorio</a> · " +
       "<a href='privacidad.html'>Privacidad y cookies</a> · " +
+      "<a href='terminos.html'>Términos</a> · " +
       "<button type='button' class='pie-cookies' id='pw-pie-cookies'>Preferencias de cookies</button></span>";
     document.body.appendChild(f);
     const pc = document.getElementById("pw-pie-cookies");
