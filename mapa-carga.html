@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Mapa interactivo de la red de carga de Chile: cada punto es una estación, con su operador, conectores, potencia, estado, dirección y horario.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -125,7 +125,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 </main>
 <script>document.write('<script src="data/mapa_carga.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/fuentes_carga.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 // Operadores cuyo feed no responde (#13): sus estaciones van con la ultima lectura buena y se avisa.
 { const FC = (window.PW_DATA || {}).fuentes_carga || {}; const av = document.getElementById("aviso-fuentes"); if (av && (FC.avisos || []).length) { av.textContent = FC.avisos.join(" "); av.hidden = false; } }
@@ -404,7 +404,7 @@ const _title = s => (s || "").toLowerCase()
     ? PW.fmt(V.clientes) + " clientes sin luz en " + PW.fmt(V.n_comunas) + " comunas al momento de la última lectura de la SEC (" + D.hora_sec + ")."
     : "Sin cortes relevantes al momento de la última lectura de la SEC (" + D.hora_sec + ")."; document.getElementById("cv-nota-vivo").textContent += avisoVivo; // Por empresa distribuidora (en vivo, best-effort: puede faltar el bloque)
 const DI = D.distribuidoras; if (DI && (DI.por_grupo || []).length) {
-  document.getElementById("cv-card-dist").style.display = ""; const cap = DI.capturado ? DI.capturado.slice(0, 16).replace("T", " ") : "s/f"; document.getElementById("cv-dist-head").textContent =
+  document.getElementById("cv-card-dist").style.display = ""; const cap = DI.capturado ? PW.horaChile(DI.capturado) : "s/f"; document.getElementById("cv-dist-head").textContent =
     "Snapshot " + cap + " · " + (DI.cobertura || "") + " · " +
     PW.fmt(DI.n_reales) + " fallas reales / " + PW.fmt(DI.clientes_reales) + " clientes."; PW.barras("cv-g-dist-grupo", {
     items: (DI.por_grupo || []).map(g => ({

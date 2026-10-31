@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="El marco legal y de metas de la electromovilidad y la energía en Chile: qué está comprometido, qué normas existen y dónde están los vacíos.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <style>
 /* [PROCESO PLANEE] mesas como fichas cortas y documentos en dos columnas (page-local) */
 .pp-mesas { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 6px 0 14px; }
@@ -143,7 +143,7 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
   <h1>Metas y marco legal</h1>
   <p class="sub">El marco legal y de metas de la electromovilidad y la energía en Chile:
   qué está comprometido, con qué fuerza jurídica, qué normas existen, dónde están los vacíos
-  y que viene en el radar legislativo. <span id="n-docs">—</span> documentos oficiales verificados. <span id="pp-enlace" hidden>Ver también el <a href="#proceso-planee">proceso de elaboración del PLANEE 2028-2033</a>.</span></p>
+  y qué viene en el radar legislativo. <span id="n-docs">—</span> documentos oficiales verificados. <span id="pp-enlace" hidden>Ver también el <a href="#proceso-planee">proceso de elaboración del PLANEE 2028-2033</a>.</span></p>
   <p class="nota" id="nota"></p>
 
   <div class="kpis" id="kpis"></div>
@@ -314,7 +314,7 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
   </div>
 </main>
 <script>document.write('<script src="data/c_normativa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 PW.montarNav("normativa.html"); const D = PW_DATA.c_normativa; // Las cifras del texto se leen del dato: decian 114 documentos y 49 normas mientras el KPI de
 // la misma pantalla mostraba 131 y 59. Escritas a mano se desfasan en cada actualizacion.
@@ -329,7 +329,7 @@ document.getElementById("nota").textContent = "Actualizado " + (D.generado || ""
   [K.documentos, "documentos oficiales verificados", ""],
   [K.metas_vinculantes + " de " + K.metas, "metas con rango vinculante", "el resto: declarativas, compromisos o indicativas"],
   [K.normas, "normas analizadas", "con relevancia EV y vacios"],
-  [K.brechas_maxima + " de " + K.brechas, "brechas de urgencia maxima", "para la meta 2035"],
+  [K.brechas_maxima + " de " + K.brechas, "brechas de urgencia máxima", "para la meta 2035"],
   [K.monitoreo, "items en el radar legislativo", "barrido mensual"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const vinPill = c => `<span class="vin vin-${c}">${c}</span>`; let tMetas = null; function pintarMetas() {
   const f = document.getElementById("f-vin").value; const filas = D.metas.filter(m => !f || m.clase === f); const cols = [

@@ -24,10 +24,10 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Mejor hora para cargar — Energías Futuro</title>
-<meta name="description" content="A que hora conviene cargar: la ocupación real de la red pública hora por hora, a partir del histórico de estados capturado en continuo. Menos fila, más sol.">
+<meta name="description" content="A qué hora conviene cargar: la ocupación real de la red pública hora por hora, a partir del histórico de estados capturado en continuo. Menos fila, más sol.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/horas.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_horaverde.js?v='+_pwv+'">')</script>
@@ -36,7 +36,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <body>
 <main>
   <h1>Mejor hora para cargar</h1>
-  <p class="sub">A que hora conviene cargar: la ocupación real de la red pública hora por hora,
+  <p class="sub">A qué hora conviene cargar: la ocupación real de la red pública hora por hora,
   a partir del histórico de estados capturado en continuo. Menos fila, más sol.</p>
   <p class="nota" id="nota"></p>
 
@@ -93,10 +93,10 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 </main>
 <script>document.write('<script src="data/horas.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_horaverde.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 PW.montarNav("horas.html"); const D = PW_DATA.horas; if (!D.disponible) {
-  document.getElementById("nota").textContent = "Sin historico de estados disponible todavia."; } else {
+  document.getElementById("nota").textContent = "Sin histórico de estados disponible todavía."; } else {
   document.getElementById("nota").textContent =
     "Basado en " + D.dias_observados + " días de observación. " + D.nota + " Actualizado " + (D.generado || "").slice(0, 10) + "."; const horas = [...Array(24).keys()]; // "ocupacion"/"disponible_pct" son % del pool operativo (disponible+ocupado, como siempre); // los otros 3 son % del total de observaciones esa hora (los 6 estados) -- no encajan en esa
   // dicotomia. Cada opcion trae su propia nota para que quede claro cual base usa.

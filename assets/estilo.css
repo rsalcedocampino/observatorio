@@ -279,6 +279,9 @@ footer.pw a.solicitar-pie:hover { text-decoration: none; background: var(--accio
 .modulo-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); }
 
 main { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+/* Una cadena larga sin espacios (una URL, un nombre de archivo de la fuente) no se partia y sacaba
+   la pagina de la pantalla en celular: tco-buses.html, 50 px a 375 (auditoria 2026-10-30). */
+main p, main li, main dd, main figcaption { overflow-wrap: break-word; }
 h1 { font-size: 26px; margin: 6px 0 4px; }
 h2 { font-size: 19px; margin: 34px 0 10px; }
 p.sub { color: var(--ink-2); margin: 0 0 18px; max-width: 860px; }
@@ -324,6 +327,10 @@ p.nota { color: var(--ink-3); font-size: 12.5px; max-width: 860px; }
   font-size: 13.5px;
   font-family: inherit;
 }
+/* Un select toma el ancho de su opcion mas larga: en tco-buses.html a 375 px el selector de modelo
+   sacaba la pagina 102 px de la pantalla (auditoria 2026-10-30). Tope al ancho disponible. */
+.filtros > label { min-width: 0; max-width: 100%; }
+.filtros select { max-width: 100%; }
 .filtros input[type="number"] { width: 90px; }
 .filtros input[type="search"], .filtros input[type="text"] { min-width: 220px; }
 

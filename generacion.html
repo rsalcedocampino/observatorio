@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Las centrales del Sistema Eléctrico Nacional (Coordinador y ACERA): tecnología, potencia, fase de operación, construcción o desarrollo, y propietario.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <style>
   .badge-fase { font-size: 11px; padding: 1px 7px; border-radius: 6px; font-weight: 600; white-space: nowrap; }
 </style>
@@ -73,7 +73,6 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     2010–2026. Antes de 2017 eran dos sistemas (SIC centro-hidro, SING norte-carbonero); desde 2017 el
     SEN interconectado, en descenso. Fuente: CNE.</p>
     <div id="g-co2"></div>
-    <div id="leg-co2" style="margin-top:8px"></div>
     <p class="nota" id="nota-co2"></p>
   </div>
 
@@ -109,7 +108,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>document.write('<script src="data/c_genmix.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_co2.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_gd.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 PW.montarNav("generacion.html"); const D = PW_DATA.generacion; const GEN = D.centrales, T = D.totales; function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
 function g(id) { return document.getElementById(id); }
@@ -152,23 +151,21 @@ const cols = [
     "Bioenergía": "--s6", "Geotérmica": "--s5", "Cogeneración": "--ink-3",
   }; const col = t => PW.color(COL[t] || "--ink-3"); PW.lineas("g-genmix", {
     labels: MX.anios.map(String),
-    series: MX.series.map(s => ({ nombre: s.nombre, valores: s.valores, color: col(s.nombre) })),
+    series: MX.series.map(s => ({ nombre: s.nombre, valores: s.valores, color: col(s.nombre), bordesEstructurales: true })),
     alto: 300, fmtV: v => PW.fmt(Math.round(v)) + " GWh",
     fmtY: v => PW.fmt(Math.round(v / 1000)) + "k",
   }); const pct = MX.renovable_pct || [], ult = MX.anios.length - 1; const i0 = pct.findIndex(v => v != null); if (i0 >= 0) g("nota-genmix").innerHTML =
     `Renovable: ${pct[i0]}% (${MX.anios[i0]}) → <b>${pct[ult]}%</b> (${MX.anios[ult]}). ` +
     `Total ${MX.anios[ult]}: ${PW.fmt(Math.round(MX.total[ult]))} GWh.`; })(); // Factor de emisión de CO2 por sistema en el tiempo — desde c_co2.js
 (function () {
-  const CO = window.PW_DATA.c_co2; if (!CO || !CO.series || !CO.series.length) return; const COL = { "SEN": "--s2", "SIC": "--s1", "SING": "--critical" }; const col = s => PW.color(COL[s] || "--ink-3"); PW.lineas("g-co2", {
-    labels: CO.anios.map(String),
-    series: CO.series.map(s => ({ nombre: s.sistema, valores: s.valores, color: col(s.sistema) })),
+  const CO = window.PW_DATA.c_co2; if (!CO || !CO.series || !CO.series.length) return; const COL = { "SEN": "--s2", "SIC": "--s1", "SING": "--critical" }; const col = s => PW.color(COL[s] || "--ink-3"); // anio en curso parcial (campo de #11): "2026 (ene-mar)" en vez de un anio que parece completo
+  const CP = CO.cobertura_ultimo_anio; PW.lineas("g-co2", {
+    labels: CO.anios.map(a => (CP && CP.parcial && a === CP.anio && CP.rango) ? a + " (" + CP.rango + ")" : String(a)),
+    series: CO.series.map(s => ({ nombre: s.sistema, valores: s.valores, color: col(s.sistema), bordesEstructurales: true })),
     alto: 260, min: 0,
     fmtV: v => PW.fmt(v, 3) + " tCO2/MWh",
     fmtY: v => PW.fmt(v, 2),
-  }); g("leg-co2").innerHTML = CO.series.map(s =>
-    `<span style="white-space:nowrap;margin-right:14px;font-size:12px">` +
-    `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${col(s.sistema)};margin-right:5px;vertical-align:middle"></span>${s.sistema}</span>`
-  ).join(""); const sen = CO.series.find(s => s.sistema === "SEN"); if (sen) {
+  }); const sen = CO.series.find(s => s.sistema === "SEN"); if (sen) {
     const v = sen.valores, ai = CO.anios; const i0 = v.findIndex(x => x != null); const i1 = v.length - 1 - [...v].reverse().findIndex(x => x != null); if (i0 >= 0) g("nota-co2").innerHTML =
       `SEN: <b>${PW.fmt(v[i0], 3)}</b> tCO2/MWh (${ai[i0]}) → <b>${PW.fmt(v[i1], 3)}</b> (${ai[i1]}).`; }
 })(); // Generación distribuida (net billing) — desde c_gd.js

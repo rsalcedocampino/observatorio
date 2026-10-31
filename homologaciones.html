@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Qué modelos se certifican en Chile y cuándo: línea de tiempo de homologaciones de vehículos por fecha, con el avance de los electrificados frente a la combustión, los modelos del último mes y las motos.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_homologaciones.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -46,7 +46,6 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 
   <div class="tarjeta">
     <h2 style="margin-top:0">Homologaciones por mes: electrificados vs combustión</h2>
-    <div id="ley-tend" style="display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;margin:2px 0 6px"></div>
     <div id="g-tendencia"></div>
     <p class="nota" id="nota-tend"></p>
   </div>
@@ -80,7 +79,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 </main>
 
 <script>document.write('<script src="data/c_homologaciones.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 PW.montarNav("homologaciones.html");
 const D = PW_DATA.c_homologaciones;
@@ -115,12 +114,10 @@ const N = 24;
 const ms = meses.slice(-N);
 const C_ELEC = PW.color("--s1") || "#16a34a";
 const C_COMB = PW.color("--ink-3") || "#9ca3af";
-g("ley-tend").innerHTML = [["Electrificados (incluye híbridos)", C_ELEC], ["Combustión", C_COMB]]
-  .map(s => `<span><i style="display:inline-block;width:11px;height:11px;border-radius:2px;background:${s[1]};margin-right:5px"></i>${PW.esc(s[0])}</span>`).join("");
 PW.lineas("g-tendencia", {
   labels: ms.map(m => m.mes),
   series: [
-    { nombre: "Electrificados", valores: ms.map(m => m.elec), color: C_ELEC, area: true },
+    { nombre: "Electrificados (incluye híbridos)", valores: ms.map(m => m.elec), color: C_ELEC, area: true },
     { nombre: "Combustión", valores: ms.map(m => m.comb), color: C_COMB },
   ],
   fmtY: v => PW.fmt(v),

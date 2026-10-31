@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Dossier de una región o comuna: parque enchufable, red de carga y brecha al 2035, energía, resiliencia ante cortes, Censo 2024 y vulnerabilidad energética.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -265,7 +265,7 @@ details.seccion > summary { padding: 4px 0; }
 <script>document.write('<script src="data/tracker.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/sitios.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>document.write('<script src="assets/franja-macro.js?v='+_pwv+'"><\/script>')</script>
 <script>
 PW.montarNav("reporte-regional.html"); const D = PW_DATA.tracker; // Horizonte y criterio unicos para todo "necesarios/faltan 2035" (decision del usuario,
@@ -332,25 +332,25 @@ let REG_ESTADO = null, tabReg = null, tabEnergia = null; (function poblarFiltroR
       cargadores_hoy: r.cargadores_hoy, cargadores_pub: r.cargadores_pub, ev_por_carg: evPorCarg,
       necesarios_2035: necesarios, necesarios_esc, faltan, ritmo_actual: r.instalados_12m, ritmo_req: ritmoReq,
       estado: r.instalados_12m >= ritmoReq ? "En ritmo" : "Bajo ritmo",
-    }; }); const filas = regSel ? filasTodas.filter(f => f.rcut === regSel) : filasTodas; const totalFaltan = filas.reduce((s, f) => s + f.faltan, 0); const enRitmo = filas.filter(f => f.estado === "En ritmo").length; const ambito = regSel ? filas[0].region : "pais"; document.getElementById("kpis-reg").innerHTML = kpiHTML([
+    }; }); const filas = regSel ? filasTodas.filter(f => f.rcut === regSel) : filasTodas; const totalFaltan = filas.reduce((s, f) => s + f.faltan, 0); const enRitmo = filas.filter(f => f.estado === "En ritmo").length; const ambito = regSel ? filas[0].region : "país"; document.getElementById("kpis-reg").innerHTML = kpiHTML([
     [PW.fmt(totalFaltan), "cargadores faltantes 2035 (" + ambito + ")", RATIO_OFICIAL + " EV por cargador (criterio oficial)"],
-    [enRitmo + " de " + filas.length, (filas.length === 1 ? "region" : "regiones") + " al ritmo requerido", "últimos 12 meses SEC"],
-    [filas[0] ? filas[0].region : "—", regSel ? "region seleccionada" : "región con más parque EV", filas[0] ? PW.fmt(filas[0].parque_ev) + " vehículos" : ""],
+    [enRitmo + " de " + filas.length, (filas.length === 1 ? "región" : "regiones") + " al ritmo requerido", "últimos 12 meses SEC"],
+    [filas[0] ? filas[0].region : "—", regSel ? "región seleccionada" : "región con más parque EV", filas[0] ? PW.fmt(filas[0].parque_ev) + " vehículos" : ""],
   ]); const th = (t, f) => `<span title="${f}">${t}</span>`; const cols = [
     { k: "region", titulo: "Región", fmt: (v, f) => PW.esc(v) + (f.flotas_pct >= FLOTA_REG_PCT ? ` <span class="pill" title="${PW.esc(TXT_FLOTAS)}">flotas ${f.flotas_pct}%</span>` : "") },
-    { k: "parque_ev", titulo: th("Parque EV hoy", "Vehiculos electricos registrados (INE, permisos 2024; puede incluir hibridos)"), num: true, fmt: v => PW.fmt(v) },
+    { k: "parque_ev", titulo: th("Parque EV hoy", "Vehículos eléctricos registrados (INE, permisos 2024; puede incluir híbridos)"), num: true, fmt: v => PW.fmt(v) },
     { k: "ev_1000hab", titulo: th("EV / 1.000 hab", "Parque EV / población regional (INE + Censo 2024)"), num: true, fmt: v => v == null ? "—" : PW.fmt(v, 1) },
     { k: "parque_2035", titulo: th("Parque 2035 proy.", "Proyección nacional repartida por participación actual"), num: true, fmt: v => PW.fmt(v) },
-    { k: "cargadores_pub", titulo: th("Cargadores públicos", "Cargadores de acceso publico (base de la brecha; excluye privado/restringido)"), num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
-    { k: "ev_por_carg", titulo: th("EV por cargador", "Parque EV / cargadores publicos"), num: true, fmt: v => v == null ? "sin red" : PW.fmt(v, 1) },
+    { k: "cargadores_pub", titulo: th("Cargadores públicos", "Cargadores de acceso público (base de la brecha; excluye privado/restringido)"), num: true, fmt: v => v === 0 ? `<span class="estado-mal">0</span>` : PW.fmt(v) },
+    { k: "ev_por_carg", titulo: th("EV por cargador", "Parque EV / cargadores públicos"), num: true, fmt: v => v == null ? "sin red" : PW.fmt(v, 1) },
     { k: "necesarios_2035", titulo: th("Necesarios 2035", "Parque 2035 / 10 (criterio oficial)"), num: true, fmt: v => PW.fmt(v) },
     { k: "necesarios_esc", titulo: th("Escenario (" + ratio + " EV/carg.)", "Parque 2035 / ratio editable arriba — no es la cifra oficial"), num: true, fmt: v => PW.fmt(v) },
     { k: "faltan", titulo: th("Faltan a 2035", "Necesarios (criterio oficial) - cargadores públicos"), num: true, fmt: v => `<b>${PW.fmt(v)}</b>` },
-    { k: "ritmo_actual", titulo: th("Ritmo real 12m", "Cargadores publicos nuevos ult. 12 meses (SEC)"), num: true, fmt: v => PW.fmt(v) },
+    { k: "ritmo_actual", titulo: th("Ritmo real 12m", "Cargadores públicos nuevos en los últimos 12 meses (SEC)"), num: true, fmt: v => PW.fmt(v) },
     { k: "ritmo_req", titulo: th("Ritmo requerido/año", "Faltantes / años a 2035"), num: true, fmt: v => PW.fmt(v) },
     { k: "estado", titulo: "Estado", fmt: v => `<span class="${v === "En ritmo" ? "estado-ok" : "estado-mal"}">${v}</span>` },
   ]; if (tabReg) tabReg.actualizar(filas); else tabReg = PW.tabla("t-regiones", cols, filas, { orden: "faltan" }); document.getElementById("nota-reg").textContent =
-    "Pasa el mouse por cada titulo de columna para ver su fuente. Parque " + (D.anio_parque || "") +
+    "Pasa el mouse por cada título de columna para ver su fuente. Parque " + (D.anio_parque || "") +
     " (INE). \"Necesarios/Faltan/Ritmo\" usan el criterio oficial (10 EV/cargador); la columna \"Escenario\" (" + ratio + " EV/cargador) se edita arriba y es solo de referencia. «flotas N%» = parte del parque de la región inscrita en comunas de flotas (se muestra desde " + FLOTA_REG_PCT + "%). " + TXT_FLOTAS + (FLOTA_NAC != null ? " Promedio nacional: " + PW.fmt(FLOTA_NAC, 1) + " EV por 1.000 habitantes." : ""); PW.barras("g-faltantes", {
     items: filas.filter(f => f.faltan > 0).sort((a, b) => b.faltan - a.faltan).map(f => ({
       nombre: f.region, valor: f.faltan,
@@ -367,15 +367,15 @@ function refrescarEnergiaReg(filasTodas, regSel) {
   // fila en la tabla) -- sin sumarlo, el KPI "nacional" quedaba por debajo del total real (8,1% del
   // BESS operando invisible). Ver generar_datos.py/modulo_tracker.
   const sr = ER.SR || {}; const solarOp = filasE.reduce((s, f) => s + f.solar_op, 0) + (sr.solar_op_mw || 0); const solarPipe = filasE.reduce((s, f) => s + f.solar_pipe, 0) + (sr.solar_pipe_mw || 0); const bessOp = filasE.reduce((s, f) => s + f.bess_op, 0) + (sr.bess_op_mwh || 0); document.getElementById("kpis-energia-nac").innerHTML = kpiHTML([
-    [PW.fmt(demTot, 1) + " GWh", "demanda EV proyectada 2035 (pais)", gwhSen ? PW.fmt(100 * demTot / gwhSen, 2) + "% del SEN actual" : ""],
+    [PW.fmt(demTot, 1) + " GWh", "demanda EV proyectada 2035 (país)", gwhSen ? PW.fmt(100 * demTot / gwhSen, 2) + "% del SEN actual" : ""],
     [PW.fmt(solarOp) + " MW", "solar operando hoy", "+" + PW.fmt(solarPipe) + " MW en pipeline"],
     [PW.fmt(bessOp) + " MWh", "almacenamiento operando", "el respaldo de la carga"],
   ]); const th = (t, f) => `<span title="${f}">${t}</span>`; const cols = [
     { k: "region", titulo: "Región" },
-    { k: "solar_op", titulo: th("Solar operando (MW)", "FV en operacion (Coordinador + ACERA)"), num: true, fmt: v => PW.fmt(v) },
-    { k: "solar_pipe", titulo: th("Solar pipeline (MW)", "Solar en construccion/aprobada"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
+    { k: "solar_op", titulo: th("Solar operando (MW)", "FV en operación (Coordinador + ACERA)"), num: true, fmt: v => PW.fmt(v) },
+    { k: "solar_pipe", titulo: th("Solar pipeline (MW)", "Solar en construcción/aprobada"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
     { k: "bess_op", titulo: th("Almacenamiento op. (MWh)", "BESS en operación"), num: true, fmt: v => v > 0 ? PW.fmt(v) : `<span class="estado-mal">0</span>` },
-    { k: "bess_pipe", titulo: th("Almacenamiento pipe. (MWh)", "BESS en construccion/aprobado"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
+    { k: "bess_pipe", titulo: th("Almacenamiento pipe. (MWh)", "BESS en construcción/aprobado"), num: true, fmt: v => v > 0 ? PW.fmt(v) : "—" },
     { k: "gd_mw", titulo: th("Gen. distribuida (MW)", "Net billing SEC"), num: true, fmt: v => PW.fmt(v, 1) },
     { k: "demanda_2035", titulo: th("Demanda EV 2035 (GWh)", "Parque 2035 x km/año / km/kWh"), num: true, fmt: v => `<b>${PW.fmt(v, 1)}</b>` },
   ]; if (tabEnergia) tabEnergia.actualizar(filas); else tabEnergia = PW.tabla("t-energia-reg", cols, filas, { orden: "demanda_2035" }); document.getElementById("nota-energia-reg").textContent =

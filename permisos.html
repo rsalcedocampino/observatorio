@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Todos los vehículos con permiso de circulación en Chile según el INE: cuántos hay, con qué tipo de motor y en qué región, desde 2008.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/permisos.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -86,7 +86,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   <p class="fuente" id="fuente"></p>
 </main>
 <script>document.write('<script src="data/permisos.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 PW.montarNav("permisos.html"); const D = PW_DATA.permisos; const T = D.totales, S = D.serie; function g(id) { return document.getElementById(id); }
 function miles(v) { return (v || v === 0) ? PW.fmt(v) : "—"; }
@@ -103,7 +103,7 @@ g("ano-ult").textContent = T.ano; g("ano-reg").textContent = T.ano; g("ano-tipo"
 }); PW.lineas("ch-parque", {
   labels,
   series: [{ nombre: "Parque motorizado", valores: S.map(x => x.motorizados) }],
-  fmtY: v => (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : PW.fmt(Math.round(v))),
+  fmtY: v => (v >= 1e6 ? PW.fmt(v / 1e6, 1) + " M" : PW.fmt(Math.round(v))),
 }); // ---------- Proyección 2025 (ESTIMACIÓN) ----------
 // Insumo de la sesión "Permisos de Circulación" (CAMBIOS 558): metodo, backtest y reconciliacion
 // (suma de regiones = nacional, salvo "no motorizados" que la fuente regional no desglosa)
@@ -125,7 +125,7 @@ g("ano-ult").textContent = T.ano; g("ano-reg").textContent = T.ano; g("ano-tipo"
     pintarProyeccion(); })); selReg.addEventListener("change", pintarProyeccion); function niceCeil(x) {
     const p = Math.pow(10, Math.floor(Math.log10(x))); const n = x / p; return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p; }
   function panelSVG(o) {
-    const sx = a => o.x + (a - XMIN) / (XMAX - XMIN) * o.w; const sy = v => o.y + o.h - v / o.ymax * o.h; const fmt = o.ymax >= 1e6 ? (v => (v / 1e6).toFixed(1) + "M") : o.ymax >= 1e3 ? (v => (v / 1e3).toFixed(0) + "k") : (v => "" + Math.round(v)); let s = `<text x="${o.x}" y="${o.y - 11}" font-size="14" font-weight="700" fill="${PW.color("--ink-1")}">${PW.esc(o.title)}</text>`; for (let i = 0; i <= 5; i++) {
+    const sx = a => o.x + (a - XMIN) / (XMAX - XMIN) * o.w; const sy = v => o.y + o.h - v / o.ymax * o.h; const fmt = o.ymax >= 1e6 ? (v => PW.fmt(v / 1e6, 1) + " M") : o.ymax >= 1e3 ? (v => (v / 1e3).toFixed(0) + "k") : (v => "" + Math.round(v)); let s = `<text x="${o.x}" y="${o.y - 11}" font-size="14" font-weight="700" fill="${PW.color("--ink-1")}">${PW.esc(o.title)}</text>`; for (let i = 0; i <= 5; i++) {
       const v = o.ymax * i / 5, yy = sy(v); s += `<line x1="${o.x}" y1="${yy.toFixed(1)}" x2="${o.x + o.w}" y2="${yy.toFixed(1)}" stroke="${PW.color("--grid")}"/>`; s += `<text x="${o.x - 8}" y="${(yy + 4).toFixed(1)}" font-size="10.5" fill="${PW.color("--ink-3")}" text-anchor="end">${fmt(v)}</text>`; }
     for (let a = XMIN; a <= XMAX; a++) if (a % 2 === 0 || a === XMAX)
       s += `<text x="${sx(a).toFixed(1)}" y="${o.y + o.h + 16}" font-size="10" fill="${PW.color("--ink-3")}" text-anchor="middle">${a}</text>`; s += `<polyline points="${o.serie.map(([a, v]) => sx(a).toFixed(1) + "," + sy(v).toFixed(1)).join(" ")}" fill="none" stroke="${PW.color("--ink-2")}" stroke-width="2.4"/>`; o.serie.forEach(([a, v]) => s += `<circle cx="${sx(a).toFixed(1)}" cy="${sy(v).toFixed(1)}" r="2.3" fill="${PW.color("--ink-2")}"/>`); const [la, lv0] = o.serie[o.serie.length - 1], xa = sx(la), xb = sx(XMAX); const lv = o.ancla != null ? o.ancla : lv0; if (o.ancla != null && o.ancla !== lv0) {

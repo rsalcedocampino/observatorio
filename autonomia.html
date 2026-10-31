@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Dónde un eléctrico promedio se queda sin punto de carga en ruta: distancia entre estaciones con carga DC frente a la autonomía real del catálogo.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <style>
 @media (max-width: 768px) {
   .fila2 { grid-template-columns: 1fr !important; }
@@ -104,7 +104,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   </div>
 </main>
 <script>document.write('<script src="data/c_autonomia.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 function initAut() {
   if (typeof PW === "undefined") {
@@ -167,7 +167,7 @@ function filtrarPorRegion() {
       color: (p.nn_km || 0) > umbral ? PW.color("--critical") : PW.color("--s3"),
       popup: `<b>${p.n || "Estacion DC"}</b><br>${p.com}, ${p.reg}` +
         `<br>${PW.fmt(p.kw)} kW` +
-        `<br>DC mas cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
+        `<br>DC más cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
         PW.waze(p.lat, p.lon),
     })),
   }); mapaRef = PW.mapa("mapa-dc", {
@@ -178,8 +178,8 @@ function filtrarPorRegion() {
   }); // sin recuadro de capas: el filtro regional ya controla la vista
   if (document.querySelector("#mapa-dc .leaflet-control-layers"))
     document.querySelector("#mapa-dc .leaflet-control-layers").remove(); PW.leyendaMapa("ley-dc", [
-    ["Vecino DC dentro del rango util", PW.color("--s3")],
-    ["Aislada (vecino mas alla del rango)", PW.color("--critical")],
+    ["Vecino DC dentro del rango útil", PW.color("--s3")],
+    ["Aislada (vecino más allá del rango)", PW.color("--critical")],
     ...((!regSel) ? [
       ["Brecha < 100 km", "#84cc16"],
       ["Brecha 100-200 km", "#eab308"],
@@ -196,7 +196,7 @@ function filtrarPorRegion() {
     { k: "com", titulo: "Comuna" },
     { k: "reg", titulo: "Región" },
     { k: "kw", titulo: "kW", num: true, fmt: v => PW.fmt(v) },
-    { k: "nn_km", titulo: "DC mas cercano (km)", num: true, fmt: v => v == null ? "—" : `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
+    { k: "nn_km", titulo: "DC más cercano (km)", num: true, fmt: v => v == null ? "—" : `<span class="${v > umbral ? "estado-mal" : ""}">${PW.fmt(v, 1)}</span>` },
   ], puntosFiltr, { orden: "nn_km", max: 300 }); }
 
 // Listeners para tablas: DELEGADOS en el contenedor ESTABLE (#t-brechas / #t-puntos nunca se
@@ -245,7 +245,7 @@ document.getElementById("t-brechas").addEventListener("click", e => {
           color: (p.nn_km || 0) > umbral ? PW.color("--critical") : PW.color("--s3"),
           popup: `<b>${p.n}</b><br>${p.com}, ${p.reg}` +
             `<br>${PW.fmt(p.kw)} kW` +
-            `<br>DC mas cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
+            `<br>DC más cercano: ${p.nn_km != null ? PW.fmt(p.nn_km, 1) + " km" : "—"}` +
             PW.waze(p.lat, p.lon),
         }]
       }],

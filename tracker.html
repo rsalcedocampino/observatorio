@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Chile comprometió 100% de ventas de vehículos livianos cero emisiones al 2035. A este paso, ¿cuándo llegamos?">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <style>
 .semaforo td:first-child { font-weight: 600; }
 .sem-punto { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 7px; vertical-align: -1px; }
@@ -85,7 +85,7 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
   <div class="kpis" id="kpis"></div>
   <div class="tarjeta">
     <div id="g-part"></div>
-    <p class="nota">Un punto por año. A la izquierda de "Hoy": lo que paso (promedio anual).
+    <p class="nota">Un punto por año. A la izquierda de "Hoy": lo que pasó (promedio anual).
     A la derecha: la línea naranja es lo que EXIGE la meta y la punteada es lo que PASARÍA si
     el ritmo actual continua (curva S logística ajustada a los últimos 36 meses; la llegada
     con extrapolación lineal simple se muestra en las tarjetas de arriba).</p>
@@ -157,7 +157,7 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
     enchufables mensuales. La serie histórica del parque no se repite aquí.</p>
   </div>
 
-  <h2 class="pregunta">3. ¿Con que energía se cargaran?</h2>
+  <h2 class="pregunta">3. ¿Con qué energía se cargarán?</h2>
   <p class="puente">Un EV es tan limpio como la electricidad que lo carga. Generación renovable
   del SEN, mes a mes, contra una referencia de 80% renovable.</p>
 
@@ -169,7 +169,7 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
     meta oficial de esta serie.</p>
   </div>
 
-  <h2 class="pregunta">4. ¿Qué esta comprometido y que se propone?</h2>
+  <h2 class="pregunta">4. ¿Qué está comprometido y qué se propone?</h2>
   <p class="puente">Las metas oficiales ordenadas por su año objetivo con su fuerza
   jurídica real. Las propuestas para cerrar las brechas —por actor y norma por norma— viven
   en la biblioteca normativa completa: <a href="normativa.html">Normativa y metas</a>. Allí también
@@ -203,7 +203,7 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_normativa.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/iea_latam.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 PW.montarNav("tracker.html"); const D = PW_DATA.tracker; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; // Metas OFICIALES desde la biblioteca normativa (Documentos de Gobierno)
 const OF = (window.PW_DATA.c_normativa || {}).oficiales || null; if (OF && OF.cargadores_2030 && OF.cargadores_2030.valor) {
@@ -249,9 +249,9 @@ const part = D.participacion.map(p => ({ ym: p.ym.slice(0, 7), v: p.enchufables 
       : (pendiente > 0 ? +Math.min(100, ult.v + pendiente * (a - xUlt)).toFixed(1) : null); }); PW.lineas("g-part", {
     labels: anios.map(String),
     series: [
-      { nombre: "Real (promedio anual)", valores: real, area: true },
-      { nombre: "Requerida para la meta", valores: req, color: PW.color("--s2") },
-      { nombre: "Si seguimos asi", valores: proy, color: PW.color("--s4"), dash: true },
+      { nombre: "Real (promedio anual)", valores: real, area: true, bordesEstructurales: true },
+      { nombre: "Requerida para la meta", valores: req, color: PW.color("--s2"), bordesEstructurales: true },
+      { nombre: "Si seguimos así", valores: proy, color: PW.color("--s4"), dash: true, bordesEstructurales: true },
     ],
     lineaX: { i: anios.indexOf(anioHoy), texto: "Hoy" },
     lineaY: { v: meta, texto: "Meta " + meta + "%" },
@@ -295,9 +295,9 @@ function refrescarInfra() {
     if (a < anioHoy) return null; return Math.round(ult.cargadores_acum + ritmo * 12 * (a - xUlt < 0 ? 0 : a - xUlt)); }); PW.lineas("g-infra", {
     labels: anios.map(String),
     series: [
-      { nombre: "Cargadores públicos", valores: real, area: true },
-      { nombre: "Requerida para la meta", valores: req, color: PW.color("--s2") },
-      { nombre: "Si seguimos asi", valores: proy, color: PW.color("--s4"), dash: true },
+      { nombre: "Cargadores públicos", valores: real, area: true, bordesEstructurales: true },
+      { nombre: "Requerida para la meta", valores: req, color: PW.color("--s2"), bordesEstructurales: true },
+      { nombre: "Si seguimos así", valores: proy, color: PW.color("--s4"), dash: true, bordesEstructurales: true },
     ],
     lineaX: { i: anios.indexOf(anioHoy), texto: "Hoy" },
     lineaY: { v: meta, texto: "Meta " + PW.fmt(meta) },
@@ -308,17 +308,17 @@ function refrescarInfra() {
     [fmtAnio(llegada), "llegada proyectada", "meta " + PW.fmt(meta) + " — objetivo " + metaAnio],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); if (D.red_viva) {
     const esOficial = OF && OF.cargadores_2030 && meta === OF.cargadores_2030.valor && metaAnio === 2030; const fraseMeta = esOficial
-      ? "Meta OFICIAL: " + PW.fmt(meta) + " puntos publicos al 2030 (" +
+      ? "Meta OFICIAL: " + PW.fmt(meta) + " puntos públicos al 2030 (" +
         OF.cargadores_2030.vinculancia + "). Al 2035 la referencia oficial es " +
         PW.fmt(OF.cargadores_2035.valor) + " puntos (" + OF.cargadores_2035.vinculancia + ")."
       : "Meta editada manualmente (la oficial es " + PW.fmt(OF && OF.cargadores_2030 ? OF.cargadores_2030.valor : 6500) + " al 2030)."; document.getElementById("nota-infra").textContent =
       "Serie: SEC EcoCarga categoría público hasta " + ult.ym + ". Red viva hoy (Cargadores y " +
-      "Conectores, cada 15 min, acceso publico + privado/restringido): " +
+      "Conectores, cada 15 min, acceso público + privado/restringido): " +
       PW.fmt(D.red_viva.cargadores) + " cargadores y " + PW.fmt(D.red_viva.conectores) +
       " conectores en " + PW.fmt(D.red_viva.estaciones) + " estaciones" +
       (D.red_viva.cargadores_publico ? " (" + PW.fmt(D.red_viva.cargadores_publico) +
-       " cargadores de acceso publico)" : "") +
-      ". Proyeccion = ritmo de los ultimos 12 meses sostenido. " + fraseMeta; }
+       " cargadores de acceso público)" : "") +
+      ". Proyección = ritmo de los últimos 12 meses sostenido. " + fraseMeta; }
   const [, colorS, textoS] = estadoMeta(llegada, metaAnio); const esOf = OF && OF.cargadores_2030 && meta === OF.cargadores_2030.valor && metaAnio === 2030; SEM.carg = {
     nombre: "Red de carga: cargadores públicos", hoy: PW.fmt(hoyCarg),
     objetivo: PW.fmt(meta) + " en " + metaAnio + (esOf ? " (oficial: compromiso)" : " (editada)"),
@@ -343,7 +343,7 @@ function refrescarParque() {
     [PW.fmt(cargNec2035), "cargadores necesarios 2035", ratio + " EV por cargador"],
     [PW.fmt(Math.max(0, cargNec2035 - cargProy2035)), "cargadores que faltarian", "proyectados al ritmo actual: " + PW.fmt(cargProy2035)],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota-parque").textContent =
-    "Proyeccion de parque: ventas de los ultimos 12 meses (" + PW.fmt(u12) + ") creciendo " +
+    "Proyección de parque: ventas de los últimos 12 meses (" + PW.fmt(u12) + ") creciendo " +
     PW.fmt(crecAnual) + " unidades/año (pendiente 24 meses), acumuladas sobre el parque estimado. " +
     "Demanda con " + PW.fmt(km) + " km/año y " + rend + " km/kWh (supuestos del cruce Demanda EV). " +
     "Sin descuentos por bajas del parque: estimación conservadora hacia arriba."; }

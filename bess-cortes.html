@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="El almacenamiento eléctrico en Chile: dónde están los proyectos, cuánta energía descargan, qué inversión viene y si se instalan donde más se corta la luz.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -71,7 +71,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   <div class="tarjeta">
     <h2 style="margin-top:0">Inversión en cartera eléctrica SEA por región</h2>
     <div id="g-sea"></div>
-    <p class="nota">Inversión declarada (MMUS$) de los proyectos eléctricos con RCA en el
+    <p class="nota" id="nota-sea">Inversión declarada (MMUS$) de los proyectos eléctricos con RCA en el
     SEIA; incluye generación y almacenamiento.</p>
   </div>
 
@@ -97,7 +97,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>document.write('<script src="data/c_besscortes.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/baterias.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/mapa_bess.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 PW.montarNav("bess-cortes.html"); const D = PW_DATA.c_besscortes; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; // Mapa BESS con filtros
 (function () {
@@ -141,12 +141,12 @@ PW.montarNav("bess-cortes.html"); const D = PW_DATA.c_besscortes; document.getEl
   PW.filtrosTerritorio("filtros-bess", puntos, f => { filtroTerr = f; pintar(); },
     `<label>Estado <select id="fb-estado"><option value="">Todos</option>` +
     estadosU.map(e => `<option>${e}</option>`).join("") + `</select></label>
-    <label>Tecnologia <select id="fb-tec"><option value="">Todas</option>` +
+    <label>Tecnología <select id="fb-tec"><option value="">Todas</option>` +
     tecsU.map(t => `<option>${t}</option>`).join("") + `</select></label>
-    <label>MWh min <input type="number" id="fb-mwh" value="0" min="0" step="50" style="width:80px"></label>`); ["fb-estado", "fb-tec", "fb-mwh"].forEach(id =>
+    <label>MWh mín. <input type="number" id="fb-mwh" value="0" min="0" step="50" style="width:80px"></label>`); ["fb-estado", "fb-tec", "fb-mwh"].forEach(id =>
     document.getElementById(id).addEventListener("input", pintar)); pintar(); PW.leyendaMapa("ley-bess", [
     ["En operación", PW.color("--good")],
-    ["En construccion", PW.color("--s2")],
+    ["En construcción", PW.color("--s2")],
     ["Aprobado / pruebas", PW.color("--s1")],
     ["Otros estados", PW.color("--ink-3")],
   ]); })(); // Descarga diaria real + inversion SEA (datos del modulo de baterias)
@@ -159,7 +159,10 @@ PW.montarNav("bess-cortes.html"); const D = PW_DATA.c_besscortes; document.getEl
       fmtV: v => PW.fmt(v, 1) + " GWh", alto: 240,
     }); const ult = B.bess_diario[B.bess_diario.length - 1]; document.getElementById("nota-bess-diario").textContent =
       "Operación real del Coordinador. Acumulado " + ult.fecha.slice(0, 4) + ": " +
-      PW.fmt(ult.gwh_anual) + " GWh al " + ult.fecha + "."; }
+      PW.fmt(ult.gwh_anual) + " GWh al " + ult.fecha +
+      // Dias sin captura de la fuente (bess_diario_sin_dato): no entran al acumulado y se dicen.
+      ((n => n ? ", suma de los días con dato (" + n + (n === 1 ? " día" : " días") + " sin dato en el año)." : ".")(
+        (B.bess_diario_sin_dato || []).filter(f => f.slice(0, 4) === ult.fecha.slice(0, 4)).length)); }
   if (B.bess_estado && B.bess_estado.length) {
     PW.tabla("t-bess", [
       { k: "estado", titulo: "Estado" },
@@ -173,7 +176,9 @@ PW.montarNav("bess-cortes.html"); const D = PW_DATA.c_besscortes; document.getEl
         nombre: s.region, valor: s.mmus, extra: s.proyectos + " proyectos",
       })),
       fmtV: v => "US$" + PW.fmt(v) + "M",
-    }); }
+    });
+    if (B.sea_criterio) document.getElementById("nota-sea").textContent = "Inversión declarada (MMUS$). " + B.sea_criterio +
+      " La cartera en carrera (en calificación o aprobada desde 2023) está en el Reporte Regional."; }
 })(); const regs = D.regiones; PW.barras("g-cortes", {
   items: regs.map(r => ({ nombre: r.region, valor: r.cliente_horas })),
   color: PW.color("--critical"),

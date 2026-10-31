@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Subestaciones y líneas de transmisión de Chile, qué tan lejos de la red está cada estación de carga y cuánto potencial renovable tiene cada comuna.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -98,12 +98,12 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>document.write('<script src="data/c_redelec.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/geo_lineas.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_transmision_region.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 PW.montarNav("red-electrica.html"); const D = PW_DATA.c_redelec; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const K = D.kpis; document.getElementById("kpis").innerHTML = [
   [PW.fmt(K.subestaciones), "subestaciones", PW.fmt(K.mva_total) + " MVA de capacidad"],
   [PW.fmt(K.lineas_coordinador), "líneas de transmisión", K.km_lineas ? PW.fmt(K.km_lineas) + " km (trazados IDE)" : ""],
-  [PW.fmt(K.dist_mediana_km, 1) + " km", "mediana cargador-subestacion", "toda la red de carga"],
+  [PW.fmt(K.dist_mediana_km, 1) + " km", "mediana cargador-subestación", "toda la red de carga"],
   [PW.fmt(K.potencial_total_gw, 1) + " GW", "potencial renovable instalable", "estudio MinEnergia 2021"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Mapa de subestaciones (color por nivel de tension)
 let mapaSub = null; function colorKv(kv) {
@@ -177,7 +177,7 @@ let filtroTerr = { rcut: null, com: null }; async function pintarSub() {
         (f.properties.km ? " (" + PW.fmt(Math.round(f.properties.km)) + " km)" : ""),
         { sticky: true }),
     }); capaLineas.addTo(mapaSub); L.control.layers(null, {
-      ["Lineas de transmision (" + featsLin.length + ")"]: capaLineas,
+      ["Líneas de transmisión (" + featsLin.length + ")"]: capaLineas,
       ["Ductos de combustibles (" + window.PW_DATA.geo_ductos.features.length + ")"]: capaDuctos,
     }, { collapsed: false }).addTo(mapaSub); }
   const mvaTot = sel.reduce((a, s) => a + (s.mva || 0), 0); // Mismo hueco que el borde punteado del marcador (CAMBIOS 555) pero en el texto: (s.mva||0)
@@ -188,7 +188,7 @@ let filtroTerr = { rcut: null, com: null }; async function pintarSub() {
     PW.fmt(pts.length) + " subestaciones de " + PW.fmt(D.subestaciones.length) +
     " · " + PW.fmt(Math.round(mvaTot)) + " MVA" + (sinMva ? " (" + PW.fmt(sinMva) + " sin capacidad informada)" : "") +
     " · " + troncal + " troncales (220 kV+)" +
-    (window.PW_DATA.geo_lineas ? " · trazados de lineas y ductos en el selector de capas (arriba a la derecha)." : "."); }
+    (window.PW_DATA.geo_lineas ? " · trazados de líneas y ductos en el selector de capas (arriba a la derecha)." : "."); }
 PW.filtrosTerritorio("filtros-mapa",
   D.subestaciones.map(s => ({ rcut: s.rcut, reg: s.rcut, com: s.com })).map(x => ({
     ...x, reg: (D.conexion_regiones.find(r => r.rcut === x.rcut) || {}).region || x.rcut,
@@ -197,7 +197,7 @@ PW.filtrosTerritorio("filtros-mapa",
   `<label>Tension minima (kV) <input type="number" id="f-kv" value="0" min="0" step="66" style="width:80px"></label>
    <label>Buscar subestacion <input type="search" id="f-busca-sub" placeholder="Nombre o propietario..."></label>`); document.getElementById("f-kv").addEventListener("input", pintarSub); document.getElementById("f-busca-sub").addEventListener("input", pintarSub); pintarSub(); asegurarCutsLineas(); // si geo_lineas llego cacheado sin `cuts`, recargarlo fresco para el recorte por CUT
 PW.leyendaMapa("ley-sub", [
-  ["220 kV o mas (troncal)", PW.color("--s2")],
+  ["220 kV o más (troncal)", PW.color("--s2")],
   ["66 a 220 kV", PW.color("--s1")],
   ["Menos de 66 kV", PW.color("--s3")],
   ["Sin dato de tensión", PW.color("--ink-3")],

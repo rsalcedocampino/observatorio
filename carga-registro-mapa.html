@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Mapa del registro oficial de infraestructura de recarga declarada a la SEC (EcoCarga), estación por estación, con todas las categorías de uso.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261030b">
+<link rel="stylesheet" href="assets/estilo.css?v=261031a">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous">
@@ -118,7 +118,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <div class="tarjeta">
       <h2 style="margin-top:0">Por clase de potencia</h2>
       <div id="ci-g-pot"></div>
-      <p class="nota">Snapshot de la red pública (EcoCarga). Semi-rápido y ultrarápido dominan.</p>
+      <p class="nota" id="ci-nota-pot">Foto de la red pública (EcoCarga).</p>
     </div>
     <div class="tarjeta">
       <h2 style="margin-top:0">Por tipo de conector</h2>
@@ -168,7 +168,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   </section>
 </main>
 <script>document.write('<script src="data/carga_mapa.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261030b"></script>
+<script src="assets/comun.js?v=261031a"></script>
 <script>
 PW.montarNav("carga-registro-mapa.html"); const D = window.PW_DATA.carga_mapa || {}; const PTS = (D.puntos || []).map(p => ({ ...p, lat: +p.lat, lon: +p.lon }))
   .filter(p => !Number.isNaN(p.lat) && !Number.isNaN(p.lon)); document.getElementById("nota").textContent =
@@ -289,7 +289,11 @@ const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar"); PW.lineas("c
 }); PW.barras("ci-g-pot", {
   items: D.por_potencia.map(p => ({ nombre: p.clase, valor: p.n })),
   fmtV: v => PW.fmt(v),
-}); PW.barras("ci-g-con", {
+}); { // la nota sale del dato: la clase que domina y la fecha de la foto (antes fija, con 4 clases que ya no existen)
+  const tp = D.por_potencia.reduce((s, p) => s + p.n, 0), top = [...D.por_potencia].sort((a, b) => b.n - a.n)[0];
+  const fd = D.dimensiones_generado ? " al " + D.dimensiones_generado.slice(0, 10).split("-").reverse().join("-") : "";
+  if (top && tp) document.getElementById("ci-nota-pot").textContent = "Foto de la red pública (EcoCarga)" + fd + ". Domina la carga " +
+    top.clase.toLowerCase() + ": " + PW.fmt(100 * top.n / tp, 0) + "% de " + PW.fmt(tp) + " conectores."; } PW.barras("ci-g-con", {
   items: D.por_conector.map(c => ({ nombre: c.tipo, valor: c.n })),
   fmtV: v => PW.fmt(v),
 }); document.getElementById("ci-fuente").textContent = D.nota;
@@ -315,7 +319,7 @@ function pintarFisc(anio) {
       ", con la definición de la SEC: una estación está <b>operativa</b> si al menos uno de sus cargadores " +
       "está disponible. No es una fiscalización: lee el estado que informan los operadores cada 15 minutos.";
     document.getElementById("rp-kpi-fisc").innerHTML = [
-      [PW.fmt(O.estaciones || 0), "estaciones observadas", "red pública identificada"],
+      [PW.fmt(O.estaciones || 0), "estaciones observadas", "en la red viva en el período, todas las categorías"],
       [pctFmt(O.operatividad_pct), "operatividad nacional", "sobre las lecturas con estado conocido"],
       [pctFmt((O.desglose_pct || {}).sin_comunicacion), "del tiempo sin comunicación", "no se sabe si funcionaban"],
     ].map(kpiHTML).join("");

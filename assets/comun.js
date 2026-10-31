@@ -506,11 +506,29 @@
     }
     return lo > 0 ? t.slice(0, lo) + "…" : "…";
   }
+  // dec es el maximo de decimales. Hasta 2026-10-30 cualquier dec daba 1 decimal: los 21 usos con
+  // dec 2 o 3 (factor de CO2, tarifas, % del SEN) mostraban 0,224 y 0,198 como "0,2".
+  const nfDec = {};
   function fmt(v, dec) {
     if (v === null || v === undefined || Number.isNaN(v)) return "—";
-    return (dec ? nf1 : nf0).format(v);
+    if (!dec) return nf0.format(v);
+    const d = dec === true ? 1 : Math.min(Math.max(Math.round(dec), 1), 6);
+    if (d === 1) return nf1.format(v);
+    if (!nfDec[d]) nfDec[d] = new Intl.NumberFormat("es-CL", { maximumFractionDigits: d });
+    return nfDec[d].format(v);
   }
   function clp(v) { return v == null ? "—" : "$" + nf0.format(Math.round(v)); }
+  // "2026-10-30T19:32:07-04:00" -> "2026-10-30 20:32" en hora de Chile. Varios productores fijan
+  // UTC-4 todo el anio y en horario de verano (UTC-3) la hora mostrada quedaba una hora atras
+  // (auditoria 2026-10-30). Sin zona en el texto no se adivina: se recorta tal cual.
+  function horaChile(s) {
+    if (!s) return "—";
+    const t = String(s);
+    if (!/(Z|[+-]\d{2}:?\d{2})$/.test(t)) return t.slice(0, 16).replace("T", " ");
+    const d = new Date(t);
+    if (isNaN(d)) return t.slice(0, 16).replace("T", " ");
+    return d.toLocaleString("sv-SE", { timeZone: "America/Santiago" }).slice(0, 16);
+  }
   function pct(v) { return v == null ? "—" : nf1.format(v) + "%"; }
 
   // Escapa texto de DATOS antes de interpolarlo en HTML (innerHTML/bindPopup).
@@ -616,7 +634,46 @@
     return (LINEA_DEBIL[k] && fondoClaro()) ? LINEA_DEBIL[k] : c;
   }
 
+  // [ESCALA REDONDA] (auditoria 2026-10-30) el eje se partia en n tramos iguales del maximo y salian
+  //   marcas como 1.284 / 2.568 (ventas) o 6,9 / 13,7 (pelp); peor, con fmtY de un decimal 0,25 y 0,75
+  //   se leian "0,3" y "0,8" (generacion, CO2): la grilla decia otra cosa que lo medido. Paso de 1, 2,
+  //   2,5 o 5 por potencia de 10 y el tope sube al siguiente paso. Si con el formato de la pagina dos
+  //   marcas salen iguales se prueba un paso mas grueso; si nada sirve, n tramos iguales como antes.
+  function pasoRedondo(crudo) {
+    const p = Math.pow(10, Math.floor(Math.log10(crudo)));
+    const f = crudo / p;
+    return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+  }
+  function escalaY(minV, maxV, n, fmt) {
+    const rango = maxV - minV;
+    const iguales = () => {
+      const ticks = [];
+      for (let i = 0; i <= n; i++) ticks.push(minV + rango * i / n);
+      return { min: minV, max: maxV, ticks };
+    };
+    if (!(rango > 0) || !isFinite(rango)) return iguales();
+    // Con n tramos el paso redondo puede dejar un tercio del grafico vacio (censo 20,6 M -> 30 M);
+    // con un tramo mas a veces cierra mas cerca del dato (-> 25 M). Se queda el tope mas bajo.
+    const tope = p => Math.ceil(rango / p - 1e-9) * p;
+    const pA = pasoRedondo(rango / n), pB = pasoRedondo(rango / (n + 1));
+    let paso = tope(pB) < tope(pA) ? pB : pA;
+    for (let intento = 0; intento < 5; intento++) {
+      const tramos = Math.ceil(rango / paso - 1e-9);
+      const ticks = [];
+      for (let k = 0; k <= tramos; k++) ticks.push(+(minV + k * paso).toPrecision(12));
+      const txt = ticks.map(fmt);
+      if (new Set(txt).size === txt.length) return { min: minV, max: ticks[ticks.length - 1], ticks };
+      paso = pasoRedondo(paso * 1.01);
+    }
+    return iguales();
+  }
+
   // ---------- grafico de lineas (series: [{nombre, valores}], labels: [..])
+  // s.bordesEstructurales: true -> la serie empieza o termina por diseno (proyeccion desde "Hoy",
+  //   tecnologia que no existia, sistema que dejo de existir): sus bordes sin dato NO llevan banda de
+  //   hueco. La banda en los bordes es a proposito para el resto (ver [huecos] mas abajo).
+  // s.huecosEstructurales: true -> serie de puntos sueltos por diseno (anios de censo): ningun tramo
+  //   sin dato lleva banda; los puntos siguen marcados con su circulo.
   function lineas(cont, cfg) {
     const el = typeof cont === "string" ? document.getElementById(cont) : cont;
     el.innerHTML = "";
@@ -627,18 +684,18 @@
     const m = { t: 14, r: 12, b: 26, l: 52 };
     const labels = cfg.labels, series = cfg.series;
     const todos = series.flatMap(s => s.valores).filter(v => v != null);
-    const maxV = cfg.max != null ? cfg.max : Math.max(...todos, 1);
     const minV = cfg.min != null ? cfg.min : 0;
+    const fmtEje = v => cfg.fmtY ? cfg.fmtY(v) : nf0.format(Math.round(v));
+    // con cfg.max fijo la pagina eligio el tope: se respeta y se parte en 4 como antes
+    const esc = cfg.max != null
+      ? { min: minV, max: cfg.max, ticks: [0, 1, 2, 3, 4].map(i => minV + (cfg.max - minV) * i / 4) }
+      : escalaY(minV, Math.max(...todos, 1), 4, fmtEje);
+    const maxV = esc.max;
     // [MARGEN DEL EJE] las etiquetas del eje Y van alineadas a la derecha en m.l - 7: si no caben,
     // se salen del SVG por la izquierda y se pierden los primeros digitos. Se mide la mas ancha
-    // (mismos 5 ticks que se dibujan abajo) y el margen crece lo justo, con tope.
+    // (los mismos ticks que se dibujan abajo) y el margen crece lo justo, con tope.
     {
-      const ets = [];
-      for (let i = 0; i <= 4; i++) {
-        const v = minV + (maxV - minV) * i / 4;
-        ets.push(cfg.fmtY ? cfg.fmtY(v) : nf0.format(Math.round(v)));
-      }
-      const need = Math.ceil(Math.max(...ets.map(t => anchoTexto(t, 11)))) + 12;
+      const need = Math.ceil(Math.max(...esc.ticks.map(v => anchoTexto(fmtEje(v), 11)))) + 12;
       m.l = Math.max(m.l, Math.min(Math.round(W * 0.45), need));
     }
     // [ETIQUETA FINAL] con 3 o mas series el color solo no las separa (los pares mas cercanos de la
@@ -660,15 +717,13 @@
 
     const svg = svgEl("svg", { width: "100%", viewBox: `0 0 ${W} ${H}` });
     wrap.appendChild(svg);
-    const nTicks = 4;
-    for (let i = 0; i <= nTicks; i++) {
-      const v = minV + (maxV - minV) * i / nTicks;
+    esc.ticks.forEach(v => {
       const y = Y(v);
       svg.appendChild(svgEl("line", { x1: m.l, x2: W - m.r, y1: y, y2: y, stroke: color("--grid"), "stroke-width": 1 }));
       const t = svgEl("text", { x: m.l - 7, y: y + 4, "text-anchor": "end", "font-size": 11, fill: color("--ink-3") });
-      t.textContent = cfg.fmtY ? cfg.fmtY(v) : nf0.format(Math.round(v));
+      t.textContent = fmtEje(v);
       svg.appendChild(t);
-    }
+    });
     const rotular = indicesEje(labels.length, X, W - m.l - m.r);
     labels.forEach((lb, i) => {
       if (!rotular.has(i)) return;
@@ -685,14 +740,16 @@
       s.valores.forEach((v, i) => { if (v != null) validos.push(i); });
       if (!validos.length) return pares;
       const primero = validos[0], ultimo = validos[validos.length - 1];
-      if (primero > 0) pares.push([0, primero]);
+      // tercer elemento: el tramo lleva banda; los circulos de borde se dibujan igual
+      const bordes = !s.bordesEstructurales && !s.huecosEstructurales;
+      if (primero > 0) pares.push([0, primero, bordes]);
       for (let k = 1; k < validos.length; k++) {
-        if (validos[k] - validos[k - 1] > 1) pares.push([validos[k - 1], validos[k]]);
+        if (validos[k] - validos[k - 1] > 1) pares.push([validos[k - 1], validos[k], !s.huecosEstructurales]);
       }
-      if (ultimo < s.valores.length - 1) pares.push([ultimo, s.valores.length - 1]);
+      if (ultimo < s.valores.length - 1) pares.push([ultimo, s.valores.length - 1, bordes]);
       return pares;
     });
-    [...new Set(gapsPorSerie.flat().map(([i0, i1]) => i0 + "-" + i1))]
+    [...new Set(gapsPorSerie.flat().filter(p => p[2]).map(([i0, i1]) => i0 + "-" + i1))]
       .map(k => k.split("-").map(Number))
       .forEach(([i0, i1]) => {
         svg.appendChild(svgEl("rect", {
@@ -920,26 +977,27 @@
     const W = el.clientWidth || 640, H = cfg.alto || 220;
     const m = { t: 12, r: 10, b: 26, l: 48 };
     const vals = cfg.valores, labels = cfg.labels;
-    const maxV = Math.max(...vals.filter(v => v != null), 1);
+    const fmtEje = v => cfg.fmtY ? cfg.fmtY(v) : nf0.format(Math.round(v));
+    // [ESCALA REDONDA] ver escalaY(): 3 tramos como antes, con paso redondo
+    const esc = escalaY(0, Math.max(...vals.filter(v => v != null), 1), 3, fmtEje);
+    const maxV = esc.max;
     // [MARGEN DEL EJE] mismo problema que en lineas(): etiqueta del eje mas ancha que el margen
-    // fijo de 48 px -> se cortaban los primeros digitos. Se mide sobre los 4 ticks que se dibujan.
+    // fijo de 48 px -> se cortaban los primeros digitos. Se mide sobre los ticks que se dibujan.
     {
-      const ets = [];
-      for (let i = 0; i <= 3; i++) ets.push(cfg.fmtY ? cfg.fmtY(maxV * i / 3) : nf0.format(Math.round(maxV * i / 3)));
-      const need = Math.ceil(Math.max(...ets.map(t => anchoTexto(t, 11)))) + 11;
+      const need = Math.ceil(Math.max(...esc.ticks.map(v => anchoTexto(fmtEje(v), 11)))) + 11;
       m.l = Math.max(m.l, Math.min(Math.round(W * 0.45), need));
     }
     const n = vals.length;
     const ancho = (W - m.l - m.r) / n;
     const svg = svgEl("svg", { width: "100%", viewBox: `0 0 ${W} ${H}` });
     wrap.appendChild(svg);
-    for (let i = 0; i <= 3; i++) {
-      const v = maxV * i / 3, y = m.t + (H - m.t - m.b) * (1 - i / 3);
+    esc.ticks.forEach(v => {
+      const y = m.t + (H - m.t - m.b) * (1 - v / maxV);
       svg.appendChild(svgEl("line", { x1: m.l, x2: W - m.r, y1: y, y2: y, stroke: color("--grid") }));
       const t = svgEl("text", { x: m.l - 6, y: y + 4, "text-anchor": "end", "font-size": 11, fill: color("--ink-3") });
-      t.textContent = cfg.fmtY ? cfg.fmtY(v) : nf0.format(Math.round(v));
+      t.textContent = fmtEje(v);
       svg.appendChild(t);
-    }
+    });
     // hueco (null): sin marca, una columna faltante se pierde entre las lineas de grilla y se lee
     // igual que "todavia no cargo" -- mismo problema que ya se corrigio en lineas(), misma banda.
     vals.forEach((v, i) => {
@@ -1075,7 +1133,7 @@
       const claseCol = (c, i) => (hayPrio && i > 0 && !c.prio) ? " col-sec" : "";
       const th = cols.map((c, i) =>
         `<th class="${c.num ? "num" : ""} ${orden === c.k ? "orden" + (asc ? " asc" : "") : ""}${claseCol(c, i)}" data-k="${c.k}"` +
-        ` tabindex="0" title="Ordenar por ${esc(c.titulo)}"` +
+        ` tabindex="0" title="Ordenar por ${esc(String(c.titulo).replace(/<[^>]*>/g, "").trim())}"` +  // titulo con HTML: solo su texto
         ` aria-sort="${orden === c.k ? (asc ? "ascending" : "descending") : "none"}">${c.titulo}</th>`
       ).join("");
       const cuerpo = datos.map(f => "<tr>" + cols.map((c, i) => {
@@ -2340,7 +2398,7 @@
   document.addEventListener("visibilitychange", revisarDatosNuevos);
   window.addEventListener("focus", revisarDatosNuevos);
 
-  window.PW = { montarNav, avisoCookies, fmt, clp, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto, ruedaSegura, pestanas, cargarDatos };
+  window.PW = { montarNav, avisoCookies, fmt, clp, horaChile, pct, esc, lineas, barras, columnas, tabla, color, mapa, choropleth, boundsComunas, leyendaMapa, waze, enChile, filtrosTerritorio, icono, popupEstacion, estadoProyecto, lineaEnTerritorio, multiLinea, capaComunaOnDemand, recargarSiFaltaCampo, bandaTension, estiloTransmision, leyendaTransmision, renderColaboradores, acotarAChile, fitTerritorio, cargarGeoComunas, completarSerie, anchoTexto, ruedaSegura, pestanas, cargarDatos };
 })();
 // [ASISTENTE DE DATOS] (#71, publicado con la palabra del usuario el 2026-10-25). Carga solo el cargador
 // chico del boton (assets/agente-boton.js); el asistente completo (agente.js) se baja al tocarlo. Sin
