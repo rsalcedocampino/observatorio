@@ -1,6 +1,6 @@
 window.PW_DATA.c_elasticidad_tarifas_detallado = {
-  "generado": "2026-10-11",
-  "nota": "Tarifas completas = precio de nudo de referencia (pendiente dato CNE oficial) + VAD (distribuidor) por segmento",
+  "generado": "2026-10-31",
+  "nota": "Valores ilustrativos, no son la tarifa vigente: el precio de nudo y el VAD son cifras de ejemplo fijadas a mano (ninguna sale de un pliego tarifario) y la energía, el cargo fijo y la potencia difieren de los pliegos publicados por las distribuidoras. Cubre solo cinco regiones y dos distribuidoras. Para la tarifa real, consulte el pliego de su distribuidora.",
   "segmentos_info": {
     "BT1": "Domiciliario",
     "BT2": "Comercial <50kW",

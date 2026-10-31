@@ -42,7 +42,6 @@
       ["rescate.html", "Fichas de rescate"],
       ["fichacober.html", "Cobertura de rescate"],
       ["seguros.html", "Coberturas EV"],
-      ["seguros-energia.html", "Seguros de proyectos de energía"],
     ]],
     ["Red de carga", [
       ["mapa-carga.html", "Red de carga en vivo"],
@@ -67,6 +66,9 @@
       ["baterias.html", "Importaciones de baterías de litio"],
       ["cargadores-importacion.html", "Importación de cargadores EV"],
       ["grupos-economicos.html", "Grupos económicos"],
+      // seguros-energia (parques solares, eolicos y BESS) estuvo por error en "Mi auto"; aqui por decision
+      // del usuario en #17 (31-10).
+      ["seguros-energia.html", "Seguros de proyectos de energía"],
     ]],
     ["Energía y resiliencia", [
       ["riesgo.html", "Cortes eléctricos"],

@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="¿Sube la adopción de enchufables cuando sube la bencina? Participación de mercado enchufable frente al precio real de la bencina 93.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261031a">
+<link rel="stylesheet" href="assets/estilo.css?v=261031b">
 <style>
   /* flex-wrap: a 360px los 5 botones median 587px en una fila de 320 y desbordaban la pagina
      entera (medido: scrollWidth 584 contra ventana 360). El color de esta barra no se toca. */
@@ -113,9 +113,9 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     </div>
 
     <div class="tarjeta">
-      <h2 style="margin-top:0">Correlación: índice de cargos de potencia vs Stock EV</h2>
-      <p class="nota">¿A mayor cargo de potencia, menos stock de EVs? La tabla cruza el índice de cargos de potencia
-      (promedio simple de todos los segmentos, no es una tarifa final) con el stock proyectado 2025 por región. Nota: Metropolitana domina cifras (<span id="pct-rm">—</span> del parque nacional).</p>
+      <h2 style="margin-top:0">Correlación: <span class="rot-corto">índice de cargos de potencia</span> vs Stock EV</h2>
+      <p class="nota">¿A mayor cargo de potencia, menos stock de EVs? La tabla cruza ese cargo con el stock
+      proyectado 2025 por región; la nota de la proyección, más arriba, explica de dónde sale y qué no es. Nota: Metropolitana domina cifras (<span id="pct-rm">—</span> del parque nacional).</p>
       <div id="t-ev-tarifas"></div>
     </div>
 
@@ -236,7 +236,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 })(); </script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261031a"></script>
+<script src="assets/comun.js?v=261031b"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -517,10 +517,14 @@ function cargarTabEV2025() {
     tarifa_potencia: r.tarifa_potencia,
     tarifa_energia: r.tarifa_energia,
     stock_2025: r.p2025,
-  })); PW.tabla("t-ev-tarifas", [
+  }));
+  // Rotulos desde el dato (c_ev_proyeccion.rotulo_*): cambian junto con las cifras cuando #08 cambia la
+  // referencia tarifaria (31-10: BT4 industrial con IVA). Sin las claves, el rotulo anterior.
+  if (D.rotulo_corto) document.querySelectorAll(".rot-corto").forEach(e => { e.textContent = D.rotulo_corto; });
+  PW.tabla("t-ev-tarifas", [
     { k: "region", titulo: "Región", num: false },
-    { k: "tarifa_potencia", titulo: "Índice de cargos de potencia (promedio simple, no es tarifa final)", num: true, fmt: v => PW.fmt(v, 1) },
-    { k: "tarifa_energia", titulo: "Tarifa Energía ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
+    { k: "tarifa_potencia", titulo: D.rotulo_potencia || "Índice de cargos de potencia (promedio simple, no es tarifa final)", num: true, fmt: v => PW.fmt(v, 1) },
+    { k: "tarifa_energia", titulo: D.rotulo_energia || "Tarifa Energía ($/kWh)", num: true, fmt: v => PW.fmt(v, 2) },
     { k: "stock_2025", titulo: "Stock EV 2025", num: true, fmt: v => v.toLocaleString() },
   ], filas_correlacion, { max: 20 }); // El filtro por tarifa_potencia deja regiones afuera sin decirlo: la tabla se leia como si
   // fuera el pais entero. Se declara cuantas y cuales.
