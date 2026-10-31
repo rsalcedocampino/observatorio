@@ -319,7 +319,7 @@ function pintarFisc(anio) {
       ", con la definición de la SEC: una estación está <b>operativa</b> si al menos uno de sus cargadores " +
       "está disponible. No es una fiscalización: lee el estado que informan los operadores cada 15 minutos.";
     document.getElementById("rp-kpi-fisc").innerHTML = [
-      [PW.fmt(O.estaciones || 0), "estaciones observadas", "en la red viva en el período, todas las categorías"],
+      [PW.fmt(O.estaciones || 0), "estaciones observadas", "estaciones distintas con lecturas en esas fechas, incluidas las que cerraron"],
       [pctFmt(O.operatividad_pct), "operatividad nacional", "sobre las lecturas con estado conocido"],
       [pctFmt((O.desglose_pct || {}).sin_comunicacion), "del tiempo sin comunicación", "no se sabe si funcionaban"],
     ].map(kpiHTML).join("");
