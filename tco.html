@@ -35,7 +35,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 .pestanas button.activo { background: var(--surface-1); color: var(--ink-1); border-bottom-color: var(--s1); font-weight: 600; }
 .fila2 > * { min-width: 0; }
 .kpi .v.estado-ok { color: var(--good); }
-.kpi .v.estado-mal { color: var(--critical); }
+.kpi .v.estado-mal { color: var(--critical); } .kpi { container-type: inline-size; } .kpi .v { font-size: min(26px, 16cqi); }
 .veredicto { margin: 10px 0 0; font-size: 13.5px; }
 .ajustes { margin: 4px 0 8px; }
 .ajustes > summary { cursor: pointer; color: var(--ink-2); font-size: 13px; padding: 5px 0; user-select: none; }
@@ -105,7 +105,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <div class="kpis" id="k-comp"></div>
     <p class="veredicto" id="v-comp"></p>
     <div class="fila2">
-      <div class="tarjeta"><h2 style="margin-top:0">Costo acumulado por año</h2><div id="g-acum"></div>
+      <div class="tarjeta"><h2 style="margin-top:0">Costo de uso acumulado por año</h2><div id="g-acum"></div>
         <p class="nota">Costo de USO del vehículo acumulado (energía, mantención, seguro y permiso) — sin
         considerar el precio de compra ni la depreciación. El cruce marca desde cuándo el eléctrico
         acumula menos costo de uso.</p></div>
@@ -312,13 +312,13 @@ const BUILD = {}; BUILD["comparador"] = function () {
     if (!ev || !ice) {
       g("k-comp").innerHTML = ""; g("v-comp").textContent = "Selecciona un eléctrico y un combustión para ver la comparación."; g("g-acum").innerHTML = ""; g("g-desglose").innerHTML = ""; if (tComp) tComp.actualizar([]); return; }
     const { E, P } = envP(); const eEv = efectivo(ev, "ev", true), eIce = efectivo(ice, "ice", false); const te = tco(eEv, E, P), ti = tco(eIce, E, P); const dif = ti.total - te.total; const evC = curvaAcum(eEv, E, P), iceC = curvaAcum(eIce, E, P); const be = breakeven(evC, iceC); g("k-comp").innerHTML =
-      kpi(PW.clp(te.total), "TCO eléctrico", "a " + P.ny + " años") +
-      kpi(PW.clp(ti.total), "TCO combustión", "a " + P.ny + " años") +
+      kpi(PW.clp(te.total), "Costo de uso eléctrico", "a " + P.ny + " años") +
+      kpi(PW.clp(ti.total), "Costo de uso combustión", "a " + P.ny + " años") +
       kpi(PW.clp(Math.abs(dif)), dif >= 0 ? "Ahorro del EV" : "Sobrecosto del EV", "a " + P.ny + " años", dif >= 0 ? "estado-ok" : "estado-mal") +
-      kpi(be == null ? "no aplica" : (be === 0 ? "inmediato" : be + (be === 1 ? " año" : " años")), "Punto de equilibrio", "el EV se vuelve más barato") +
+      kpi(be == null ? "no aplica" : (be === 0 ? "inmediato" : be + (be === 1 ? " año" : " años")), "Punto de equilibrio", "costo de uso, sin precio de compra") +
       kpi(PW.clp((te.energiaAnio + (eEv.ma || 0)) / (P.kmm * 12)), "Operación/km eléctrico", "energía + mantención") +
       kpi(PW.clp((ti.energiaAnio + (eIce.ma || 0)) / (P.kmm * 12)), "Operación/km combustión", "energía + mantención"); const co2ev = co2kgAnio(eEv, P) * P.ny, co2ic = co2kgAnio(eIce, P) * P.ny; g("v-comp").innerHTML = "En " + P.ny + " años el eléctrico " +
-      (dif >= 0 ? "ahorra <b>" + PW.clp(dif) + "</b>" : "cuesta <b>" + PW.clp(-dif) + "</b> más") +
+      (dif >= 0 ? "ahorra <b>" + PW.clp(dif) + "</b> en costo de uso" : "cuesta <b>" + PW.clp(-dif) + "</b> más en costo de uso") +
       " y evita <b>" + PW.fmt(Math.max(0, co2ic - co2ev)) + " kg</b> de CO2 (" +
       PW.fmt(Math.max(0, (co2ic - co2ev) / (P.arbol_kg || 21))) + " árboles-año equivalentes)." +
       ((cargaTxt(eEv) || eEv.eu || eEv.nm) ? "<br><span class=\"nota\">Eléctrico: " +
