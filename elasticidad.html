@@ -56,7 +56,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <button class="tab-btn activo" data-tab="bencina">Bencina 93</button>
     <button class="tab-btn" data-tab="ev2025">Stock EV 2025 (Proyectado)</button>
     <button class="tab-btn" data-tab="pnp">Precios Nudo por Subestación</button>
-    <button class="tab-btn" data-tab="tarifas-detalle">Tarifa Final (valores de referencia)</button>
+    <button class="tab-btn" data-tab="tarifas-detalle">Tarifa final (valores ilustrativos)</button>
   </div>
 
   <!-- TAB 1: Bencina 93 -->
@@ -172,7 +172,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     </div>
   </div>
 
-  <!-- TAB 4: Tarifa Final (valores de referencia) -->
+  <!-- TAB 4: Tarifa final (valores ilustrativos, CAMBIOS 1882 de #08) -->
   <div id="tab-tarifas-detalle" class="tab-content">
     <p class="sub">Tarifa final al cliente = Precio Nudo + Valor Agregado Distribución (distribuidor). El Precio Nudo de esta vista es un valor de REFERENCIA, pendiente de reemplazo por el dato de la CNE: no confundir con el decreto vigente.
     Selecciona región, distribuidor y segmento para ver desglose completo: energía, potencia, cargos fijos y tarifa total.</p>
@@ -449,7 +449,7 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
         cargo_fijo: tarifa.vad.cargo_fijo
       },
       {
-        componente: "TARIFA FINAL (Total)",
+        componente: "Suma ilustrativa (no es la tarifa vigente)",
         energia: tarifa.final.energia,
         potencia: tarifa.final.potencia,
         cargo_fijo: tarifa.final.cargo_fijo,

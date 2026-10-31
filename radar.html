@@ -56,6 +56,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <div class="tarjeta">
       <h2 style="margin-top:0">Top marcas, últimos 12 meses</h2>
       <div id="g-marcas"></div>
+      <p class="nota" id="nota-marcas"></p>
     </div>
     <div class="tarjeta">
       <h2 style="margin-top:0">País de origen, últimos 12 meses</h2>
@@ -93,12 +94,21 @@ PW.montarNav("radar.html"); const D = PW_DATA.radar; document.getElementById("no
     series: Object.entries(G.series).map(([k, v]) => ({ nombre: k, valores: v.slice(desde) })),
     fmtV: v => PW.fmt(v) + " unid.",
     alto: 280,
-  }); PW.barras("g-marcas", {
-    items: G.top_marcas_12m.slice(0, 15).map(m => ({
+  });
+  // [MARCA IDENTIFICADA] ranking solo con marcas del kit (top_marcas_id_12m); lo sin marca identificable
+  // (ciudades o razones sociales del exportador en la glosa de Aduana) va en la nota. Sin la clave nueva,
+  // el ranking anterior.
+  const MK = G.top_marcas_id_12m || G.top_marcas_12m, COB = G.marcas_cobertura_12m;
+  if (MK.length) PW.barras("g-marcas", {
+    items: MK.slice(0, 15).map(m => ({
       nombre: m.marca, valor: m.unidades,
       extra: "CIF unitario: US$" + PW.fmt(m.cif_unitario),
     })),
-  }); PW.barras("g-paises", { items: G.paises_12m.map(p => ({ nombre: p.pais, valor: p.unidades })), color: PW.color("--s2") }); PW.barras("g-importadores", {
+  }); else document.getElementById("g-marcas").innerHTML = "";
+  document.getElementById("nota-marcas").textContent = (G.top_marcas_id_12m && COB && COB.unidades_sin_marca > 0)
+    ? PW.fmt(COB.unidades_sin_marca) + " de " + PW.fmt(COB.unidades_total) + " unidades (" + PW.fmt(COB.pct_sin_marca, 1) +
+      "%) no traen una marca identificable en la declaración de Aduana (suele venir el nombre del exportador o de su ciudad) y no entran al ranking."
+    : ""; PW.barras("g-paises", { items: G.paises_12m.map(p => ({ nombre: p.pais, valor: p.unidades })), color: PW.color("--s2") }); PW.barras("g-importadores", {
     items: (G.top_importadores_12m || []).map(i => ({
       nombre: i.importador, valor: i.unidades, parte: i.unidades_inferidas || 0,
       extra: (i.unidades_inferidas > 0 ? PW.fmt(i.unidades - i.unidades_inferidas) + " identificadas en la declaración · " + PW.fmt(i.unidades_inferidas) + " estimadas por marca<br>" : "") + "CIF: US$" + PW.fmt(i.cif_usd),
