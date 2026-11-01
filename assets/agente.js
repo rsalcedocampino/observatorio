@@ -4424,7 +4424,7 @@ const { raizEs } = __req("agente_web/src/raices.js");
 const { temaDePagina, textoDeTema } = __req("agente_web/src/temas_pagina.js");
 
 // Indicadores que responden solo por el conector MCP: el asistente nunca los enruta aunque aparezcan en el catalogo.
-const SOLO_CONECTOR = new Set(["tco_vehiculos"]);
+const SOLO_CONECTOR = new Set(["tco_vehiculos", "ventas_acumuladas"]);
 
 const MESES = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12 };
 const NUMEROS = { un: 1, uno: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, doce: 12, quince: 15, veinte: 20 };
