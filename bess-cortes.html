@@ -62,7 +62,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
       <div id="t-bess"></div>
     </div>
     <div class="tarjeta">
-      <h2 style="margin-top:0">Descarga diaria de BESS en el SEN (GWh)</h2>
+      <h2 style="margin-top:0">Carga y descarga diaria de BESS en el SEN (GWh)</h2>
       <div id="g-bess-diario"></div>
       <p class="nota" id="nota-bess-diario"></p>
     </div>
@@ -155,11 +155,16 @@ PW.montarNav("bess-cortes.html"); const D = PW_DATA.c_besscortes; document.getEl
     const BDIA = PW.completarSerie(B.bess_diario, "fecha", "dia"); // completarSerie: los periodos ausentes se dibujan como "sin dato" y no se borran del eje.
     PW.lineas("g-bess-diario", {
       labels: BDIA.map(x => x.fecha),
-      series: [{ nombre: "GWh descargados por día", valores: BDIA.map(x => x.gwh_dia), color: PW.color("--s3") }],
+      series: [
+        { nombre: "Entregada a la red (descarga)", valores: BDIA.map(x => x.gwh_dia), color: PW.color("--s3") },
+        { nombre: "Tomada de la red (carga)", valores: BDIA.map(x => x.gwh_carga), color: PW.color("--s1") },
+      ],
       fmtV: v => PW.fmt(v, 1) + " GWh", alto: 240,
     }); const ult = B.bess_diario[B.bess_diario.length - 1]; document.getElementById("nota-bess-diario").textContent =
-      "Energía que las baterías entregaron a la red (sin contar la que cargaron), medida central por central por el Coordinador. " +
-      "Descarga acumulada del " + B.bess_diario[0].fecha + " al " + ult.fecha + ": " + PW.fmt(ult.gwh_acum) + " GWh" +
+      "Energía que las baterías tomaron de la red para cargarse y la que le devolvieron, por día, medida central por central por el Coordinador. " +
+      "Del " + B.bess_diario[0].fecha + " al " + ult.fecha + " cargaron " + PW.fmt(ult.gwh_carga_acum) + " GWh y entregaron " + PW.fmt(ult.gwh_acum) + " GWh" +
+      // eficiencia aparente del ciclo: lo que devuelven sobre lo que toman (la diferencia son perdidas y carga que queda guardada)
+      (ult.gwh_carga_acum > 0 ? " (devolvieron el " + PW.fmt(100 * ult.gwh_acum / ult.gwh_carga_acum, 0) + " % de lo que cargaron)" : "") +
       // Dias sin captura de la fuente (bess_diario_sin_dato): no entran al acumulado y se dicen.
       ((n => n ? ", suma de los días con dato (" + n + (n === 1 ? " día" : " días") + " sin dato)." : ".")(
         (B.bess_diario_sin_dato || []).length) +
