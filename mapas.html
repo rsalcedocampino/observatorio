@@ -163,10 +163,10 @@ const CAPAS = [
   { k: "lin_b", nombre: "Transmisión <66 kV",    color: "--s2", on: false, g: "Transmisión" },
   { k: "solar",  nombre: "Generación solar",        color: "--s4",       on: false, g: "Generación y almacenamiento" },
   { k: "bess",   nombre: "Almacenamiento (BESS)",   color: "--s5",       on: false, g: "Generación y almacenamiento" },
-  { k: "postes", nombre: "Postes de distribución", color: "--ink-2", on: false, g: "Distribución (CGE)" },
-  { k: "mt",     nombre: "Red MT (media tensión)",  color: "#7c3aed",    on: false, g: "Distribución (CGE)" },
-  { k: "bt",     nombre: "Red BT (baja tensión)",   color: "#ec4899",    on: false, g: "Distribución (CGE)" },
-  { k: "concesion", nombre: "Área de concesión (SEC)", color: "--s1",    on: false, g: "Distribución (CGE)" },
+  { k: "postes", nombre: "Postes de distribución (CGE y SAESA)", color: "--ink-2", on: false, g: "Distribución" },
+  { k: "mt",     nombre: "Red MT (media tensión)",  color: "#7c3aed",    on: false, g: "Distribución" },
+  { k: "bt",     nombre: "Red BT (baja tensión)",   color: "#ec4899",    on: false, g: "Distribución" },
+  { k: "concesion", nombre: "Área de concesión (SEC)", color: "--s1",    on: false, g: "Distribución" },
   { k: "regiones", nombre: "Regiones", color: "#9467bd", on: false, g: "Territorio" },
 ]; // El telon comunal (Censo/SEC) ya no es un chip: se enciende/apaga con el selector
 // "Telon de fondo por comuna" (opcion "— (apagado)" = off).
@@ -278,13 +278,13 @@ function render(fit) {
     popup: popupLinea, colorSel: "#00c2d6",
   }); const lineas = LIN ? [
     capaBanda("lin_a", bnd.a), capaBanda("lin_m", bnd.m), capaBanda("lin_b", bnd.b),
-  ] : []; // Red de distribucion CGE (MT/BT): un solo MultiLineString por tipo (liviano de pintar/anotar)
+  ] : []; // Red de distribucion MT/BT (GIS SEC, todas las distribuidoras): un solo MultiLineString por tipo (liviano de pintar/anotar)
   ["mt", "bt"].forEach(tipo => {
     const segs = on(tipo) ? tramosSegs(tipo) : null; if (segs && segs.length) lineas.push({
       nombre: "Red " + tipo.toUpperCase(), visible: true,
       geojson: PW.multiLinea(segs),
       color: TRAMOS[tipo].color, weight: 1, opacity: 0.7,
-      tip: () => "Red de distribución " + TRAMOS[tipo].nombre + " (CGE)",
+      tip: () => "Red de distribución " + TRAMOS[tipo].nombre + " (SEC)",
     }); }); // Area de concesion por distribuidora (SEC capa 0): poligonos coloreados por empresa (relleno tenue)
   if (on("concesion") && window.PW_DATA.geo_concesiones) lineas.push({
     nombre: "Área de concesión", visible: true, geojson: window.PW_DATA.geo_concesiones,
@@ -342,7 +342,7 @@ function pintarKpis() {
 
 function pintarPanel() {
   const el = document.getElementById("panel-capas"); // Los chips NO muestran conteo (la cantidad no es fija: cambia con el filtro/muestreo). Se AGRUPAN por
-  // categoría (Carga · Transmisión · Generación y almacenamiento · Distribución CGE · Fondo comunal) con
+  // categoría (Carga · Transmisión · Generación y almacenamiento · Distribución · Fondo comunal) con
   // subtítulo, para escanearlos más rápido. La guía y los totales siguen en el contador/hints y KPIs.
   const chip = c => `<span class="capa-chip ${c.on ? "on" : "off"}" data-k="${c.k}" style="--c:${C(c.color)}">` +
     `<span class="dot"></span>${c.nombre}</span>`; const grupos = []; CAPAS.forEach(c => {
@@ -369,8 +369,8 @@ function txtComunas(key, rcut, cap) {
 
 function postesHint() {
   const t = totalPostes(); if (!filtroTerr.com && !filtroTerr.rcut) {
-    return " Postes: " + PW.fmt(t) + " en total (CGE); con dato en: " + txtRegiones("n") + " — elige una de esas regiones (o una comuna) para dibujarlos."; }
-  if (!t) return " Postes: sin red de distribución CGE aquí."; const pts = postesRender(); const shown = pts ? pts.length : 0; if (!shown) return " Postes: cargando…"; const donde = filtroTerr.com ? "en " + filtroTerr.com : "en la región"; return " Postes: " + (shown < t ? PW.fmt(shown) + " de " + PW.fmt(t) + " (muestra)" : PW.fmt(t)) + " " + donde + "."; }
+    return " Postes: " + PW.fmt(t) + " en total (CGE y SAESA); con dato en: " + txtRegiones("n") + " — elige una de esas regiones (o una comuna) para dibujarlos."; }
+  if (!t) return " Postes: sin dato de postes aquí."; const pts = postesRender(); const shown = pts ? pts.length : 0; if (!shown) return " Postes: cargando…"; const donde = filtroTerr.com ? "en " + filtroTerr.com : "en la región"; return " Postes: " + (shown < t ? PW.fmt(shown) + " de " + PW.fmt(t) + " (muestra)" : PW.fmt(t)) + " " + donde + "."; }
 function tramosHint(tipo) {
   const T = tipo.toUpperCase(), nom = TRAMOS[tipo].nombre; const scope = cutsTramosScope(tipo); if (!scope.length) {
     if (filtroTerr.com) return " Red " + T + ": sin red en esta comuna."; if (filtroTerr.rcut) {
