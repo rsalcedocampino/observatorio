@@ -155,14 +155,15 @@ PW.montarNav("bess-cortes.html"); const D = PW_DATA.c_besscortes; document.getEl
     const BDIA = PW.completarSerie(B.bess_diario, "fecha", "dia"); // completarSerie: los periodos ausentes se dibujan como "sin dato" y no se borran del eje.
     PW.lineas("g-bess-diario", {
       labels: BDIA.map(x => x.fecha),
-      series: [{ nombre: "GWh descargados por día", valores: BDIA.map(x => x.gwh_dia), area: true, color: PW.color("--s3") }],
+      series: [{ nombre: "GWh descargados por día", valores: BDIA.map(x => x.gwh_dia), color: PW.color("--s3") }],
       fmtV: v => PW.fmt(v, 1) + " GWh", alto: 240,
     }); const ult = B.bess_diario[B.bess_diario.length - 1]; document.getElementById("nota-bess-diario").textContent =
-      "Operación real del Coordinador. Acumulado " + ult.fecha.slice(0, 4) + ": " +
-      PW.fmt(ult.gwh_anual) + " GWh al " + ult.fecha +
+      "Energía que las baterías entregaron a la red (sin contar la que cargaron), medida central por central por el Coordinador. " +
+      "Descarga acumulada del " + B.bess_diario[0].fecha + " al " + ult.fecha + ": " + PW.fmt(ult.gwh_acum) + " GWh" +
       // Dias sin captura de la fuente (bess_diario_sin_dato): no entran al acumulado y se dicen.
-      ((n => n ? ", suma de los días con dato (" + n + (n === 1 ? " día" : " días") + " sin dato en el año)." : ".")(
-        (B.bess_diario_sin_dato || []).filter(f => f.slice(0, 4) === ult.fecha.slice(0, 4)).length)); }
+      ((n => n ? ", suma de los días con dato (" + n + (n === 1 ? " día" : " días") + " sin dato)." : ".")(
+        (B.bess_diario_sin_dato || []).length) +
+      " La serie se completa hacia atrás de a pocos días."); }
   if (B.bess_estado && B.bess_estado.length) {
     PW.tabla("t-bess", [
       { k: "estado", titulo: "Estado" },
