@@ -264,7 +264,8 @@ function familiaCliente(ua) {
 }
 
 // Hash corto para contar origenes distintos sin guardar la direccion: lleva sal (variable SAL_METRICAS, secreta) y rota cada dia; 6 bytes.
-async function hashCorto(texto, sal = "") {
+async function hashCorto(texto, sal) {
+  if (!sal) throw new Error("hashCorto exige una sal: sin ella el hash de una direccion IP se revierte");
   const datos = new TextEncoder().encode(String(sal) + "|" + String(texto));
   const h = await crypto.subtle.digest("SHA-256", datos);
   return [...new Uint8Array(h)].slice(0, 6).map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -2872,6 +2873,12 @@ const { buscarNormas, contiene, datosMarco, filasQueCalzan, indiceNormas, normas
 // El texto tal como lo escribio la persona pero sin tildes ni mayusculas: conserva los puntos de «21.505», que norm() convierte en espacio.
 const crudoDe = (texto) => String(texto).toLowerCase().normalize("NFD").replace(/\p{Mn}/gu, "");
 
+// Normas cuyo numero de catalogo difiere del que aparece en su propio nombre (p.ej. «Modifica la Resolucion 379/2024» -> Resolucion 500/2026 es la version refundida).
+// Cuando normasPorNumero no encuentra la entidad, se intenta con el alias.
+const ALIAS_NORMAS = [
+  { clase: "resolucion", numero: 379, anio: 2024, destClase: "resolucion", destNumero: 500, destAnio: 2026 },
+];
+
 // ---- pistas ------------------------------------------------------------------------------------------------------------------------------
 const PALABRAS_LEGALES = /\b(ley|leyes|decreto|decretos|reglamento|reglamentos|reglamentario|reglamentaria|normativa|normativas|norma|normas|legal|legales|legislacion|legislativo|legislativa|ordenanza|ordenanzas|regulacion|regulaciones|regulatorio|regulatoria|regula|regulan|regulado|regulada|fiscaliza|fiscalizan|fiscalizacion)\b/;
 const NUMEROS_LEGALES = /\b(ley\s*(n[°º.o]?\s*)?\d|d\.?\s?s\.?\s*(n[°º.o]?\s*)?\d|dfl\s*\d|dl\s*\d|decreto\s+ley\s*(n[°º.o]?\s*)?\d|dto\.?\s*\d|decreto\s*(supremo|exento)?\s*(n[°º.o]?\s*)?\d|res(olucion)?\.?\s*(ex(enta)?\.?)?\s*(n[°º.o]?\s*)?\d|(ric|rgr|nch)\s*\d|te-?\d\b)/;
@@ -3041,6 +3048,12 @@ async function interpretarNorma(env, texto, q, { previo = null, debil = false, e
     const conocidas = entidades.filter((e) => e.clase !== "te");
     const hallazgos = [];
     for (const e of conocidas) for (const n of normasPorNumero(idx, e)) if (!hallazgos.includes(n)) hallazgos.push(n);
+    if (!hallazgos.length) {
+      for (const e of conocidas) {
+        const al = ALIAS_NORMAS.find((a) => a.clase === e.clase && a.numero === e.numero && (!a.anio || a.anio === e.anio));
+        if (al) for (const n of normasPorNumero(idx, { clase: al.destClase, numero: al.destNumero, anio: al.destAnio })) if (!hallazgos.includes(n)) hallazgos.push(n);
+      }
+    }
     if (hallazgos.length === 1) {
       if (RX.vaciosDe.test(q) && !RX.metas.test(q)) return { ...base, intencion: "norma_vacios", ref: { i: hallazgos[0]._i, k: hallazgos[0]._k } };
       return { ...base, intencion: "norma", filas: hallazgos };
@@ -4410,6 +4423,9 @@ const { FAMILIAS, INDICADORES_MENSUALES_DE_VENTAS, MEDIDAS_DE_HIBRIDOS, esTecnol
 const { raizEs } = __req("agente_web/src/raices.js");
 const { temaDePagina, textoDeTema } = __req("agente_web/src/temas_pagina.js");
 
+// Indicadores que responden solo por el conector MCP: el asistente nunca los enruta aunque aparezcan en el catalogo.
+const SOLO_CONECTOR = new Set(["tco_vehiculos"]);
+
 const MESES = { enero: 1, febrero: 2, marzo: 3, abril: 4, mayo: 5, junio: 6, julio: 7, agosto: 8, septiembre: 9, setiembre: 9, octubre: 10, noviembre: 11, diciembre: 12 };
 const NUMEROS = { un: 1, uno: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, doce: 12, quince: 15, veinte: 20 };
 const TERRITORIAL = new Set(["nacional", "region", "comuna"]);
@@ -5444,6 +5460,7 @@ async function interpretar(env, texto, ctx) {
 
   // indicador
   let candidatos = puntuarIndicadores(cat, resto, raizEs, true);
+  if (!ctx.forzar) candidatos = candidatos.filter((c) => !SOLO_CONECTOR.has(c.i.id));
   if (ctx.forzar) {
     const f = cat.indicadores.find((i) => i.id === ctx.forzar);
     if (f) candidatos = [{ i: f, s: 100 }];
@@ -5523,7 +5540,7 @@ async function interpretar(env, texto, ctx) {
 }
 
 const PAGINAS_DERIVACION = PAGINAS;
-return { limpiarPregunta, detectarSocial, pideUbicacionDeCargadores, PROYECCIONES, PREGUNTAS_DE_PROYECCIONES, proyeccionAplicable, fueraDeAlcance, esComparacionDeCostos, detectarRanking, detectarSerie, esPreguntaDeCambio, detectarPeriodo, detectarMeses, resolverPeriodo, detectarMedida, numerosDeRegion, detectarTerritorios, unoDelMismoNombre, pideFicha, armarFicha, esPreguntaDeParque, armarParquePorTecnologia, pideLoMasVendido, intencionesDe, detectarAnios, interpretar, PAGINAS_DERIVACION, raizEs };
+return { SOLO_CONECTOR, limpiarPregunta, detectarSocial, pideUbicacionDeCargadores, PROYECCIONES, PREGUNTAS_DE_PROYECCIONES, proyeccionAplicable, fueraDeAlcance, esComparacionDeCostos, detectarRanking, detectarSerie, esPreguntaDeCambio, detectarPeriodo, detectarMeses, resolverPeriodo, detectarMedida, numerosDeRegion, detectarTerritorios, unoDelMismoNombre, pideFicha, armarFicha, esPreguntaDeParque, armarParquePorTecnologia, pideLoMasVendido, intencionesDe, detectarAnios, interpretar, PAGINAS_DERIVACION, raizEs };
 })();
 __mod["agente_web/src/ojo_clave.js"] = (function () {
 // Los «Ojo» clave (2026-10-25, decision del usuario: «dejar 3 o 4 avisos «Ojo» clave» → «ok»). El asistente no muestra las advertencias del catalogo (decision del 2026-10-19); estas pocas, las que mas
