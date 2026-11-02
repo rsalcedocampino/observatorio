@@ -45,7 +45,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>document.write('<link rel="preload" as="script" href="data/c_elasticidad_regional_preliminar.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/combustible.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_bencina93_serie.js?v='+_pwv+'">')</script>
-<script>document.write('<link rel="preload" as="script" href="data/c_elasticidad_tarifas_detallado.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_tarifas_bt.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
@@ -56,7 +56,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <button class="tab-btn activo" data-tab="bencina">Bencina 93</button>
     <button class="tab-btn" data-tab="ev2025">Stock EV 2025 (Proyectado)</button>
     <button class="tab-btn" data-tab="pnp">Precios Nudo por Subestación</button>
-    <button class="tab-btn" data-tab="tarifas-detalle">Tarifa final (valores ilustrativos)</button>
+    <button class="tab-btn" data-tab="tarifas-detalle">Tarifas de luz vigentes</button>
   </div>
 
   <!-- TAB 1: Bencina 93 -->
@@ -172,14 +172,13 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     </div>
   </div>
 
-  <!-- TAB 4: Tarifa final (valores ilustrativos, CAMBIOS 1882 de #08) -->
+  <!-- TAB 4: Tarifas de luz vigentes (pliegos de CGE y Enel; dato c_tarifas_bt de #08) -->
   <div id="tab-tarifas-detalle" class="tab-content">
-    <p class="sub">Tarifa final al cliente = Precio Nudo + Valor Agregado Distribución (distribuidor). El Precio Nudo de esta vista es un valor de REFERENCIA, pendiente de reemplazo por el dato de la CNE: no confundir con el decreto vigente.
-    Selecciona región, distribuidor y segmento para ver desglose completo: energía, potencia, cargos fijos y tarifa total.</p>
+    <p class="sub">Lo que cobran hoy las distribuidoras según sus pliegos tarifarios. Elige región y distribuidora para ver los cargos de cada tipo de cliente, y si quieres, una comuna.</p>
     <p class="nota" id="nota-tarifa-detalle"></p>
 
     <div class="tarjeta">
-      <h2 style="margin-top:0">Tarifa final por región, distribuidor y segmento</h2>
+      <h2 style="margin-top:0">Tarifas de luz por región, distribuidora y comuna</h2>
 
       <div style="margin-bottom: 1rem;">
         <label for="sel-region-det" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Región:</label>
@@ -189,35 +188,24 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
       </div>
 
       <div id="dist-det-container" style="display: none; margin-bottom: 1rem;">
-        <label for="sel-distribuidor-det" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Distribuidor:</label>
-        <select id="sel-distribuidor-det" style="width: 100%; padding: 8px; font-size: 1rem;">
-          <option value="">-- Selecciona distribuidor --</option>
-        </select>
+        <label for="sel-distribuidor-det" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Distribuidora:</label>
+        <select id="sel-distribuidor-det" style="width: 100%; padding: 8px; font-size: 1rem;"></select>
       </div>
 
-      <div id="seg-det-container" style="display: none; margin-bottom: 1rem;">
-        <label for="sel-segmento-det" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Segmento (tipo cliente):</label>
-        <select id="sel-segmento-det" style="width: 100%; padding: 8px; font-size: 1rem;">
-          <option value="">-- Selecciona segmento --</option>
-          <option value="BT1">BT1 - Domiciliario (residencial)</option>
-          <option value="BT2">BT2 - Comercial pequeño (10-50 kW)</option>
-          <option value="MT">MT - Media Tensión (50-500 kW)</option>
-          <option value="AT">AT - Alta Tensión (&gt;500 kW)</option>
-        </select>
+      <div id="com-det-container" style="display: none; margin-bottom: 1rem;">
+        <label for="sel-comuna-det" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Comuna:</label>
+        <select id="sel-comuna-det" style="width: 100%; padding: 8px; font-size: 1rem;"></select>
       </div>
 
       <div id="tabla-tarifa-detalle"></div>
 
-      <p class="nota" style="margin-top: 1.5rem; font-size: 0.85rem; color:var(--ink-2);">
-        Datos: precio de nudo de referencia + VAD de referencia; no corresponden al decreto vigente. Componentes: Energía ($/kWh) + Potencia ($/kW/mes) + Cargo fijo ($/mes).
-        Nota: VAD en revisión - valores de referencia regulados. Verificar con distribuidor para tarifas vigentes actuales.
-      </p>
+      <p class="nota" id="fuente-tarifa-detalle" style="margin-top: 1.5rem; font-size: 0.85rem; color:var(--ink-2);"></p>
     </div>
   </div>
 </main>
 <script>document.write('<script src="data/c_elasticidad.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_elasticidad_tarifas_pnp.js?v='+_pwv+'"><\/script>')</script>
-<script>document.write('<script src="data/c_elasticidad_tarifas_detallado.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_tarifas_bt.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_ev_proyeccion.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_elasticidad_regional_preliminar.js?v='+_pwv+'"><\/script>')</script>
 <script>
@@ -391,76 +379,107 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
       { k: "potencia", titulo: "Potencia ($/kW/mes)", num: true, fmt: v => PW.fmt(v, 0) },
     ], filas, {}); }); }
 
-// TAB 4: Tarifa Final (PNP + VAD)
-if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_detallado) {
-  const DTD = PW_DATA.c_elasticidad_tarifas_detallado; // Actualizar nota
-  document.getElementById("nota-tarifa-detalle").textContent = "Actualizado " + (DTD.generado || "").slice(0, 10) + ". " + DTD.nota; // Llenar dropdown regiones
-  const selRegionDet = document.getElementById("sel-region-det"); const regionesMapeo = {   // las 16, nombre corto del kit canonico territorio_chile:
-    // una region nueva en el dato ya no sale sin nombre en el desplegable
-    "01": "Tarapacá",
-    "02": "Antofagasta",
-    "03": "Atacama",
-    "04": "Coquimbo",
-    "05": "Valparaíso",
-    "06": "O'Higgins",
-    "07": "Maule",
-    "08": "Biobío",
-    "09": "La Araucanía",
-    "10": "Los Lagos",
-    "11": "Aysén",
-    "12": "Magallanes",
-    "13": "Metropolitana",
-    "14": "Los Ríos",
-    "15": "Arica y Parinacota",
-    "16": "Ñuble",
-    }; Object.keys(DTD.tarifas || {}).sort().forEach(region => {
-    const opt = document.createElement("option"); opt.value = region; opt.textContent = region + " - " + (regionesMapeo[region] || ""); selRegionDet.appendChild(opt); }); // Evento: cambio región
-  selRegionDet.addEventListener("change", function() {
-    const region = this.value; const distDetContainer = document.getElementById("dist-det-container"); const segDetContainer = document.getElementById("seg-det-container"); const selDistDet = document.getElementById("sel-distribuidor-det"); const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle"); if (!region) {
-      distDetContainer.style.display = "none"; segDetContainer.style.display = "none"; tablaTarifaDet.innerHTML = ""; return; }
+// TAB 4: Tarifas de luz vigentes (c_tarifas_bt, de #08 Precios de Energia). Reemplaza la vista
+// ilustrativa precio de nudo + VAD (c_elasticidad_tarifas_detallado) por decision del usuario del
+// 2026-11-02. Si el dato falta o no trae la forma esperada, la pestana lo dice en vez de mostrar
+// cifras a medias. Los nombres de region salen del kit (con tildes y apostrofo), no del dato.
+(function () {
+  const nota = document.getElementById("nota-tarifa-detalle");
+  const DT = window.PW_DATA && PW_DATA.c_tarifas_bt;
+  if (!DT || !DT.tarifas || !Array.isArray(DT.regiones) || !DT.comunas) {
+    nota.textContent = "Las tarifas vigentes no están disponibles en este momento."; return; }
+  const NOMBRE_REGION = {
+    "01": "Tarapacá", "02": "Antofagasta", "03": "Atacama", "04": "Coquimbo",
+    "05": "Valparaíso", "06": "O'Higgins", "07": "Maule", "08": "Biobío",
+    "09": "La Araucanía", "10": "Los Lagos", "11": "Aysén", "12": "Magallanes",
+    "13": "Metropolitana", "14": "Los Ríos", "15": "Arica y Parinacota", "16": "Ñuble",
+  };
+  const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+    "septiembre", "octubre", "noviembre", "diciembre"];
+  const SEGMENTOS = ["BT1", "BT2", "BT3", "BT4"];
+  // clave del dato -> [nombre del cargo, unidad, decimales]
+  const CARGOS = {
+    cargo_fijo_clp_mes: ["Cargo fijo", "$/mes", 0],
+    variable_clp_kwh_tramo1: ["Energía (consumo hasta 350 kWh)", "$/kWh", 2],
+    energia_total_clp_kwh: ["Energía", "$/kWh", 2],
+    energia_clp_kwh: ["Energía", "$/kWh", 2],
+    potencia_punta_clp_kw: ["Potencia en horas de punta", "$/kW/mes", 0],
+    potencia_parcial_punta_clp_kw: ["Potencia parcialmente presente en punta", "$/kW/mes", 0],
+    potencia_leida_punta_clp_kw: ["Potencia leída en horas de punta", "$/kW/mes", 0],
+    potencia_leida_parcial_punta_clp_kw: ["Potencia leída parcialmente presente en punta", "$/kW/mes", 0],
+    potencia_contratada_clp_kw: ["Potencia contratada", "$/kW/mes", 0],
+  };
+  const nomDist = d => (DT.distribuidoras_nombre || {})[d] || etiquetaDist(d);
+  const nomRegion = r => NOMBRE_REGION[r.region_cut] || r.region;
+  const v = String(DT.vigencia || "").split("-");
+  const vigencia = v.length >= 2 && MESES[+v[1] - 1] ? MESES[+v[1] - 1] + " de " + v[0] : DT.vigencia;
+  nota.textContent = DT.nota || "";
 
-    // Llenar dropdown distribuidores
-    selDistDet.innerHTML = '<option value="">-- Selecciona distribuidor --</option>'; const dists = Object.keys(DTD.tarifas[region] || {}); dists.forEach(d => {
-      const opt = document.createElement("option"); opt.value = d; opt.textContent = etiquetaDist(d); selDistDet.appendChild(opt); }); distDetContainer.style.display = "block"; segDetContainer.style.display = "none"; tablaTarifaDet.innerHTML = ""; }); // Evento: cambio distribuidor
-  document.getElementById("sel-distribuidor-det").addEventListener("change", function() {
-    const region = document.getElementById("sel-region-det").value; const dist = this.value; const segDetContainer = document.getElementById("seg-det-container"); const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle"); if (!region || !dist) {
-      segDetContainer.style.display = "none"; tablaTarifaDet.innerHTML = ""; return; }
+  const fuente = document.getElementById("fuente-tarifa-detalle");
+  fuente.textContent = "Fuente: ";
+  (DT.fuente || []).forEach((f, k) => {
+    if (k) fuente.appendChild(document.createTextNode("; "));
+    if (/^https:\/\//.test(f.url || "")) {
+      const a = document.createElement("a"); a.href = f.url; a.target = "_blank"; a.rel = "noopener";
+      a.textContent = f.documento; fuente.appendChild(a);
+    } else fuente.appendChild(document.createTextNode(f.documento || ""));
+    fuente.appendChild(document.createTextNode(" (" + f.distribuidora + ")"));
+  });
+  fuente.appendChild(document.createTextNode(". Vigencia: " + vigencia + "."));
 
-    segDetContainer.style.display = "block"; tablaTarifaDet.innerHTML = ""; }); // Evento: cambio segmento
-  document.getElementById("sel-segmento-det").addEventListener("change", function() {
-    const region = document.getElementById("sel-region-det").value; const dist = document.getElementById("sel-distribuidor-det").value; const segmento = this.value; const tablaTarifaDet = document.getElementById("tabla-tarifa-detalle"); if (!region || !dist || !segmento) {
-      tablaTarifaDet.innerHTML = ""; return; }
+  const selRegion = document.getElementById("sel-region-det");
+  const selDist = document.getElementById("sel-distribuidor-det");
+  const selCom = document.getElementById("sel-comuna-det");
+  const contDist = document.getElementById("dist-det-container");
+  const contCom = document.getElementById("com-det-container");
+  const tabla = document.getElementById("tabla-tarifa-detalle");
+  DT.regiones.slice().sort((a, b) => a.region_cut.localeCompare(b.region_cut)).forEach(r => {
+    if (!DT.tarifas[r.region_cut]) return;
+    const o = document.createElement("option"); o.value = r.region_cut; o.textContent = nomRegion(r);
+    selRegion.appendChild(o); });
 
-    const tarifa = DTD.tarifas[region][dist][segmento]; if (!tarifa) {
-      tablaTarifaDet.innerHTML = "<p style='color:var(--ink-2);'>Sin datos para esta combinación.</p>"; return; }
+  function opcion(sel, valor, texto) {
+    const o = document.createElement("option"); o.value = valor; o.textContent = texto; sel.appendChild(o); }
 
-    // Construir tabla con desglose PNP + VAD + Final
-    const filas = [
-      {
-        componente: "Precio Nudo (Transmisión CNE)",
-        energia: tarifa.pnp.energia,
-        potencia: tarifa.pnp.potencia,
-        cargo_fijo: "-"
-      },
-      {
-        componente: "VAD Distribuidor",
-        energia: tarifa.vad.energia,
-        potencia: tarifa.vad.potencia,
-        cargo_fijo: tarifa.vad.cargo_fijo
-      },
-      {
-        componente: "Suma ilustrativa (no es la tarifa vigente)",
-        energia: tarifa.final.energia,
-        potencia: tarifa.final.potencia,
-        cargo_fijo: tarifa.final.cargo_fijo,
-        style: "font-weight: bold; background-color: #f0f0f0;"
-      }
-    ]; const tabla = document.createElement("table"); tabla.style.cssText = "width:100%; border-collapse: collapse; margin: 1rem 0;"; // Encabezado
-    const thead = tabla.createTHead(); const headerRow = thead.insertRow(); ["Componente", "Energía ($/kWh)", "Potencia ($/kW/mes)", "Cargo Fijo ($/mes)"].forEach(h => {
-      const th = document.createElement("th"); th.textContent = h; th.style.cssText = "text-align:left; padding:10px; border-bottom:2px solid #999; background:#f5f5f5;"; headerRow.appendChild(th); }); // Filas
-    const tbody = tabla.createTBody(); filas.forEach(f => {
-      const row = tbody.insertRow(); if (f.style) row.style.cssText = f.style; [f.componente, PW.fmt(f.energia, 2), PW.fmt(f.potencia, 0), f.cargo_fijo === "-" ? "-" : PW.fmt(f.cargo_fijo, 0)].forEach((val, i) => {
-        const cell = row.insertCell(); cell.textContent = val; cell.style.cssText = "padding:10px; border-bottom:1px solid #ddd; text-align:" + (i === 0 ? "left" : "right"); }); }); tablaTarifaDet.innerHTML = ""; tablaTarifaDet.appendChild(tabla); }); }
+  function dibujar() {
+    const region = selRegion.value, dist = selDist.value, com = selCom.value;
+    if (!region || !dist) { tabla.innerHTML = ""; return; }
+    const src = com ? DT.comunas[com] : (DT.tarifas[region] || {})[dist];
+    const filas = [];
+    SEGMENTOS.forEach(seg => {
+      const s = src && src[seg]; if (!s) return;
+      Object.keys(s).forEach(k => {
+        const val = s[k]; if (typeof val !== "number" || !(val > 0)) return;
+        const c = CARGOS[k] || [k, "", 2];
+        filas.push({ segmento: (DT.segmentos_info || {})[seg] || seg, cargo: c[0], valor: val, unidad: c[1], dec: c[2] }); }); });
+    if (!filas.length) { tabla.innerHTML = "<p style='color:var(--ink-2);'>Sin datos para esta combinación.</p>"; return; }
+    PW.tabla("tabla-tarifa-detalle", [
+      { k: "segmento", titulo: "Tipo de cliente", num: false },
+      { k: "cargo", titulo: "Cargo", num: false },
+      { k: "valor", titulo: "Valor", num: true, fmt: (x, f) => PW.fmt(x, f.dec) },
+      { k: "unidad", titulo: "Unidad", num: false },
+    ], filas, { buscador: false });
+  }
+
+  function llenarComunas() {
+    const region = selRegion.value, dist = selDist.value;
+    selCom.innerHTML = "";
+    const coms = Object.keys(DT.comunas).filter(c => DT.comunas[c].region_cut === region && DT.comunas[c].distribuidor === dist)
+      .sort((a, b) => String(DT.comunas[a].nombre).localeCompare(String(DT.comunas[b].nombre), "es"));
+    opcion(selCom, "", "Promedio de la región (" + coms.length + (coms.length === 1 ? " comuna)" : " comunas)"));
+    coms.forEach(c => opcion(selCom, c, DT.comunas[c].nombre));
+    contCom.style.display = coms.length ? "block" : "none";
+  }
+
+  selRegion.addEventListener("change", () => {
+    selDist.innerHTML = ""; selCom.innerHTML = ""; contCom.style.display = "none";
+    const dists = Object.keys(DT.tarifas[selRegion.value] || {});
+    if (!selRegion.value || !dists.length) { contDist.style.display = "none"; tabla.innerHTML = ""; return; }
+    dists.forEach(d => opcion(selDist, d, nomDist(d)));
+    contDist.style.display = "block"; llenarComunas(); dibujar(); });
+  selDist.addEventListener("change", () => { llenarComunas(); dibujar(); });
+  selCom.addEventListener("change", dibujar);
+})();
 
 // TAB 3: Stock de EVs 2025 — una sola proyeccion para todo el sitio (c_ev_proyeccion.js).
 // Antes esta pestaña publicaba DOS proyecciones distintas del mismo hecho (69.596 por tasa de
