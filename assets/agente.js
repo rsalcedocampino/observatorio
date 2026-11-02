@@ -75,6 +75,10 @@ function urlPublica(env) {
   return ((env && env.SITIO_PUBLICO) || URL_SITIO_DEFECTO).replace(/\/+$/, "");
 }
 
+// Indicadores del sitio que no se exponen en el conector MCP (permanecen en los ia_*.json que lee el asistente del sitio).
+// Decision del usuario, 2026-11-01: parque y poblacion son datos generales, fuera del alcance principal del conector.
+const IDS_EXCLUIDOS_CONECTOR = new Set(["parque_ev_ine", "poblacion_censo2024", "proyeccion_poblacion"]);
+
 // Origenes de navegador aceptados. Ausente = cliente de servidor a servidor (Claude, ChatGPT): se acepta.
 function origenPermitido(origen, env) {
   if (!origen) return true;
@@ -88,7 +92,7 @@ function origenPermitido(origen, env) {
   if (u.protocol === "http:" && (u.hostname === "localhost" || u.hostname === "127.0.0.1" || u.hostname === "[::1]")) return true;
   return false;
 }
-return { NOMBRE_SERVIDOR, TITULO_SERVIDOR, DESCRIPTOR_MARCA, VERSION_SERVIDOR, DESCRIPCION_SERVIDOR, URL_SITIO_DEFECTO, VERSIONES_MODERNAS, VERSIONES_LEGADAS, INSTRUCCIONES, LIMITES_BASE, limites, urlSitio, urlPublica, origenPermitido };
+return { NOMBRE_SERVIDOR, TITULO_SERVIDOR, DESCRIPTOR_MARCA, VERSION_SERVIDOR, DESCRIPCION_SERVIDOR, URL_SITIO_DEFECTO, VERSIONES_MODERNAS, VERSIONES_LEGADAS, INSTRUCCIONES, LIMITES_BASE, limites, urlSitio, urlPublica, IDS_EXCLUIDOS_CONECTOR, origenPermitido };
 })();
 __mod["agente_web/src/datos_navegador.js"] = (function () {
 // Acceso a los datos publicados desde el NAVEGADOR: lee data/ia_*.json del mismo sitio con fetch. Misma interfaz que servidor/src/datos.js
@@ -716,10 +720,10 @@ async function equivalentes(env, cat, ind, resultado, objetivos) {
   return out;
 }
 
-async function consultar(env, args) {
+async function consultar(env, args, { interno = false } = {}) {
   const L = limites(env);
   const a = validarArgs(args, L);
-  const { cat, desactualizado } = await obtenerCatalogo(env);
+  const { cat, desactualizado } = await obtenerCatalogo(env, { aplicarFiltro: !interno });
   const ind = cat.indicadores.find((i) => i.id === a.indicador);
   if (!ind) throw new ErrorConsulta(`No existe el indicador «${a.indicador}».`, { sugerencias: sugerirIndicadores(cat, a.indicador) });
   const { objetivos, resueltas, avisos } = await resolverObjetivos(env, ind, a);
@@ -889,7 +893,7 @@ function redactar(res) {
 
 // ---- listado, busqueda de territorios y search/fetch ------------------------------------------------------------
 async function listar(env, args) {
-  const { cat } = await obtenerCatalogo(env);
+  const { cat } = await obtenerCatalogo(env, { aplicarFiltro: true });
   if (args === null || typeof args !== "object" || Array.isArray(args)) throw new ErrorConsulta("Los argumentos deben ser un objeto.");
   for (const k of Object.keys(args)) if (k !== "tema") throw new ErrorConsulta(`Parámetro desconocido: «${sanitizar(k, 30)}». El único parámetro es «tema».`);
   let lista = cat.indicadores;
@@ -924,7 +928,7 @@ async function buscarParaChatGPT(env, args, L) {
   if (args === null || typeof args !== "object" || Array.isArray(args)) throw new ErrorConsulta("Los argumentos deben ser un objeto.");
   for (const k of Object.keys(args)) if (k !== "query") throw new ErrorConsulta(`Parámetro desconocido: «${sanitizar(k, 30)}». El único parámetro es «query».`);
   if (typeof args.query !== "string" || args.query.trim().length < 2 || args.query.length > 200) throw new ErrorConsulta("«query» es obligatorio: entre 2 y 200 caracteres.");
-  const { cat } = await obtenerCatalogo(env);
+  const { cat } = await obtenerCatalogo(env, { aplicarFiltro: true });
   const terr = await obtenerTerritorios(env);
   const consulta = sanitizar(args.query, 200);
   const terrs = detectarEnTexto(terr, consulta);
@@ -5750,7 +5754,7 @@ function crearDialogo(env) {
       let args = { ...c, indicador: ind.id };
       for (let intento = 0; intento < 2; intento++) {
         try {
-          resultados.push(await consultar(env, args));
+          resultados.push(await consultar(env, args, { interno: true }));
           break;
         } catch (e) {
           if (!(e instanceof ErrorConsulta)) throw e;
@@ -5828,7 +5832,7 @@ function crearDialogo(env) {
     const avisos = [];
     for (const o of [...objetivos.values()].slice(0, 3)) {
       let rp;
-      try { rp = await consultar(env, { indicador: "proyeccion_parque", ...o.args }); } catch (e) {
+      try { rp = await consultar(env, { indicador: "proyeccion_parque", ...o.args }, { interno: true }); } catch (e) {
         if (e instanceof ErrorConsulta) continue;
         throw e;
       }
@@ -5870,13 +5874,13 @@ function crearDialogo(env) {
     let serie = mostrados.map((f) => ({ periodo: f.periodo, valor: f.valores[medidaId] }));
     try {
       if (resumen12) {
-        const larga = await consultar(env, { indicador: ind.id, ultimos: 24, medida: medidaId });
+        const larga = await consultar(env, { indicador: ind.id, ultimos: 24, medida: medidaId }, { interno: true });
         serie = larga.filas.filter((f) => f.valores[medidaId] !== undefined).map((f) => ({ periodo: f.periodo, valor: f.valores[medidaId] }));
         const deLarga = new Map(serie.map((x) => [x.periodo, x.valor]));
         if (!mostrados.every((f) => deLarga.get(f.periodo) === f.valores[medidaId])) return [];
       } else if (tabla && !entreDos && mostrados.length) {
         const previo = mesAnterior(mostrados[0].periodo);
-        const rp = await consultar(env, { indicador: ind.id, periodo: previo, medida: medidaId }).catch((e) => { if (e instanceof ErrorConsulta) return null; throw e; });
+        const rp = await consultar(env, { indicador: ind.id, periodo: previo, medida: medidaId }, { interno: true }).catch((e) => { if (e instanceof ErrorConsulta) return null; throw e; });
         const f0 = rp && rp.filas.find((f) => f.periodo === previo && f.valores[medidaId] !== undefined);
         if (f0) serie = [{ periodo: previo, valor: f0.valores[medidaId] }, ...serie];
       }
@@ -5946,14 +5950,14 @@ function crearDialogo(env) {
     const medidaMensual = opc.medida || f.mensual.medida;
     if (!opc.sinAnual && cat.indicadores.some((i) => i.id === f.anual.indicador)) {
       try {
-        const ra = await consultar(env, { indicador: f.anual.indicador, ultimos: 2, ...(f.anual.medida ? { medida: f.anual.medida } : {}) });
+        const ra = await consultar(env, { indicador: f.anual.indicador, ultimos: 2, ...(f.anual.medida ? { medida: f.anual.medida } : {}) }, { interno: true });
         const porAnio = bloquesDeResultado(ra);
         if (porAnio[0] && porAnio[0].titulo) porAnio[0].titulo = f.anual.titulo;
         if (!cifrasSinRespaldo(porAnio, ra).length) bloques.push(...porAnio);
       } catch (e) { if (!(e instanceof ErrorConsulta)) throw e; }
     }
     try {
-      const rv = await consultar(env, { indicador: f.mensual.indicador, ultimos: 12, ...(medidaMensual ? { medida: medidaMensual } : {}) });
+      const rv = await consultar(env, { indicador: f.mensual.indicador, ultimos: 12, ...(medidaMensual ? { medida: medidaMensual } : {}) }, { interno: true });
       const meses = bloquesDeResultado(rv);
       if (meses[0] && meses[0].titulo) meses[0].titulo = opc.titulo || f.mensual.titulo;
       if (!cifrasSinRespaldo(meses, rv).length) {

@@ -3,7 +3,7 @@
    Generado: generar_datos_elasticidad_pnp.py */
 
 window.PW_DATA.c_elasticidad_tarifas_pnp = {
-  "generado": "2026-10-12",
+  "generado": "2026-11-02",
   "vigencia": "Precio de Nudo de Corto Plazo, reajustado al 1-abr-2026 (DS 4T/2026; RE 247, Tabla 17)",
   "nota": "Datos APR-2026 de Subestaciones 220kV. Mapeado a distribuidoras.",
   "total_subestaciones": 34,
@@ -189,6 +189,14 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
       ]
     },
     "13": {
+      "cge": [
+        {
+          "subestacion": "Maipo",
+          "tension_kv": 220,
+          "energia_kwh": 51.096,
+          "potencia_kw": 8603.53
+        }
+      ],
       "sin-distribuidor": [
         {
           "subestacion": "Polpaico",
@@ -225,12 +233,6 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
           "tension_kv": 220,
           "energia_kwh": 48.79,
           "potencia_kw": 8853.82
-        },
-        {
-          "subestacion": "Maipo",
-          "tension_kv": 220,
-          "energia_kwh": 51.096,
-          "potencia_kw": 8603.53
         }
       ]
     },
