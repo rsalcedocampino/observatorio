@@ -172,7 +172,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     </div>
   </div>
 
-  <!-- TAB 4: Tarifas de luz vigentes (pliegos de CGE y Enel; dato c_tarifas_bt de #08) -->
+  <!-- TAB 4: Tarifas de luz vigentes (pliegos de las distribuidoras; dato c_tarifas_bt de #08) -->
   <div id="tab-tarifas-detalle" class="tab-content">
     <p class="sub">Lo que cobran hoy las distribuidoras según sus pliegos tarifarios. Elige región y distribuidora para ver los cargos de cada tipo de cliente, y si quieres, una comuna.</p>
     <p class="nota" id="nota-tarifa-detalle"></p>
@@ -441,10 +441,18 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
   function opcion(sel, valor, texto) {
     const o = document.createElement("option"); o.value = valor; o.textContent = texto; sel.appendChild(o); }
 
+  // Una comuna atendida por dos distribuidoras trae `por_distribuidor` = {id: {BT1..BT4}}; sus
+  // BT1..BT4 de primer nivel son los de la principal. Sin esa clave, la comuna es de una sola.
+  function tarifaComuna(c, dist) {
+    const x = DT.comunas[c]; if (!x) return null;
+    if (x.por_distribuidor) return x.por_distribuidor[dist] || null;
+    return x.distribuidor === dist ? x : null;
+  }
+
   function dibujar() {
     const region = selRegion.value, dist = selDist.value, com = selCom.value;
     if (!region || !dist) { tabla.innerHTML = ""; return; }
-    const src = com ? DT.comunas[com] : (DT.tarifas[region] || {})[dist];
+    const src = com ? tarifaComuna(com, dist) : (DT.tarifas[region] || {})[dist];
     const filas = [];
     SEGMENTOS.forEach(seg => {
       const s = src && src[seg]; if (!s) return;
@@ -464,10 +472,12 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
   function llenarComunas() {
     const region = selRegion.value, dist = selDist.value;
     selCom.innerHTML = "";
-    const coms = Object.keys(DT.comunas).filter(c => DT.comunas[c].region_cut === region && DT.comunas[c].distribuidor === dist)
+    const coms = Object.keys(DT.comunas).filter(c => DT.comunas[c].region_cut === region && tarifaComuna(c, dist))
       .sort((a, b) => String(DT.comunas[a].nombre).localeCompare(String(DT.comunas[b].nombre), "es"));
     opcion(selCom, "", "Promedio de la región (" + coms.length + (coms.length === 1 ? " comuna)" : " comunas)"));
-    coms.forEach(c => opcion(selCom, c, DT.comunas[c].nombre));
+    coms.forEach(c => {
+      const otras = Object.keys(DT.comunas[c].por_distribuidor || {}).filter(d => d !== dist).map(nomDist);
+      opcion(selCom, c, DT.comunas[c].nombre + (otras.length ? " (también " + otras.join(" y ") + ")" : "")); });
     contCom.style.display = coms.length ? "block" : "none";
   }
 

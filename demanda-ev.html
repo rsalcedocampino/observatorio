@@ -63,7 +63,8 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=261102a"></script>
 <script>
-PW.montarNav("demanda-ev.html"); const D = PW_DATA.c_demanda; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; function refrescar() {
+PW.montarNav("demanda-ev.html"); const D = PW_DATA.c_demanda; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; // Los campos parten con los supuestos del dato (rendimiento = mediana del catalogo), no con un valor fijo: antes el KPI mostraba 94,0 GWh y el modulo 97,7.
+const SUP = D.supuestos || {}; if (SUP.km_anuales) document.getElementById("f-km").value = SUP.km_anuales; if (SUP.rendimiento_km_kwh) document.getElementById("f-rend").value = SUP.rendimiento_km_kwh; function refrescar() {
   const km = +document.getElementById("f-km").value || 15000; const rend = +document.getElementById("f-rend").value || 5.4; const gwh = D.kpis.parque_ev * km / rend / 1e6; document.getElementById("kpis").innerHTML = [
     [PW.fmt(D.kpis.parque_ev), "vehículos eléctricos registrados", "INE 2024 (puede incluir híbridos)"],
     [PW.fmt(gwh, 1) + " GWh", "consumo anual estimado", km / 1000 + " mil km x " + rend + " km/kWh"],

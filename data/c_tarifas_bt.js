@@ -1,7 +1,7 @@
 window.PW_DATA.c_tarifas_bt = {
- "generado": "2026-11-02",
+ "generado": "2026-11-03",
  "vigencia": "2026-08-01",
- "nota": "Tarifas de los pliegos de agosto de 2026 de CGE (con sus filiales) y Enel, red aérea, con IVA salvo el cargo por servicio público. Cada región es el promedio simple de sus comunas, sin ponderar por clientes. BT4 es una referencia industrial (promedio de todas las redes). Sin datos de Los Lagos, Aysén, Magallanes ni Los Ríos. Para la tarifa de un suministro concreto, consulte el pliego de su distribuidora.",
+ "nota": "Tarifas de los pliegos de agosto de 2026 de CGE (con sus filiales), Enel, Saesa, Luz Osorno y Edelaysén, red aérea, con IVA salvo el cargo por servicio público. Cada región es el promedio simple de sus comunas, sin ponderar por clientes. BT4 es una referencia industrial (promedio de todas las redes en CGE y Enel; en las demás, el BT4 de su propio pliego). Una comuna atendida por dos distribuidoras aparece en ambas y no se promedian entre sí. Sin datos de Magallanes. Para la tarifa de un suministro concreto, consulte el pliego de su distribuidora.",
  "unidades": {
   "cargo_fijo_clp_mes": "$/cliente/mes",
   "variable_clp_kwh_tramo1": "$/kWh (consumo hasta 350 kWh)",
@@ -18,6 +18,21 @@ window.PW_DATA.c_tarifas_bt = {
    "distribuidora": "Enel Distribución",
    "documento": "Tarifas Suministro Eléctrico, Decretos 24T y 5T, agosto de 2026",
    "url": "https://www.enel.cl/es/clientes/tarifas-y-regulacion/conceptos-tarifas.html"
+  },
+  {
+   "distribuidora": "Saesa",
+   "documento": "Tarifas de Suministro Eléctrico, agosto de 2026 (Decretos 24T y 5T)",
+   "url": "https://web.gruposaesa.cl/web/saesa/pago-y-boleta/tarifas-vigentes"
+  },
+  {
+   "distribuidora": "Luz Osorno",
+   "documento": "Tarifas de Suministro Eléctrico, agosto de 2026 (Decretos 24T y 5T)",
+   "url": "https://web.gruposaesa.cl/web/luz-osorno/pago-y-boleta/tarifas-vigentes"
+  },
+  {
+   "distribuidora": "Edelaysén",
+   "documento": "Tarifas de Suministro Eléctrico, agosto de 2026 (Decretos 24T y 5T)",
+   "url": "https://web.gruposaesa.cl/web/edelaysen/pago-y-boleta/tarifas-vigentes"
   }
  ],
  "segmentos_info": {
@@ -27,18 +42,21 @@ window.PW_DATA.c_tarifas_bt = {
   "BT4": "Referencia industrial (BT4)"
  },
  "regiones_sin_dato": [
-  "10",
-  "11",
-  "12",
-  "14"
+  "12"
  ],
  "distribuidoras_incluidas": [
   "cge",
-  "enel-distribucion"
+  "edelaysen",
+  "enel-distribucion",
+  "luz-osorno",
+  "saesa"
  ],
  "distribuidoras_nombre": {
   "cge": "CGE y filiales",
-  "enel-distribucion": "Enel Distribución"
+  "edelaysen": "Edelaysén",
+  "enel-distribucion": "Enel Distribución",
+  "luz-osorno": "Luz Osorno",
+  "saesa": "Saesa"
  },
  "regiones": [
   {
@@ -150,6 +168,34 @@ window.PW_DATA.c_tarifas_bt = {
    }
   },
   {
+   "region_cut": "10",
+   "region": "Los Lagos",
+   "region_kit": "Los Lagos",
+   "comunas": 30,
+   "distribuidoras": [
+    "edelaysen",
+    "luz-osorno",
+    "saesa"
+   ],
+   "comunas_por_distribuidora": {
+    "edelaysen": 3,
+    "luz-osorno": 9,
+    "saesa": 27
+   }
+  },
+  {
+   "region_cut": "11",
+   "region": "Aysén",
+   "region_kit": "Aysén",
+   "comunas": 7,
+   "distribuidoras": [
+    "edelaysen"
+   ],
+   "comunas_por_distribuidora": {
+    "edelaysen": 7
+   }
+  },
+  {
    "region_cut": "13",
    "region": "Metropolitana",
    "region_kit": "Metropolitana",
@@ -161,6 +207,20 @@ window.PW_DATA.c_tarifas_bt = {
    "comunas_por_distribuidora": {
     "cge": 19,
     "enel-distribucion": 33
+   }
+  },
+  {
+   "region_cut": "14",
+   "region": "Los Ríos",
+   "region_kit": "Los Ríos",
+   "comunas": 12,
+   "distribuidoras": [
+    "luz-osorno",
+    "saesa"
+   ],
+   "comunas_por_distribuidora": {
+    "luz-osorno": 2,
+    "saesa": 12
    }
   },
   {
@@ -405,6 +465,98 @@ window.PW_DATA.c_tarifas_bt = {
     }
    }
   },
+  "10": {
+   "edelaysen": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "variable_clp_kwh_tramo1": 278.94
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "energia_total_clp_kwh": 212.82,
+     "potencia_punta_clp_kw": 68812.0,
+     "potencia_parcial_punta_clp_kw": 54169.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "energia_total_clp_kwh": 212.82,
+     "potencia_leida_punta_clp_kw": 68812.0,
+     "potencia_leida_parcial_punta_clp_kw": 54169.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 19833.0,
+     "energia_clp_kwh": 211.97
+    }
+   },
+   "luz-osorno": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "variable_clp_kwh_tramo1": 281.27
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "energia_total_clp_kwh": 154.13,
+     "potencia_punta_clp_kw": 72845.0,
+     "potencia_parcial_punta_clp_kw": 42919.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "energia_total_clp_kwh": 154.13,
+     "potencia_leida_punta_clp_kw": 72845.0,
+     "potencia_leida_parcial_punta_clp_kw": 42919.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 10863.0,
+     "energia_clp_kwh": 121.94
+    }
+   },
+   "saesa": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1232.84,
+     "variable_clp_kwh_tramo1": 261.11
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1232.84,
+     "energia_total_clp_kwh": 165.3,
+     "potencia_punta_clp_kw": 35645.0,
+     "potencia_parcial_punta_clp_kw": 23416.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1232.84,
+     "energia_total_clp_kwh": 165.3,
+     "potencia_leida_punta_clp_kw": 35645.0,
+     "potencia_leida_parcial_punta_clp_kw": 23416.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 8869.0,
+     "energia_clp_kwh": 135.43
+    }
+   }
+  },
+  "11": {
+   "edelaysen": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "variable_clp_kwh_tramo1": 278.94
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "energia_total_clp_kwh": 212.83,
+     "potencia_punta_clp_kw": 68812.0,
+     "potencia_parcial_punta_clp_kw": 54169.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "energia_total_clp_kwh": 212.83,
+     "potencia_leida_punta_clp_kw": 68812.0,
+     "potencia_leida_parcial_punta_clp_kw": 54169.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 19833.0,
+     "energia_clp_kwh": 211.97
+    }
+   }
+  },
   "13": {
    "cge": {
     "BT1": {
@@ -448,6 +600,52 @@ window.PW_DATA.c_tarifas_bt = {
     "BT4": {
      "potencia_contratada_clp_kw": 4378.0,
      "energia_clp_kwh": 155.34
+    }
+   }
+  },
+  "14": {
+   "luz-osorno": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "variable_clp_kwh_tramo1": 280.19
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "energia_total_clp_kwh": 153.05,
+     "potencia_punta_clp_kw": 72845.0,
+     "potencia_parcial_punta_clp_kw": 42919.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1304.7,
+     "energia_total_clp_kwh": 153.05,
+     "potencia_leida_punta_clp_kw": 72845.0,
+     "potencia_leida_parcial_punta_clp_kw": 42919.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 10863.0,
+     "energia_clp_kwh": 120.86
+    }
+   },
+   "saesa": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1232.84,
+     "variable_clp_kwh_tramo1": 270.42
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1232.84,
+     "energia_total_clp_kwh": 167.46,
+     "potencia_punta_clp_kw": 38867.0,
+     "potencia_parcial_punta_clp_kw": 25629.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1232.84,
+     "energia_total_clp_kwh": 167.46,
+     "potencia_leida_punta_clp_kw": 38867.0,
+     "potencia_leida_parcial_punta_clp_kw": 25629.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 10816.0,
+     "energia_clp_kwh": 135.26
     }
    }
   },
@@ -3826,6 +4024,1345 @@ window.PW_DATA.c_tarifas_bt = {
     "energia_clp_kwh": 153.18
    }
   },
+  "10101": {
+   "nombre": "Puerto Montt",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 255.87
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_punta_clp_kw": 32927.0,
+    "potencia_parcial_punta_clp_kw": 21547.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_leida_punta_clp_kw": 32927.0,
+    "potencia_leida_parcial_punta_clp_kw": 21547.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 7546.0,
+    "energia_clp_kwh": 130.81
+   }
+  },
+  "10102": {
+   "nombre": "Calbuco",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10103": {
+   "nombre": "Cochamó",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 223.77
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 135.06,
+    "potencia_punta_clp_kw": 31686.0,
+    "potencia_parcial_punta_clp_kw": 20694.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 135.06,
+    "potencia_leida_punta_clp_kw": 31686.0,
+    "potencia_leida_parcial_punta_clp_kw": 20694.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 7128.0,
+    "energia_clp_kwh": 134.21
+   }
+  },
+  "10104": {
+   "nombre": "Fresia",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10105": {
+   "nombre": "Frutillar",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 274.36
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_punta_clp_kw": 37207.0,
+      "potencia_parcial_punta_clp_kw": 24489.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_leida_punta_clp_kw": 37207.0,
+      "potencia_leida_parcial_punta_clp_kw": 24489.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9988.0,
+      "energia_clp_kwh": 137.16
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 282.93
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 123.59
+     }
+    }
+   }
+  },
+  "10106": {
+   "nombre": "Los Muermos",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10107": {
+   "nombre": "Llanquihue",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10108": {
+   "nombre": "Maullín",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10109": {
+   "nombre": "Puerto Varas",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 262.22
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 32927.0,
+    "potencia_parcial_punta_clp_kw": 21547.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 32927.0,
+    "potencia_leida_parcial_punta_clp_kw": 21547.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 7546.0,
+    "energia_clp_kwh": 137.16
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 262.22
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_punta_clp_kw": 32927.0,
+      "potencia_parcial_punta_clp_kw": 21547.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_leida_punta_clp_kw": 32927.0,
+      "potencia_leida_parcial_punta_clp_kw": 21547.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 7546.0,
+      "energia_clp_kwh": 137.16
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 282.93
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 123.59
+     }
+    }
+   }
+  },
+  "10201": {
+   "nombre": "Castro",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10202": {
+   "nombre": "Ancud",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 251.71
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 130.81
+   }
+  },
+  "10203": {
+   "nombre": "Chonchi",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10204": {
+   "nombre": "Curaco de Vélez",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10205": {
+   "nombre": "Dalcahue",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 247.13
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 158.42,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 158.42,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 126.23
+   }
+  },
+  "10206": {
+   "nombre": "Puqueldón",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10207": {
+   "nombre": "Queilén",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10208": {
+   "nombre": "Quellón",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10209": {
+   "nombre": "Quemchi",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10210": {
+   "nombre": "Quinchao",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "10301": {
+   "nombre": "Osorno",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 262.22
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 32927.0,
+    "potencia_parcial_punta_clp_kw": 21547.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 32927.0,
+    "potencia_leida_parcial_punta_clp_kw": 21547.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 7546.0,
+    "energia_clp_kwh": 137.16
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 262.22
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_punta_clp_kw": 32927.0,
+      "potencia_parcial_punta_clp_kw": 21547.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_leida_punta_clp_kw": 32927.0,
+      "potencia_leida_parcial_punta_clp_kw": 21547.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 7546.0,
+      "energia_clp_kwh": 137.16
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 282.93
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 123.59
+     }
+    }
+   }
+  },
+  "10302": {
+   "nombre": "Puerto Octay",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 268.01
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 130.81
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 268.01
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 163.0,
+      "potencia_punta_clp_kw": 37207.0,
+      "potencia_parcial_punta_clp_kw": 24489.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 163.0,
+      "potencia_leida_punta_clp_kw": 37207.0,
+      "potencia_leida_parcial_punta_clp_kw": 24489.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9988.0,
+      "energia_clp_kwh": 130.81
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 277.46
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 150.32,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 150.32,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 118.13
+     }
+    }
+   }
+  },
+  "10303": {
+   "nombre": "Purranque",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 274.36
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_punta_clp_kw": 37207.0,
+      "potencia_parcial_punta_clp_kw": 24489.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_leida_punta_clp_kw": 37207.0,
+      "potencia_leida_parcial_punta_clp_kw": 24489.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9988.0,
+      "energia_clp_kwh": 137.16
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 282.93
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 123.59
+     }
+    }
+   }
+  },
+  "10304": {
+   "nombre": "Puyehue",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 263.43
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 158.42,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 158.42,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 126.23
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 263.43
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 158.42,
+      "potencia_punta_clp_kw": 37207.0,
+      "potencia_parcial_punta_clp_kw": 24489.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 158.42,
+      "potencia_leida_punta_clp_kw": 37207.0,
+      "potencia_leida_parcial_punta_clp_kw": 24489.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9988.0,
+      "energia_clp_kwh": 126.23
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 273.53
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 146.38,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 146.38,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 114.19
+     }
+    }
+   }
+  },
+  "10305": {
+   "nombre": "Río Negro",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 274.36
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_punta_clp_kw": 37207.0,
+      "potencia_parcial_punta_clp_kw": 24489.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_leida_punta_clp_kw": 37207.0,
+      "potencia_leida_parcial_punta_clp_kw": 24489.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9988.0,
+      "energia_clp_kwh": 137.16
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 282.93
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 123.59
+     }
+    }
+   }
+  },
+  "10306": {
+   "nombre": "San Juan de la Costa",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 274.36
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_punta_clp_kw": 37207.0,
+      "potencia_parcial_punta_clp_kw": 24489.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_leida_punta_clp_kw": 37207.0,
+      "potencia_leida_parcial_punta_clp_kw": 24489.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9988.0,
+      "energia_clp_kwh": 137.16
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 282.93
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 123.59
+     }
+    }
+   }
+  },
+  "10307": {
+   "nombre": "San Pablo",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 274.36
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_punta_clp_kw": 37207.0,
+      "potencia_parcial_punta_clp_kw": 24489.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_leida_punta_clp_kw": 37207.0,
+      "potencia_leida_parcial_punta_clp_kw": 24489.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9988.0,
+      "energia_clp_kwh": 137.16
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 282.93
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 123.59
+     }
+    }
+   }
+  },
+  "10401": {
+   "nombre": "Chaitén",
+   "region_cut": "10",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
+  "10402": {
+   "nombre": "Futaleufú",
+   "region_cut": "10",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
+  "10403": {
+   "nombre": "Hualaihué",
+   "region_cut": "10",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 223.77
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 135.06,
+    "potencia_punta_clp_kw": 31686.0,
+    "potencia_parcial_punta_clp_kw": 20694.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 135.06,
+    "potencia_leida_punta_clp_kw": 31686.0,
+    "potencia_leida_parcial_punta_clp_kw": 20694.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 7128.0,
+    "energia_clp_kwh": 134.21
+   }
+  },
+  "10404": {
+   "nombre": "Palena",
+   "region_cut": "10",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
+  "11101": {
+   "nombre": "Coyhaique",
+   "region_cut": "11",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
+  "11102": {
+   "nombre": "Lago Verde",
+   "region_cut": "11",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
+  "11201": {
+   "nombre": "Aysén",
+   "region_cut": "11",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
+  "11202": {
+   "nombre": "Cisnes",
+   "region_cut": "11",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
+  "11301": {
+   "nombre": "Cochrane",
+   "region_cut": "11",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
+  "11401": {
+   "nombre": "Chile Chico",
+   "region_cut": "11",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
+  "11402": {
+   "nombre": "Río Ibáñez",
+   "region_cut": "11",
+   "distribuidor": "edelaysen",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "variable_clp_kwh_tramo1": 278.94
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_punta_clp_kw": 68812.0,
+    "potencia_parcial_punta_clp_kw": 54169.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1304.7,
+    "energia_total_clp_kwh": 212.82,
+    "potencia_leida_punta_clp_kw": 68812.0,
+    "potencia_leida_parcial_punta_clp_kw": 54169.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 19833.0,
+    "energia_clp_kwh": 211.97
+   }
+  },
   "13101": {
    "nombre": "Santiago",
    "region_cut": "13",
@@ -5124,6 +6661,398 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 5094.0,
     "energia_clp_kwh": 152.03
+   }
+  },
+  "14101": {
+   "nombre": "Valdivia",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 251.71
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 130.81
+   }
+  },
+  "14102": {
+   "nombre": "Corral",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "14103": {
+   "nombre": "Lanco",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 255.07
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 165.72,
+    "potencia_punta_clp_kw": 31511.0,
+    "potencia_parcial_punta_clp_kw": 20552.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 165.72,
+    "potencia_leida_punta_clp_kw": 31511.0,
+    "potencia_leida_parcial_punta_clp_kw": 20552.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 6997.0,
+    "energia_clp_kwh": 133.35
+   }
+  },
+  "14104": {
+   "nombre": "Los Lagos",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 282.34
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 43330.0,
+    "potencia_parcial_punta_clp_kw": 28699.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 43330.0,
+    "potencia_leida_parcial_punta_clp_kw": 28699.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 13510.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "14105": {
+   "nombre": "Máfil",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 282.34
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 43330.0,
+    "potencia_parcial_punta_clp_kw": 28699.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 43330.0,
+    "potencia_leida_parcial_punta_clp_kw": 28699.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 13510.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "14106": {
+   "nombre": "Mariquina",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 258.06
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 35544.0,
+    "potencia_parcial_punta_clp_kw": 23346.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 35544.0,
+    "potencia_leida_parcial_punta_clp_kw": 23346.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8429.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "14107": {
+   "nombre": "Paillaco",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 282.34
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 43330.0,
+    "potencia_parcial_punta_clp_kw": 28699.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 43330.0,
+    "potencia_leida_parcial_punta_clp_kw": 28699.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 13510.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "14108": {
+   "nombre": "Panguipulli",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 275.99
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_punta_clp_kw": 43330.0,
+    "potencia_parcial_punta_clp_kw": 28699.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_leida_punta_clp_kw": 43330.0,
+    "potencia_leida_parcial_punta_clp_kw": 28699.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 13510.0,
+    "energia_clp_kwh": 130.81
+   }
+  },
+  "14201": {
+   "nombre": "La Unión",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 274.36
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_punta_clp_kw": 37207.0,
+      "potencia_parcial_punta_clp_kw": 24489.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 169.35,
+      "potencia_leida_punta_clp_kw": 37207.0,
+      "potencia_leida_parcial_punta_clp_kw": 24489.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9988.0,
+      "energia_clp_kwh": 137.16
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 282.93
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 155.78,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 123.59
+     }
+    }
+   }
+  },
+  "14202": {
+   "nombre": "Futrono",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 282.34
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 43330.0,
+    "potencia_parcial_punta_clp_kw": 28699.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 43330.0,
+    "potencia_leida_parcial_punta_clp_kw": 28699.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 13510.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "14203": {
+   "nombre": "Lago Ranco",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 274.36
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 169.35,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 137.16
+   }
+  },
+  "14204": {
+   "nombre": "Río Bueno",
+   "region_cut": "14",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "variable_clp_kwh_tramo1": 268.01
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_punta_clp_kw": 37207.0,
+    "potencia_parcial_punta_clp_kw": 24489.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1232.84,
+    "energia_total_clp_kwh": 163.0,
+    "potencia_leida_punta_clp_kw": 37207.0,
+    "potencia_leida_parcial_punta_clp_kw": 24489.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9988.0,
+    "energia_clp_kwh": 130.81
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "variable_clp_kwh_tramo1": 268.01
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 163.0,
+      "potencia_punta_clp_kw": 37207.0,
+      "potencia_parcial_punta_clp_kw": 24489.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1232.84,
+      "energia_total_clp_kwh": 163.0,
+      "potencia_leida_punta_clp_kw": 37207.0,
+      "potencia_leida_parcial_punta_clp_kw": 24489.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9988.0,
+      "energia_clp_kwh": 130.81
+     }
+    },
+    "luz-osorno": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "variable_clp_kwh_tramo1": 277.46
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 150.32,
+      "potencia_punta_clp_kw": 72845.0,
+      "potencia_parcial_punta_clp_kw": 42919.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1304.7,
+      "energia_total_clp_kwh": 150.32,
+      "potencia_leida_punta_clp_kw": 72845.0,
+      "potencia_leida_parcial_punta_clp_kw": 42919.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10863.0,
+      "energia_clp_kwh": 118.13
+     }
+    }
    }
   },
   "15101": {
