@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="¿Sube la adopción de enchufables cuando sube la bencina? Participación de mercado enchufable frente al precio real de la bencina 93.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261102a">
+<link rel="stylesheet" href="assets/estilo.css?v=261103a">
 <style>
   /* flex-wrap: a 360px los 5 botones median 587px en una fila de 320 y desbordaban la pagina
      entera (medido: scrollWidth 584 contra ventana 360). El color de esta barra no se toca. */
@@ -224,7 +224,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 })(); </script>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_bencina93_serie.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261102a"></script>
+<script src="assets/comun.js?v=261103a"></script>
 <script>
 // Navegación de tabs
 document.querySelectorAll(".tab-btn").forEach(btn => {
@@ -411,8 +411,18 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
   };
   const nomDist = d => (DT.distribuidoras_nombre || {})[d] || etiquetaDist(d);
   const nomRegion = r => NOMBRE_REGION[r.region_cut] || r.region;
-  const v = String(DT.vigencia || "").split("-");
-  const vigencia = v.length >= 2 && MESES[+v[1] - 1] ? MESES[+v[1] - 1] + " de " + v[0] : DT.vigencia;
+  const mesTexto = f => { const v = String(f || "").split("-");
+    return v.length >= 2 && MESES[+v[1] - 1] ? MESES[+v[1] - 1] + " de " + v[0] : f; };
+  // Cada distribuidora publica su pliego en su propio mes: se muestra el mes que tienen casi todas
+  // y aparte las que van en otro (vigencia_por_distribuidor, de #08 el 2026-11-03). Sin esa clave, el
+  // mes general del dato.
+  const VPD = DT.vigencia_por_distribuidor || {};
+  const cuenta = {};
+  Object.values(VPD).forEach(f => { cuenta[f] = (cuenta[f] || 0) + 1; });
+  const comun = Object.keys(cuenta).sort((a, b) => cuenta[b] - cuenta[a])[0] || DT.vigencia;
+  const otras = Object.keys(VPD).filter(d => VPD[d] !== comun).sort()
+    .map(d => nomDist(d) + ": " + mesTexto(VPD[d]));
+  const vigencia = mesTexto(comun) + (otras.length ? " (" + otras.join("; ") + ")" : "");
   nota.textContent = DT.nota || "";
 
   const fuente = document.getElementById("fuente-tarifa-detalle");

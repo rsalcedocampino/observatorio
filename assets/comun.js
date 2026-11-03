@@ -418,8 +418,11 @@
       "Elaboración propia.<br>" +
       // Capa comercial: un enlace, no un formulario. La CSP tiene `form-action 'none'`
       // desde la (661) y un `mailto:` no lo gobierna esa directiva.
-      "<a class='solicitar-pie' href='mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio'>Contacto</a>" +
+      // Desde el 2026-11-03 el boton lleva a la pagina de contacto (formulario + conector de IA), por
+      // decision del usuario; el correo sigue alli como respaldo.
+      "<a class='solicitar-pie' href='conectar-ia.html#contacto'>Contacto - IA</a>" +
       "<span class='pie-legal'><a href='como-se-hace.html'>Cómo se hace este observatorio</a> · " +
+      "<a href='conectar-ia.html#conectar'>Conecta la IA</a> · " +
       "<a href='privacidad.html'>Privacidad y cookies</a> · " +
       "<a href='terminos.html'>Términos</a> · " +
       "<button type='button' class='pie-cookies' id='pw-pie-cookies'>Preferencias de cookies</button></span>";

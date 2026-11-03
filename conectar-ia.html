@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com https://docs.google.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Contacto y conexión con IA — Energías Futuro</title>
+<meta name="description" content="Escríbele a Energías Futuro y conecta tu asistente de inteligencia artificial a las cifras que publica el sitio: qué es el conector, qué datos entrega y cómo agregarlo en Claude y ChatGPT.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261103a">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<main class="legal">
+  <h1>Contacto y conexión con IA</h1>
+  <p class="sub">Escríbenos para pedir datos, un informe o hacer una consulta. Y si usas un asistente
+  de inteligencia artificial, conéctalo a las cifras que publica Energías Futuro.</p>
+
+  <div class="tarjeta" id="contacto">
+    <h2 style="margin-top:0">Escríbenos</h2>
+    <div id="formulario-contacto"></div>
+    <p class="nota" id="contacto-respaldo">Si el formulario no carga, escríbenos a
+    <a href="mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio">rsalcedocampino@gmail.com</a>.</p>
+  </div>
+
+  <h2 id="conectar">Conecta tu IA</h2>
+  <p>Conecta tu asistente de inteligencia artificial a las cifras que publica Energías Futuro y
+  pregúntale por ellas en tus conversaciones. Hay instrucciones para Claude y para ChatGPT.</p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Qué es el conector</h2>
+    <p>El conector de Energías Futuro permite que tu asistente de IA consulte las cifras que este sitio ya
+    publica y las cite con su definición, universo, fuente y fecha de corte. Las cifras las producen
+    programas que leen fuentes oficiales; el conector no usa inteligencia artificial para generar ni
+    estimar ninguna cifra.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Qué datos entrega</h2>
+    <p>Solo cifras ya publicadas en este sitio, consultadas de a una: por territorio, operador,
+    marca o período, o en un ranking. Por ejemplo:</p>
+    <ul>
+      <li>La red de carga: cargadores, estaciones, operadores y precio por kWh.</li>
+      <li>Ventas e importaciones de vehículos eléctricos, y parque de buses y camiones eléctricos.</li>
+      <li>Precio de los combustibles.</li>
+      <li>Generación eléctrica, capacidad instalada y cortes de suministro.</li>
+      <li>Proyecciones del parque eléctrico, de la energía y del transporte público.</li>
+    </ul>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Dirección del conector</h2>
+    <p><code>https://mcp.energiasfuturo.com/mcp</code></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Cómo agregarlo en Claude</h2>
+    <ol>
+      <li>En Claude, abre <b>Configuración</b>.</li>
+      <li>Entra a <b>Conectores</b>.</li>
+      <li>Elige <b>Agregar conector personalizado</b>.</li>
+      <li>Pega la dirección <code>https://mcp.energiasfuturo.com/mcp</code>.</li>
+      <li>Déjalo <b>sin autenticación</b> y guárdalo.</li>
+    </ol>
+    <p>Después, pregúntale a Claude por una cifra del sitio; por ejemplo, «¿Cuántos cargadores de
+    acceso público hay en la región del Biobío?».</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Cómo agregarlo en ChatGPT</h2>
+    <ol>
+      <li>En ChatGPT, abre <b>Configuración</b> &gt; <b>Apps y conectores</b> &gt; <b>Configuración
+      avanzada</b>, y activa el <b>Modo desarrollador</b>.</li>
+      <li>Vuelve a <b>Apps y conectores</b> y elige <b>Crear</b>.</li>
+      <li>Ponle un nombre, por ejemplo «Energías Futuro», pega la dirección
+      <code>https://mcp.energiasfuturo.com/mcp</code>, elige <b>Sin autenticación</b> y guárdalo.</li>
+      <li>En un chat nuevo, toca el <b>+</b>, elige <b>Modo desarrollador</b> y activa
+      Energías Futuro.</li>
+    </ol>
+    <p>El Modo desarrollador no está en el plan gratuito de ChatGPT, y en las cuentas de empresa
+    puede necesitar el permiso de quien las administra. Si un menú no aparece con ese nombre, búscalo
+    en <b>Configuración</b>: ChatGPT los cambia de lugar de vez en cuando.</p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Condiciones</h2>
+    <p>El uso del conector se rige por los <a href="terminos.html">Términos de uso</a>. Entre otras
+    cosas, no permiten la extracción masiva de los datos, su reventa ni su uso para entrenar modelos,
+    y cada cifra se presenta con su fuente y su fecha de corte. El servicio limita la cantidad de
+    consultas y se ofrece sin garantía de disponibilidad.</p>
+  </div>
+</main>
+<script src="assets/comun.js?v=261103a"></script>
+<script>
+PW.montarNav("conectar-ia.html");
+// Formulario de contacto: Google Forms incrustado (decision del usuario del 2026-11-03). Mientras
+// FORMULARIO quede vacio, la tarjeta muestra solo el correo de respaldo.
+(function () {
+  const FORMULARIO = "";
+  if (!/^https:\/\/docs\.google\.com\/forms\//.test(FORMULARIO)) return;
+  const f = document.createElement("iframe");
+  f.src = FORMULARIO; f.title = "Formulario de contacto"; f.loading = "lazy";
+  f.style.cssText = "width:100%;height:900px;border:0;";
+  document.getElementById("formulario-contacto").appendChild(f);
+})();
+</script>
+</body>
+</html>
