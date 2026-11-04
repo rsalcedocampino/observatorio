@@ -30,6 +30,23 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <link rel="stylesheet" href="assets/estilo.css?v=261103a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<style>
+/* Desplegables de "Conecta tu IA" (pedido del usuario del 2026-11-04): el bloque entero y, dentro,
+   Claude y ChatGPT por separado. El titulo es el propio h2 dentro del summary. */
+details.desplegable > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+details.desplegable > summary::-webkit-details-marker { display: none; }
+details.desplegable > summary h2 { margin: 0; }
+details.desplegable > summary::after { content: "\25B8"; color: var(--ink-3); font-size: 16px; margin-left: auto; display: inline-block; transition: transform .15s; }
+details.desplegable[open] > summary::after { transform: rotate(90deg); }
+details.desplegable > summary:focus-visible { outline: 2px solid var(--accion); outline-offset: 3px; border-radius: 4px; }
+#conectar { margin-top: 28px; }
+#conectar > summary { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; }
+#conectar > summary .tit { display: flex; flex-direction: column; gap: 3px; }
+#conectar > summary .bajada { color: var(--ink-2); font-size: 14px; }
+#conectar[open] > summary { margin-bottom: 4px; }
+details.tarjeta.desplegable[open] > summary { margin-bottom: 8px; }
+@media (prefers-reduced-motion: reduce) { details.desplegable > summary::after { transition: none; } }
+</style>
 </head>
 <body>
 <main class="legal">
@@ -44,20 +61,21 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <a href="mailto:rsalcedocampino@gmail.com?subject=Solicitud%20de%20datos%20o%20informe%20-%20Observatorio">rsalcedocampino@gmail.com</a>.</p>
   </div>
 
-  <h2 id="conectar">Conecta tu IA</h2>
+  <details class="desplegable" id="conectar">
+  <summary><span class="tit"><h2>Conecta tu IA</h2><span class="bajada">Qué es el conector y cómo agregarlo en Claude o ChatGPT</span></span></summary>
   <p>Conecta tu asistente de inteligencia artificial a las cifras que publica Energías Futuro y
   pregúntale por ellas en tus conversaciones. Hay instrucciones para Claude y para ChatGPT.</p>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Qué es el conector</h2>
+  <details class="tarjeta desplegable">
+    <summary><h2>Qué es el conector</h2></summary>
     <p>El conector de Energías Futuro permite que tu asistente de IA consulte las cifras que este sitio ya
     publica y las cite con su definición, universo, fuente y fecha de corte. Las cifras las producen
     programas que leen fuentes oficiales; el conector no usa inteligencia artificial para generar ni
     estimar ninguna cifra.</p>
-  </div>
+  </details>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Qué datos entrega</h2>
+  <details class="tarjeta desplegable">
+    <summary><h2>Qué datos entrega</h2></summary>
     <p>Solo cifras ya publicadas en este sitio, consultadas de a una: por territorio, operador,
     marca o período, o en un ranking. Por ejemplo:</p>
     <ul>
@@ -67,15 +85,15 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
       <li>Generación eléctrica, capacidad instalada y cortes de suministro.</li>
       <li>Proyecciones del parque eléctrico, de la energía y del transporte público.</li>
     </ul>
-  </div>
+  </details>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Dirección del conector</h2>
+  <details class="tarjeta desplegable">
+    <summary><h2>Dirección del conector</h2></summary>
     <p><code>https://mcp.energiasfuturo.com/mcp</code></p>
-  </div>
+  </details>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Cómo agregarlo en Claude</h2>
+  <details class="tarjeta desplegable">
+    <summary><h2>Cómo agregarlo en Claude</h2></summary>
     <ol>
       <li>En Claude, abre <b>Configuración</b>.</li>
       <li>Entra a <b>Conectores</b>.</li>
@@ -85,10 +103,10 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     </ol>
     <p>Después, pregúntale a Claude por una cifra del sitio; por ejemplo, «¿Cuántos cargadores de
     acceso público hay en la región del Biobío?».</p>
-  </div>
+  </details>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Cómo agregarlo en ChatGPT</h2>
+  <details class="tarjeta desplegable">
+    <summary><h2>Cómo agregarlo en ChatGPT</h2></summary>
     <ol>
       <li>En ChatGPT, abre <b>Configuración</b> &gt; <b>Apps y conectores</b> &gt; <b>Configuración
       avanzada</b>, y activa el <b>Modo desarrollador</b>.</li>
@@ -101,19 +119,26 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <p>El Modo desarrollador no está en el plan gratuito de ChatGPT, y en las cuentas de empresa
     puede necesitar el permiso de quien las administra. Si un menú no aparece con ese nombre, búscalo
     en <b>Configuración</b>: ChatGPT los cambia de lugar de vez en cuando.</p>
-  </div>
+  </details>
 
-  <div class="tarjeta">
-    <h2 style="margin-top:0">Condiciones</h2>
+  <details class="tarjeta desplegable">
+    <summary><h2>Condiciones</h2></summary>
     <p>El uso del conector se rige por los <a href="terminos.html">Términos de uso</a>. Entre otras
     cosas, no permiten la extracción masiva de los datos, su reventa ni su uso para entrenar modelos,
     y cada cifra se presenta con su fuente y su fecha de corte. El servicio limita la cantidad de
     consultas y se ofrece sin garantía de disponibilidad.</p>
-  </div>
+  </details>
+  </details>
 </main>
 <script src="assets/comun.js?v=261103a"></script>
 <script>
 PW.montarNav("conectar-ia.html");
+// El enlace del pie "Conecta la IA" apunta a #conectar: si llega con ese ancla, el desplegable se abre.
+(function () {
+  const abrir = () => { const d = document.getElementById("conectar");
+    if (d && location.hash === "#conectar") { d.open = true; d.scrollIntoView({ block: "start" }); } };
+  abrir(); window.addEventListener("hashchange", abrir);
+})();
 // Formulario de contacto: Google Forms incrustado (decision del usuario del 2026-11-03). Mientras
 // FORMULARIO quede vacio, la tarjeta muestra solo el correo de respaldo. Se carga desde Google solo
 // al pulsar el boton: privacidad.html promete que sin aceptar cookies no se envia nada a Google.
