@@ -416,11 +416,9 @@
       "trazable a su fuente y está homologada por comuna (CUT INE), tipo de conector, estado " +
       "y tecnología.<br>" +
       "Elaboración propia.<br>" +
-      // Capa comercial: un enlace, no un formulario. La CSP tiene `form-action 'none'`
-      // desde la (661) y un `mailto:` no lo gobierna esa directiva.
-      // Desde el 2026-11-03 el boton lleva a la pagina de contacto (formulario + conector de IA), por
-      // decision del usuario; el correo sigue alli como respaldo.
-      "<a class='solicitar-pie' href='conectar-ia.html#contacto'>Contacto - IA</a>" +
+      // El boton "Contacto - IA" del pie (clase solicitar-pie) se quito el 2026-11-04 por pedido del
+      // usuario: repetia el enlace "Conecta la IA" de la linea legal. A la pagina de contacto se llega
+      // por ese enlace y por el boton del hero de index.html.
       "<span class='pie-legal'><a href='como-se-hace.html'>Cómo se hace este observatorio</a> · " +
       "<a href='conectar-ia.html#conectar'>Conecta la IA</a> · " +
       "<a href='privacidad.html'>Privacidad y cookies</a> · " +
