@@ -115,14 +115,48 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>
 PW.montarNav("conectar-ia.html");
 // Formulario de contacto: Google Forms incrustado (decision del usuario del 2026-11-03). Mientras
-// FORMULARIO quede vacio, la tarjeta muestra solo el correo de respaldo.
+// FORMULARIO quede vacio, la tarjeta muestra solo el correo de respaldo. Se carga desde Google solo
+// al pulsar el boton: privacidad.html promete que sin aceptar cookies no se envia nada a Google.
 (function () {
-  const FORMULARIO = "";
+  const FORMULARIO = "https://docs.google.com/forms/d/e/1FAIpQLSdg3BkurmcxrKxah5zd5alS43cr3IMXkNYtYoSmNjCljru9wg/viewform?embedded=true";
   if (!/^https:\/\/docs\.google\.com\/forms\//.test(FORMULARIO)) return;
-  const f = document.createElement("iframe");
-  f.src = FORMULARIO; f.title = "Formulario de contacto"; f.loading = "lazy";
-  f.style.cssText = "width:100%;height:900px;border:0;";
-  document.getElementById("formulario-contacto").appendChild(f);
+  const caja = document.getElementById("formulario-contacto");
+  const aviso = document.createElement("p");
+  aviso.textContent = "El formulario lo aloja Google Forms y se abre aquí mismo al pulsar el botón.";
+  const b = document.createElement("button");
+  b.type = "button"; b.textContent = "Abrir el formulario";
+  b.style.cssText = "cursor:pointer;border:1px solid var(--accion);background:var(--accion);" +
+    "color:var(--accion-texto);border-radius:8px;padding:8px 16px;font-size:14px;font-weight:600;font-family:inherit;";
+  b.addEventListener("click", () => {
+    const f = document.createElement("iframe");
+    f.src = FORMULARIO; f.title = "Formulario de contacto";
+    // Google no informa el alto del formulario (otro origen). Alto medido el 2026-11-04 abriendo el
+    // formulario solo a cada ancho, con la sesion de Google iniciada (sin sesion es ~80 px menor):
+    // [ancho px, alto px]. Si se agregan preguntas, volver a medir.
+    const MEDIDO = [[300, 2044], [360, 1907], [420, 1831], [520, 1767], [700, 1658], [930, 1638]];
+    const altoForm = () => {
+      const w = caja.offsetWidth;
+      if (w <= MEDIDO[0][0]) return MEDIDO[0][1] + 30;
+      for (let i = 1; i < MEDIDO.length; i++) {
+        const [w1, h1] = MEDIDO[i - 1], [w2, h2] = MEDIDO[i];
+        if (w <= w2) return Math.round(h1 + (h2 - h1) * (w - w1) / (w2 - w1)) + 30;
+      }
+      return MEDIDO[MEDIDO.length - 1][1] + 30;
+    };
+    f.style.cssText = "width:100%;border:0;display:block;height:" + altoForm() + "px;";
+    // Cada envio navega dentro del iframe y dispara "load": las cargas pares son la confirmacion
+    // («Se ha registrado tu respuesta»), que es corta; las impares, el formulario de nuevo.
+    let cargas = 0, confirmacion = false;
+    f.addEventListener("load", () => {
+      cargas++;
+      confirmacion = cargas % 2 === 0;
+      f.style.height = (confirmacion ? 480 : altoForm()) + "px";
+      if (confirmacion) caja.scrollIntoView({ block: "start" });
+    });
+    window.addEventListener("resize", () => { if (!confirmacion) f.style.height = altoForm() + "px"; });
+    caja.replaceChildren(f);
+  });
+  caja.append(aviso, b);
 })();
 </script>
 </body>

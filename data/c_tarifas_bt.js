@@ -1,15 +1,16 @@
 window.PW_DATA.c_tarifas_bt = {
- "generado": "2026-11-03",
+ "generado": "2026-11-04",
  "vigencia": "2026-11-01",
  "vigencia_por_distribuidor": {
   "cge": "2026-10-01",
   "edelaysen": "2026-11-01",
   "edelmag": "2026-11-01",
   "enel-distribucion": "2026-11-01",
+  "frontel": "2026-11-01",
   "luz-osorno": "2026-11-01",
   "saesa": "2026-11-01"
  },
- "nota": "Tarifas del último pliego publicado de cada distribuidora (CGE con sus filiales, Enel, Saesa, Luz Osorno, Edelaysén y Edelmag; el mes de cada una figura junto a su fuente), red aérea, con IVA salvo el cargo por servicio público. Cada región es el promedio simple de sus comunas, sin ponderar por clientes. BT4 es una referencia industrial (promedio de todas las redes en CGE y Enel; en las demás, el BT4 de su propio pliego). Una comuna atendida por dos distribuidoras aparece en ambas y no se promedian entre sí. En Magallanes solo están las 5 localidades del pliego de Edelmag (Punta Arenas, Natales, Torres del Paine, Porvenir y Cabo de Hornos); Porvenir y Cabo de Hornos no pagan IVA por ley. Para la tarifa de un suministro concreto, consulte el pliego de su distribuidora.",
+ "nota": "Tarifas del último pliego publicado de cada distribuidora (CGE con sus filiales, Enel, Saesa, Frontel, Luz Osorno, Edelaysén y Edelmag; el mes de cada una figura junto a su fuente), red aérea, con IVA salvo el cargo por servicio público. Cada región es el promedio simple de sus comunas, sin ponderar por clientes. BT4 es una referencia industrial (promedio de todas las redes en CGE y Enel; en las demás, el BT4 de su propio pliego). Una comuna atendida por dos distribuidoras aparece en ambas y no se promedian entre sí. En Magallanes solo están las 5 localidades del pliego de Edelmag (Punta Arenas, Natales, Torres del Paine, Porvenir y Cabo de Hornos); Porvenir y Cabo de Hornos no pagan IVA por ley. Para la tarifa de un suministro concreto, consulte el pliego de su distribuidora.",
  "unidades": {
   "cargo_fijo_clp_mes": "$/cliente/mes",
   "variable_clp_kwh_tramo1": "$/kWh (consumo hasta 350 kWh)",
@@ -31,6 +32,11 @@ window.PW_DATA.c_tarifas_bt = {
    "distribuidora": "Saesa",
    "documento": "Tarifas de suministro eléctrico vigentes en noviembre de 2026",
    "url": "https://web.gruposaesa.cl/web/saesa/pago-y-boleta/tarifas-vigentes"
+  },
+  {
+   "distribuidora": "Frontel",
+   "documento": "Tarifas de suministro eléctrico vigentes en noviembre de 2026",
+   "url": "https://web.gruposaesa.cl/web/frontel/pago-y-boleta/tarifas-vigentes"
   },
   {
    "distribuidora": "Luz Osorno",
@@ -60,6 +66,7 @@ window.PW_DATA.c_tarifas_bt = {
   "edelaysen",
   "edelmag",
   "enel-distribucion",
+  "frontel",
   "luz-osorno",
   "saesa"
  ],
@@ -68,6 +75,7 @@ window.PW_DATA.c_tarifas_bt = {
   "edelaysen": "Edelaysén",
   "edelmag": "Edelmag",
   "enel-distribucion": "Enel Distribución",
+  "frontel": "Frontel",
   "luz-osorno": "Luz Osorno",
   "saesa": "Saesa"
  },
@@ -90,10 +98,12 @@ window.PW_DATA.c_tarifas_bt = {
    "region_kit": "Antofagasta",
    "comunas": 6,
    "distribuidoras": [
-    "cge"
+    "cge",
+    "saesa"
    ],
    "comunas_por_distribuidora": {
-    "cge": 6
+    "cge": 6,
+    "saesa": 2
    }
   },
   {
@@ -160,24 +170,30 @@ window.PW_DATA.c_tarifas_bt = {
    "region_cut": "08",
    "region": "Biobío",
    "region_kit": "Biobío",
-   "comunas": 12,
+   "comunas": 33,
    "distribuidoras": [
-    "cge"
+    "cge",
+    "frontel"
    ],
    "comunas_por_distribuidora": {
-    "cge": 12
+    "cge": 12,
+    "frontel": 27
    }
   },
   {
    "region_cut": "09",
    "region": "La Araucanía",
    "region_kit": "La Araucanía",
-   "comunas": 10,
+   "comunas": 32,
    "distribuidoras": [
-    "cge"
+    "cge",
+    "frontel",
+    "saesa"
    ],
    "comunas_por_distribuidora": {
-    "cge": 10
+    "cge": 10,
+    "frontel": 29,
+    "saesa": 4
    }
   },
   {
@@ -264,12 +280,14 @@ window.PW_DATA.c_tarifas_bt = {
    "region_cut": "16",
    "region": "Ñuble",
    "region_kit": "Ñuble",
-   "comunas": 15,
+   "comunas": 21,
    "distribuidoras": [
-    "cge"
+    "cge",
+    "frontel"
    ],
    "comunas_por_distribuidora": {
-    "cge": 15
+    "cge": 15,
+    "frontel": 9
    }
   }
  ],
@@ -319,6 +337,28 @@ window.PW_DATA.c_tarifas_bt = {
     "BT4": {
      "potencia_contratada_clp_kw": 5902.0,
      "energia_clp_kwh": 114.38
+    }
+   },
+   "saesa": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1246.48,
+     "variable_clp_kwh_tramo1": 264.91
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1246.48,
+     "energia_total_clp_kwh": 184.47,
+     "potencia_punta_clp_kw": 34157.0,
+     "potencia_parcial_punta_clp_kw": 22383.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1246.48,
+     "energia_total_clp_kwh": 184.47,
+     "potencia_leida_punta_clp_kw": 34157.0,
+     "potencia_leida_parcial_punta_clp_kw": 22383.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 7927.0,
+     "energia_clp_kwh": 151.55
     }
    }
   },
@@ -464,6 +504,28 @@ window.PW_DATA.c_tarifas_bt = {
      "potencia_contratada_clp_kw": 9717.0,
      "energia_clp_kwh": 145.4
     }
+   },
+   "frontel": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1319.14,
+     "variable_clp_kwh_tramo1": 290.94
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1319.14,
+     "energia_total_clp_kwh": 167.71,
+     "potencia_punta_clp_kw": 63544.0,
+     "potencia_parcial_punta_clp_kw": 46655.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1319.14,
+     "energia_total_clp_kwh": 167.71,
+     "potencia_leida_punta_clp_kw": 63544.0,
+     "potencia_leida_parcial_punta_clp_kw": 46655.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 12304.0,
+     "energia_clp_kwh": 135.34
+    }
    }
   },
   "09": {
@@ -487,6 +549,50 @@ window.PW_DATA.c_tarifas_bt = {
     "BT4": {
      "potencia_contratada_clp_kw": 9927.0,
      "energia_clp_kwh": 156.9
+    }
+   },
+   "frontel": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1319.14,
+     "variable_clp_kwh_tramo1": 300.4
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1319.14,
+     "energia_total_clp_kwh": 177.16,
+     "potencia_punta_clp_kw": 56419.0,
+     "potencia_parcial_punta_clp_kw": 41346.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1319.14,
+     "energia_total_clp_kwh": 177.16,
+     "potencia_leida_punta_clp_kw": 56419.0,
+     "potencia_leida_parcial_punta_clp_kw": 41346.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 8907.0,
+     "energia_clp_kwh": 144.79
+    }
+   },
+   "saesa": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1246.48,
+     "variable_clp_kwh_tramo1": 263.17
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1246.48,
+     "energia_total_clp_kwh": 173.14,
+     "potencia_punta_clp_kw": 36869.0,
+     "potencia_parcial_punta_clp_kw": 24287.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1246.48,
+     "energia_total_clp_kwh": 173.14,
+     "potencia_leida_punta_clp_kw": 36869.0,
+     "potencia_leida_parcial_punta_clp_kw": 24287.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 9789.0,
+     "energia_clp_kwh": 140.81
     }
    }
   },
@@ -744,6 +850,28 @@ window.PW_DATA.c_tarifas_bt = {
      "potencia_contratada_clp_kw": 11019.0,
      "energia_clp_kwh": 156.83
     }
+   },
+   "frontel": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1319.13,
+     "variable_clp_kwh_tramo1": 300.24
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1319.13,
+     "energia_total_clp_kwh": 177.0,
+     "potencia_punta_clp_kw": 67071.0,
+     "potencia_parcial_punta_clp_kw": 49284.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 1319.13,
+     "energia_total_clp_kwh": 177.0,
+     "potencia_leida_punta_clp_kw": 67071.0,
+     "potencia_leida_parcial_punta_clp_kw": 49284.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 13608.0,
+     "energia_clp_kwh": 144.63
+    }
    }
   }
  },
@@ -921,6 +1049,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 6747.0,
     "energia_clp_kwh": 165.97
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 270.17
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 197.25,
+      "potencia_punta_clp_kw": 28531.0,
+      "potencia_parcial_punta_clp_kw": 20079.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 197.25,
+      "potencia_leida_punta_clp_kw": 28531.0,
+      "potencia_leida_parcial_punta_clp_kw": 20079.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 6747.0,
+      "energia_clp_kwh": 165.97
+     }
+    },
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "variable_clp_kwh_tramo1": 287.88
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 207.44,
+      "potencia_punta_clp_kw": 34157.0,
+      "potencia_parcial_punta_clp_kw": 22383.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 207.44,
+      "potencia_leida_punta_clp_kw": 34157.0,
+      "potencia_leida_parcial_punta_clp_kw": 22383.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 7927.0,
+      "energia_clp_kwh": 174.52
+     }
+    }
    }
   },
   "02102": {
@@ -996,6 +1170,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 5480.0,
     "energia_clp_kwh": 129.19
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 236.52
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 162.11,
+      "potencia_punta_clp_kw": 28976.0,
+      "potencia_parcial_punta_clp_kw": 20421.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 162.11,
+      "potencia_leida_punta_clp_kw": 28976.0,
+      "potencia_leida_parcial_punta_clp_kw": 20421.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 5480.0,
+      "energia_clp_kwh": 129.19
+     }
+    },
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "variable_clp_kwh_tramo1": 241.94
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 161.5,
+      "potencia_punta_clp_kw": 34157.0,
+      "potencia_parcial_punta_clp_kw": 22383.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 161.5,
+      "potencia_leida_punta_clp_kw": 34157.0,
+      "potencia_leida_parcial_punta_clp_kw": 22383.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 7927.0,
+      "energia_clp_kwh": 128.58
+     }
+    }
    }
   },
   "02201": {
@@ -3571,6 +3791,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 11930.0,
     "energia_clp_kwh": 76.11
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 194.24
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 108.47,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 108.47,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 11930.0,
+      "energia_clp_kwh": 76.11
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 228.57
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 105.34,
+      "potencia_punta_clp_kw": 49747.0,
+      "potencia_parcial_punta_clp_kw": 36374.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 105.34,
+      "potencia_leida_punta_clp_kw": 49747.0,
+      "potencia_leida_parcial_punta_clp_kw": 36374.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 5225.0,
+      "energia_clp_kwh": 72.98
+     }
+    }
    }
   },
   "08103": {
@@ -3621,6 +3887,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 16111.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 293.96
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 45526.0,
+      "potencia_parcial_punta_clp_kw": 30994.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 45526.0,
+      "potencia_leida_parcial_punta_clp_kw": 30994.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 16111.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 85045.0,
+      "potencia_parcial_punta_clp_kw": 62678.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 85045.0,
+      "potencia_leida_parcial_punta_clp_kw": 62678.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 22610.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
    }
   },
   "08105": {
@@ -3646,6 +3958,77 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 16111.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 293.96
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 45526.0,
+      "potencia_parcial_punta_clp_kw": 30994.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 45526.0,
+      "potencia_leida_parcial_punta_clp_kw": 30994.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 16111.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 59833.0,
+      "potencia_parcial_punta_clp_kw": 43890.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 59833.0,
+      "potencia_leida_parcial_punta_clp_kw": 43890.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10193.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
+   }
+  },
+  "08106": {
+   "nombre": "Lota",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
    }
   },
   "08107": {
@@ -3698,6 +4081,31 @@ window.PW_DATA.c_tarifas_bt = {
     "energia_clp_kwh": 157.74
    }
   },
+  "08109": {
+   "nombre": "Santa Juana",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
   "08110": {
    "nombre": "Talcahuano",
    "region_cut": "08",
@@ -3746,6 +4154,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 59833.0,
+      "potencia_parcial_punta_clp_kw": 43890.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 59833.0,
+      "potencia_leida_parcial_punta_clp_kw": 43890.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10193.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
    }
   },
   "08112": {
@@ -3773,6 +4227,181 @@ window.PW_DATA.c_tarifas_bt = {
     "energia_clp_kwh": 108.06
    }
   },
+  "08201": {
+   "nombre": "Lebu",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 295.65
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 140.05
+   }
+  },
+  "08202": {
+   "nombre": "Arauco",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 295.65
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 140.05
+   }
+  },
+  "08203": {
+   "nombre": "Cañete",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "08204": {
+   "nombre": "Contulmo",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "08205": {
+   "nombre": "Curanilahue",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "08206": {
+   "nombre": "Los Álamos",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "08207": {
+   "nombre": "Tirúa",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
   "08301": {
    "nombre": "Los Ángeles",
    "region_cut": "08",
@@ -3796,6 +4425,127 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 16111.0,
     "energia_clp_kwh": 149.34
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 285.56
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 181.71,
+      "potencia_punta_clp_kw": 45526.0,
+      "potencia_parcial_punta_clp_kw": 30994.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 181.71,
+      "potencia_leida_punta_clp_kw": 45526.0,
+      "potencia_leida_parcial_punta_clp_kw": 30994.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 16111.0,
+      "energia_clp_kwh": 149.34
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 295.65
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 172.42,
+      "potencia_punta_clp_kw": 59833.0,
+      "potencia_parcial_punta_clp_kw": 43890.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 172.42,
+      "potencia_leida_punta_clp_kw": 59833.0,
+      "potencia_leida_parcial_punta_clp_kw": 43890.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10193.0,
+      "energia_clp_kwh": 140.05
+     }
+    }
+   }
+  },
+  "08302": {
+   "nombre": "Antuco",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 261.22
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 137.98,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 137.98,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 105.61
+   }
+  },
+  "08303": {
+   "nombre": "Cabrero",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 290.74
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_punta_clp_kw": 80000.0,
+    "potencia_parcial_punta_clp_kw": 58918.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_leida_punta_clp_kw": 80000.0,
+    "potencia_leida_parcial_punta_clp_kw": 58918.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 20125.0,
+    "energia_clp_kwh": 135.14
+   }
+  },
+  "08304": {
+   "nombre": "Laja",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 295.65
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_punta_clp_kw": 69914.0,
+    "potencia_parcial_punta_clp_kw": 51402.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_leida_punta_clp_kw": 69914.0,
+    "potencia_leida_parcial_punta_clp_kw": 51402.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 15158.0,
+    "energia_clp_kwh": 140.05
    }
   },
   "08305": {
@@ -3821,6 +4571,277 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 149.34
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 267.47
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 181.71,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 181.71,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 149.34
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 295.65
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 172.42,
+      "potencia_punta_clp_kw": 49747.0,
+      "potencia_parcial_punta_clp_kw": 36374.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 172.42,
+      "potencia_leida_punta_clp_kw": 49747.0,
+      "potencia_leida_parcial_punta_clp_kw": 36374.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 5225.0,
+      "energia_clp_kwh": 140.05
+     }
+    }
+   }
+  },
+  "08306": {
+   "nombre": "Nacimiento",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 295.65
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_punta_clp_kw": 80000.0,
+    "potencia_parcial_punta_clp_kw": 58918.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_leida_punta_clp_kw": 80000.0,
+    "potencia_leida_parcial_punta_clp_kw": 58918.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 20125.0,
+    "energia_clp_kwh": 140.05
+   }
+  },
+  "08307": {
+   "nombre": "Negrete",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 290.73
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_punta_clp_kw": 50248.0,
+    "potencia_parcial_punta_clp_kw": 36747.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_leida_punta_clp_kw": 50248.0,
+    "potencia_leida_parcial_punta_clp_kw": 36747.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 5472.0,
+    "energia_clp_kwh": 135.14
+   }
+  },
+  "08308": {
+   "nombre": "Quilaco",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 252.78
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 129.54,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 129.54,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 97.18
+   }
+  },
+  "08309": {
+   "nombre": "Quilleco",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 290.74
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_punta_clp_kw": 69914.0,
+    "potencia_parcial_punta_clp_kw": 51402.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_leida_punta_clp_kw": 69914.0,
+    "potencia_leida_parcial_punta_clp_kw": 51402.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 15158.0,
+    "energia_clp_kwh": 135.14
+   }
+  },
+  "08310": {
+   "nombre": "San Rosendo",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "08311": {
+   "nombre": "Santa Bárbara",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 290.74
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_punta_clp_kw": 69914.0,
+    "potencia_parcial_punta_clp_kw": 51402.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_leida_punta_clp_kw": 69914.0,
+    "potencia_leida_parcial_punta_clp_kw": 51402.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 15158.0,
+    "energia_clp_kwh": 135.14
+   }
+  },
+  "08312": {
+   "nombre": "Tucapel",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 290.74
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_punta_clp_kw": 80000.0,
+    "potencia_parcial_punta_clp_kw": 58918.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_leida_punta_clp_kw": 80000.0,
+    "potencia_leida_parcial_punta_clp_kw": 58918.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 20125.0,
+    "energia_clp_kwh": 135.14
+   }
+  },
+  "08313": {
+   "nombre": "Yumbel",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 295.65
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_punta_clp_kw": 80000.0,
+    "potencia_parcial_punta_clp_kw": 58918.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_leida_punta_clp_kw": 80000.0,
+    "potencia_leida_parcial_punta_clp_kw": 58918.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 20125.0,
+    "energia_clp_kwh": 140.05
+   }
+  },
+  "08314": {
+   "nombre": "Alto Biobío",
+   "region_cut": "08",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 252.78
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 129.54,
+    "potencia_punta_clp_kw": 80000.0,
+    "potencia_parcial_punta_clp_kw": 58918.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 129.54,
+    "potencia_leida_punta_clp_kw": 80000.0,
+    "potencia_leida_parcial_punta_clp_kw": 58918.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 20125.0,
+    "energia_clp_kwh": 97.18
    }
   },
   "09101": {
@@ -3846,6 +4867,102 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 11930.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 11930.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 49747.0,
+      "potencia_parcial_punta_clp_kw": 36374.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 49747.0,
+      "potencia_leida_parcial_punta_clp_kw": 36374.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 5225.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
+   }
+  },
+  "09102": {
+   "nombre": "Carahue",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09103": {
+   "nombre": "Cunco",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
    }
   },
   "09104": {
@@ -3896,6 +5013,148 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 59833.0,
+      "potencia_parcial_punta_clp_kw": 43890.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 59833.0,
+      "potencia_leida_parcial_punta_clp_kw": 43890.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10193.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
+   }
+  },
+  "09106": {
+   "nombre": "Galvarino",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09107": {
+   "nombre": "Gorbea",
+   "region_cut": "09",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1246.48,
+    "variable_clp_kwh_tramo1": 262.24
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1246.48,
+    "energia_total_clp_kwh": 173.38,
+    "potencia_punta_clp_kw": 41397.0,
+    "potencia_parcial_punta_clp_kw": 27396.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1246.48,
+    "energia_total_clp_kwh": 173.38,
+    "potencia_leida_punta_clp_kw": 41397.0,
+    "potencia_leida_parcial_punta_clp_kw": 27396.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 12816.0,
+    "energia_clp_kwh": 141.01
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "variable_clp_kwh_tramo1": 262.24
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 173.38,
+      "potencia_punta_clp_kw": 41397.0,
+      "potencia_parcial_punta_clp_kw": 27396.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 173.38,
+      "potencia_leida_punta_clp_kw": 41397.0,
+      "potencia_leida_parcial_punta_clp_kw": 27396.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 12816.0,
+      "energia_clp_kwh": 141.01
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 59833.0,
+      "potencia_parcial_punta_clp_kw": 43890.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 59833.0,
+      "potencia_leida_parcial_punta_clp_kw": 43890.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10193.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
    }
   },
   "09108": {
@@ -3921,6 +5180,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 149.34
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 267.47
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 181.71,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 181.71,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 149.34
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 295.65
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 172.42,
+      "potencia_punta_clp_kw": 59833.0,
+      "potencia_parcial_punta_clp_kw": 43890.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 172.42,
+      "potencia_leida_punta_clp_kw": 59833.0,
+      "potencia_leida_parcial_punta_clp_kw": 43890.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10193.0,
+      "energia_clp_kwh": 140.05
+     }
+    }
    }
   },
   "09109": {
@@ -3946,6 +5251,102 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "variable_clp_kwh_tramo1": 262.24
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 173.38,
+      "potencia_punta_clp_kw": 35180.0,
+      "potencia_parcial_punta_clp_kw": 23122.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 173.38,
+      "potencia_leida_punta_clp_kw": 35180.0,
+      "potencia_leida_parcial_punta_clp_kw": 23122.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9321.0,
+      "energia_clp_kwh": 141.01
+     }
+    }
+   }
+  },
+  "09110": {
+   "nombre": "Melipeuco",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 290.74
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 135.14
+   }
+  },
+  "09111": {
+   "nombre": "Nueva Imperial",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.34
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 59833.0,
+    "potencia_parcial_punta_clp_kw": 43890.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 59833.0,
+    "potencia_leida_parcial_punta_clp_kw": 43890.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 10193.0,
+    "energia_clp_kwh": 147.74
    }
   },
   "09112": {
@@ -3971,6 +5372,77 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 49747.0,
+      "potencia_parcial_punta_clp_kw": 36374.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 49747.0,
+      "potencia_leida_parcial_punta_clp_kw": 36374.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 5225.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
+   }
+  },
+  "09113": {
+   "nombre": "Perquenco",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
    }
   },
   "09114": {
@@ -3996,6 +5468,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 49747.0,
+      "potencia_parcial_punta_clp_kw": 36374.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 49747.0,
+      "potencia_leida_parcial_punta_clp_kw": 36374.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 5225.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
    }
   },
   "09115": {
@@ -4023,6 +5541,127 @@ window.PW_DATA.c_tarifas_bt = {
     "energia_clp_kwh": 157.74
    }
   },
+  "09116": {
+   "nombre": "Saavedra",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09117": {
+   "nombre": "Teodoro Schmidt",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09118": {
+   "nombre": "Toltén",
+   "region_cut": "09",
+   "distribuidor": "saesa",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1246.48,
+    "variable_clp_kwh_tramo1": 265.98
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1246.48,
+    "energia_total_clp_kwh": 172.4,
+    "potencia_punta_clp_kw": 35366.0,
+    "potencia_parcial_punta_clp_kw": 23267.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1246.48,
+    "energia_total_clp_kwh": 172.4,
+    "potencia_leida_punta_clp_kw": 35366.0,
+    "potencia_leida_parcial_punta_clp_kw": 23267.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 8510.0,
+    "energia_clp_kwh": 140.21
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "variable_clp_kwh_tramo1": 265.98
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 172.4,
+      "potencia_punta_clp_kw": 35366.0,
+      "potencia_parcial_punta_clp_kw": 23267.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 172.4,
+      "potencia_leida_punta_clp_kw": 35366.0,
+      "potencia_leida_parcial_punta_clp_kw": 23267.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 8510.0,
+      "energia_clp_kwh": 140.21
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 50248.0,
+      "potencia_parcial_punta_clp_kw": 36747.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 50248.0,
+      "potencia_leida_parcial_punta_clp_kw": 36747.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 5472.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
+   }
+  },
   "09119": {
    "nombre": "Vilcún",
    "region_cut": "09",
@@ -4046,6 +5685,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 49747.0,
+      "potencia_parcial_punta_clp_kw": 36374.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 49747.0,
+      "potencia_leida_parcial_punta_clp_kw": 36374.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 5225.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
    }
   },
   "09120": {
@@ -4071,6 +5756,374 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "variable_clp_kwh_tramo1": 262.24
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 173.38,
+      "potencia_punta_clp_kw": 35533.0,
+      "potencia_parcial_punta_clp_kw": 23365.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 173.38,
+      "potencia_leida_punta_clp_kw": 35533.0,
+      "potencia_leida_parcial_punta_clp_kw": 23365.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 8509.0,
+      "energia_clp_kwh": 141.01
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 59833.0,
+      "potencia_parcial_punta_clp_kw": 43890.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 59833.0,
+      "potencia_leida_parcial_punta_clp_kw": 43890.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10193.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
+   }
+  },
+  "09121": {
+   "nombre": "Cholchol",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09201": {
+   "nombre": "Angol",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09202": {
+   "nombre": "Collipulli",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 290.74
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 167.5,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 135.14
+   }
+  },
+  "09203": {
+   "nombre": "Curacautín",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09204": {
+   "nombre": "Ercilla",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09205": {
+   "nombre": "Lonquimay",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 280.9
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 157.66,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 157.66,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 125.3
+   }
+  },
+  "09206": {
+   "nombre": "Los Sauces",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 295.65
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 140.05
+   }
+  },
+  "09207": {
+   "nombre": "Lumaco",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09208": {
+   "nombre": "Purén",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09209": {
+   "nombre": "Renaico",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 280.89
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 157.66,
+    "potencia_punta_clp_kw": 50248.0,
+    "potencia_parcial_punta_clp_kw": 36747.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 157.66,
+    "potencia_leida_punta_clp_kw": 50248.0,
+    "potencia_leida_parcial_punta_clp_kw": 36747.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 5472.0,
+    "energia_clp_kwh": 125.3
+   }
+  },
+  "09210": {
+   "nombre": "Traiguén",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "09211": {
+   "nombre": "Victoria",
+   "region_cut": "09",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
    }
   },
   "10101": {
@@ -7329,6 +9382,31 @@ window.PW_DATA.c_tarifas_bt = {
     "energia_clp_kwh": 157.74
    }
   },
+  "16102": {
+   "nombre": "Bulnes",
+   "region_cut": "16",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 295.65
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 140.05
+   }
+  },
   "16103": {
    "nombre": "Chillán Viejo",
    "region_cut": "16",
@@ -7352,6 +9430,102 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 71058.0,
+      "potencia_parcial_punta_clp_kw": 52255.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 71058.0,
+      "potencia_leida_parcial_punta_clp_kw": 52255.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 12462.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
+   }
+  },
+  "16104": {
+   "nombre": "El Carmen",
+   "region_cut": "16",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "16105": {
+   "nombre": "Pemuco",
+   "region_cut": "16",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 80000.0,
+    "potencia_parcial_punta_clp_kw": 58918.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 80000.0,
+    "potencia_leida_parcial_punta_clp_kw": 58918.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 20125.0,
+    "energia_clp_kwh": 147.74
    }
   },
   "16106": {
@@ -7377,6 +9551,127 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 157.74
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 275.87
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 190.11,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 157.74
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 303.34
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_punta_clp_kw": 59833.0,
+      "potencia_parcial_punta_clp_kw": 43890.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 180.11,
+      "potencia_leida_punta_clp_kw": 59833.0,
+      "potencia_leida_parcial_punta_clp_kw": 43890.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10193.0,
+      "energia_clp_kwh": 147.74
+     }
+    }
+   }
+  },
+  "16107": {
+   "nombre": "Quillón",
+   "region_cut": "16",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 80000.0,
+    "potencia_parcial_punta_clp_kw": 58918.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 80000.0,
+    "potencia_leida_parcial_punta_clp_kw": 58918.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 20125.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "16108": {
+   "nombre": "San Ignacio",
+   "region_cut": "16",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 303.35
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_punta_clp_kw": 57639.0,
+    "potencia_parcial_punta_clp_kw": 42255.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 180.11,
+    "potencia_leida_punta_clp_kw": 57639.0,
+    "potencia_leida_parcial_punta_clp_kw": 42255.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 9749.0,
+    "energia_clp_kwh": 147.74
+   }
+  },
+  "16109": {
+   "nombre": "Yungay",
+   "region_cut": "16",
+   "distribuidor": "frontel",
+   "BT1": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "variable_clp_kwh_tramo1": 295.65
+   },
+   "BT2": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_punta_clp_kw": 80000.0,
+    "potencia_parcial_punta_clp_kw": 58918.0
+   },
+   "BT3": {
+    "cargo_fijo_clp_mes": 1319.13,
+    "energia_total_clp_kwh": 172.42,
+    "potencia_leida_punta_clp_kw": 80000.0,
+    "potencia_leida_parcial_punta_clp_kw": 58918.0
+   },
+   "BT4": {
+    "potencia_contratada_clp_kw": 20125.0,
+    "energia_clp_kwh": 140.05
    }
   },
   "16201": {
@@ -7527,6 +9822,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 10954.0,
     "energia_clp_kwh": 143.98
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 262.11
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 176.34,
+      "potencia_punta_clp_kw": 36384.0,
+      "potencia_parcial_punta_clp_kw": 24982.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 176.34,
+      "potencia_leida_punta_clp_kw": 36384.0,
+      "potencia_leida_parcial_punta_clp_kw": 24982.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10954.0,
+      "energia_clp_kwh": 143.98
+     }
+    },
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 290.74
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 167.5,
+      "potencia_punta_clp_kw": 59833.0,
+      "potencia_parcial_punta_clp_kw": 43890.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 167.5,
+      "potencia_leida_punta_clp_kw": 59833.0,
+      "potencia_leida_parcial_punta_clp_kw": 43890.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10193.0,
+      "energia_clp_kwh": 135.14
+     }
+    }
    }
   },
   "16207": {
