@@ -46,6 +46,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>document.write('<link rel="preload" as="script" href="data/combustible.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_bencina93_serie.js?v='+_pwv+'">')</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_tarifas_bt.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_tarifas_bt_hist.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
@@ -201,11 +202,30 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 
       <p class="nota" id="fuente-tarifa-detalle" style="margin-top: 1.5rem; font-size: 0.85rem; color:var(--ink-2);"></p>
     </div>
+
+    <div class="tarjeta" id="tarjeta-tarifa-hist" style="display: none;">
+      <h2 style="margin-top:0">Cómo cambió mes a mes</h2>
+      <p class="sub" id="sub-tarifa-hist"></p>
+      <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+        <div style="flex: 1 1 220px;">
+          <label for="sel-seg-hist" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Tipo de cliente:</label>
+          <select id="sel-seg-hist" style="width: 100%; padding: 8px; font-size: 1rem;"></select>
+        </div>
+        <div style="flex: 1 1 220px;">
+          <label for="sel-cargo-hist" style="font-weight: bold; display: block; margin-bottom: 0.5rem;">Cargo:</label>
+          <select id="sel-cargo-hist" style="width: 100%; padding: 8px; font-size: 1rem;"></select>
+        </div>
+      </div>
+      <div id="graf-tarifa-hist"></div>
+      <p class="nota" id="resumen-tarifa-hist"></p>
+      <p class="nota" id="nota-tarifa-hist" style="font-size: 0.85rem; color:var(--ink-2);"></p>
+    </div>
   </div>
 </main>
 <script>document.write('<script src="data/c_elasticidad.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_elasticidad_tarifas_pnp.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_tarifas_bt.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/c_tarifas_bt_hist.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_ev_proyeccion.js?v='+_pwv+'"><\/script>')</script>
 <script>document.write('<script src="data/c_elasticidad_regional_preliminar.js?v='+_pwv+'"><\/script>')</script>
 <script>
@@ -491,14 +511,91 @@ if (window.PW_DATA && PW_DATA.c_elasticidad_tarifas_pnp) {
     contCom.style.display = coms.length ? "block" : "none";
   }
 
+  // Evolucion mes a mes (c_tarifas_bt_hist, de #08; pedido del usuario del 2026-11-03). La serie es
+  // por region y distribuidora, no por comuna. Un mes sin pliego viene null y queda como hueco: no se
+  // rellena con el mes anterior. Si el dato falta, la tarjeta no se muestra.
+  const DH = window.PW_DATA && PW_DATA.c_tarifas_bt_hist;
+  const tarjetaH = document.getElementById("tarjeta-tarifa-hist");
+  const selSegH = document.getElementById("sel-seg-hist");
+  const selCargoH = document.getElementById("sel-cargo-hist");
+  const listaMeses = xs => xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " y " + xs[xs.length - 1];
+  if (DH && DH.nota) document.getElementById("nota-tarifa-hist").textContent = DH.nota;
+
+  function serieHist() {
+    const region = selRegion.value, dist = selDist.value;
+    return DH && Array.isArray(DH.meses) && DH.tarifas && (DH.tarifas[region] || {})[dist] || null;
+  }
+
+  function llenarSegHist() {
+    const s = serieHist(), antes = selSegH.value;
+    selSegH.innerHTML = "";
+    if (!s) return;
+    SEGMENTOS.filter(seg => s[seg]).forEach(seg => opcion(selSegH, seg, (DH.segmentos_info || {})[seg] || seg));
+    if ([...selSegH.options].some(o => o.value === antes)) selSegH.value = antes;
+    llenarCargoHist();
+  }
+
+  function llenarCargoHist() {
+    const s = serieHist(), antes = selCargoH.value;
+    selCargoH.innerHTML = "";
+    const seg = s && s[selSegH.value]; if (!seg) return;
+    Object.keys(seg).filter(k => (seg[k] || []).some(v => v != null))
+      .forEach(k => opcion(selCargoH, k, (CARGOS[k] || [k])[0]));
+    // por defecto, el cargo de energia: es el que mas pesa en la cuenta
+    const pref = ["variable_clp_kwh_tramo1", "energia_total_clp_kwh", "energia_clp_kwh"]
+      .find(k => [...selCargoH.options].some(o => o.value === k));
+    if ([...selCargoH.options].some(o => o.value === antes)) selCargoH.value = antes;
+    else if (pref) selCargoH.value = pref;
+  }
+
+  function dibujarHist() {
+    const s = serieHist();
+    const vals = s && s[selSegH.value] && s[selSegH.value][selCargoH.value];
+    if (!vals || !vals.some(v => v != null)) { tarjetaH.style.display = "none"; return; }
+    tarjetaH.style.display = "block";
+    const c = CARGOS[selCargoH.value] || [selCargoH.value, "", 2];
+    const region = DT.regiones.find(r => r.region_cut === selRegion.value);
+    document.getElementById("sub-tarifa-hist").textContent = "Promedio de " +
+      (region ? nomRegion(region) : selRegion.value) + " en " + nomDist(selDist.value) +
+      ", según el pliego vigente cada mes" + (selCom.value ? " (la serie es de la región, no de la comuna)." : ".");
+    const conDato = vals.map((v, i) => [v, i]).filter(p => p[0] != null);
+    const bajo = Math.min(...conDato.map(p => p[0])), alto = Math.max(...conDato.map(p => p[0]));
+    // el eje no parte de cero: el cambio mes a mes es de pocos puntos y en cero la linea sale plana
+    // el piso se redondea hacia abajo a un paso "redondo" para que las marcas del eje salgan limpias
+    const crudo = Math.max(0, bajo - Math.max((alto - bajo) * 0.5, bajo * 0.05));
+    const paso = Math.pow(10, Math.floor(Math.log10(Math.max(alto - crudo, 1)))) / 2;
+    const piso = Math.floor(crudo / paso) * paso;
+    PW.lineas("graf-tarifa-hist", {
+      labels: DH.meses,
+      series: [{ nombre: nomDist(selDist.value), valores: vals }],
+      min: piso, alto: 240, fmtY: v => PW.fmt(v, Math.abs(v - Math.round(v)) < 1e-9 ? 0 : 1),
+    });
+    const [v0, i0] = conDato[0], [v1, i1] = conDato[conDato.length - 1];
+    const sinM = DH.meses.filter((m, i) => vals[i] == null);
+    const unAnio = sinM.every(m => m.slice(0, 4) === (sinM[0] || "").slice(0, 4));
+    const sin = unAnio ? sinM.map(m => MESES[+m.slice(5, 7) - 1]) : sinM.map(mesTexto);
+    let txt = "Último mes con pliego, " + mesTexto(DH.meses[i1]) + ": " + PW.fmt(v1, c[2]) + " " + c[1] + ".";
+    if (i1 > i0) {
+      const pct = 100 * (v1 - v0) / v0;
+      txt += " Desde " + mesTexto(DH.meses[i0]) + " cambió " + (pct > 0 ? "+" : "") + PW.fmt(pct, 1) + " %.";
+    }
+    if (sin.length) txt += " Sin pliego en " + listaMeses(sin) + (unAnio ? " de " + sinM[0].slice(0, 4) : "") +
+      ": quedan como hueco en la línea.";
+    document.getElementById("resumen-tarifa-hist").textContent = txt;
+  }
+
+  selSegH.addEventListener("change", () => { llenarCargoHist(); dibujarHist(); });
+  selCargoH.addEventListener("change", dibujarHist);
+
   selRegion.addEventListener("change", () => {
     selDist.innerHTML = ""; selCom.innerHTML = ""; contCom.style.display = "none";
     const dists = Object.keys(DT.tarifas[selRegion.value] || {});
-    if (!selRegion.value || !dists.length) { contDist.style.display = "none"; tabla.innerHTML = ""; return; }
+    if (!selRegion.value || !dists.length) {
+      contDist.style.display = "none"; tabla.innerHTML = ""; tarjetaH.style.display = "none"; return; }
     dists.forEach(d => opcion(selDist, d, nomDist(d)));
-    contDist.style.display = "block"; llenarComunas(); dibujar(); });
-  selDist.addEventListener("change", () => { llenarComunas(); dibujar(); });
-  selCom.addEventListener("change", dibujar);
+    contDist.style.display = "block"; llenarComunas(); dibujar(); llenarSegHist(); dibujarHist(); });
+  selDist.addEventListener("change", () => { llenarComunas(); dibujar(); llenarSegHist(); dibujarHist(); });
+  selCom.addEventListener("change", () => { dibujar(); dibujarHist(); });
 })();
 
 // TAB 3: Stock de EVs 2025 — una sola proyeccion para todo el sitio (c_ev_proyeccion.js).
