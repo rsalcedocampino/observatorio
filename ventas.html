@@ -173,10 +173,16 @@ const V12 = D.marcas_ventana_12m || null; const MES_CORTO = ["ene", "feb", "mar"
 const mesCorto = m => MES_CORTO[+m.slice(5, 7) - 1] + "-" + m.slice(0, 4);
 const TITULO_12M = V12 && V12.desde ? mesCorto(V12.desde) + " a " + mesCorto(V12.hasta) : "Últimos 12 meses";
 function nota12m() {
-  if (!V12 || !V12.meses_sin_detalle || !V12.meses_sin_detalle.length) return "";
-  return "La columna «" + TITULO_12M + "» cubre " + V12.meses_con_detalle + " de 12 meses: " +
-    V12.meses_sin_detalle.map(mesCorto).join(", ") + " no tienen desglose por marca en la fuente (" +
-    PW.fmt(V12.enchufables_sin_marca) + " enchufables vendidos esos meses quedan sin marca)."; }
+  if (!V12) return "";
+  const sin = V12.meses_sin_detalle || [], parc = V12.meses_detalle_parcial || [];
+  if (sin.length) return "La columna «" + TITULO_12M + "» cubre " + V12.meses_con_detalle + " de 12 meses: " +
+    sin.map(mesCorto).join(", ") + " no tienen desglose por marca en la fuente (" +
+    PW.fmt(V12.enchufables_sin_marca) + " enchufables vendidos esos meses quedan sin marca).";
+  // desglose parcial: todos los meses traen marca, pero no de todas las unidades
+  if (!V12.enchufables_sin_marca || !parc.length) return "";
+  const pct = V12.enchufables_ventana ? " (" + PW.fmt(100 * V12.enchufables_sin_marca / V12.enchufables_ventana, 1) + " % de los 12 meses)" : "";
+  return "La columna «" + TITULO_12M + "» no asigna marca a " + PW.fmt(V12.enchufables_sin_marca) +
+    " enchufables" + pct + ": la fuente no desglosa por marca todas las ventas de " + parc.map(mesCorto).join(", ") + "."; }
 function colsMarcas(conUltimos12) {
   return [
     { k: "marca", titulo: "Marca" },
