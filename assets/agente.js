@@ -4692,7 +4692,7 @@ function fueraDeAlcance(q) {
   if (/\b(dolar|dolares|euro|euros|uf|utm|ipc|inflacion|sueldo|salario|bitcoin|criptomonedas?|acciones|bolsa|cobre|litio|tasa de interes|credito|hipoteca|pib)\b/.test(q)) {
     return { motivo: "economia", pagina: "indicadores.html", nombre: "Indicadores económicos del sitio (dólar, UF, IPC, cobre, litio)", texto: "No tengo cifras económicas (dólar, UF, inflación, metales) entre los datos que puedo consultar aquí; el sitio las publica en otra página." };
   }
-  if (/\b(clima|temperatura|lluvia|pronostico del tiempo|horoscopo|chiste|chistes|cuentame|futbol|partido|receta|cancion|pelicula|noticias|elecciones|candidato|presidente|que hora es|que dia es|que fecha es|capital de)\b/.test(q)) {
+  if (/\b(clima|temperatura|lluvia|llover|llovera|frio|calor|nieve|nevar|nublado|soleado|tormenta|pronostico del tiempo|horoscopo|chiste|chistes|cuentame|futbol|partido|receta|cancion|pelicula|noticias|elecciones|candidato|presidente|que hora es|que dia es|que fecha es|capital de)\b/.test(q)) {
     return { motivo: "fuera_de_tema", texto: "Eso queda fuera de lo que puedo responder: solo contesto con cifras de electromovilidad, transporte y energía en Chile." };
   }
   const herramienta = herramientaTco(q);
