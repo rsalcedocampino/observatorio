@@ -219,7 +219,8 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
     <p class="nota" id="nb-conteo"></p>
     <div class="filtros">
       <label>Urgencia <select id="f-urg"><option value="">Todas</option>
-        <option>máxima</option><option>alta</option><option>media</option><option>baja</option>
+        <!-- value sin tilde: el dato trae "maxima" y el filtro compara igualdad exacta -->
+        <option value="maxima">máxima</option><option>alta</option><option>media</option><option>baja</option>
       </select></label>
     </div>
     <div id="t-brechas"></div>
@@ -344,7 +345,7 @@ document.getElementById("f-vin").addEventListener("input", pintarMetas); pintarM
   const f = document.getElementById("f-urg").value; const filas = D.brechas.filter(b => !f || String(b.Urgencia).toLowerCase() === f); const cols = [
     { k: "Brecha", titulo: "Brecha" },
     { k: "Tipo", titulo: "Tipo", fmt: v => `<span class="pill">${v || "—"}</span>` },
-    { k: "Urgencia", titulo: "Urgencia", fmt: v => `<span class="urg-${String(v).toLowerCase()}">${v || "—"}</span>` },
+    { k: "Urgencia", titulo: "Urgencia", fmt: v => `<span class="urg-${String(v).toLowerCase()}">${String(v).toLowerCase() === "maxima" ? "máxima" : (v || "—")}</span>` },
     { k: "Via", titulo: "Via" },
     { k: "Instrumento_Afectado", titulo: "Instrumento afectado" },
     { k: "Referencia_Internacional", titulo: "Referencia internacional" },
