@@ -273,6 +273,8 @@ details.ruta-card[open] .body { animation: ruta-in .18s ease; }
         <option value="5">Eje 5 · Coordinación pública</option>
         <option value="_t">Transversal (sin eje)</option>
       </select></label>
+      <!-- Las opciones salen del dato (Ministerio_ID de cada norma), con su conteo -->
+      <label>Ministerio <select id="f-norma-min"><option value="">Todos</option></select></label>
     </div>
     <div id="t-normas"></div>
   </div>
@@ -380,9 +382,21 @@ const NORMAS_ANIO = PW.completarSerie(D.normas_anio, "anio", "anio", { n: 0 }); 
   { k: "Monto", titulo: "Monto", num: true, fmt: (v, r) => v == null ? "—" : PW.fmt(+v) + " " + (r.Moneda_Unidad || "") },
 ], D.inversiones, {}); const norm = s => (s || "").toLowerCase(); let tNormas = null; const EJE_AB = { 1: "Infraestructura de carga", 2: "Transporte pesado", 3: "Marítimo", 4: "Economía circular de baterías", 5: "Coordinación pública" }; function ejesDeNorma(n) {
   const raw = String(n.Eje_Estrategia || "").trim(); return raw ? raw.split(/[,;/ ]+/).map(Number).filter(x => x) : []; }
+// Ministerio_ID viene del kit Organismos de #10 ("min-energia", o "mtt+min-hacienda" si la norma es
+// conjunta). El dato no trae el nombre del ministerio: estos son los rotulos; una clave nueva sin
+// rotulo se muestra tal cual, y una norma sin ministerio cae en "Sin ministerio asignado".
+const MIN_NOMBRE = { "min-energia": "Energía", "mtt": "Transportes y Telecomunicaciones", "mma": "Medio Ambiente", "minsal": "Salud",
+  "min-economia": "Economía", "min-hacienda": "Hacienda", "minvu": "Vivienda y Urbanismo", "min-bienes-nacionales": "Bienes Nacionales",
+  "min-interior": "Interior", "min-justicia": "Justicia y Derechos Humanos" };
+const ministeriosDe = n => n.Ministerio_ID ? String(n.Ministerio_ID).split("+") : ["_sin"];
+(() => { const cuenta = {}; D.normas.forEach(n => ministeriosDe(n).forEach(m => { cuenta[m] = (cuenta[m] || 0) + 1; }));
+  const sel = document.getElementById("f-norma-min");
+  Object.keys(cuenta).sort((a, b) => (a === "_sin") - (b === "_sin") || cuenta[b] - cuenta[a]).forEach(m => {
+    const o = document.createElement("option"); o.value = m;
+    o.textContent = (m === "_sin" ? "Sin ministerio asignado" : MIN_NOMBRE[m] || m) + " (" + cuenta[m] + ")"; sel.appendChild(o); }); })();
 function pintarNormas() {
-  const q = norm(document.getElementById("busca-norma").value); const fe = document.getElementById("f-norma-eje").value; const filas = D.normas.filter(n => {
-    const ejes = ejesDeNorma(n); const okEje = !fe || (fe === "_t" ? ejes.length === 0 : ejes.includes(+fe)); return okEje && (!q || norm(n.Norma + " " + n.Materia + " " + n.Relevancia_EV + " " + n.Vacios).includes(q)); }).slice().sort((a, b) => (ejesDeNorma(a)[0] || 9) - (ejesDeNorma(b)[0] || 9)); const cols = [
+  const q = norm(document.getElementById("busca-norma").value); const fe = document.getElementById("f-norma-eje").value; const fm = document.getElementById("f-norma-min").value; const filas = D.normas.filter(n => {
+    const ejes = ejesDeNorma(n); const okEje = !fe || (fe === "_t" ? ejes.length === 0 : ejes.includes(+fe)); const okMin = !fm || ministeriosDe(n).includes(fm); return okEje && okMin && (!q || norm(n.Norma + " " + n.Materia + " " + n.Relevancia_EV + " " + n.Vacios).includes(q)); }).slice().sort((a, b) => (ejesDeNorma(a)[0] || 9) - (ejesDeNorma(b)[0] || 9)); const cols = [
     { k: "Eje_Estrategia", titulo: "Eje", fmt: (v, r) => {
         const e = ejesDeNorma(r); return e.length ? e.map(x => `<span class="pill" title="Eje ${x} · ${EJE_AB[x] || ""}">${x}</span>`).join(" ")
                         : `<span class="pill" title="Transversal (sin eje)">T</span>`; } },
@@ -421,7 +435,7 @@ function pintarRelaciones() {
   document.getElementById("rel-resumen").innerHTML = `${PW.fmt(REL.length)} relaciones entre normas de la biblioteca: cuál reglamenta, modifica, complementa, deroga o se apoya en otra. ` +
     `Cada una indica su base: ${PW.fmt(nc("verificada"))} verificadas, ${PW.fmt(nc("parcial"))} parciales y ${PW.fmt(nc("supuesto"))} supuestas, aún sin verificar. Las más conectadas: ${top}.`; })();
 ["busca-rel", "f-rel-tipo", "f-rel-conf"].forEach(id => document.getElementById(id).addEventListener("input", pintarRelaciones)); pintarRelaciones();
-document.getElementById("busca-norma").addEventListener("input", pintarNormas); document.getElementById("f-norma-eje").addEventListener("input", pintarNormas); pintarNormas(); PW.tabla("t-internacional", D.internacional.length ? Object.keys(D.internacional[0]).slice(0, 4).map(k => ({ k, titulo: k.replace(/_/g, " ") })) : [], D.internacional, {}); let tCifras = null; function pintarCifras() {
+document.getElementById("busca-norma").addEventListener("input", pintarNormas); document.getElementById("f-norma-eje").addEventListener("input", pintarNormas); document.getElementById("f-norma-min").addEventListener("input", pintarNormas); pintarNormas(); PW.tabla("t-internacional", D.internacional.length ? Object.keys(D.internacional[0]).slice(0, 4).map(k => ({ k, titulo: k.replace(/_/g, " ") })) : [], D.internacional, {}); let tCifras = null; function pintarCifras() {
   const q = norm(document.getElementById("busca-cifra").value); const filas = D.cifras.filter(c => !q || norm(c.Indicador + " " + c.Fuente).includes(q)); const cols = [
     { k: "Indicador", titulo: "Indicador" },
     { k: "Valor", titulo: "Valor", num: true, fmt: (v, r) => v == null ? "—" : v + " " + (r.Unidad || "") },
