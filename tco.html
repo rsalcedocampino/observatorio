@@ -229,7 +229,8 @@ function tco(v, E, P) {
   }; const total = c.energia + c.mant + c.seguro + c.permiso + c.ivpv; return { total, mensual: total / (P.ny * 12), porKm: total / (kmAnio(P) * P.ny), c, energiaAnio: eA }; }
 function curvaAcum(v, E, P) {
   const opex = costoEnergiaAnio(v, E, P) + (v.ma || 0) + (v.sg || 0) + permisoTotal(v, P) / P.ny; const iv = (v.iv || 0) * P.utm; const arr = []; for (let t = 0; t <= P.ny; t++) arr.push(opex * t + iv); return arr; }
-function breakeven(evC, iceC) { for (let t = 0; t < evC.length; t++) if (evC[t] <= iceC[t]) return t; return null; }
+// Equilibrio con la diferencia de precio de compra: mismo criterio que el payback de Mi vehículo.
+function breakevenConCompra(evC, iceC, difPrecio) { for (let t = 0; t < evC.length; t++) if (evC[t] + difPrecio <= iceC[t]) return t; return null; }
 
 // -------- utilidades UI --------
 const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ") : ""; // carga: texto "AC X kW · DC Y kW" y estimacion de minutos de carga rapida DC al 80% (aprox, potencia constante).
@@ -311,11 +312,11 @@ const BUILD = {}; BUILD["comparador"] = function () {
     const cons = Math.max(0.1, numIn(px + "-cons", esEv ? v.ke : v.kl)); if (esEv) e.ke = cons; else e.kl = cons; return e; }; const render = () => {
     if (!ev || !ice) {
       g("k-comp").innerHTML = ""; g("v-comp").textContent = "Selecciona un eléctrico y un combustión para ver la comparación."; g("g-acum").innerHTML = ""; g("g-desglose").innerHTML = ""; if (tComp) tComp.actualizar([]); return; }
-    const { E, P } = envP(); const eEv = efectivo(ev, "ev", true), eIce = efectivo(ice, "ice", false); const te = tco(eEv, E, P), ti = tco(eIce, E, P); const dif = ti.total - te.total; const evC = curvaAcum(eEv, E, P), iceC = curvaAcum(eIce, E, P); const be = breakeven(evC, iceC); g("k-comp").innerHTML =
+    const { E, P } = envP(); const eEv = efectivo(ev, "ev", true), eIce = efectivo(ice, "ice", false); const te = tco(eEv, E, P), ti = tco(eIce, E, P); const dif = ti.total - te.total; const evC = curvaAcum(eEv, E, P), iceC = curvaAcum(eIce, E, P); const difPrecio = (eEv.pr || 0) + P0.wb - (eIce.pr || 0); const be = breakevenConCompra(evC, iceC, difPrecio); g("k-comp").innerHTML =
       kpi(PW.clp(te.total), "Costo de uso eléctrico", "a " + P.ny + " años") +
       kpi(PW.clp(ti.total), "Costo de uso combustión", "a " + P.ny + " años") +
       kpi(PW.clp(Math.abs(dif)), dif >= 0 ? "Ahorro del EV" : "Sobrecosto del EV", "a " + P.ny + " años", dif >= 0 ? "estado-ok" : "estado-mal") +
-      kpi(be == null ? "no aplica" : (be === 0 ? "inmediato" : be + (be === 1 ? " año" : " años")), "Punto de equilibrio", "costo de uso, sin precio de compra") +
+      kpi(be == null ? "no aplica" : (be === 0 ? "inmediato" : be + (be === 1 ? " año" : " años")), "Punto de equilibrio", "incluye la diferencia de precio") +
       kpi(PW.clp((te.energiaAnio + (eEv.ma || 0)) / (P.kmm * 12)), "Operación/km eléctrico", "energía + mantención") +
       kpi(PW.clp((ti.energiaAnio + (eIce.ma || 0)) / (P.kmm * 12)), "Operación/km combustión", "energía + mantención"); const co2ev = co2kgAnio(eEv, P) * P.ny, co2ic = co2kgAnio(eIce, P) * P.ny; g("v-comp").innerHTML = "En " + P.ny + " años el eléctrico " +
       (dif >= 0 ? "ahorra <b>" + PW.clp(dif) + "</b> en costo de uso" : "cuesta <b>" + PW.clp(-dif) + "</b> más en costo de uso") +
@@ -333,7 +334,7 @@ const BUILD = {}; BUILD["comparador"] = function () {
       series: [{ nombre: "Eléctrico", valores: evC, color: PW.color("--s1") },
                { nombre: "Combustión", valores: iceC, color: PW.color("--s2") }],
       alto: 250, fmtY: PW.clp, fmtV: PW.clp,
-      lineaX: be != null ? { i: be, texto: "equilibrio" } : null,
+      lineaX: null,
     }); const part = [["Energía", "energia"], ["Mantención", "mant"],
                   ["Seguro", "seguro"], ["Permiso", "permiso"], ["Imp. verde", "ivpv"]]; PW.columnas("g-desglose", {
       labels: part.map(p => p[0]),
