@@ -182,9 +182,14 @@ const COLC = {
   "Publico": PW.color("--s2"),
   "Privado": PW.color("--s5"),
   "Electroterminal": PW.color("--s3"),
-  "Cargador de transporte público": PW.color("--s4"),
+  // Claves SIN tilde: son el valor del dato (campo `cat` del registro SEC). Con la tilde, las 77
+  // estaciones de transporte publico salian con el color de "Otros" y entraban en ese filtro (2026-11-04).
+  "Cargador de transporte publico": PW.color("--s4"),
   "Otros": PW.color("--s6"),
-}; const colorCat = c => COLC[c] || PW.color("--s6"); // selects
+}; const colorCat = c => COLC[c] || PW.color("--s6");
+// Nombre visible de cada categoria (el dato viene sin tildes).
+const NOMBRE_CAT = { "Publico": "Público", "Privado": "Privado", "Electroterminal": "Electroterminal (buses)",
+  "Cargador de transporte publico": "Transporte público (buses)" }; const nombreCat = c => NOMBRE_CAT[c] || c || "—"; // selects
 const selAc = document.getElementById("f-ac"); const selCat = document.getElementById("f-cat"); const selReg = document.getElementById("f-reg"); const selMet = document.getElementById("f-metrica"); const REG = {}; PTS.forEach(p => { if (p.rcut) REG[p.rcut] = p.reg; }); Object.entries(REG).sort((a, b) => (a[1] || "").localeCompare(b[1] || ""))
   .forEach(([rc, nom]) => { const o = document.createElement("option"); o.value = rc; o.textContent = nom || rc; selReg.appendChild(o); }); function filtrar() {
   const ac = selAc.value, cat = selCat.value, rc = selReg.value; return PTS.filter(p =>
@@ -193,7 +198,7 @@ const selAc = document.getElementById("f-ac"); const selCat = document.getElemen
     (!rc || p.rcut === rc)); }
 
 function popup(p) {
-  const L = []; L.push(`<b>${PW.esc(p.n || "Estación")}</b>`); if (p.dir) L.push(PW.esc(p.dir)); L.push(`${PW.esc(p.cat || "—")} · <b>${PW.esc(p.ac || "—")}</b>`); if (p.op) L.push(`Operador: ${PW.esc(p.op)}`); L.push(`${PW.esc(p.com || "—")}${p.reg ? ", " + PW.esc(p.reg) : ""}`); L.push(`${PW.fmt(p.ncar || 0)} cargadores · ${PW.fmt(p.nc || 0)} conectores`); if (p.pub) L.push(`<span class="pill" style="margin-top:4px">También en red pública en vivo${p.mt ? " (" + PW.esc(p.mt) + ")" : ""}</span>`); return L.join("<br>"); }
+  const L = []; L.push(`<b>${PW.esc(p.n || "Estación")}</b>`); if (p.dir) L.push(PW.esc(p.dir)); L.push(`${PW.esc(nombreCat(p.cat))} · <b>${PW.esc(p.ac || "—")}</b>`); if (p.op) L.push(`Operador: ${PW.esc(p.op)}`); L.push(`${PW.esc(p.com || "—")}${p.reg ? ", " + PW.esc(p.reg) : ""}`); L.push(`${PW.fmt(p.ncar || 0)} cargadores · ${PW.fmt(p.nc || 0)} conectores`); if (p.pub) L.push(`<span class="pill" style="margin-top:4px">También en red pública en vivo${p.mt ? " (" + PW.esc(p.mt) + ")" : ""}</span>`); return L.join("<br>"); }
 
 const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]); let mapa = null; function render() {
   const pts = filtrar(); const rc = selReg.value, met = selMet.value; const ambito = rc ? (REG[rc] || rc) : "todo el país"; document.getElementById("ambito").textContent = PW.fmt(pts.length) + " estaciones · " + ambito; document.getElementById("kpis").innerHTML = [
@@ -203,11 +208,14 @@ const CHILE = L.latLngBounds([[-56.0, -76.2], [-17.4, -66.2]]); let mapa = null;
     // "Red publica" SIN tilde: es el valor del dato (campo `acceso` del registro SEC), no prosa.
     // Con la tilde el filtro no calzaba con ninguna fila y el KPI mostraba 0 en vez de 602.
     [PW.fmt(pts.filter(p => p.ac === "Red publica").length), "de red pública", "acceso abierto"],
+    // Pedido del usuario (2026-11-04): los cargadores de transporte publico (buses) con su cifra propia.
+    [PW.fmt(pts.filter(p => p.cat === "Cargador de transporte publico").length), "de transporte público",
+      PW.fmt(pts.filter(p => p.cat === "Cargador de transporte publico").reduce((s, p) => s + (p.ncar || 0), 0)) + " cargadores de buses"],
   ].map(kpiHTML).join(""); const capas = [{
     nombre: "Estaciones", visible: true, color: PW.color("--s2"),
     puntos: pts.map(p => ({
       lat: p.lat, lon: p.lon, r: 5, color: colorCat(p.cat),
-      tip: (p.n || "Estación") + " — " + (p.cat || ""),
+      tip: (p.n || "Estación") + " — " + nombreCat(p.cat),
       popup: popup(p),
     })),
   }]; const valores = {}; Object.entries(D.comunas || {}).forEach(([cut, v]) => { valores[cut] = v[met]; }); const etq = { con: "conectores", con_pub: "conectores públicos", est: "estaciones" }[met]; const prev = mapa ? { c: mapa.getCenter(), z: mapa.getZoom() } : null; if (mapa) { mapa.remove(); mapa = null; }
@@ -227,7 +235,7 @@ PW.leyendaMapa("leyenda-mapa", [
   ["Pública", COLC["Publico"]],
   ["Privada", COLC["Privado"]],
   ["Electroterminal", COLC["Electroterminal"]],
-  ["Transporte público", COLC["Cargador de transporte público"]],
+  ["Transporte público", COLC["Cargador de transporte publico"]],
 ]); [selAc, selCat, selReg, selMet].forEach(s => s.addEventListener("input", render)); // geo_comunas.js (~4 MB) ya no se carga fijo: se trae bajo demanda (comun.js:cargarGeoComunas) y
 // recien entonces se pinta el registro por comuna inicial (los refrescos por filtro ya lo tienen cacheado).
 PW.cargarGeoComunas().then(render); 
@@ -266,13 +274,13 @@ const SERIE = PW.completarSerie(D.serie, "ym", "mes", "arrastrar"); PW.lineas("c
   ],
   fmtV: v => PW.fmt(v), alto: 300,
 }); PW.tabla("ci-t-cat", [
-  { k: "cat", titulo: "Categoría de uso" },
+  { k: "cat", titulo: "Categoría de uso", fmt: v => PW.esc(nombreCat(v)) },
   { k: "instalaciones", titulo: "Instalaciones", num: true, fmt: v => PW.fmt(v) },
   { k: "cargadores", titulo: "Cargadores", num: true, fmt: v => PW.fmt(v) },
   { k: "conectores", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
   { k: "mw", titulo: "Potencia (MW)", num: true, fmt: v => PW.fmt(v, 1) },
 ], D.categorias, { orden: "conectores", buscador: false }); const catMW = D.categorias.slice().sort((a, b) => b.mw - a.mw)[0]; document.getElementById("ci-nota-cat").textContent =
-  "El uso privado concentra la mayor cantidad de conectores, pero " + catMW.cat.toLowerCase() +
+  "El uso privado concentra la mayor cantidad de conectores, pero " + nombreCat(catMW.cat).toLowerCase() +
   " concentra la potencia (" + PW.fmt(catMW.mw, 1) + " MW): los buses eléctricos cargan a alta potencia." +
   " Estas cifras son el REGISTRO DECLARADO a la SEC y no tienen por qué coincidir con la red viva que publican la portada y el mapa en vivo, que es lo que los operadores transmiten cada 15 minutos: son dos fuentes distintas del mismo mundo."; PW.barras("ci-g-zona", {
   items: D.zonas.map(z => ({
