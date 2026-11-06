@@ -2472,6 +2472,13 @@ async function tco(env, interp, estado) {
   if (interp.tcoIds && interp.tcoIds.length) versiones = versionesPorRef(idx, interp.tcoIds, interp.tcoK);
   else versiones = versionesDeTco(interp.filasTco || [], interp.anio, 3);
   if (!versiones.length) return await tcoSinModelo(env, interp, idx);
+  if (interp.anio && !(interp.tcoIds && interp.tcoIds.length)) {
+    const aniosDisp = [...new Set((interp.filasTco || []).map((v) => v.yr).filter(Boolean))].sort((x, y) => y - x);
+    if (aniosDisp.length && !aniosDisp.includes(interp.anio)) {
+      const chips = aniosDisp.slice(0, 4).map((a) => { const v = versionesDeTco(interp.filasTco, a, 1); return chip(`${titulo(v[0])} ${a}`, { intencion: "tco", ...refT(v) }); });
+      return sinDato(`El año ${interp.anio} no está disponible para ese modelo en el sitio. Estos son los años que tengo:`, chips);
+    }
+  }
   if (interp.nivelTco === "parecido" && !(interp.tcoIds && interp.tcoIds.length)) return await tcoSinModelo(env, interp, idx, interp.filasTco || []);
   // solo se calcula lo que la calculadora del sitio tambien calcula (versiones con precio y consumo); de las demas se dice por que no
   const sinCalculo = versiones.filter((v) => !calculable(v));
@@ -2737,7 +2744,14 @@ async function marcaElegir(env, interp) {
 
 // Modelo que esta en los datos de costo (TCO) y no en el padron: se muestran las cifras tecnicas que trae el TCO y se ofrece calcular su costo.
 async function soloTco(env, interp, estado) {
-  const versiones = versionesDeTco(interp.filasTco || [], null, 2).slice(0, 2);
+  if (interp.anio) {
+    const aniosDisp = [...new Set((interp.filasTco || []).map((v) => v.yr).filter(Boolean))].sort((x, y) => y - x);
+    if (aniosDisp.length && !aniosDisp.includes(interp.anio)) {
+      const chips = aniosDisp.slice(0, 4).map((a) => { const v = versionesDeTco(interp.filasTco, a, 1); return chip(`${titulo(v[0])} ${a}`, { intencion: "tco", ...refT(v) }); });
+      return sinDato(`El año ${interp.anio} no está disponible para ese modelo en el sitio. Estos son los años que tengo:`, chips);
+    }
+  }
+  const versiones = versionesDeTco(interp.filasTco || [], interp.anio || null, 2).slice(0, 2);
   if (!versiones.length) return sinDato("No encontré ese modelo.");
   const campos = interp.campos || [];
   const faltan = interp.faltantes && interp.faltantes.length ? [nota(`No tengo ${interp.faltantes.join(" ni ")} de este modelo entre los datos del sitio. Esto es lo que sí tengo:`)] : [];
@@ -4162,7 +4176,8 @@ async function interpretarVehiculo(env, texto, q, { previo = null, sinIndicios =
   }
   if (tcoSolo) {
     const faltantes = NO_DISPONIBLES.filter(([, rx]) => rx.test(q)).map(([nombre]) => nombre);
-    return { ...base, intencion: "solo_tco", filasTco: tcoSolo.filas, nivelTco: tcoSolo.nivel, sinCubrirTco: tcoSolo.sinCubrir || [], escritoTco: (tcoSolo.residual || []).join(" "), campos, soloCampos: campos.length > 0 && !RX.ficha.test(q), faltantes, marca: base.marca || (tcoSolo.marca ? tcoSolo.marca.nombre : null) };
+    const anioSolo = /\b(20[12]\d)\b/.exec(q);
+    return { ...base, intencion: "solo_tco", filasTco: tcoSolo.filas, nivelTco: tcoSolo.nivel, sinCubrirTco: tcoSolo.sinCubrir || [], escritoTco: (tcoSolo.residual || []).join(" "), campos, soloCampos: campos.length > 0 && !RX.ficha.test(q), faltantes, anio: anioSolo ? Number(anioSolo[1]) : null, marca: base.marca || (tcoSolo.marca ? tcoSolo.marca.nombre : null) };
   }
   // 7. marca sola, «modelos de X» o una categoria sin marca («camionetas electricas», «que modelos electricos hay»)
   const carroceria = (CARROCERIAS.find(([, rx]) => rx.test(q)) || [null])[0];
@@ -5581,6 +5596,11 @@ const OJO_CLAVE = {
     fuente: ["El parque, las ventas y la importación miden cosas distintas"],
     texto: "El parque, las ventas y la importación miden cosas distintas y no se suman: el parque es lo que circula, las ventas lo que se vende en el año y la importación lo que entra al país.",
   },
+  ventas_acumuladas: {
+    fuente: ["El total de electrificados NO es la cantidad de autos eléctricos"],
+    medidas: ["total_electrificados_acum"],
+    texto: "El total de «electrificados» no es la cantidad de autos eléctricos: incluye híbridos no enchufables y microhíbridos, que no se cargan de la red. Los que se enchufan son los eléctricos a batería (BEV) y los híbridos enchufables (PHEV), más los buses y camiones eléctricos.",
+  },
 };
 
 // El texto del «Ojo» clave de un indicador para esta respuesta, o null si no corresponde (otro indicador, o no trae la cifra que lo confunde).
@@ -5696,9 +5716,11 @@ const corteDe = (r) => r.consulta.periodos[r.consulta.periodos.length - 1];
 const pideConteo = (consultas, medidas) => consultas.every((c) => !c.periodo && !c.ultimos && !c.top && (!c.medida || medidas.includes(c.medida)));
 // los autos eléctricos en general: el INE junta todas las tecnologias, y lo mas reciente de los autos son los enchufables (BEV + PHEV/PEREV) por mes; el total de electrificados anual solo existe para el año en curso
 const AUTOS_ENCHUFABLES = { medida: "enchufables", titulo: "Ventas mensuales de autos eléctricos enchufables (BEV + PHEV/PEREV)", sinAnual: true, descripcion: "autos eléctricos enchufables (BEV + PHEV/PEREV)" };
-const notaDeOrden = ({ clave, descripcion, ultimo, corte, proyeccion }) => ({
+const notaDeOrden = ({ clave, descripcion, ultimo, corte, proyeccion, ultimoAcum }) => ({
   tipo: "nota", verificar: false,
-  texto: `Lo más reciente que publica el sitio de ${descripcion || FAMILIAS[clave].etiqueta} son sus ventas, hasta ${mesTexto(ultimo)}: van primero. El parque en circulación lo publica el INE y llega a ${corte}: va al final${proyeccion ? ", con su proyección" : ""}.`,
+  texto: ultimoAcum
+    ? `Lo más reciente que publica el sitio de ${descripcion || FAMILIAS[clave].etiqueta} son las ventas acumuladas hasta ${mesTexto(ultimoAcum)} y las ventas mensuales hasta ${mesTexto(ultimo)}: van primero. El parque en circulación lo publica el INE y llega a ${corte}: va al final${proyeccion ? ", con su proyección" : ""}.`
+    : `Lo más reciente que publica el sitio de ${descripcion || FAMILIAS[clave].etiqueta} son sus ventas, hasta ${mesTexto(ultimo)}: van primero. El parque en circulación lo publica el INE y llega a ${corte}: va al final${proyeccion ? ", con su proyección" : ""}.`,
 });
 const opcionesEjemplos = () => EJEMPLOS.map((e) => ({ etiqueta: e, accion: { pregunta: e } }));
 
@@ -5970,6 +5992,31 @@ function crearDialogo(env) {
     return bloques;
   }
 
+  // Ventas acumuladas desde el primer año publicado hasta el ultimo mes para las preguntas de «cuantos hay»
+  // sin periodo, sin serie y sin ranking del pais de una clase (autos, buses, camiones). Regla 19, 2026-11-05.
+  // Devuelve { bloques, ultimoAcum } o { bloques: [], ultimoAcum: null } si el indicador no esta disponible.
+  async function bloqueDeAcumuladas(cat, clave) {
+    const ind = cat.indicadores.find((i) => i.id === "ventas_acumuladas");
+    if (!ind) return { bloques: [], ultimoAcum: null };
+    const ultimoAcum = (ind.periodo_defecto || {}).nacional || null;
+    if (!ultimoAcum) return { bloques: [], ultimoAcum: null };
+    const medida = clave === "buses" ? "buses_electricos_acum" : clave === "camiones" ? "camiones_electricos_acum" : null;
+    const titulo = clave === "buses" ? "Ventas acumuladas de buses eléctricos" : clave === "camiones" ? "Ventas acumuladas de camiones eléctricos" : "Ventas acumuladas de vehículos electrificados";
+    try {
+      const params = { indicador: "ventas_acumuladas", periodo: ultimoAcum };
+      if (medida) params.medida = medida;
+      const r = await consultar(env, params, { interno: true });
+      const bs = bloquesDeResultado(r);
+      agregarOjoClave(bs, "ventas_acumuladas", r);
+      if (bs.length && bs[0].titulo) bs[0].titulo = titulo;
+      if (cifrasSinRespaldo(bs, r).length) return { bloques: [], ultimoAcum: null };
+      return { bloques: bs, ultimoAcum };
+    } catch (e) {
+      if (!(e instanceof ErrorConsulta)) throw e;
+      return { bloques: [], ultimoAcum: null };
+    }
+  }
+
   // Preguntas para seguir despues de una respuesta sobre las ventas de una clase o tecnologia (buses, camiones, BEV, PHEV, HEV, MHEV, hidrogeno o autos en general): el año, los ultimos 12 meses, comparar
   // el ultimo mes con el anterior y, segun la clase, sus categorias o sus importaciones. Los meses y el año salen de lo que se acaba de mostrar (`ultimo`, «2026-08»; si la respuesta fue anual, el ultimo mes
   // publicado); no se sugiere comparar con un mes anterior a que el sitio publica el total del mes (desde 2023). Lo que se sugiere lo entiende el propio asistente (lo comprueba ventas_familias.test.mjs).
@@ -6056,8 +6103,9 @@ function crearDialogo(env) {
             const info = {};
             const deVentas = await bloquesDeLasVentas(cat, "autos", info, AUTOS_ENCHUFABLES);
             if (deVentas.length && info.ultimo && info.ultimo > corteDe(r)) {
-              recientes.push(...deVentas);
-              ordenPorFrescura = { clave: "autos", descripcion: AUTOS_ENCHUFABLES.descripcion, ultimo: info.ultimo, corte: corteDe(r), proyeccion: true };
+              const { bloques: acum, ultimoAcum } = await bloqueDeAcumuladas(cat, "autos");
+              recientes.push(...acum, ...deVentas);
+              ordenPorFrescura = { clave: "autos", descripcion: AUTOS_ENCHUFABLES.descripcion, ultimo: info.ultimo, corte: corteDe(r), proyeccion: true, ultimoAcum };
               chipsDeOrden = ((await siguientesDeVentas(cat, "autos", info.ultimo, "parque", original)) || []).slice(0, 1);
             }
           }
@@ -6072,8 +6120,9 @@ function crearDialogo(env) {
             if (deVentas.length && info.ultimo) ventasDe = { clave, ultimo: info.ultimo, modo: "parque" };
             // «¿cuantos camiones electricos hay?»: las ventas llegan al ultimo mes y el parque del INE a 2024: las ventas van primero y el INE al final (orden por frescura). Un porcentaje o un periodo, no
             if (deVentas.length && info.ultimo && pideConteo(consultas, ["electricos", "total_pesados"]) && info.ultimo > corteDe(r)) {
-              recientes.push(...deVentas);
-              ordenPorFrescura = { clave, ultimo: info.ultimo, corte: corteDe(r), proyeccion: false, notasDelIne: true };   // «Te muestro «Camion simple»…» habla de la tarjeta del INE: va con ella
+              const { bloques: acum, ultimoAcum } = await bloqueDeAcumuladas(cat, clave);
+              recientes.push(...acum, ...deVentas);
+              ordenPorFrescura = { clave, ultimo: info.ultimo, corte: corteDe(r), proyeccion: false, notasDelIne: true, ultimoAcum };   // «Te muestro «Camion simple»…» habla de la tarjeta del INE: va con ella
             } else bloques.push(...deVentas);
           }
         }

@@ -3,11 +3,11 @@
 window.EV2025Data = {
   "metadata": {
     "titulo": "Tarifas de electricidad por región y stock eléctrico e híbrido 2024 (INE, registro municipal)",
-    "fecha_generacion": "2026-10-31",
+    "fecha_generacion": "2026-11-06",
     "vigencia_tarifas": "2026-08-01",
     "total_2024_real": 33853,
     "cobertura_regiones": 16,
-    "nota": "Solo tarifas por región y stock 2024 real. La proyección de stock 2025 la publica c_ev_proyeccion. Las tarifas son la referencia industrial (BT4) con IVA: promedio simple por comuna de la potencia contratada y la energía; no se ponderó por clientes y faltan las regiones 10, 11, 12 y 14."
+    "nota": "Solo tarifas por región y stock 2024 real. La proyección de stock 2025 la publica c_ev_proyeccion. Las tarifas son la referencia industrial (BT4) con IVA: promedio simple por comuna de la potencia contratada y la energía; no se ponderó por clientes. En Magallanes es Edelmag (5 localidades; Porvenir y Cabo de Hornos no pagan IVA por ley). Faltan las regiones 10, 11 y 14, donde las distribuidoras difieren hasta el doble y una sola cifra regional engañaría."
   },
   "regiones": [
     {
@@ -91,8 +91,8 @@ window.EV2025Data = {
       "region_cut": "12",
       "region": "Magallanes",
       "stock_2024": 201,
-      "tarifa_potencia_clp_kw": null,
-      "tarifa_energia_clp_kwh": null
+      "tarifa_potencia_clp_kw": 5342.6,
+      "tarifa_energia_clp_kwh": 113.9
     },
     {
       "region_cut": "13",

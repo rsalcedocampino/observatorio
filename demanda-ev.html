@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Cuánta energía consume hoy el parque de vehículos eléctricos y cuándo su crecimiento se hará sentir en el sistema eléctrico nacional.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261104a">
+<link rel="stylesheet" href="assets/estilo.css?v=261106a">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/c_demanda.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -61,7 +61,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   </div>
 </main>
 <script>document.write('<script src="data/c_demanda.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261104a"></script>
+<script src="assets/comun.js?v=261106a"></script>
 <script>
 PW.montarNav("demanda-ev.html"); const D = PW_DATA.c_demanda; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; // Los campos parten con los supuestos del dato (rendimiento = mediana del catalogo), no con un valor fijo: antes el KPI mostraba 94,0 GWh y el modulo 97,7.
 const SUP = D.supuestos || {}; if (SUP.km_anuales) document.getElementById("f-km").value = SUP.km_anuales; if (SUP.rendimiento_km_kwh) document.getElementById("f-rend").value = SUP.rendimiento_km_kwh; function refrescar() {
