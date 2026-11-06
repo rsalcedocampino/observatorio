@@ -979,7 +979,7 @@ return { ErrorConsulta, NIVELES, validarArgs, puntuarIndicadores, sugerirIndicad
 })();
 __mod["agente_web/src/enlaces.js"] = (function () {
 // Enlaces que el asistente puede dibujar FUERA del sitio (fichas de rescate y etiquetas de eficiencia de los vehiculos): solo https y solo de estos
-// sitios, que son los mismos que el sitio ya enlaza en rescate.html y padron-ev.html. Lo demas se descarta.
+// sitios, que son los mismos que el sitio ya enlaza en rescate.html y vehiculo.html. Lo demas se descarta.
 // La lista es la misma de capa_vehiculos.py (HOSTS_ENLACES): una prueba comprueba que sean iguales.
 const HOSTS_ENLACES = [
   "api.rescue.euroncap.com", "www.sec.cl", "www.anb.cl", "drive.google.com",
@@ -1045,7 +1045,7 @@ return { crearLector };
 __mod["agente_web/src/vehiculos.js"] = (function () {
 // Capa de vehiculos del asistente: lee los tres archivos ia_veh_*.json (modelos, TCO y seguros), busca marcas y modelos en lo que escribe la persona y arma
 // las tarjetas de respuesta. No interpreta frases (eso es nlu_veh.js). Todo lo que muestra sale de esos archivos, que a su vez son copia fiel de lo que el sitio
-// ya publica (padron-ev.html, tco.html, seguros.html); la UNICA cuenta que hace es el TCO, con la misma formula de tco.html (ver calcularTCO).
+// ya publica (vehiculo.html, tco.html, seguros.html); la UNICA cuenta que hace es el TCO, con la misma formula de tco.html (ver calcularTCO).
 const { fmtNumero, norm } = __req("servidor/src/util.js");
 const { urlExterna } = __req("agente_web/src/enlaces.js");
 const { crearLector } = __req("agente_web/src/lector.js");
@@ -4382,7 +4382,7 @@ const TEMAS_DE_PAGINA = [
     chips: ["Revisa los escenarios de la PELP", "¿Qué porcentaje de la electricidad es renovable?"],
   },
   {
-    id: "cobertura_de_rescate", pagina: "fichacober.html", nombre: "Cobertura de rescate", tema: "qué parte de los eléctricos más vendidos tiene ficha de rescate",
+    id: "cobertura_de_rescate", pagina: "rescate.html#cobertura", nombre: "Cobertura de rescate", tema: "qué parte de los eléctricos más vendidos tiene ficha de rescate",
     rx: [/\bcobertura (de )?(las )?fichas? de rescate\b/, /\b(porcentaje|proporcion|cuantos|cuantas|que parte)\b.{0,50}\bfichas? de rescate\b/, /\bque (autos|vehiculos|modelos|marcas) (no )?tienen fichas? de rescate\b/],
     chips: ["Revisa la ficha de rescate de un vehículo", "¿Qué es una ficha de rescate?"],
   },
@@ -6278,6 +6278,15 @@ function crearDialogo(env) {
           // «que es el PELP»: no se define, pero quizas el sitio tiene una pagina del tema
           const paginas = await bloqueDePaginasPara(env, original);
           if (paginas) bloques.push(paginas);
+        }
+        // sin redireccion especifica: sin pagina concreta que ofrecer; listar los temas disponibles
+        if (bloques.length === 1) {
+          const porTema = new Map();
+          for (const i of cat.indicadores) porTema.set(i.tema, (porTema.get(i.tema) || 0) + 1);
+          const items = [...porTema.keys()].filter((t) => TEMAS[t]).map((t) => [TEMAS[t][0], TEMAS[t][1]]);
+          items.push(TEMA_NORMATIVA);
+          bloques.push(texto("Estos son los temas de Energías Futuro que puedes explorar:"));
+          bloques.push({ tipo: "lista", verificar: false, items });
         }
         // sobre la meta 2035 lo que si se responde es que metas hay y cuanta fuerza juridica tienen
         const sugeridas = interp.motivo === "meta" ? [{ etiqueta: "¿Es obligatoria la meta 2035?", accion: { pregunta: "¿Es obligatoria la meta 2035?" } }, ...opcionesEjemplos().slice(0, 2)]

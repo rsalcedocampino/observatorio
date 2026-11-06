@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Busca un modelo electrificado en Chile: su ficha 360 (importación, ventas, batería, autonomía y conectores) y el padrón con certificación CIT, ficha de rescate y seguro EV.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261106c">
+<link rel="stylesheet" href="assets/estilo.css?v=261106d">
 <style>
   #t-modelos tbody tr { cursor: pointer; }
   /* el foco tiene que verse: una fila enfocable sin indicador deja el teclado a ciegas */
@@ -96,7 +96,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   </section>
 </main>
 <script>document.write('<script src="data/vehiculo.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261106c"></script>
+<script src="assets/comun.js?v=261106d"></script>
 <script>
 PW.montarNav("vehiculo.html"); const D = PW_DATA.vehiculo; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const selT = document.getElementById("f-tipo"); [...new Set(D.modelos.map(m => m.tipo).filter(Boolean))].sort().forEach(t => {
   const o = document.createElement("option"); o.value = t; o.textContent = t; selT.appendChild(o); }); function norm(s) {
