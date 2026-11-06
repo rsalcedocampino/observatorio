@@ -52,11 +52,12 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   <div class="tarjeta">
     <h2 style="margin-top:0">Capacidad instalada en operación</h2>
     <p class="nota">Potencia instalada del SEN (centrales en operación), por tecnología y por región.
-    Fuente: capacidad instalada de la CNE, homologada.</p>
+    Fuente: catastro de centrales en operación del Coordinador + ACERA (la misma base que la tabla de abajo).</p>
     <div class="fila2">
       <div><h3 style="margin:2px 0 8px;font-size:13.5px">Por tecnología</h3><div id="g-cap-tec"></div></div>
       <div><h3 style="margin:2px 0 8px;font-size:13.5px">Por región</h3><div id="g-cap-reg"></div></div>
     </div>
+    <p class="nota" id="nota-alm" style="margin-top:10px"></p>
   </div>
 
   <div class="tarjeta">
@@ -112,12 +113,25 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>
 PW.montarNav("generacion.html"); const D = PW_DATA.generacion; const GEN = D.centrales, T = D.totales; function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
 function g(id) { return document.getElementById(id); }
+// [CAMBIOS 2116, #26->#11] almacenamiento EN OPERACION: separa la bateria dedicada (fila "Almacenamiento (BESS)")
+// de la co-ubicada dentro de plantas solares (almacenamiento_mwh en una fila no-BESS). El grafico "por tecnologia"
+// solo suma la dedicada, de ahi que los MW de BESS se vean bajos; aqui se da el cuadro completo por energia.
+const _esBESS = x => /bess|almacen/i.test(((x.tecnologia || "") + " " + (x.tec_raw || "")));
+const ALM = (function () {
+  let sMwh = 0, sN = 0, cMwh = 0, cN = 0;
+  GEN.filter(x => (x.fase || "").toLowerCase().indexOf("opera") >= 0).forEach(x => {
+    const e = +x.almacenamiento_mwh || 0;
+    if (_esBESS(x)) { sN++; sMwh += e; }
+    else if (e > 0) { cN++; cMwh += e; }
+  });
+  return { sMwh, sN, cMwh, cN, totMwh: sMwh + cMwh, totN: sN + cN };
+})();
 
 g("kpis").innerHTML = [
   [PW.fmt(T.centrales), "centrales", PW.fmt(T.en_operacion) + " en operación"],
   [PW.fmt(T.capacidad_operando_mw) + " MW", "capacidad en operación", "potencia instalada del SEN"],
   [PW.fmt(T.pct_renovable, 1) + "%", "renovable", "solar, eólica e hidro sobre lo operando"],
-  [PW.fmt(T.almacenamiento_mwh) + " MWh", "en almacenamiento", "capacidad BESS catalogada"],
+  [PW.fmt(T.almacenamiento_mwh) + " MWh", "en almacenamiento", "catalogada, todas las fases"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); function llenar(id, valores, etiqueta) {
   const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es")); g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join(""); }
 llenar("f-tec", GEN.map(x => x.tecnologia), "Todas"); llenar("f-fase", GEN.map(x => x.fase), "Todas"); llenar("f-reg", GEN.map(x => x.region), "Todas"); const COLOR_FASE = { "En operación": "--s3", "En construcción": "--s2", "En desarrollo": "--ink-3" }; function faseBadge(x) {
@@ -143,7 +157,13 @@ const cols = [
   const oper = GEN.filter(x => (x.fase || "").toLowerCase().indexOf("opera") >= 0); function canonReg(r) {
     const u = norm(r); if (u.includes("ARICA")) return "Arica y Parinacota"; if (u.includes("TARAPACA")) return "Tarapacá"; if (u.includes("ANTOFAGASTA")) return "Antofagasta"; if (u.includes("ATACAMA")) return "Atacama"; if (u.includes("COQUIMBO")) return "Coquimbo"; if (u.includes("VALPARAISO")) return "Valparaíso"; if (u.includes("METROPOLITANA")) return "Metropolitana"; if (u.includes("HIGGINS") || u.includes("LIBERTADOR")) return "O'Higgins"; if (u.includes("MAULE")) return "Maule"; if (u.includes("NUBLE")) return "Ñuble"; if (u.includes("BIOBIO")) return "Biobío"; if (u.includes("ARAUCANIA")) return "La Araucanía"; if (u.includes("LOS RIOS")) return "Los Ríos"; if (u.includes("LOS LAGOS")) return "Los Lagos"; if (u.includes("AYSEN")) return "Aysén"; if (u.includes("MAGALLANES")) return "Magallanes"; return (r && r.trim()) ? r : "(sin región)"; }
   const suma = keyFn => {
-    const m = {}; oper.forEach(x => { const k = keyFn(x) || "—"; m[k] = (m[k] || 0) + (x.potencia_mw || 0); }); return Object.entries(m).map(([nombre, valor]) => ({ nombre, valor })).sort((a, b) => b.valor - a.valor); }; const fmtMW = v => PW.fmt(Math.round(v)) + " MW"; PW.barras("g-cap-tec", { items: suma(x => x.tecnologia || "—"), color: PW.color("--s6"), fmtV: fmtMW }); PW.barras("g-cap-reg", { items: suma(x => canonReg(x.region)), color: PW.color("--s4"), fmtV: fmtMW }); })(); // Mix de generación por tecnología en el tiempo (GWh) — desde c_genmix.js
+    const m = {}; oper.forEach(x => { const k = keyFn(x) || "—"; m[k] = (m[k] || 0) + (x.potencia_mw || 0); }); return Object.entries(m).map(([nombre, valor]) => ({ nombre, valor })).sort((a, b) => b.valor - a.valor); }; const fmtMW = v => PW.fmt(Math.round(v)) + " MW"; PW.barras("g-cap-tec", { items: suma(x => x.tecnologia || "—"), color: PW.color("--s6"), fmtV: fmtMW }); PW.barras("g-cap-reg", { items: suma(x => canonReg(x.region)), color: PW.color("--s4"), fmtV: fmtMW });
+  g("nota-alm").innerHTML =
+    `La barra <b>Almacenamiento (BESS)</b> suma solo las ${ALM.sN} baterías dedicadas en operación. Hay además ` +
+    `batería co-ubicada dentro de ${ALM.cN} plantas solares, que no aparece como fila propia. Almacenamiento total ` +
+    `en operación: <b>${PW.fmt(ALM.totMwh)} MWh</b> en ${ALM.totN} sistemas (${ALM.sN} dedicados + ${ALM.cN} co-ubicados ` +
+    `en plantas solares). La potencia (MW) de las baterías co-ubicadas no viene desglosada en el catastro, así que la ` +
+    `potencia total de batería operando es mayor que la que muestra la barra.`; })(); // Mix de generación por tecnología en el tiempo (GWh) — desde c_genmix.js
 (function () {
   const MX = window.PW_DATA.c_genmix; if (!MX || !MX.series || !MX.series.length) return; const COL = {
     "Solar FV + CSP": "--s4", "Eólica": "--s3", "Hidroelectricidad": "--s1",
