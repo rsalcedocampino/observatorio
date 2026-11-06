@@ -32,6 +32,7 @@
     ["Mi auto", [
       ["padron-ev.html", "Padrón EV"],
       ["vehiculo.html", "Vehículo 360"],
+      ["especificaciones-ev.html", "Especificaciones técnicas"],
       ["tco.html#comparador", "Comparar EV vs combustión"],
       ["tco.html#mi-vehiculo", "Desde mi vehículo"],
       ["tco.html#recomendar", "Recomiéndame un EV"],
@@ -134,6 +135,7 @@
   ICONOS["buses.html"] = ICONOS["vehiculo.html"];
   ICONOS["camiones.html"] = ICONOS["vehiculo.html"];
   ICONOS["padron-ev.html"] = ICONOS["vehiculo.html"];
+  ICONOS["especificaciones-ev.html"] = ICONOS["vehiculo.html"];
   ICONOS["homologaciones.html"] = ICONOS["vehiculo.html"];
   ICONOS["inversion.html"] = IC('<path d="M3 17l5-5 3 3 4-4.5"/><path d="M15 10.5h4v4"/><path d="M3 21h18"/>');
   ICONOS["indicadores.html"] = IC('<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>');

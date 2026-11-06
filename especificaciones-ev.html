@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Especificaciones técnicas de autos eléctricos — Energías Futuro</title>
+<meta name="description" content="Autonomía WLTP, batería, potencia, carga rápida, peso y maletero de decenas de modelos de autos eléctricos, versión por versión, con cifras de referencia de terceros e indicación de si cada modelo se vende en Chile.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261106b">
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/c_especificaciones_ev.js?v='+_pwv+'">')</script>
+<style>
+.ver-det{background:none;border:0;padding:0;font:inherit;text-align:left;color:var(--accion);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.ver-det:hover{text-decoration-thickness:2px}
+.etq-chile{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;line-height:1.5;border:2px solid var(--c,var(--border));white-space:nowrap}
+.c-v,.c-i{--c:var(--s3)}
+.c-h,.c-o{--c:var(--s4)}
+.c-s,.c-n{--c:var(--s2)}
+.det-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.det-cab h2{margin:0}
+.det-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:18px;margin-top:14px}
+.det-grid>div{min-width:0}
+.det-aut{grid-column:1/-1}
+#t-esp table.pw th:first-child,#t-esp table.pw td:first-child{min-width:190px}
+.det-grid h3{margin:0 0 6px;font-size:14px}
+dl.d{display:grid;grid-template-columns:1fr auto;gap:3px 14px;margin:0;font-size:13.5px}
+dl.d dt{color:var(--ink-2)}
+dl.d dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.leyenda-chile{margin:8px 0 0;padding-left:18px}
+.leyenda-chile li{margin:4px 0}
+</style>
+</head>
+<body>
+<main>
+  <h1>Especificaciones técnicas</h1>
+  <p class="sub">La ficha técnica de decenas de autos eléctricos, versión por versión: batería, autonomía, consumo, potencia,
+  carga rápida, peso y maletero, y si el modelo se vende en Chile.</p>
+  <p class="nota" id="alcance">Son cifras de referencia de un sitio agregador de pruebas de terceros; el origen de cada medición no se
+  declara. No son cifras oficiales: lo que está homologado y se vende en Chile, con su dato oficial, está en el
+  <a href="padron-ev.html">Padrón EV</a>. Aquí también salen modelos que no se venden en Chile, con su indicación.</p>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="tarjeta">
+    <div class="filtros">
+      <label>Marca <select id="f-marca"><option value="">Todas</option></select></label>
+      <label>En Chile <select id="f-chile"><option value="">Todos</option></select></label>
+      <label><input type="checkbox" id="f-wltp"> Solo con autonomía WLTP</label>
+      <button type="button" id="f-limpiar" class="preset-btn">Limpiar filtros</button>
+    </div>
+    <p class="nota" id="nota-filtro"></p>
+    <div id="t-esp"></div>
+    <p class="nota">Haz clic en el nombre de una versión para ver su detalle. La autonomía y el consumo de la tabla son los WLTP del
+    acabado básico; el detalle trae las demás pruebas. Un «—» significa que la fuente no trae ese dato.</p>
+  </div>
+
+  <div class="tarjeta" id="detalle" hidden tabindex="-1"></div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Las 12 versiones con más autonomía</h2>
+    <div id="g-aut"></div>
+    <p class="nota" id="n-aut"></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Cómo leer estas cifras</h2>
+    <ul>
+      <li><b>WLTP, EPA y CLTC</b> son tres pruebas de laboratorio distintas, usadas en Europa, en Estados Unidos y en China. Sus resultados
+      no son comparables entre sí: por eso la tabla ordena solo por WLTP y el detalle rotula cada prueba.</li>
+      <li><b>La autonomía real cambia</b> con la velocidad, la temperatura y el uso de climatización. Por eso el detalle muestra también la
+      autonomía a 90, 112 y 120 km/h y con climatización de 2 kW, cuando la fuente la trae.</li>
+      <li><b>La batería neta</b> es la energía que se puede usar; la bruta incluye la reserva que el fabricante no deja usar.</li>
+      <li><b>La carga DC máxima</b> es el pico que acepta el auto, no lo que recibe todo el tiempo: la potencia baja a medida que la batería se llena. La
+      forma de esa caída está en <a href="curvas-de-carga.html">Curvas de carga</a>.</li>
+      <li><b>«En Chile»</b> es un dato del modelo, no de la versión, y sale de cruzar fuentes del Observatorio. Que un modelo no aparezca
+      ahí no prueba que no se venda.</li>
+    </ul>
+    <ul class="leyenda-chile" id="leyenda-chile"></ul>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Para seguir</h2>
+    <ul>
+      <li><a href="padron-ev.html">Padrón EV</a>: los modelos que se venden en Chile, con la homologación y la etiqueta de eficiencia oficiales.</li>
+      <li><a href="vehiculo.html">Vehículo 360</a>: un modelo y todo su rastro en Chile (importaciones, ventas, batería y ficha de rescate).</li>
+      <li><a href="tco.html">Costo total de propiedad</a>: cuánto cuesta tener un eléctrico frente a uno a combustión.</li>
+      <li><a href="curvas-de-carga.html">Curvas de carga</a>: por qué un auto no carga siempre a la misma velocidad.</li>
+    </ul>
+    <p class="nota" id="n-fuente"></p>
+  </div>
+</main>
+<script>document.write('<script src="data/c_especificaciones_ev.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=261106b"></script>
+<script>
+PW.montarNav("especificaciones-ev.html");
+(function () {
+  const D = (window.PW_DATA || {}).c_especificaciones_ev;
+  if (!D || !Array.isArray(D.filas) || !D.filas.length || !Array.isArray(D.campos) || !D.estados) {
+    document.getElementById("alcance").textContent = "Los datos de esta página no están disponibles por ahora. Vuelve a intentarlo más tarde.";
+    document.querySelectorAll("main > .tarjeta, main > .kpis").forEach(e => { e.hidden = true; });
+    return;
+  }
+  const esc = PW.esc;
+  const n1 = v => (v == null ? null : PW.fmt(v, 1));
+  const n2 = v => (v == null ? null : PW.fmt(v, 2));
+  const con = (txt, unidad) => (txt == null ? null : txt + " " + unidad);
+
+  // cada fila de la fuente pasa a un objeto con los nombres de `campos`; `i` es su posición, que usa el detalle
+  const FILAS = D.filas.map((f, i) => {
+    const o = { i };
+    D.campos.forEach((n, j) => { o[n] = f[j]; });
+    o.chile_txt = o.chile && D.estados[o.chile] ? D.estados[o.chile][0] : "Sin dato";
+    return o;
+  });
+
+  // ---- resumen
+  const modelos = new Set(FILAS.map(f => f.marca + "|" + f.modelo)).size;
+  const conVentas = FILAS.filter(f => f.chile === "v").length;
+  const mejor = FILAS.reduce((a, f) => (f.aut != null && (a == null || f.aut > a.aut) ? f : a), null);
+  document.getElementById("kpis").innerHTML = [
+    [PW.fmt(FILAS.length), "versiones", "de " + PW.fmt(modelos) + " modelos"],
+    [PW.fmt(conVentas), "con ventas en Chile", "el estado es del modelo, no de la versión"],
+    [mejor ? PW.fmt(mejor.aut) + " km" : "—", "mayor autonomía WLTP", mejor ? mejor.nombre : ""],
+  ].map(d => `<div class="kpi"><div class="v">${esc(d[0])}</div><div class="l">${esc(d[1])}</div><div class="d">${esc(d[2])}</div></div>`).join("");
+
+  // ---- tabla y filtros
+  const COLS = [
+    { k: "nombre", titulo: "Versión", prio: true, fmt: (v, f) => `<button type="button" class="ver-det" data-i="${f.i}">${esc(v)}</button>` },
+    { k: "chile_txt", titulo: "En Chile", prio: true, fmt: (v, f) => `<span class="etq-chile c-${esc(f.chile || "x")}">${esc(v)}</span>` },
+    { k: "aut", titulo: "Autonomía WLTP (km)", num: true, prio: true, fmt: v => (v == null ? "—" : PW.fmt(v)) },
+    { k: "bat_neta", titulo: "Batería neta (kWh)", num: true, prio: true, fmt: v => (v == null ? "—" : n2(v)) },
+    { k: "cons", titulo: "Consumo WLTP (kWh/100 km)", num: true, fmt: v => (v == null ? "—" : n2(v)) },
+    { k: "pot", titulo: "Potencia (kW)", num: true, fmt: v => (v == null ? "—" : n1(v)) },
+    { k: "dc", titulo: "Carga DC máx. (kW)", num: true, fmt: v => (v == null ? "—" : n1(v)) },
+    { k: "acel", titulo: "0–100 km/h (s)", num: true, fmt: v => (v == null ? "—" : n1(v)) },
+    { k: "vmax", titulo: "Vel. máx. (km/h)", num: true, fmt: v => (v == null ? "—" : PW.fmt(v)) },
+    { k: "peso", titulo: "Peso en vacío (kg)", num: true, fmt: v => (v == null ? "—" : PW.fmt(v)) },
+    { k: "mal", titulo: "Maletero (L)", num: true, fmt: v => (v == null ? "—" : PW.fmt(v)) },
+  ];
+  const T = PW.tabla("t-esp", COLS, FILAS, { orden: "aut", asc: false });
+
+  const selMarca = document.getElementById("f-marca");
+  [...new Set(FILAS.map(f => f.marca))].sort((a, b) => a.localeCompare(b, "es"))
+    .forEach(m => selMarca.insertAdjacentHTML("beforeend", `<option value="${esc(m)}">${esc(m)}</option>`));
+  const selChile = document.getElementById("f-chile");
+  Object.keys(D.estados).forEach(c => {
+    const n = FILAS.filter(f => f.chile === c).length;
+    if (n) selChile.insertAdjacentHTML("beforeend", `<option value="${esc(c)}">${esc(D.estados[c][0])} (${n})</option>`);
+  });
+  const chkWltp = document.getElementById("f-wltp");
+  function aplicar() {
+    const m = selMarca.value, c = selChile.value, w = chkWltp.checked;
+    const sel = FILAS.filter(f => (!m || f.marca === m) && (!c || f.chile === c) && (!w || f.aut != null));
+    T.actualizar(sel);
+    document.getElementById("nota-filtro").textContent = (m || c || w) ? `${PW.fmt(sel.length)} de ${PW.fmt(FILAS.length)} versiones con estos filtros.` : "";
+  }
+  [selMarca, selChile, chkWltp].forEach(el => el.addEventListener("change", aplicar));
+  document.getElementById("f-limpiar").addEventListener("click", () => { selMarca.value = ""; selChile.value = ""; chkWltp.checked = false; aplicar(); });
+
+  // ---- detalle de una versión
+  const dl = filas => {
+    const r = filas.filter(x => x[1] != null && x[1] !== "");
+    return r.length ? `<dl class="d">${r.map(x => `<dt>${esc(x[0])}</dt><dd>${x[1]}</dd>`).join("")}</dl>` : '<p class="nota">La fuente no trae estos datos.</p>';
+  };
+  const IGUALES = [["wltp_s", "wltp_b"], ["wltp_s_ac", "wltp_b_ac"], ["epa_s", "epa_b"]];
+  function pruebas(x) {
+    const A = x.aut || {};
+    const omitidas = new Set();
+    IGUALES.forEach(([sup, bas]) => { if (A[sup] && A[bas] && A[sup][0] === A[bas][0] && A[sup][1] === A[bas][1]) omitidas.add(sup); });
+    const filas = D.pruebas.filter(([cod]) => A[cod] && !omitidas.has(cod)).map(([cod, rotulo, tipo]) => {
+      const p = A[cod];
+      const otro = p[1] == null ? "" : " · " + (tipo === "red" ? PW.fmt(p[1], 1) + " %" : PW.fmt(p[1], 2) + " kWh/100 km");
+      return [rotulo, PW.fmt(p[0]) + " km" + otro];
+    });
+    if (!filas.length) return '<p class="nota">La fuente no trae pruebas de autonomía de esta versión.</p>';
+    return dl(filas.map(f => [f[0], esc(f[1])])) +
+      '<p class="nota" style="margin:8px 0 0">En cada prueba: la autonomía y, después de «·», el consumo; en las de climatización, la reducción de autonomía frente a la misma prueba sin climatización.' +
+      (omitidas.size ? " Donde el acabado superior da las mismas cifras que el básico, no se repite." : "") + "</p>";
+  }
+  const detalle = document.getElementById("detalle");
+  function mostrarDetalle(i) {
+    const f = FILAS[i];
+    if (!f) return;
+    const x = f.x || {};
+    const est = f.chile && D.estados[f.chile];
+    detalle.innerHTML = `
+      <div class="det-cab">
+        <div><h2>${esc(f.nombre)}</h2>
+          <p style="margin:6px 0 0"><span class="etq-chile c-${esc(f.chile || "x")}">${esc(f.chile_txt)}</span>
+          <span class="nota">${est ? esc(est[1]) + " " : ""}El estado es del modelo, no de esta versión.</span></p></div>
+        <button type="button" class="preset-btn" id="det-cerrar">Cerrar</button>
+      </div>
+      <div class="det-grid">
+        <div class="det-aut"><h3>Autonomía por prueba</h3>${pruebas(x)}</div>
+        <div><h3>Batería y carga</h3>${dl([
+          ["Batería neta", con(n2(f.bat_neta), "kWh")], ["Batería bruta", con(n2(f.bat_bruta), "kWh")],
+          ["Química del cátodo", x.qui ? esc(x.qui) : null], ["Voltaje nominal", x.vol != null ? PW.fmt(x.vol) + " V" : null],
+          ["Módulos", x.mod != null ? PW.fmt(x.mod) : null], ["Configuración del paquete", x.cfg ? esc(x.cfg) : null],
+          ["Carga DC máxima", con(n1(f.dc), "kW")], ["Ubicación del puerto de carga", x.puerto ? esc(x.puerto) : null]])}</div>
+        <div><h3>Prestaciones</h3>${dl([
+          ["Potencia máxima", con(n1(f.pot), "kW")], ["Par motor", con(n1(x.par), "Nm")],
+          ["0–100 km/h", con(n1(f.acel), "s")], ["Velocidad máxima", con(f.vmax == null ? null : PW.fmt(f.vmax), "km/h")]])}</div>
+        <div><h3>Peso, maletero y remolque</h3>${dl([
+          ["Peso en vacío", con(f.peso == null ? null : PW.fmt(f.peso), "kg")], ["Peso total máximo", con(x.peso_max == null ? null : PW.fmt(x.peso_max), "kg")],
+          ["Carga útil máxima", con(x.carga_util == null ? null : PW.fmt(x.carga_util), "kg")], ["Carga máxima en el techo", con(x.techo == null ? null : PW.fmt(x.techo), "kg")],
+          ["Maletero", con(f.mal == null ? null : PW.fmt(f.mal), "L")], ["Maletero con los asientos traseros abatidos", con(x.mal_abat == null ? null : PW.fmt(x.mal_abat), "L")],
+          ["Maletero delantero", con(x.frunk == null ? null : PW.fmt(x.frunk), "L")],
+          ["Remolque con freno", con(x.rem_freno == null ? null : PW.fmt(x.rem_freno), "kg")], ["Remolque sin freno", con(x.rem_sin == null ? null : PW.fmt(x.rem_sin), "kg")],
+          ["Carga vertical sobre la bola", con(x.bola == null ? null : PW.fmt(x.bola), "kg")]])}</div>
+      </div>`;
+    detalle.hidden = false;
+    detalle.scrollIntoView({ behavior: "smooth", block: "start" });
+    detalle.focus({ preventScroll: true });
+    document.getElementById("det-cerrar").addEventListener("click", () => { detalle.hidden = true; });
+  }
+  document.getElementById("t-esp").addEventListener("click", e => {
+    const b = e.target.closest(".ver-det");
+    if (b) mostrarDetalle(Number(b.dataset.i));
+  });
+
+  // ---- ranking de autonomía
+  const top = FILAS.filter(f => f.aut != null).sort((a, b) => b.aut - a.aut).slice(0, 12);
+  // las etiquetas largas se cortan a unos 35 caracteres: sin la marca queda a la vista lo que distingue a una versión de otra (el nombre completo va en la ayuda de cada barra)
+  const etiqueta = f => (f.nombre.length > 34 && f.nombre.toLowerCase().startsWith(f.marca.toLowerCase()) ? f.nombre.slice(f.marca.length).trim() : f.nombre);
+  PW.barras("g-aut", { items: top.map(f => ({ nombre: etiqueta(f), valor: f.aut, extra: esc(f.nombre) + "<br>" + esc(f.chile_txt) })), fmtV: v => PW.fmt(v) + " km" });
+  document.getElementById("n-aut").textContent = "Autonomía WLTP del acabado básico, en km. Solo entran las versiones que traen esa prueba; las que solo traen EPA o CLTC no se comparan aquí.";
+
+  // ---- leyenda de «En Chile» y fuente
+  document.getElementById("leyenda-chile").innerHTML = Object.keys(D.estados).map(c => `<li><span class="etq-chile c-${esc(c)}">${esc(D.estados[c][0])}</span> ${esc(D.estados[c][1])}</li>`).join("");
+  document.getElementById("n-fuente").textContent = "Fuente: " + D.fuente + ". " + D.nota + " Datos generados el " + String(D.generado || "").slice(0, 10) + ".";
+})();
+</script>
+</body>
+</html>
