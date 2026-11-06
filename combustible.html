@@ -38,10 +38,17 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   <p class="sub">Los precios de bencina, diésel y kerosene por <b>estación de servicio</b> en Chile
   (CNE, Bencina en Línea). Una fila por estación con el precio de cada combustible; ordena la tabla
   por la columna que quieras y filtra por región, marca comercial o grupo dueño para encontrar
-  dónde está más barato.
+  dónde está más barato. En <b>Energía importada</b>, cuánta energía entra al país cada año en los
+  combustibles que se importan.
   <span class="pill">CNE</span></p>
   <div class="franja-macro" data-claves="brent,gasolina,usd" data-nota="Petróleo y gasolina son precios internacionales, no el precio en bomba en Chile."></div>
 
+  <div class="tab-nav" id="pestanas" role="tablist">
+    <button class="tab-btn activo" data-tab="precios">Precios por estación</button>
+    <button class="tab-btn" data-tab="importada">Energía importada</button>
+  </div>
+
+  <section class="tab-content activo" id="precios">
   <div class="kpis" id="kpis"></div>
   <p class="nota" id="nota"></p>
 
@@ -60,6 +67,21 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   </div>
 
   <p class="fuente" id="fuente"></p>
+  </section>
+
+  <section class="tab-content" id="importada">
+  <h2>Energía de los combustibles importados</h2>
+  <p class="nota">Petróleo y derivados (partida 2710) y gas (partida 2711, gas licuado y gas natural):
+  las cantidades que declara Aduanas en cada importación, llevadas a energía con el poder calorífico
+  de cada producto, y comparadas con el Balance Nacional de Energía de la CNE. Es una estimación: úsala
+  como orden de magnitud y lee la nota de abajo.</p>
+  <div class="kpis" id="ci-kpis"></div>
+  <div class="tarjeta">
+    <div id="t-importada"></div>
+  </div>
+  <div class="tarjeta" id="ci-nota"></div>
+  <p class="fuente" id="ci-fuente"></p>
+  </section>
 </main>
 <script>document.write('<script src="data/combustible.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=261106d"></script>
@@ -92,6 +114,36 @@ llenar("f-reg", EST.map(x => x.region), "Todas"); llenar("f-marca", EST.map(x =>
     (!mk || x.marca === mk) &&
     (!gr || x.grupo === gr) &&
     (!q || norm(x.estacion + " " + x.comuna).includes(q))); g("contador").textContent = filas.length + " estaciones"; if (tab) tab.actualizar(filas); else tab = PW.tabla("t-comb", cols, filas, { orden: "p93", asc: true, max: 300, buscador: false }); }
-["busca", "f-reg", "f-marca", "f-grupo"].forEach(id => g(id).addEventListener("input", refrescar)); refrescar(); g("fuente").textContent = "Precios actualizados al " + (T.fecha || "s/f") + ". " + D.nota; </script>
+["busca", "f-reg", "f-marca", "f-grupo"].forEach(id => g(id).addEventListener("input", refrescar)); refrescar(); g("fuente").textContent = "Precios actualizados al " + (T.fecha || "s/f") + ". " + D.nota;
+// Pestana "Energia importada" (06-11-2026, dato de #97: c_combustible_importado). Se arma al abrirla.
+PW.pestanas("pestanas", async (id) => {
+  if (id !== "importada") return;
+  const C = await PW.cargarDatos("c_combustible_importado");
+  if (!C) { g("ci-nota").textContent = "No se pudo cargar el dato de energía importada."; return; }
+  const S = C.serie, U = C.unidad; const completos = S.filter(a => !a.parcial); const ult = completos[completos.length - 1];
+  const ref = S.find(a => a.anio === C.ultimo_con_referencia); const curso = S.find(a => a.parcial);
+  const d1 = v => v.toLocaleString("es-CL", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const pct = v => (v === null || v === undefined) ? "—" : (v > 0 ? "+" : "") + d1(v) + " %";
+  g("ci-kpis").innerHTML = [
+    ult ? [d1(ult.total), U + " en " + ult.anio, "último año completo"] : null,
+    ref ? [pct(ref.total_dif), "frente al balance de la CNE", "en " + ref.anio + ", el último año con referencia"] : null,
+    curso ? [d1(curso.total), U + " en " + curso.anio, "año en curso, parcial"] : null,
+  ].filter(Boolean).map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${PW.esc(d[1])}</div><div class="d">${PW.esc(d[2])}</div></div>`).join("");
+  const mg = v => (v === null || v === undefined) ? "—" : d1(v);
+  PW.tabla("t-importada", [
+    { k: "anio", titulo: "Año", fmt: (v, a) => a.parcial ? v + " (parcial)" : String(v) },
+    { k: "petroleo", titulo: "Petróleo y derivados", fmt: mg },
+    { k: "gas", titulo: "Gas", fmt: mg },
+    { k: "total", titulo: "Total", fmt: v => "<b>" + mg(v) + "</b>" },
+    { k: "total_cne", titulo: "Balance CNE", fmt: mg },
+    { k: "total_dif", titulo: "Diferencia con la CNE", fmt: v => v === null || v === undefined ? "sin referencia" : pct(v) },
+  ], S, { orden: "anio", asc: true, buscador: false });
+  const neg = t => PW.esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  g("ci-nota").innerHTML = "<h3 style=\"margin-top:0\">Diferencia con el Balance Nacional de Energía</h3>" + C.nota.map(b => b.tipo === "lista"
+    ? "<ul>" + b.items.map(i => "<li>" + neg(i) + "</li>").join("") + "</ul>"
+    : "<p>" + neg(b.texto) + "</p>").join("");
+  g("ci-fuente").textContent = "Cifras en " + U + ". Fuentes: " + C.fuente + " Cálculo de Energías Futuro; actualizado el " + (C.generado || "").slice(0, 10) + ".";
+});
+</script>
 </body>
 </html>
