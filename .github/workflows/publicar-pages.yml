@@ -1,0 +1,45 @@
+# Despliegue propio del Observatorio en GitHub Pages (reemplaza al automatico «pages build and
+# deployment» de la fuente «rama»). Autorizado por el usuario en el chat de #1 el 2026-11-06, tras
+# E-019: ese dia el despliegue automatico se corto 6 veces (4 por el tope fijo de 10 min y 2 con
+# «Deployment failed, try again later»).
+#
+# - Timeout de despliegue de 30 min y tolerancia alta a errores pasajeros del servicio.
+# - Una sola corrida a la vez; un push nuevo espera en cola y no cancela la que esta desplegando.
+# - Se puede relanzar a mano desde Actions («Run workflow») sin commits vacios.
+# - El sitio es estatico: no hay build. Se sube la raiz del repo tal cual (sin .git ni .github).
+#
+# Lo mantiene #1. publicar_web.py excluye .github del espejo, asi que este archivo vive solo aqui.
+name: Publicar sitio
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: despliegue
+        uses: actions/deploy-pages@v4
+        with:
+          timeout: 1800000
+          error_count: 20
