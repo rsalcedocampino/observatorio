@@ -23,76 +23,81 @@
     });
   }
 
-  // Agrupacion por intencion del visitante (no por origen del dato): 5 grupos + "Mapas" como
+  // Agrupacion por intencion del visitante (no por origen del dato): 7 grupos + "Mapas" como
   // link directo (fuera de GRUPOS, ver montarNav) porque cruza 5 fuentes a la vez y no es "de"
-  // ningun grupo. Reemplaza los 10 grupos por origen de dato que tenia el nav hasta 2026-09-16
-  // (ver CAMBIOS.md). infraestructura.html ya no esta en el menu: hoy es una redireccion a
-  // carga-registro-mapa.html#capacidad, donde vive la capacidad de carga instalada (SEC).
+  // ningun grupo. Los 7 grupos son la propuesta 1.2 de la auditoria del 30-10
+  // (Pagina Web\auditorias\2026-10-30\3_menu_descripciones_graficos.md), elegida por el usuario
+  // el 06-11 (CAMBIOS 1859): se separa "Inversion" de "Mercado", los rotulos se acortan y, dentro
+  // de cada grupo, el orden es el de una decision (cuanto cuesta, que modelo, como lo uso, como lo
+  // protejo). Sin la union U3 (no elegida), baterias y cargadores de Aduana siguen con entrada propia.
+  // fichacober.html y padron-ev.html ya no estan: son redirecciones a rescate.html#cobertura y
+  // vehiculo.html#buscador (uniones U1 y U2). infraestructura.html tampoco: redirige a
+  // carga-registro-mapa.html#capacidad.
   const GRUPOS = [
     ["Mi auto", [
-      ["padron-ev.html", "Padrón EV"],
-      ["vehiculo.html", "Vehículo 360"],
+      ["tco.html#comparador", "Comparar eléctrico vs combustión"],
+      ["tco.html#recomendar", "Recomiéndame un eléctrico"],
+      ["tco.html#mi-vehiculo", "Cuánto ahorro desde mi auto actual"],
+      ["tco.html#solar", "Cargar con paneles solares"],
+      ["costo.html", "Bencina vs enchufe en mi comuna"],
+      ["combustible.html", "Precio de combustible por estación"],
+      ["vehiculo.html", "Modelos eléctricos: buscador y ficha"],
       ["especificaciones-ev.html", "Especificaciones técnicas"],
-      ["tco.html#comparador", "Comparar EV vs combustión"],
-      ["tco.html#mi-vehiculo", "Desde mi vehículo"],
-      ["tco.html#recomendar", "Recomiéndame un EV"],
-      ["tco.html#solar", "Simulador solar"],
-      ["costo.html", "Bencina vs Enchufe"],
-      ["horas.html", "Mejor hora"],
-      ["combustible.html", "Precio de combustible"],
+      ["curvas-de-carga.html", "Cuánto demora una carga"],
+      ["horas.html", "Mejor hora para cargar"],
+      ["seguros.html", "Seguros para tu eléctrico"],
       ["rescate.html", "Fichas de rescate"],
-      ["fichacober.html", "Cobertura de rescate"],
-      ["seguros.html", "Coberturas EV"],
     ]],
     ["Red de carga", [
       ["mapa-carga.html", "Red de carga en vivo"],
       ["carga-registro-mapa.html", "Registro oficial de carga (SEC)"],
-      ["operadores.html", "Operadores y Sitios"],
-      ["autonomia.html", "Brecha de cobertura"],
-      ["duales.html", "Estaciones duales"],
-      ["conectores-red.html", "Conectores flota-red"],
-      ["curvas-de-carga.html", "Curvas de carga"],
+      ["operadores.html", "Ranking de operadores"],
+      ["autonomia.html", "Tramos sin carga en ruta"],
+      ["conectores-red.html", "Conectores: autos que llegan vs red instalada"],
+      ["duales.html", "Bencineras con cargador"],
     ]],
-    ["Mercado e inversión", [
-      ["ventas.html", "Ventas de vehículos EV"],
-      ["rotacion.html", "Rotación de inventario"],
-      ["elasticidad.html", "Elasticidad bencina-EV"],
+    ["Mercado", [
+      ["ventas.html", "Ventas de vehículos eléctricos"],
+      ["permisos.html", "Parque vehicular (INE)"],
+      ["homologaciones.html", "Homologaciones: los modelos que vienen"],
+      ["radar.html", "Importaciones de vehículos (Aduana)"],
+      ["rotacion.html", "Rotación de inventario por marca"],
+      ["elasticidad.html", "Bencina y adopción de eléctricos"],
       ["buses.html", "Buses eléctricos"],
-      ["tco-buses.html", "TCO de buses urbanos"],
-      ["camiones.html", "Camiones cero y baja emisión"],
-      ["inversion.html", "Inversión verde"],
-      ["indicadores.html", "Indicadores económicos"],
-      ["radar.html", "Importaciones de vehículos"],
-      ["homologaciones.html", "Radar de homologaciones"],
-      ["baterias.html", "Importaciones de baterías de litio"],
-      ["cargadores-importacion.html", "Importación de cargadores EV"],
-      ["grupos-economicos.html", "Grupos económicos"],
-      // seguros-energia (parques solares, eolicos y BESS) estuvo por error en "Mi auto"; aqui por decision
-      // del usuario en #17 (31-10).
-      ["seguros-energia.html", "Seguros de proyectos de energía"],
+      ["tco-buses.html", "Costo total de un bus urbano"],
+      ["camiones.html", "Camiones y comerciales eléctricos"],
     ]],
-    ["Energía y resiliencia", [
-      ["riesgo.html", "Cortes eléctricos"],
-      ["bess-cortes.html", "Almacenamiento (BESS)"],
-      ["demanda-ev.html", "Demanda del parque EV"],
-      ["red-electrica.html", "Red eléctrica y potencial"],
-      ["pelp.html", "Chile vs PELP"],
-      ["generacion.html", "Parque de generación"],
+    ["Energía", [
+      ["riesgo.html", "Cortes de luz"],
+      ["bess-cortes.html", "Almacenamiento (BESS) y cortes"],
+      ["generacion.html", "Generación y emisiones"],
       ["vertimiento.html", "Vertimiento renovable"],
+      ["red-electrica.html", "Red eléctrica y potencial renovable"],
+      ["demanda-ev.html", "Demanda eléctrica de los eléctricos"],
+      ["pelp.html", "Chile frente a su plan energético (PELP)"],
     ]],
-    ["Normativa y metas", [
-      ["tracker.html", "Meta 2035"],
+    ["Inversión", [
+      ["inversion.html", "Inversión y financiamiento verde"],
+      // seguros-energia (parques solares, eolicos y BESS) estuvo por error en "Mi auto" (decision del
+      // usuario en #17, 31-10).
+      ["seguros-energia.html", "Seguros para proyectos de energía"],
+      ["grupos-economicos.html", "Grupos económicos"],
+      ["indicadores.html", "Indicadores económicos"],
+      ["baterias.html", "Importación de baterías de litio"],
+      ["cargadores-importacion.html", "Importación de cargadores"],
+    ]],
+    ["Normativa", [
+      ["tracker.html", "Meta 2035: ¿vamos a llegar?"],
       ["normativa.html", "Metas y marco legal"],
-      ["reporte-energetico.html", "Reporte Energético 2026 CCGE"],
       ["acuerdo-electromovilidad.html", "Acuerdo de Electromovilidad 2026"],
-      ["bodegaje.html", "Bodegaje de sustancias peligrosas"],
+      ["reporte-energetico.html", "Empresas obligadas a reportar energía (CCGE)"],
+      ["bodegaje.html", "Almacenamiento de baterías y sustancias peligrosas"],
     ]],
-    ["Territorio y población", [
+    ["Territorio", [
       ["reporte-regional.html", "Reporte Regional"],
-      ["pois.html", "Puntos de interés y servicios"],
       ["vulnerabilidad.html", "Vulnerabilidad energética"],
-      ["censo.html", "Censo Nacional"],
-      ["permisos.html", "Parque de vehículos"],
+      ["censo.html", "Censo 2024 y proyección"],
+      ["pois.html", "Puntos de interés y servicios"],
     ]],
   ];
 
@@ -776,10 +781,22 @@
         ultimo = i;
       });
       // relleno suave bajo la curva (opcional, para destacar brechas)
+      // [E-005, CAMBIOS 1921] el area se cierra TRAMO A TRAMO: con un solo poligono, una serie con
+      // huecos (null) se cerraba desde el ultimo tramo hasta el primer punto y dibujaba un triangulo
+      // falso sobre el hueco. Un tramo de un solo punto no tiene area.
       if (s.area && primero !== null && ultimo !== null && ultimo > primero) {
-        const base = Y(minV);
-        const dArea = d + `L${X(ultimo).toFixed(1)} ${base.toFixed(1)}L${X(primero).toFixed(1)} ${base.toFixed(1)}Z`;
-        svg.appendChild(svgEl("path", { d: dArea, fill: cBase, "fill-opacity": 0.12, stroke: "none" }));
+        const base = Y(minV).toFixed(1);
+        const tramos = [];
+        let tramo = [];
+        s.valores.forEach((v, i) => {
+          if (v == null) { if (tramo.length) tramos.push(tramo); tramo = []; return; }
+          tramo.push(i);
+        });
+        if (tramo.length) tramos.push(tramo);
+        const dArea = tramos.filter(t => t.length > 1).map(t =>
+          `M${X(t[0]).toFixed(1)} ${base}` + t.map(i => `L${X(i).toFixed(1)} ${Y(s.valores[i]).toFixed(1)}`).join("") +
+          `L${X(t[t.length - 1]).toFixed(1)} ${base}Z`).join("");
+        if (dArea) svg.appendChild(svgEl("path", { d: dArea, fill: cBase, "fill-opacity": 0.12, stroke: "none" }));
       }
       if (conEtiquetas && ultimo !== null) {
         etiquetas.push({ nombre: s.nombre, c, x: X(ultimo), y0: Y(s.valores[ultimo]), y: Y(s.valores[ultimo]) });

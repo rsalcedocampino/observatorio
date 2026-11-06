@@ -27,7 +27,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta name="description" content="Fichas de corte seguro y rescate de vehículos electrificados que circulan en Chile, consolidadas desde Euro NCAP, SEC y ANB.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261106b">
+<link rel="stylesheet" href="assets/estilo.css?v=261106c">
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/rescate.js?v='+_pwv+'">')</script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -37,9 +37,17 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   <h1>Fichas de rescate</h1>
   <p class="sub">Fichas de corte seguro y rescate de vehículos electrificados que circulan en
   Chile, consolidadas desde Euro NCAP, SEC y ANB. Pensado para bomberos, aseguradoras y
-  talleres: filtra por marca, modelo, tecnología, tipo, año o fuente y abre el documento
-  original (con copia de respaldo).</p>
+  talleres: en <b>Fichas por modelo</b> filtra por marca, modelo, tecnología, tipo, año o fuente y abre
+  el documento original (con copia de respaldo); en <b>Cobertura de los más vendidos</b> mira qué parte
+  de los eléctricos que más se venden tiene ficha y cuáles no.</p>
 
+  <div class="tab-nav" id="pestanas" role="tablist">
+    <button class="tab-btn activo" data-tab="fichas">Fichas por modelo</button>
+    <button class="tab-btn" data-tab="cobertura">Cobertura de los más vendidos</button>
+  </div>
+
+  <section class="tab-content activo" id="fichas">
+  <h2>Fichas por modelo</h2>
   <div class="kpis" id="kpis"></div>
   <p class="nota" id="nota"></p>
 
@@ -59,9 +67,33 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   <div class="tarjeta">
     <div id="t-fichas"></div>
   </div>
+  </section>
+
+  <section class="tab-content" id="cobertura">
+  <h2>Cobertura de los más vendidos</h2>
+  <p class="sub">Cuando un vehículo eléctrico choca o se incendia, bomberos necesita su <b>ficha de
+  rescate</b> (dónde cortar, dónde está la batería de alto voltaje). Cruzando por <b>modelo</b>
+  homologado, medimos qué parte de los eléctricos más vendidos en Chile tiene ficha, y cuáles, pese a
+  venderse mucho, no la tienen.</p>
+
+  <div class="kpis" id="cb-kpis"></div>
+  <p class="nota" id="cb-nota"></p>
+
+  <div class="tarjeta">
+    <h3 style="margin-top:0">Modelos eléctricos más vendidos: ¿tienen ficha?</h3>
+    <div class="leyenda" id="cb-ley" style="margin:4px 0 12px"></div>
+    <div class="scroll-x"><table class="pw" id="cb-tabla"></table></div>
+    <p class="nota" style="margin-top:10px">La barra escala las unidades vendidas del modelo.
+    Alcance: los modelos del top de ventas (<span id="cb-alcance">ver nota de fuente</span>); "cobertura" son las unidades de
+    modelos con ficha sobre ese total. Los modelos sin ficha, pese a su volumen, son la brecha de
+    seguridad para el rescate.</p>
+  </div>
+
+  <p class="fuente" id="cb-fuente"></p>
+  </section>
 </main>
 <script>document.write('<script src="data/rescate.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261106b"></script>
+<script src="assets/comun.js?v=261106c"></script>
 <script>
 PW.montarNav("rescate.html"); const D = PW_DATA.rescate; const VEH = D.vehiculos; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; function norm(s) { return (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toUpperCase(); }
 function g(id) { return document.getElementById(id); }
@@ -97,6 +129,31 @@ llenarModelos(); const cols = [
     (!fte || (v.fuentes || []).includes(fte)) &&
     (!q || norm(v.marca + " " + v.modelo + " " + (v.descripcion || "")).includes(q))); g("contador").textContent =
     filas.length + " vehículos, " + filas.reduce((a, v) => a + (v.documentos || []).length, 0) + " documentos"; if (tab) tab.actualizar(filas); else tab = PW.tabla("t-fichas", cols, filas, { orden: "marca", asc: true, max: 600, buscador: false }); }
-g("f-marca").addEventListener("input", () => { llenarModelos(); refrescar(); }); ["busca", "f-tec", "f-tipo", "f-modelo", "f-anio", "f-fuente"].forEach(id => g(id).addEventListener("input", refrescar)); refrescar(); </script>
+g("f-marca").addEventListener("input", () => { llenarModelos(); refrescar(); }); ["busca", "f-tec", "f-tipo", "f-modelo", "f-anio", "f-fuente"].forEach(id => g(id).addEventListener("input", refrescar)); refrescar();
+// [U1, CAMBIOS 1859] fichacober.html se unio aqui: su contenido es la pestana "cobertura" y se
+// arma al abrirla, con el mismo codigo y el mismo dato (c_fichacober). fichacober.html quedo como
+// redireccion a rescate.html#cobertura.
+PW.pestanas("pestanas", async (id) => {
+  if (id !== "cobertura") return;
+  if (!await PW.cargarDatos("c_fichacober")) { g("cb-nota").textContent = "No se pudo cargar el dato de cobertura."; return; }
+  const D = window.PW_DATA.c_fichacober; const C = PW.color; const M = D.modelos; const maxu = Math.max(...M.map(m => m.unidades), 1); const brecha = M.filter(m => !m.ficha)[0]; g("cb-kpis").innerHTML = [
+    [PW.fmt(D.cobertura_pct, 1) + "%", "cobertura de rescate", "de las unidades más vendidas"],
+    [PW.fmt(D.con_ficha) + " de " + PW.fmt(D.total_modelos), "modelos con ficha", "entre los más vendidos"],
+    [brecha ? brecha.marca + " " + brecha.modelo : "—", "el mayor sin ficha", brecha ? PW.fmt(brecha.unidades) + " unidades" : ""],
+    [PW.fmt(D.fichas_totales), "fichas en la biblioteca", "incluye modelos no vendidos aquí"],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); g("cb-nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + "."; PW.leyendaMapa("cb-ley", [["Con ficha de rescate", C("--good")], ["Sin ficha (brecha)", C("--critical")]]); function barra(u, ficha) {
+    const w = Math.min(100, u / maxu * 100); const col = C(ficha ? "--good" : "--critical"); return `<div class="ubar"><span class="n">${PW.fmt(u)}</span>` +
+      `<div class="track"><i style="width:${w}%;background:${col}"></i></div></div>`; }
+  function tag(ficha) {
+    return ficha
+      ? `<span class="tag" style="background:${C("--good")}">Sí</span>`
+      : `<span class="tag" style="background:${C("--critical")}">No</span>`; }
+  const th = `<thead><tr><th>Marca</th><th>Modelo</th>` +
+    `<th>Unidades vendidas</th><th class="num">Ficha</th></tr></thead>`; const rows = M.map(m =>
+    `<tr${!m.ficha ? ' style="background:color-mix(in srgb, ' + C("--critical") + ' 6%, transparent)"' : ""}>` +
+    `<td><b>${PW.esc(m.marca)}</b></td><td>${PW.esc(m.modelo)}</td>` +
+    `<td style="min-width:200px">${barra(m.unidades, m.ficha)}</td>` +
+    `<td class="num">${tag(m.ficha)}</td></tr>`).join(""); g("cb-tabla").innerHTML = th + "<tbody>" + rows + "</tbody>"; g("cb-fuente").textContent = D.nota; if (D.ventana) g("cb-alcance").textContent = (D.alcance_pct != null ? "≈" + PW.fmt(D.alcance_pct, 1) + "% de los enchufables livianos vendidos" : "ventas") + " de " + D.ventana;
+}); </script>
 </body>
 </html>

@@ -23,11 +23,11 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Ficha vehículo 360 — Energías Futuro</title>
-<meta name="description" content="Un modelo y todo su rastro en Chile en una sola ficha: cuánto se importó y a qué precio, cuánto se vende, batería, autonomía y conectores.">
+<title>Modelos eléctricos en Chile — Energías Futuro</title>
+<meta name="description" content="Busca un modelo electrificado en Chile: su ficha 360 (importación, ventas, batería, autonomía y conectores) y el padrón con certificación CIT, ficha de rescate y seguro EV.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="stylesheet" href="assets/estilo.css?v=261106b">
+<link rel="stylesheet" href="assets/estilo.css?v=261106c">
 <style>
   #t-modelos tbody tr { cursor: pointer; }
   /* el foco tiene que verse: una fila enfocable sin indicador deja el teclado a ciegas */
@@ -39,10 +39,19 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 </head>
 <body>
 <main>
-  <h1>Ficha vehículo 360</h1>
-  <p class="sub">Un modelo, todo su rastro en Chile en una sola ficha: cuánto se importó y a
-  qué precio, cuánto se vende, batería, autonomía, conectores y guía de rescate. El expediente
-  que ningún portal automotriz reúne.</p>
+  <h1>Modelos eléctricos en Chile</h1>
+  <p class="sub">Dos formas de buscar un modelo electrificado. En <b>Ficha 360</b>, un modelo con todo su
+  rastro en Chile: cuánto se importó y a qué precio, cuánto se vende, batería, autonomía, conectores y
+  guía de rescate. En <b>Buscador del padrón</b>, el padrón de modelos identificados en Chile con su
+  certificación (CIT), ficha de rescate y seguro EV, para filtrar y llegar al documento.</p>
+
+  <div class="tab-nav" id="pestanas" role="tablist">
+    <button class="tab-btn activo" data-tab="ficha">Ficha 360</button>
+    <button class="tab-btn" data-tab="buscador">Buscador del padrón</button>
+  </div>
+
+  <section class="tab-content activo" id="ficha">
+  <h2>Ficha 360</h2>
   <p class="nota" id="nota"></p>
 
   <div class="filtros">
@@ -57,12 +66,37 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   <div id="detalle"></div>
 
   <div class="tarjeta">
-    <h2 style="margin-top:0">Catálogo (haz clic en una fila para ver la ficha)</h2>
+    <h3 style="margin-top:0">Catálogo (haz clic en una fila para ver la ficha)</h3>
     <div id="t-modelos"></div>
   </div>
+  </section>
+
+  <section class="tab-content" id="buscador">
+  <h2>Buscador del padrón</h2>
+  <p class="nota">Son dos catálogos distintos: este padrón consolida la identidad, la certificación, la
+  ficha de rescate y el seguro de cada modelo, y la Ficha 360 parte de la importación y la venta. Por eso
+  un modelo puede estar en uno y no en el otro.</p>
+  <p class="nota" id="pd-nota"></p>
+
+  <div class="kpis" id="pd-kpis"></div>
+
+  <div class="tarjeta">
+    <div class="filtros">
+      <label>Buscar <input type="search" id="f-buscar" placeholder="Marca o modelo..."></label>
+      <label>Tecnología <select id="f-tec"><option value="">Todas</option></select></label>
+      <label>Marca <select id="f-marca"><option value="">Todas</option></select></label>
+      <label><input type="checkbox" id="f-rescate"> Con ficha de rescate</label>
+      <label><input type="checkbox" id="f-cit"> Certificado en Chile (CIT)</label>
+      <label><input type="checkbox" id="f-seguro"> Con seguro EV</label>
+      <button type="button" id="f-limpiar" class="preset-btn">Limpiar filtros</button>
+    </div>
+    <p class="nota" id="nota-filtro"></p>
+    <div class="scroll-x" id="t-padron"></div>
+  </div>
+  </section>
 </main>
 <script>document.write('<script src="data/vehiculo.js?v='+_pwv+'"><\/script>')</script>
-<script src="assets/comun.js?v=261106b"></script>
+<script src="assets/comun.js?v=261106c"></script>
 <script>
 PW.montarNav("vehiculo.html"); const D = PW_DATA.vehiculo; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const selT = document.getElementById("f-tipo"); [...new Set(D.modelos.map(m => m.tipo).filter(Boolean))].sort().forEach(t => {
   const o = document.createElement("option"); o.value = t; o.textContent = t; selT.appendChild(o); }); function norm(s) {
@@ -123,6 +157,47 @@ function marcarFilasAccesibles() {
     if (tr.getAttribute("role") === "button") return; tr.tabIndex = 0; tr.setAttribute("role", "button"); const f = filaDe(tr); if (f) tr.setAttribute("aria-label", "Ver la ficha de " + f.marca + " " + f.modelo); }); }
 new MutationObserver(marcarFilasAccesibles).observe(contModelos, { childList: true, subtree: true }); marcarFilasAccesibles(); contModelos.addEventListener("keydown", e => {
   if (e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return; const tr = e.target.closest("tbody tr"); if (!tr) return; e.preventDefault(); // Espacio no debe scrollear la pagina
-  const m = filaDe(tr); if (m) mostrarDetalle(m); }); </script>
+  const m = filaDe(tr); if (m) mostrarDetalle(m); });
+// [U2, CAMBIOS 1859] padron-ev.html se unio aqui como la pestana "buscador" (padron-ev.html quedo como
+// redireccion a vehiculo.html#buscador). Se arma al abrirla, con el mismo codigo y el mismo dato
+// (c_padron_ev). No se fundieron las dos tablas: el 06-11 solo 241 marca+modelo estaban en los dos
+// catalogos (1.066 en vehiculo, 815 en el padron), asi que una tabla unica habria perdido modelos.
+PW.pestanas("pestanas", async (id) => {
+  if (id !== "buscador") return;
+  if (!await PW.cargarDatos("c_padron_ev")) { document.getElementById("pd-nota").textContent = "No se pudo cargar el padrón."; return; }
+  const D = PW_DATA.c_padron_ev; if (!D.disponible) {
+  document.getElementById("pd-nota").textContent = "Padrón no disponible todavía."; return; }
+  const M = D.meta; document.getElementById("pd-nota").textContent =
+    "Fuente: " + M.fuente + ". Actualizado " + (D.generado || "") + ". " + M.descripcion; document.getElementById("pd-kpis").innerHTML = [
+    [PW.fmt(M.total), "modelos en el padrón", M.marcas.length + " marcas"],
+    [PW.fmt(M.n_cit) + " (" + PW.fmt(M.n_cit / M.total * 100, 0) + "%)", "certificados en Chile", "CIT / Etiqueta de Eficiencia"],
+    [PW.fmt(M.n_rescate) + " (" + PW.fmt(M.n_rescate / M.total * 100, 0) + "%)", "con ficha de rescate", "Euro NCAP / SEC / ANB"],
+    [PW.fmt(M.n_seguro), "con seguro EV", "de " + PW.fmt(M.total)],
+  ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const selTec = document.getElementById("f-tec"); selTec.innerHTML += M.tecnologias.map(t => `<option value="${PW.esc(t)}">${PW.esc(t)}</option>`).join(""); const selMarca = document.getElementById("f-marca"); selMarca.innerHTML += M.marcas.map(m => `<option value="${PW.esc(m)}">${PW.esc(m)}</option>`).join(""); const TEC_TXT = { BEV: "Eléctrico", PHEV: "Híbrido enchufable", HEV: "Híbrido", MHEV: "Híbrido leve", EREV: "Rango extendido", FCEV: "Hidrógeno" }; const cols = [
+    { k: "marca", titulo: "Marca" },
+    { k: "modelo", titulo: "Modelo" },
+    { k: "tec", titulo: "Tecnología", fmt: v => `<span class="pill">${PW.esc(TEC_TXT[v] || v)}</span>` },
+    { k: "carroceria", titulo: "Carrocería", fmt: v => v ? PW.esc(v) : "—" },
+    { k: "bateria", titulo: "Batería", num: true, fmt: v => v ? PW.fmt(v, 1) + " kWh" : "—" },
+    { k: "autonomia", titulo: "Autonomía", num: true, fmt: v => v ? PW.fmt(v) + " km" : "—" },
+    { k: "precio_min", titulo: "Precio", num: true, fmt: (v, f) => v ? (f.precio_max && f.precio_max !== v ? PW.clp(v) + " – " + PW.clp(f.precio_max) : PW.clp(v)) : "—" },
+    { k: "cit", titulo: "CIT", fmt: (v, f) => v ? `<a href="${PW.esc(f.etiqueta_url || '#')}" target="_blank" rel="noopener" class="pill" style="background:var(--good);color:#fff">certificado</a>` : "—" },
+    { k: "rescate", titulo: "Ficha de rescate", fmt: (v, f) => v ? `<a href="${PW.esc(f.rescate_url)}" target="_blank" rel="noopener">ver PDF</a>` : "—" },
+    { k: "seguro_ev", titulo: "Seguro EV", fmt: v => v ? `<span class="pill" style="background:var(--s3);color:#fff">disponible</span>` : "—" },
+  ]; let tabP = null; const normP = s => (s || "").toString().normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase(); function filtradas() {
+    const q = normP(document.getElementById("f-buscar").value.trim()); const tec = selTec.value; const marca = selMarca.value; const soloRescate = document.getElementById("f-rescate").checked; const soloCit = document.getElementById("f-cit").checked; const soloSeguro = document.getElementById("f-seguro").checked; return D.v.filter(x =>
+      (!q || normP(x.marca).includes(q) || normP(x.modelo).includes(q)) &&
+      (!tec || x.tec === tec) &&
+      (!marca || x.marca === marca) &&
+      (!soloRescate || x.rescate) &&
+      (!soloCit || x.cit) &&
+      (!soloSeguro || x.seguro_ev)
+    ); }
+  function aplicar() {
+    const filas = filtradas(); document.getElementById("nota-filtro").textContent =
+      "Mostrando " + PW.fmt(filas.length) + " de " + PW.fmt(D.v.length) + " modelos."; if (tabP) tabP.actualizar(filas); else tabP = PW.tabla("t-padron", cols, filas, { orden: "marca", asc: true, buscador: false, max: 800 }); }
+  document.getElementById("f-buscar").addEventListener("input", aplicar); ["f-tec", "f-marca"].forEach(i => document.getElementById(i).addEventListener("input", aplicar)); ["f-rescate", "f-cit", "f-seguro"].forEach(i => document.getElementById(i).addEventListener("change", aplicar)); document.getElementById("f-limpiar").addEventListener("click", () => {
+    document.getElementById("f-buscar").value = ""; selTec.value = ""; selMarca.value = ""; document.getElementById("f-rescate").checked = false; document.getElementById("f-cit").checked = false; document.getElementById("f-seguro").checked = false; aplicar(); }); aplicar();
+}); </script>
 </body>
 </html>
