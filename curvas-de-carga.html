@@ -222,32 +222,50 @@ function curvaUsable(niveles) {
 const CURVA = curvaUsable(G && G.niveles);
 const HAY_CURVA = CURVA.length > 0;
 
-// parte (0 a 1) de su potencia maxima que recibe el auto a ese nivel de bateria: interpolacion lineal entre los niveles de la curva
-// (sin curva vale 1: potencia maxima constante, que da el tiempo minimo teorico)
-function factor(soc, clave) {
-  if (!HAY_CURVA) return 1;
-  if (soc <= CURVA[0].soc) return CURVA[0][clave] / 100;
-  const ult = CURVA[CURVA.length - 1];
+// curva propia de cada modelo (campo por_modelo del modulo): la mediana, por nivel de la bateria, de las curvas distintas de ese modelo, en porcentaje de su
+// potencia maxima. Se usa solo si cumple lo mismo que la general (0 a 100 % sin huecos de mas de 10 puntos y sus percentiles en orden). Desde 3 curvas hay
+// rango; con menos no lo hay: dos curvas no alcanzan para decir cuanto varian los autos de ese modelo.
+const MIN_CURVAS_RANGO = 3;
+function curvasPorModelo(lista) {
+  const out = {};
+  if (!Array.isArray(lista)) return out;
+  lista.forEach(m => {
+    if (!m || typeof m.id !== "string" || !m.id || !(m.curvas >= 1)) return;
+    const niveles = curvaUsable(m.niveles);
+    if (!niveles.length) return;
+    out[m.id] = { id: m.id, marca: m.marca, modelo: m.modelo, curvas: m.curvas, terceros: m.terceros || 0, propias: m.propias || 0, niveles, sinRango: m.curvas < MIN_CURVAS_RANGO };
+  });
+  return out;
+}
+const POR_MODELO = curvasPorModelo(G && G.por_modelo);
+
+// parte (0 a 1) de su potencia maxima que recibe el auto a ese nivel de bateria: interpolacion lineal entre los niveles de la curva (la general o, si se
+// pasa "cv", la de su modelo). Sin curva vale 1: potencia maxima constante, que da el tiempo minimo teorico.
+function factor(soc, clave, cv) {
+  const c = cv || CURVA;
+  if (!c.length) return 1;
+  if (soc <= c[0].soc) return c[0][clave] / 100;
+  const ult = c[c.length - 1];
   if (soc >= ult.soc) return ult[clave] / 100;
   let i = 1;
-  while (CURVA[i].soc < soc) i++;
-  const a = CURVA[i - 1], b = CURVA[i];
+  while (c[i].soc < soc) i++;
+  const a = c[i - 1], b = c[i];
   return (a[clave] + (b[clave] - a[clave]) * (soc - a.soc) / (b.soc - a.soc)) / 100;
 }
 
 // potencia (kW) que recibe el auto a un nivel de bateria en carga rapida (DC): la menor entre la del cargador y la curva escalada por la maxima del auto
-function potenciaDC(soc, pAuto, pCargador, clave) {
-  return Math.min(pCargador, factor(soc, clave) * pAuto);
+function potenciaDC(soc, pAuto, pCargador, clave, cv) {
+  return Math.min(pCargador, factor(soc, clave, cv) * pAuto);
 }
 
 // minutos de "desde" a "hasta" en carga rapida (DC): se suma el tiempo de cada paso de 1 % de bateria (el ultimo, el resto), con la potencia en el
 // punto medio del paso: la menor entre la del cargador y la curva escalada por la maxima del auto. "limitado" es la parte del tramo en que manda el cargador.
-function integrarDC(bateriaKwh, pAuto, pCargador, desde, hasta, clave) {
+function integrarDC(bateriaKwh, pAuto, pCargador, desde, hasta, clave, cv) {
   let min = 0, limitado = 0, total = 0, s = desde;
   while (s < hasta - 1e-9) {
     const b = Math.min(s + 1, hasta), medio = (s + b) / 2;
-    const deCurva = factor(medio, clave) * pAuto;
-    const p = potenciaDC(medio, pAuto, pCargador, clave);
+    const deCurva = factor(medio, clave, cv) * pAuto;
+    const p = potenciaDC(medio, pAuto, pCargador, clave, cv);
     if (!(p > 0)) return null;
     min += bateriaKwh * (b - s) / 100 / p * 60;
     total += b - s;
@@ -257,8 +275,10 @@ function integrarDC(bateriaKwh, pAuto, pCargador, desde, hasta, clave) {
   return { min, limitado: total > 0 ? limitado / total : 0 };
 }
 
-function proyeccion(bateriaKwh, dcAuto, acAuto, desde, hasta, otro) {
+// "modelo" es la curva propia del modelo del auto (un elemento de POR_MODELO) o nada: sin ella se usa la general
+function proyeccion(bateriaKwh, dcAuto, acAuto, desde, hasta, otro, modelo) {
   const ok = v => v !== null && v !== undefined && Number.isFinite(v);
+  const cv = modelo ? modelo.niveles : null, hay = !!cv || HAY_CURVA, conRango = hay && !(modelo && modelo.sinRango);
   if (![bateriaKwh, desde, hasta].every(ok) || !(bateriaKwh > 0) || desde < 0 || hasta > 100 || !(hasta > desde)) return { valido: false };
   const energia = bateriaKwh * (hasta - desde) / 100;
   const filas = CARGADORES.concat(otro ? [otro] : []).map(ch => {
@@ -270,10 +290,10 @@ function proyeccion(bateriaKwh, dcAuto, acAuto, desde, hasta, otro) {
       return { cargador: ch.nombre, corriente: ch.corriente, kw: ch.kw, uso, minutos: energia / uso * 60, rapido: null, lento: null, media: uso,
                limita: auto <= ch.kw ? "el auto" : "el cargador", limitado: auto <= ch.kw ? 0 : 1 };
     }
-    const c = integrarDC(bateriaKwh, auto, ch.kw, desde, hasta, "mediana");
-    const r = HAY_CURVA ? integrarDC(bateriaKwh, auto, ch.kw, desde, hasta, "p75") : null;     // la curva del cuarto de arriba de los modelos: la mas rapida
-    const l = HAY_CURVA ? integrarDC(bateriaKwh, auto, ch.kw, desde, hasta, "p25") : null;     // la del cuarto de abajo: la mas lenta
-    if (!c || (HAY_CURVA && (!r || !l))) return vacia;
+    const c = integrarDC(bateriaKwh, auto, ch.kw, desde, hasta, "mediana", cv);
+    const r = conRango ? integrarDC(bateriaKwh, auto, ch.kw, desde, hasta, "p75", cv) : null;     // la curva del cuarto de arriba: la mas rapida
+    const l = conRango ? integrarDC(bateriaKwh, auto, ch.kw, desde, hasta, "p25", cv) : null;     // la del cuarto de abajo: la mas lenta
+    if (!c || (conRango && (!r || !l))) return vacia;
     return { cargador: ch.nombre, corriente: ch.corriente, kw: ch.kw, uso, minutos: c.min, rapido: r ? r.min : null, lento: l ? l.min : null, media: energia / c.min * 60,
              limita: c.limitado <= 0 ? "el auto" : (c.limitado >= 1 ? "el cargador" : "el cargador al comienzo y luego el auto"), limitado: c.limitado };
   });
@@ -303,6 +323,16 @@ function textoRango(rapido, lento) {
   return a === b ? "cerca de " + a : a + " a " + b;
 }
 const pc = v => PW.fmt(v, 0) + " %";
+// curva propia del modelo del auto elegido (campo cm de c_carga_modelos), si el modulo la trae y es usable; si no, se usa la general
+const curvaDe = r => (r && r.cm && POR_MODELO[r.cm]) || null;
+// cuantas curvas sostienen la del modelo y de que tipo: «mediana de 8 curvas: 8 publicadas por terceros»
+function textoEvidencia(m) {
+  if (m.curvas === 1) return "una sola curva, " + (m.propias ? "medición propia" : "publicada por terceros");
+  const partes = [];
+  if (m.terceros) partes.push(m.terceros + (m.terceros === 1 ? " publicada por terceros" : " publicadas por terceros"));
+  if (m.propias) partes.push(m.propias + (m.propias === 1 ? " medición propia" : " mediciones propias"));
+  return "mediana de " + m.curvas + " curvas" + (partes.length ? ": " + partes.join(" y ") : "");
+}
 
 // ---- esquema sin cifras: solo si no hay curva general. La forma general de la curva de carga; no es una medicion ni corresponde a ningun modelo.
 const FORMA = [[0, 0.60], [0.05, 0.85], [0.10, 1], [0.30, 1], [0.40, 0.98], [0.50, 0.92], [0.60, 0.80], [0.70, 0.65], [0.80, 0.50], [0.85, 0.30], [0.90, 0.18], [0.95, 0.12], [1, 0.08]];
@@ -391,7 +421,9 @@ function pintarCurva() {
   document.getElementById("n-curva").textContent = "Curva general de la carga rápida (DC): " + G.n_modelos + " modelos y " + G.n_curvas + " curvas, cada una dividida por su propia potencia máxima. " +
     (rotulos.length ? "Fuente de las curvas: " + rotulos.join("; ") + ". " : "") +
     "Describe la forma típica, no la de un auto en particular: no sabemos con qué cargador ni a qué temperatura se midió cada curva.";
+  const npm = Object.keys(POR_MODELO).length;
   alcance.textContent = "Explicación general de divulgación, con una curva general armada con curvas publicadas de " + G.n_modelos + " modelos y una estimación del tiempo de carga de cada auto con las cifras del catálogo del Observatorio. " +
+    (npm ? "Para los " + npm + " modelos que tienen curvas en el registro, la estimación usa la curva de ese modelo; para los demás, la general. " : "") +
     "No es la curva de un auto en particular: cada uno tiene la suya, que además cambia con la temperatura de la batería y con el cargador.";
   // cifras de la curva
   document.getElementById("detalle-curva").hidden = false;
@@ -409,7 +441,8 @@ function pintarCurva() {
   document.getElementById("n-metodo").textContent = "Cómo se calculó: cada curva se divide por su propia potencia máxima; para cada nivel de la batería, cada modelo aporta la mediana de sus curvas y la curva general es la mediana de los modelos. " +
     "Cada modelo cuenta una vez" + (curvasTop / G.n_curvas >= 0.3 ? ": " + marcaTop + " aporta " + curvasTop + " de las " + G.n_curvas + " curvas y, si cada curva contara una vez, su forma mandaría sobre las demás" : ", aunque tenga varias versiones") +
     ". Los extremos son la curva más baja y la más alta del registro en ese nivel. Se dejaron fuera las curvas que la fuente marca como estimadas y las que repiten la de otra versión del mismo modelo. Sin interpolar ni estimar ningún punto. " +
-    "Un nivel con menos de " + G.min_modelos + " modelos no se calcula.";
+    "Un nivel con menos de " + G.min_modelos + " modelos no se calcula." +
+    (npm ? " En el selector de auto, cada modelo con curvas en el registro tiene además su propia curva: la mediana, nivel por nivel, de sus curvas distintas (sin las que la fuente marca como estimadas ni las que repiten otra del mismo modelo), con rango desde " + MIN_CURVAS_RANGO + " curvas." : "");
   // modelos que componen la curva, con su estado en Chile
   const estados = G.estados_chile || {};
   PW.tabla("t-modelos", [
@@ -499,13 +532,15 @@ function pintarResumen(p, desde, hasta) {
   const dc = leer("c-dc");
   const r = resumenAuto(p, dc);
   const nombre = elegido ? PW.esc(nombreDe(elegido)) : "tu auto";
+  const cm = curvaDe(elegido), hayC = HAY_CURVA || !!cm;
   const lineas = [];
   if (r.rapida) {
     const f = r.rapida;
-    let s = etq("DC") + "De " + PW.fmt(desde) + " % a " + PW.fmt(hasta) + " %, " + nombre + (HAY_CURVA ? " tarda " : " tarda como mínimo ") + "<strong>" + textoTiempo(f.minutos) +
+    let s = etq("DC") + "De " + PW.fmt(desde) + " % a " + PW.fmt(hasta) + " %, " + nombre + (hayC ? " tarda " : " tarda como mínimo ") + "<strong>" + textoTiempo(f.minutos) +
       "</strong> con un cargador rápido de " + potTxt(f.kw);
     if (f.rapido != null && textoTiempo(f.rapido) !== textoTiempo(f.lento)) s += " (entre " + textoTiempo(f.rapido) + " y " + textoTiempo(f.lento) + ")";
     s += ".";
+    if (cm) s += " Es con la curva de este modelo (" + textoEvidencia(cm) + ").";
     if (r.sinGanancia) s += " Como tu auto acepta como máximo " + potTxt(dc) + " en DC, un cargador de más de " + potTxt(dc) + " no baja el tiempo.";
     lineas.push(s);
   }
@@ -520,29 +555,33 @@ function pintarGrafico(p, desde, hasta) {
   const bloque = document.getElementById("bloque-grafico"), sel = document.getElementById("c-graf");
   const dc = leer("c-dc");
   const filas = p.filas.map((f, i) => [f, i]).filter(([f]) => f.corriente === "DC" && f.minutos != null);
-  if (!HAY_CURVA || !(dc > 0) || !filas.length) { bloque.hidden = true; grafAuto = null; return; }
+  const cm = curvaDe(elegido);
+  if (!(HAY_CURVA || cm) || !(dc > 0) || !filas.length) { bloque.hidden = true; grafAuto = null; return; }
   const previo = sel.value;
   sel.innerHTML = filas.map(([f, i]) => '<option value="' + i + '">' + PW.esc(f.cargador) + "</option>").join("");
   const porDefecto = String(p.filas.indexOf(resumenAuto(p, dc).rapida));
   sel.value = filas.some(([, i]) => String(i) === previo) ? previo : porDefecto;
   const fila = p.filas[Number(sel.value)];
-  grafAuto = { dc, fila, desde, hasta, nombre: elegido ? nombreDe(elegido) : "tu auto" };
+  grafAuto = { dc, fila, desde, hasta, nombre: elegido ? nombreDe(elegido) : "tu auto", cm };
   bloque.hidden = false;
   dibujarAuto();
   document.getElementById("ley-auto").innerHTML =
-    '<span style="--c:var(--s1)">Estimación central</span>' +
-    '<span style="--c:var(--seq-2)">Rango (curvas del cuarto de arriba y del cuarto de abajo de los modelos)</span>' +
+    '<span style="--c:var(--s1)">Estimación central' + (cm ? " (curva de este modelo)" : "") + "</span>" +
+    (cm && cm.sinRango ? "" : '<span style="--c:var(--seq-2)">' + (cm ? "Rango (mitad central de las curvas de este modelo)" : "Rango (curvas del cuarto de arriba y del cuarto de abajo de los modelos)") + "</span>") +
+    (cm ? '<span style="--c:var(--ink-2)">Curva general, de referencia (línea fina)</span>' : "") +
     '<span style="--c:var(--ink-3)">Tramo que cargas (' + PW.fmt(desde) + " a " + PW.fmt(hasta) + " %)</span>" +
     (fila.kw < dc ? '<span style="--c:var(--ink-2)">Límite del cargador (línea de puntos)</span>' : "");
   document.getElementById("n-auto").textContent = "Con el cargador DC de " + potTxt(fila.kw) + ", de " + PW.fmt(desde) + " % a " + PW.fmt(hasta) + " %: unos " + textoTiempo(fila.minutos) +
     (fila.rapido != null && textoTiempo(fila.rapido) !== textoTiempo(fila.lento) ? " (entre " + textoTiempo(fila.rapido) + " y " + textoTiempo(fila.lento) + ")" : "") +
-    ". La curva es la curva general escalada por la potencia máxima DC de tu auto (" + potTxt(dc) + ") y cortada donde manda el cargador; no es una medición de tu auto.";
+    (cm ? ". La curva es la de este modelo (" + textoEvidencia(cm) + "), escalada por la potencia máxima DC de tu auto (" + potTxt(dc) + ") y cortada donde manda el cargador; no es una medición de tu auto."
+        : ". La curva es la curva general escalada por la potencia máxima DC de tu auto (" + potTxt(dc) + ") y cortada donde manda el cargador; no es una medición de tu auto.");
 }
 
 function dibujarAuto() {
   const cont = document.getElementById("g-auto");
-  if (!grafAuto || !HAY_CURVA) { cont.innerHTML = ""; return; }
-  const { dc, fila, desde, hasta, nombre } = grafAuto, kw = fila.kw;
+  if (!grafAuto || !(HAY_CURVA || grafAuto.cm)) { cont.innerHTML = ""; return; }
+  const { dc, fila, desde, hasta, nombre, cm } = grafAuto, kw = fila.kw;
+  const cv = cm ? cm.niveles : null, conBanda = !(cm && cm.sinRango);     // curva propia del modelo (o la general) y si hay rango
   const W = Math.max(300, Math.min(700, cont.clientWidth || 640)), H = W < 480 ? 270 : 320;
   const IZQ = 52, DER = 14, SUP = 16, INF = 58;
   const paso = dc <= 60 ? 10 : dc <= 120 ? 20 : dc <= 260 ? 50 : 100;
@@ -552,10 +591,10 @@ function dibujarAuto() {
   const pt = (s, v) => x(s).toFixed(1) + " " + y(v).toFixed(1);
   const socs = [];
   for (let s = 0; s <= 100; s += 2) socs.push(s);
-  const serie = clave => socs.map(s => [s, potenciaDC(s, dc, kw, clave)]);
+  const serie = (clave, c) => socs.map(s => [s, potenciaDC(s, dc, kw, clave, c)]);
   const linea = pts => pts.map(([s, v], i) => (i ? "L" : "M") + pt(s, v)).join(" ");
-  const alta = serie("p75"), baja = serie("p25");
-  const banda = linea(alta) + " " + baja.slice().reverse().map(([s, v]) => "L" + pt(s, v)).join(" ") + " Z";
+  const alta = conBanda ? serie("p75", cv) : [], baja = conBanda ? serie("p25", cv) : [];
+  const banda = conBanda ? linea(alta) + " " + baja.slice().reverse().map(([s, v]) => "L" + pt(s, v)).join(" ") + " Z" : "";
   const t12 = ' fill="var(--ink-2)" font-size="12"';
   let g = '<rect x="' + x(desde).toFixed(1) + '" y="' + y(ymax).toFixed(1) + '" width="' + (x(hasta) - x(desde)).toFixed(1) + '" height="' + (y(0) - y(ymax)).toFixed(1) + '" fill="var(--ink-3)" opacity="0.2"/>';
   for (let v = 0; v <= ymax + 1e-9; v += paso) {
@@ -568,18 +607,19 @@ function dibujarAuto() {
     g += '<line x1="' + IZQ + '" x2="' + (W - DER) + '" y1="' + y(kw).toFixed(1) + '" y2="' + y(kw).toFixed(1) + '" stroke="var(--ink-3)" stroke-dasharray="5 4"/>' +
          '<text x="' + (W - DER - 4) + '" y="' + (y(kw) - 5).toFixed(1) + '" text-anchor="end"' + t12 + '>Cargador: ' + potTxt(kw) + '</text>';
   }
-  g += '<path d="' + banda + '" fill="var(--seq-2)" opacity="0.85"/>' +
-       '<path d="' + linea(serie("mediana")) + '" fill="none" stroke="var(--s1)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>';
+  if (conBanda) g += '<path d="' + banda + '" fill="var(--seq-2)" opacity="0.85"/>';
+  if (cm) g += '<path d="' + linea(serie("mediana", null)) + '" fill="none" stroke="var(--ink-2)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>';     // la general, de referencia
+  g += '<path d="' + linea(serie("mediana", cv)) + '" fill="none" stroke="var(--s1)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>';
   const kwTxt = v => PW.fmt(Math.round(v)) + " kW";
   for (let s = 0; s <= 100; s += 10) {
-    const c = potenciaDC(s, dc, kw, "mediana"), a = potenciaDC(s, dc, kw, "p75"), b = potenciaDC(s, dc, kw, "p25");
-    const tip = "Batería en " + s + " %: unos " + kwTxt(c) + " (entre " + kwTxt(b) + " y " + kwTxt(a) + ").";
+    const c = potenciaDC(s, dc, kw, "mediana", cv);
+    const tip = "Batería en " + s + " %: unos " + kwTxt(c) + (conBanda ? " (entre " + kwTxt(potenciaDC(s, dc, kw, "p25", cv)) + " y " + kwTxt(potenciaDC(s, dc, kw, "p75", cv)) + ")" : "") + ".";
     g += '<circle cx="' + x(s).toFixed(1) + '" cy="' + y(c).toFixed(1) + '" r="4" fill="var(--s1)"><title>' + PW.esc(tip) + '</title></circle>';
   }
   g += '<text x="' + (IZQ + (W - IZQ - DER) / 2) + '" y="' + (H - 10) + '" text-anchor="middle"' + t12 + '>Nivel de la batería (%)</text>' +
        '<text x="12" y="' + (SUP + (H - SUP - INF) / 2) + '" text-anchor="middle"' + t12 + ' transform="rotate(-90 12 ' + (SUP + (H - SUP - INF) / 2) + ')">Potencia (kW)</text>';
   const alt = "Potencia estimada de " + nombre + " con un cargador DC de " + potTxt(kw) + ": " +
-    [10, 50, 80].map(s => "con la batería en " + s + " %, unos " + kwTxt(potenciaDC(s, dc, kw, "mediana"))).join("; ") + ".";
+    [10, 50, 80].map(s => "con la batería en " + s + " %, unos " + kwTxt(potenciaDC(s, dc, kw, "mediana", cv))).join("; ") + ".";
   cont.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" style="max-width:100%;height:auto" role="img" aria-label="' + PW.esc(alt) + '">' + g + '</svg>';
 }
 
@@ -591,7 +631,7 @@ function pintarVersiones() {
   const { desde, hasta } = ultimo, otro = leerOtro();
   const nombreDC = (grafAuto && grafAuto.fila.cargador) || "DC rápida (150 kW)", nombreAC = "AC en casa (7,4 kW)";
   const calc = (x, nombre) => {
-    const p = proyeccion(x.bt, x.pdc, x.pac, desde, hasta, otro);
+    const p = proyeccion(x.bt, x.pdc, x.pac, desde, hasta, otro, curvaDe(x));
     const f = p.valido ? p.filas.find(y => y.cargador === nombre) : null;
     return f && f.minutos != null ? f : null;
   };
@@ -632,7 +672,8 @@ function pintar() {
     limpiarResultado(); return;
   }
   const dc = leer("c-dc"), ac = leer("c-ac");
-  const p = proyeccion(bat, dc, ac, desde, hasta, otro);
+  const cm = curvaDe(elegido), hayC = HAY_CURVA || !!cm;          // curva propia del modelo del auto elegido, si la hay
+  const p = proyeccion(bat, dc, ac, desde, hasta, otro, cm);
   if (!p.valido) {
     linea.textContent = "Revisa los datos: la batería debe ser mayor que cero y «Hasta» debe ser mayor que «Desde» (entre 0 y 100 %).";
     limpiarResultado(); return;
@@ -646,18 +687,23 @@ function pintar() {
   document.getElementById("seccion-dc").hidden = false;
   document.getElementById("seccion-ac").hidden = false;
   // carga DC (rapida): sigue la curva de carga; con curva hay estimacion y rango, sin curva solo el minimo teorico
-  document.getElementById("n-dc-intro").textContent = HAY_CURVA
-    ? "La estación convierte la corriente y la entrega directo a la batería; el auto acepta la potencia que su curva permite en cada nivel de carga. Aquí se aplica la curva general de arriba y se da un rango. La potencia media es la energía que entra dividida por el tiempo estimado."
+  document.getElementById("n-dc-intro").textContent = cm
+    ? "La estación convierte la corriente y la entrega directo a la batería; el auto acepta la potencia que su curva permite en cada nivel de carga. Aquí se aplica la curva de este modelo (" + textoEvidencia(cm) + ")" +
+      (cm.sinRango ? "; no lleva rango porque son pocas curvas y no alcanzan para decir cuánto varían los autos de este modelo" : " y se da un rango") + ". La potencia media es la energía que entra dividida por el tiempo estimado."
+    : HAY_CURVA
+    ? "La estación convierte la corriente y la entrega directo a la batería; el auto acepta la potencia que su curva permite en cada nivel de carga. Aquí se aplica la curva general de arriba" +
+      (elegido ? ", porque el Observatorio no tiene la curva de este modelo," : "") + " y se da un rango. La potencia media es la energía que entra dividida por el tiempo estimado."
     : "La estación convierte la corriente y la entrega directo a la batería. Sin la curva general el resultado es un mínimo: supone que el auto recibe su potencia máxima durante todo el tramo.";
   if (!(dc > 0)) {
     document.getElementById("t-dc").innerHTML = aviso(elegido && !tieneDC(elegido) ? "Este modelo solo tiene conector AC: no puede usar cargadores rápidos DC." : "Falta la potencia máxima DC del auto: escríbela arriba si la conoces.");
   } else {
     const cols = [
       { k: "cargador", titulo: "Cargador DC", fmt: v => PW.esc(v) },
-      { k: "minutos", titulo: HAY_CURVA ? "Tiempo estimado" : "Tiempo mínimo", prio: true, num: true,
+      { k: "minutos", titulo: hayC ? "Tiempo estimado" : "Tiempo mínimo", prio: true, num: true,
         fmt: (v, f) => v == null ? "sin dato del auto" : textoTiempo(v) + (porConfirmar(f) ? " (por confirmar)" : "") },
     ];
-    if (HAY_CURVA) cols.push({ k: "lento", titulo: "Rango (mitad central de los modelos)", prio: true, num: true, fmt: (v, f) => f.rapido == null ? "—" : textoRango(f.rapido, f.lento) });
+    if (hayC && !(cm && cm.sinRango)) cols.push({ k: "lento", titulo: cm ? "Rango (mitad central de las curvas de este modelo)" : "Rango (mitad central de los modelos)", prio: true, num: true,
+      fmt: (v, f) => f.rapido == null ? "—" : textoRango(f.rapido, f.lento) });
     cols.push({ k: "media", titulo: "Potencia media", num: true, fmt: v => v == null ? "—" : potTxt(v) });
     cols.push({ k: "limita", titulo: "Lo limita", fmt: (v, f) => v ? PW.esc(v) + (porConfirmar(f) ? " (cifra por confirmar)" : "") : "—" });
     PW.tabla("t-dc", cols, p.filas.filter(f => f.corriente === "DC"), { buscador: false });
@@ -677,7 +723,13 @@ function pintar() {
   pintarResumen(p, desde, hasta);
   pintarGrafico(p, desde, hasta);
   pintarVersiones();
-  nota.textContent = HAY_CURVA
+  nota.textContent = cm
+    ? "Es una estimación, no una medición de tu auto. En DC aplica la curva de este modelo (" + textoEvidencia(cm) + "; cada curva se divide por su propia potencia máxima y la del modelo es la mediana, nivel por nivel de la batería) " +
+      "a la potencia máxima DC de tu auto, limitada por la del cargador, y suma el tiempo de cada tramo de 1 % de batería; " +
+      (cm.sinRango ? "no lleva rango porque son pocas curvas de este modelo y no alcanzan para decir cuánto varían los autos. "
+                   : "el rango va de la curva del cuarto de arriba a la del cuarto de abajo de las curvas de este modelo (nivel por nivel de la batería). ") +
+      "En AC supone potencia constante, por eso no lleva rango. La potencia real depende además de la temperatura de la batería, de su estado y de si el cargador reparte potencia con otro auto. Las potencias de cada tipo de cargador son las nominales habituales de su clase."
+    : HAY_CURVA
     ? "Es una estimación, no una medición de tu auto. En DC aplica la curva general de arriba (mediana de " + G.n_modelos + " modelos) a la potencia máxima DC de tu auto, limitada por la del cargador, y suma el tiempo de cada tramo de 1 % de batería; " +
       "el rango va de la curva del cuarto de arriba de los modelos a la del cuarto de abajo (nivel por nivel de la batería): deja dentro a cerca de la mitad de los modelos, y hay autos más rápidos y más lentos. " +
       "En AC supone potencia constante, por eso no lleva rango. La potencia real depende además de la temperatura de la batería, de su estado y de si el cargador reparte potencia con otro auto. Las potencias de cada tipo de cargador son las nominales habituales de su clase."
@@ -699,7 +751,8 @@ pintarCurva();
 document.getElementById("titulo-proyeccion").textContent = HAY_CURVA ? "Elige tu auto y estima el tiempo de carga" : "Elige tu auto y calcula el tiempo mínimo de carga";
 document.getElementById("intro-proyeccion").textContent = "Elige tu auto y se completan la batería y las potencias máximas de carga AC y DC con las cifras del catálogo del Observatorio, o escribe tus propios datos. " +
   "La batería y la autonomía vienen del padrón oficial de Consumo Vehicular; la potencia de carga, del catálogo interno del Observatorio (que no declara la fuente de cada valor) o de una investigación web por modelo con su confianza: confírmala con la ficha de tu auto. Cada cifra dice de dónde sale. " +
-  (HAY_CURVA ? "El tiempo se estima con la curva general de arriba, con un rango." : "El resultado es un mínimo: supone que el auto recibe su potencia máxima durante todo el tramo.");
+  (HAY_CURVA ? "El tiempo se estima con la curva de tu modelo cuando el Observatorio la tiene (" + Object.keys(POR_MODELO).length + " modelos hoy) y, si no, con la curva general de arriba; se da un rango cuando hay varias curvas."
+             : "El resultado es un mínimo: supone que el auto recibe su potencia máxima durante todo el tramo.");
 
 if (FILAS.length) {
   const sm = document.getElementById("c-marca"), so = document.getElementById("c-modelo");
