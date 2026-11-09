@@ -206,16 +206,17 @@ function calc(c, kml, kmkwh) {
 let tab = null; function refrescar() {
   const kml = +document.getElementById("kml").value || 12; const kmkwh = +document.getElementById("kmkwh").value || 6; const q = document.getElementById("busca").value.trim().toLowerCase(); const sel = q ? D.comunas.find(c => c.comuna.toLowerCase() === q) : null; const base = sel || { comuna: "Promedio país", p93: D.nacional.p93, pkwh: D.nacional.pkwh }; const r = calc(base, kml, kmkwh); const ahorro = r.bencina != null && r.ev_publico != null
     ? Math.round(100 * (1 - r.ev_publico / r.bencina)) : null; document.getElementById("kpis-comuna").innerHTML = [
-    [base.comuna, "comuna seleccionada", sel ? sel.region : "promedio nacional"],
-    [r.bencina != null ? PW.clp(r.bencina) : "—", "100 km en bencina 93", base.p93 != null ? "$" + PW.fmt(base.p93) + "/L en la comuna" : "sin estaciones con precio"],
-    [r.ev_publico != null ? PW.clp(r.ev_publico) : "—", "100 km en EV (carga pública)", base.pkwh != null ? "$" + PW.fmt(base.pkwh) + "/kWh promedio local" : "sin precio publicado"],
+    // Sin comuna elegida las cifras son nacionales: los rotulos decian "en la comuna" y "promedio local".
+    [base.comuna, sel ? "comuna seleccionada" : "sin comuna elegida", sel ? sel.region : "promedios nacionales"],
+    [r.bencina != null ? PW.clp(r.bencina) : "—", "100 km en bencina 93", base.p93 != null ? "$" + PW.fmt(base.p93) + "/L " + (sel ? "en la comuna" : "promedio país") : "sin estaciones con precio"],
+    [r.ev_publico != null ? PW.clp(r.ev_publico) : "—", "100 km en EV (carga en la red)", base.pkwh != null ? "$" + PW.fmt(base.pkwh) + "/kWh " + (sel ? "promedio de la comuna" : "promedio país") : "sin precio publicado"],
     [PW.clp(r.ev_casa), "100 km en EV (casa, ref.)", "$" + TARIFA_CASA + "/kWh referencia BT1"],
     [ahorro != null ? ahorro + "%" : "—", "ahorro EV público vs bencina", ""],
     [D.nacional.nudo_clp_kwh != null ? PW.clp(D.nacional.nudo_clp_kwh) : "—",
       "precio nudo energía (mayorista)",
       D.nacional.nudo_clp_kwh != null
-        ? "fijacion " + D.nacional.nudo_fijacion + " — spread bruto con carga pública: $" +
-          PW.fmt(Math.round(D.nacional.pkwh - D.nacional.nudo_clp_kwh)) + "/kWh (sin distribucion ni potencia)"
+        ? "fijación " + D.nacional.nudo_fijacion + " — diferencia bruta con el precio medio de carga: $" +
+          PW.fmt(Math.round(D.nacional.pkwh - D.nacional.nudo_clp_kwh)) + "/kWh (sin distribución ni potencia)"
         : ""],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const filas = D.comunas.filter(c => c.pkwh != null && c.p93 != null).map(c => {
     const x = calc(c, kml, kmkwh); return {

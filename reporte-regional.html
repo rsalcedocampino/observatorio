@@ -389,15 +389,17 @@ function renderResumenNacional() {
     [PW.fmt(nuevos12), "cargadores públicos nuevos (12 meses)", "ritmo de instalación · SEC EcoCarga"],
     [evCarg != null ? PW.fmt(evCarg, 1) : "—", "EV por cargador (nacional)", "criterio oficial 2035: 10 EV por cargador"],
   ]); document.getElementById("kpi-flota").innerHTML = kpiHTML([
-    [PW.fmt(sumB("BEV")), "vehículos BEV registrados", "eléctricos puros · registros 2010-" + (VT.anios && VT.anios.length ? VT.anios[VT.anios.length - 1] : "")],
-    [PW.fmt(sumB("PHEV + PEREV")), "híbridos enchufables", "PHEV + PEREV acumulado"],
-    [PW.fmt(sumB("E-BUSES")), "buses eléctricos", "acumulado registrado"],
-    [PW.fmt(sumB("E-TRUCKS")), "camiones eléctricos", "acumulado registrado"],
+    // Son ventas (Venta Vehiculos EV), no registros: los mismos 425 camiones que camiones.html rotula como ventas.
+    [PW.fmt(sumB("BEV")), "autos eléctricos (BEV) vendidos", "livianos y medianos · ventas 2010-" + (VT.anios && VT.anios.length ? VT.anios[VT.anios.length - 1] : "")],
+    [PW.fmt(sumB("PHEV + PEREV")), "híbridos enchufables vendidos", "PHEV + PEREV · acumulado de ventas"],
+    [PW.fmt(sumB("E-BUSES")), "buses eléctricos vendidos", "acumulado de ventas"],
+    [PW.fmt(sumB("E-TRUCKS")), "camiones eléctricos vendidos", "acumulado de ventas"],
   ]); const mmv = ve.filter(x => x.ym >= "2023-01"); // serie mensual real (antes hay puntos anuales)
   const dMes = mmv.length >= 2 ? mmv[mmv.length - 1].unidades - mmv[mmv.length - 2].unidades : null; const dPp = (par.length >= 2 && par[par.length - 1].enchufables != null && par[par.length - 2].enchufables != null)
     ? +(par[par.length - 1].enchufables - par[par.length - 2].enchufables).toFixed(1) : null; const flecha = v => v == null ? "" : (v > 0 ? "▲ +" : (v < 0 ? "▼ " : "= ")) + PW.fmt(Math.abs(v)); document.getElementById("kpi-ventas").innerHTML = kpiHTML([
-    [PW.fmt(ultUnid), "enchufables vendidos en " + mesLegible, "acum. " + anioAct + ": " + PW.fmt(ytd) + (dMes != null ? " · " + flecha(dMes) + " vs mes ant." : "")],
-    [pu.enchufables != null ? PW.fmt(pu.enchufables, 1) + "%" : "—", "participación enchufable (del total vendido)", (pu.hibridos != null ? "+" + PW.fmt(pu.hibridos, 1) + "% híbridos" : "") + (dPp != null ? " · " + (dPp >= 0 ? "▲ +" : "▼ ") + PW.fmt(Math.abs(dPp), 1) + " pp" : "")],
+    [PW.fmt(ultUnid), "enchufables vendidos en " + mesLegible, "con buses y camiones · acum. " + anioAct + ": " + PW.fmt(ytd) + (dMes != null ? " · " + flecha(dMes) + " vs mes ant." : "")],
+    // "+13,1% híbridos" se leia como un crecimiento: es la participacion de los hibridos sin enchufe.
+    [pu.enchufables != null ? PW.fmt(pu.enchufables, 1) + "%" : "—", "participación enchufable (del total vendido)", (pu.hibridos != null ? "híbridos sin enchufe: " + PW.fmt(pu.hibridos, 1) + "%" : "") + (dPp != null ? " · " + (dPp >= 0 ? "▲ +" : "▼ ") + PW.fmt(Math.abs(dPp), 1) + " pp" : "")],
   ]); document.getElementById("kpi-territorio").innerHTML = kpiHTML([
     [PW.fmt(pob), "habitantes (población total)", "Censo 2024"],
     [PW.fmt(comCon), "comunas con red de carga", "de " + comunas.length + " · con cargadores públicos"],

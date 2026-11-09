@@ -303,8 +303,9 @@ const D = PW_DATA.c_elasticidad; document.getElementById("nota").textContent = "
 
   function pintar() {
     const r = selReg.value, c = selCom.value, f = selFecha.value; const ambito = c || r || "todo el país"; const st = stats(); const cuando = f ? "captura del " + f : "precio de hoy"; document.getElementById("b93-kpis").innerHTML = st ? [
-      [PW.clp(st.prom) + "/L", "precio promedio", ambito + " · " + cuando],
-      [PW.clp(st.min) + "/L", "la más barata", st.n + (st.n === 1 ? " estación" : " estaciones")],
+      // El numero de estaciones es el universo del promedio: va en su tarjeta, no bajo "la mas barata".
+      [PW.clp(st.prom) + "/L", "precio promedio", ambito + " · " + PW.fmt(st.n) + (st.n === 1 ? " estación" : " estaciones") + " · " + cuando],
+      [PW.clp(st.min) + "/L", "la más barata", ambito],
       [PW.clp(st.max) + "/L", "la más cara", "diferencia de " + PW.clp(st.max - st.min) + "/L"],
     ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${PW.esc(d[2])}</div></div>`).join("")
       : `<p class="nota">Sin dato de bencina 93 para ${PW.esc(ambito)}${f ? " en la captura del " + f : ""}.</p>`; // Evolucion en el tiempo del ambito elegido (siempre la serie completa, no una fecha).

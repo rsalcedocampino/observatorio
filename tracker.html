@@ -139,8 +139,8 @@ h2.pregunta { margin-top: 40px; border-bottom: 1px solid var(--grid); padding-bo
     <label>Año objetivo
       <input type="number" id="meta-carg-anio" value="2030" min="2027" max="2050">
     </label>
-    <label>EV por cargador (objetivo de servicio)
-      <input type="number" id="ratio-ev" value="20" min="5" step="5">
+    <label>EV por cargador (escenario)
+      <input type="number" id="ratio-ev" value="10" min="5" step="5">
     </label>
   </div>
   <div class="kpis" id="kpis-infra"></div>
@@ -261,7 +261,7 @@ const part = D.participacion.map(p => ({ ym: p.ym.slice(0, 7), v: p.enchufables 
     [PW.fmt(ult.v, 1) + "%", "participación enchufable hoy", "mes " + ult.ym],
     [PW.fmt(pendiente, 1) + " pts/año", "ritmo real (24 meses)", "se requieren " + PW.fmt(creceReq, 1)],
     [fmtAnio(llegadaLin), "llegada proyectada (lineal)", "meta " + meta + "% — objetivo " + metaAnio],
-    [fmtAnio(llegadaLog), "llegada proyectada (curva S)", "ajuste logistico 36 meses"],
+    [fmtAnio(llegadaLog), "llegada proyectada (curva S)", "ajuste logístico 36 meses"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const llegadaRef = llegadaLog != null ? llegadaLog : llegadaLin; const [, colorS, textoS] = estadoMeta(llegadaRef, metaAnio); const esOfP = OF && meta === 100 && metaAnio === 2035; SEM.part = {
     nombre: "Ventas: participación enchufable", hoy: PW.fmt(ult.v, 1) + "%",
     objetivo: meta + "% en " + metaAnio +
@@ -327,7 +327,7 @@ function refrescarInfra() {
 
 // ---------- 2b. parque proyectado y lo que exigira
 function refrescarParque() {
-  const DEM = window.PW_DATA.c_demanda; if (!DEM) return; const ratio = +document.getElementById("ratio-ev").value || 20; const km = DEM.supuestos.km_anuales, rend = DEM.supuestos.rendimiento_km_kwh; // parque estimado hoy = INE 2024 + ventas enchufables desde 2025
+  const DEM = window.PW_DATA.c_demanda; if (!DEM) return; const ratio = +document.getElementById("ratio-ev").value || 10; /* 10 = criterio oficial unico del sitio (decision del usuario, 2026-09-23; el mismo de reporte-regional) */ const km = DEM.supuestos.km_anuales, rend = DEM.supuestos.rendimiento_km_kwh; // parque estimado hoy = INE 2024 + ventas enchufables desde 2025
   const desde25 = vMes.filter(x => x.ym >= "2025-01").reduce((s, x) => s + x.u, 0); const parqueHoy = DEM.kpis.parque_ev + desde25; // ventas anuales proyectadas: nivel 12m + pendiente 24m sostenida
   const u12 = vMes.slice(-12).reduce((s, x) => s + x.u, 0); const u24a12 = vMes.slice(-24, -12).reduce((s, x) => s + x.u, 0); const crecAnual = u12 - u24a12; // unidades adicionales por año
   const xHoy = ymAnum(vMes[vMes.length - 1].ym); function parqueEn(anio) {
@@ -336,12 +336,12 @@ function refrescarParque() {
     return Math.round(p); }
   const p2030 = parqueEn(2030), p2035 = parqueEn(2035); const gwh2035 = p2035 * km / rend / 1e6; const cargNec2035 = Math.round(p2035 / ratio); // cargadores proyectados a 2035 al ritmo actual (de la seccion infra)
   const serie = D.infraestructura; const ult = serie[serie.length - 1]; const ritmo = (ult.cargadores_acum - serie[Math.max(0, serie.length - 13)].cargadores_acum) / 12; const meses2035 = Math.max(0, Math.round((2035 + 11 / 12 - ymAnum(ult.ym)) * 12)); const cargProy2035 = Math.round(ult.cargadores_acum + ritmo * meses2035); document.getElementById("kpis-parque").innerHTML = [
-    [PW.fmt(parqueHoy), "parque enchufable estimado hoy", "INE 2024 + ventas desde 2025"],
+    [PW.fmt(parqueHoy), "parque eléctrico estimado hoy", "INE 2024 (puede incluir híbridos) + ventas enchufables desde 2025"],
     [PW.fmt(p2030), "parque proyectado 2030", "ritmo de ventas sostenido"],
     [PW.fmt(p2035), "parque proyectado 2035", ""],
     [PW.fmt(gwh2035, 1) + " GWh", "demanda eléctrica 2035", PW.fmt(100 * gwh2035 / DEM.kpis.gwh_sen_anual, 1) + "% del SEN actual"],
-    [PW.fmt(cargNec2035), "cargadores necesarios 2035", ratio + " EV por cargador"],
-    [PW.fmt(Math.max(0, cargNec2035 - cargProy2035)), "cargadores que faltarian", "proyectados al ritmo actual: " + PW.fmt(cargProy2035)],
+    [PW.fmt(cargNec2035), "cargadores necesarios 2035", ratio + " EV por cargador" + (ratio === 10 ? " (criterio oficial)" : " (escenario)")],
+    [PW.fmt(Math.max(0, cargNec2035 - cargProy2035)), "cargadores que faltarían", "proyectados al ritmo actual: " + PW.fmt(cargProy2035)],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); document.getElementById("nota-parque").textContent =
     "Proyección de parque: ventas de los últimos 12 meses (" + PW.fmt(u12) + ") creciendo " +
     PW.fmt(crecAnual) + " unidades/año (pendiente 24 meses), acumuladas sobre el parque estimado. " +
@@ -358,7 +358,9 @@ document.getElementById("ratio-ev").addEventListener("input", refrescarParque); 
     [PW.fmt(ult.pct_renov, 1) + "%", "renovable el último mes",
      ult.ym + (ult.parcial ? " · mes parcial, " + ult.dias + " días" : "")],
     [PW.fmt(mejor.pct_renov, 1) + "%", "mejor mes cerrado", mejor.ym],
-    [fmtAnio(llegada), "llegada a 80% (tendencia simple)", "referencia ilustrativa"],
+    // Con el ultimo mes cerrado ya sobre 80% la "llegada" proyectada caia en el pasado y se leia como meta futura.
+    ultC.pct_renov >= 80 ? ["alcanzado", "80% renovable", "último mes cerrado " + ultC.ym + ": " + PW.fmt(ultC.pct_renov, 1) + "%"]
+      : [fmtAnio(llegada), "llegada a 80% (tendencia simple)", "referencia ilustrativa"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); PW.lineas("g-renov", {
     labels: G.map(x => x.ym + (x.parcial ? " (parcial)" : "")),
     series: [{ nombre: "% renovable", valores: G.map(x => x.pct_renov), color: PW.color("--s3"), area: true }],

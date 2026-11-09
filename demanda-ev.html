@@ -67,7 +67,7 @@ PW.montarNav("demanda-ev.html"); const D = PW_DATA.c_demanda; document.getElemen
 const SUP = D.supuestos || {}; if (SUP.km_anuales) document.getElementById("f-km").value = SUP.km_anuales; if (SUP.rendimiento_km_kwh) document.getElementById("f-rend").value = SUP.rendimiento_km_kwh; function refrescar() {
   const km = +document.getElementById("f-km").value || 15000; const rend = +document.getElementById("f-rend").value || 5.4; const gwh = D.kpis.parque_ev * km / rend / 1e6; document.getElementById("kpis").innerHTML = [
     [PW.fmt(D.kpis.parque_ev), "vehículos eléctricos registrados", "INE 2024 (puede incluir híbridos)"],
-    [PW.fmt(gwh, 1) + " GWh", "consumo anual estimado", km / 1000 + " mil km x " + rend + " km/kWh"],
+    [PW.fmt(gwh, 1) + " GWh", "consumo anual estimado", PW.fmt(km / 1000) + " mil km al año ÷ " + PW.fmt(rend, 1) + " km/kWh"],
     [PW.fmt(D.kpis.gwh_sen_anual) + " GWh", "generación SEN anualizada", ""],
     [PW.fmt(100 * gwh / D.kpis.gwh_sen_anual, 2) + "%", "del SEN es carga EV hoy", ""],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); PW.barras("g-reg", {

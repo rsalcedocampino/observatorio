@@ -130,7 +130,8 @@ const ALM = (function () {
 g("kpis").innerHTML = [
   [PW.fmt(T.centrales), "centrales", PW.fmt(T.en_operacion) + " en operación"],
   [PW.fmt(T.capacidad_operando_mw) + " MW", "capacidad en operación", "potencia instalada del SEN"],
-  [PW.fmt(T.pct_renovable, 1) + "%", "renovable", "solar, eólica e hidro sobre lo operando"],
+  // La cuenta incluye geotermia, biomasa, biogas e hibridos, y es sobre capacidad (MW), no sobre generacion.
+  [PW.fmt(T.pct_renovable, 1) + "%", "de la capacidad en operación es renovable", "solar, eólica, hidro, geotermia y biomasa · en MW"],
   [PW.fmt(T.almacenamiento_mwh) + " MWh", "en almacenamiento", "catalogada, todas las fases"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); function llenar(id, valores, etiqueta) {
   const arr = [...new Set(valores)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), "es")); g(id).innerHTML = `<option value="">${etiqueta}</option>` + arr.map(x => `<option>${x}</option>`).join(""); }

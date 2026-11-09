@@ -331,9 +331,9 @@ PW.montarNav("normativa.html"); const D = PW_DATA.c_normativa; // Las cifras del
 document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const K = D.kpis; document.getElementById("kpis").innerHTML = [
   [K.documentos, "documentos oficiales verificados", ""],
   [K.metas_vinculantes + " de " + K.metas, "metas con rango vinculante", "el resto: declarativas, compromisos o indicativas"],
-  [K.normas, "normas analizadas", "con relevancia EV y vacios"],
+  [K.normas, "normas analizadas", "con relevancia EV y vacíos"],
   [K.brechas_maxima + " de " + K.brechas, "brechas de urgencia máxima", "para la meta 2035"],
-  [K.monitoreo, "items en el radar legislativo", "barrido mensual"],
+  [K.monitoreo, "ítems en el radar legislativo", "barrido mensual"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const vinPill = c => `<span class="vin vin-${c}">${c}</span>`; let tMetas = null; function pintarMetas() {
   const f = document.getElementById("f-vin").value; const filas = D.metas.filter(m => !f || m.clase === f); const cols = [
     { k: "Meta", titulo: "Meta" },

@@ -68,7 +68,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>
 PW.montarNav("duales.html"); const D = PW_DATA.c_duales; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const totalBenc = Object.values(D.marcas).reduce((a, m) => a + m.total, 0); document.getElementById("kpis").innerHTML = [
   [D.pares.length, "estaciones duales detectadas", "cargador a 100 m o menos"],
-  [PW.fmt(Math.round(1000 * D.pares.length / Math.max(totalBenc, 1)) / 10, 1) + "%", "de las bencineras grandes", totalBenc + " estaciones en marcas 10+"],
+  [PW.fmt(Math.round(1000 * D.pares.length / Math.max(totalBenc, 1)) / 10, 1) + "%", "de las bencineras grandes", PW.fmt(totalBenc) + " estaciones en marcas 10+"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const marcas = Object.entries(D.marcas).sort((a, b) => b[1].pct - a[1].pct); PW.barras("g-marcas", {
   items: marcas.map(([m, v]) => ({
     nombre: m, valor: v.pct,

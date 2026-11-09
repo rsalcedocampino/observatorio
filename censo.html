@@ -170,7 +170,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 
   <div class="fila2">
     <div class="tarjeta">
-      <h2 style="margin-top:0">Mayor dependencia de generador diesel/bencina</h2>
+      <h2 style="margin-top:0">Mayor dependencia de generador diésel/bencina</h2>
       <div id="el-g-generador"></div>
       <p class="nota">Comunas donde más viviendas dependen de un generador: energía cara y
       contaminante — candidatas naturales a solar + almacenamiento.</p>
@@ -468,7 +468,7 @@ function pintarKpis(A) {
     [PW.fmt(A.viviendas), "viviendas censadas con dato", "particulares ocupadas, 2024"],
     [PW.fmt(A.pct_red, 1) + "%", "conectadas a la red pública", "la base de la carga domiciliaria"],
     [PW.fmt(A.n_solar), "con placa solar", PW.fmt(A.pct_solar, 1) + "%"],
-    [PW.fmt(A.n_generador), "con generador diesel/bencina", PW.fmt(A.pct_generador, 1) + "%"],
+    [PW.fmt(A.n_generador), "con generador diésel/bencina", PW.fmt(A.pct_generador, 1) + "%"],
     [PW.fmt(A.n_sin), "sin electricidad", PW.fmt(A.pct_sin, 1) + "%"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); }
 

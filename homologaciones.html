@@ -104,7 +104,8 @@ const pctElec = last.total ? Math.round(last.elec / last.total * 100) : 0;
 
 g("kpis").innerHTML = [
   [PW.fmt(U.n), "homologaciones en " + mesLargo(U.mes), PW.fmt(U.n_modelos) + " modelos distintos"],
-  [pctElec + "%", "electrificados el último mes", PW.fmt(last.ench) + " enchufables de " + PW.fmt(last.total)],
+  // El subtexto mostraba los enchufables (12) bajo el % de electrificados (14 de 32): no cuadraba.
+  [pctElec + "%", "electrificados el último mes", PW.fmt(last.elec) + " de " + PW.fmt(last.total) + " · " + PW.fmt(last.ench) + " enchufables"],
   [PW.fmt(D.total), "homologaciones vigentes", D.rango.n_meses + " meses desde " + (D.rango.desde || "")],
   [PW.fmt(MO.total), "motos homologadas", PW.fmt(MO.elec) + " eléctricas"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join("");

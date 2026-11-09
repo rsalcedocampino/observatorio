@@ -114,12 +114,15 @@ PW.montarNav("autonomia.html"); const D = PW_DATA.c_autonomia; // indice estable
 // km redondeado -- reidentificar la fila clickeada por valor de km (como hacia el fix anterior)
 // podia abrir la brecha equivocada de esas 2. Los objetos filtrados abajo son las MISMAS
 // referencias (filter() no clona), asi que _i sobrevive a cualquier filtro por region.
-D.brechas.forEach((b, i) => { b._i = i; }); document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const K = D.kpis; document.getElementById("kpis").innerHTML = [
+D.brechas.forEach((b, i) => { b._i = i; }); const comunaDe = t => ((String(t || "").match(/\(([^)]+)\)\s*$/) || [])[1] || ""); const tramo = b => { const x = comunaDe(b.desde), y = comunaDe(b.hasta); return x && y ? "entre " + x + " y " + y : ""; }; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; const K = D.kpis; document.getElementById("kpis").innerHTML = [
   [K.estaciones_dc, "estaciones con carga DC <span class=\"kpi-info\" data-tooltip=\"Estaciones con al menos un conector DC, cualquier potencia. El criterio es la corriente, no la clase de velocidad: en el vocabulario del sitio 'rápida' parte sobre 22 kW\">ℹ</span>", "cualquier potencia"],
   [PW.fmt(K.autonomia_p50) + " km", "autonomía mediana del catálogo <span class=\"kpi-info\" data-tooltip=\"Percentil 50: la mitad de vehículos llega más lejos\">ℹ</span>", "p25: " + PW.fmt(K.autonomia_p25) + " km"],
   [PW.fmt(K.rango_util_p25) + " km", "rango útil conservador <span class=\"kpi-info\" data-tooltip=\"70% del p25 para garantizar cobertura confiable incluso con envejecimiento de batería\">ℹ</span>", "70% de la autonomía p25"],
-  [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada <span class=\"kpi-info\" data-tooltip=\"Distancia más grande sin estaciones con carga DC en corredor norte-sur\">ℹ</span>", D.brechas.length ? D.brechas[0].desde : ""],
-].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); const umbral = K.rango_util_p25; let mapaRef = null; function calcularBrechaPorRegion() {
+  [D.brechas.length ? PW.fmt(D.brechas[0].km) + " km" : "—", "mayor brecha detectada <span class=\"kpi-info\" data-tooltip=\"Distancia más grande sin estaciones con carga DC en corredor norte-sur\">ℹ</span>", D.brechas.length ? tramo(D.brechas[0]) : ""],
+].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Sin region elegida se vuelven a mostrar estas cuatro: antes filtrarPorRegion() las
+// reemplazaba al cargar por "estaciones en region / nacional" y un nombre de estacion recortado
+// a 15 caracteres, que en la brecha mayor era un codigo (700500206001).
+const KPIS_NAC = document.getElementById("kpis").innerHTML; const umbral = K.rango_util_p25; let mapaRef = null; function calcularBrechaPorRegion() {
   const brechasPorReg = {}; D.brechas.forEach(b => {
     const pDesde = D.puntos.find(p => b.desde.includes(p.n)); const pHasta = D.puntos.find(p => b.hasta.includes(p.n)); if (pDesde && pHasta) {
       const reg = pDesde.reg; if (!brechasPorReg[reg]) brechasPorReg[reg] = 0; brechasPorReg[reg] = Math.max(brechasPorReg[reg], b.km); }
@@ -140,9 +143,9 @@ function colorPorBrecha(km, maxKm = 400) {
 function filtrarPorRegion() {
   const regSel = document.getElementById("filtro-region").value; const puntosFiltr = regSel ? D.puntos.filter(p => p.reg === regSel) : D.puntos; const brechasFiltr = regSel ? D.brechas.filter(b => {
     const pDesde = D.puntos.find(p => b.desde.includes(p.n)); const pHasta = D.puntos.find(p => b.hasta.includes(p.n)); return (pDesde && pDesde.reg === regSel) || (pHasta && pHasta.reg === regSel); }) : D.brechas; // Recalcular KPIs para región
-  const brechaPrinc = brechasFiltr.length ? brechasFiltr[0] : null; const docKpis = document.getElementById("kpis"); docKpis.innerHTML = [
-    [puntosFiltr.length, "estaciones en región", regSel || "nacional"],
-    [puntosFiltr.length ? PW.fmt(brechasFiltr.length ? brechasFiltr[0].km : 0) + " km" : "—", "mayor brecha detectada", brechaPrinc ? brechaPrinc.desde.split("(")[0].trim().slice(-15) : ""],
+  const brechaPrinc = brechasFiltr.length ? brechasFiltr[0] : null; const docKpis = document.getElementById("kpis"); docKpis.innerHTML = !regSel ? KPIS_NAC : [
+    [PW.fmt(puntosFiltr.length), "estaciones con carga DC", "en " + regSel],
+    [puntosFiltr.length ? PW.fmt(brechasFiltr.length ? brechasFiltr[0].km : 0) + " km" : "—", "mayor brecha detectada", brechaPrinc ? tramo(brechaPrinc) : "sin brechas sobre el rango útil"],
   ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // Calcular brechas por región para heatmap
   const brechasPorReg = calcularBrechaPorRegion(); // Recrear mapa
   if (mapaRef) mapaRef.remove(); const capas = []; // Capa de heatmap (regiones coloreadas)

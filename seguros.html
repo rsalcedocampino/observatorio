@@ -118,11 +118,11 @@ document.getElementById("nota").textContent = "Actualizado " + (D.generado || ""
 // S/I", dando a entender que 8 era el universo, cuando abajo se ven 208 celdas y 200 de ellas
 // ni siquiera tienen fila en la fuente.
 const celdasEV = D.productos.length * Object.keys(D.coberturas_ev).length; const prodConEV = new Set(matEV.map(m => m.producto)).size; document.getElementById("kpis").innerHTML = [
-  [D.aseguradoras.length, "aseguradoras analizadas", conEV + " con oferta EV especifica"],
+  [D.aseguradoras.length, "aseguradoras analizadas", conEV + " con oferta EV específica"],
   [D.productos.length, "productos y planes", "condicionados POL/CAD citados"],
   ["8", "coberturas EV canónicas", "del catálogo del proyecto"],
   [cubiertas + " de " + celdasEV, "celdas EV con cobertura confirmada",
-   "solo " + prodConEV + " de " + D.productos.length + " productos declara cobertura EV"],
+   "solo " + prodConEV + " de " + D.productos.length + (prodConEV === 1 ? " productos declara" : " productos declaran") + " cobertura EV"],
 ].map(d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2]}</div></div>`).join(""); // selector de aseguradoras
 const selA = document.getElementById("f-aseg"); D.aseguradoras.forEach(a => {
   const o = document.createElement("option"); o.value = a.id; o.textContent = a.nombre; selA.appendChild(o); }); // matriz producto x cobertura

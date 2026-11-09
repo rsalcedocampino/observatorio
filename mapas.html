@@ -334,7 +334,10 @@ function pintarKpis() {
     const filtrado = arr.filter(dentro); const sinDato = filtrado.filter(x => x[campo] == null).length; return { total: filtrado.reduce((a, x) => a + (x[campo] || 0), 0), sinDato }; }; const notaSuma = (r, unidad) => PW.fmt(Math.round(r.total)) + " " + unidad + (r.sinDato ? " (" + PW.fmt(r.sinDato) + " sin dato)" : ""); const kpis = [
     ["Estaciones de carga", conteos.carga, "de la red viva"],
     ["Subestaciones", conteos.sub, notaSuma(suma(RED.subestaciones || [], "mva"), "MVA")],
-    ["Generación solar", conteos.solar, notaSuma(suma(M.solar || [], "mw"), "MW")],
+    // La capa solar trae centrales en operacion y proyectos (aprobados, en construccion, en
+    // calificacion): sumarlos sin decirlo daba mas MW solares que toda la capacidad del SEN.
+    ["Generación solar", conteos.solar, notaSuma(suma(M.solar || [], "mw"), "MW") + " · todas las fases, " +
+      PW.fmt(Math.round(suma((M.solar || []).filter(x => x.est === "operacion"), "mw").total)) + " MW en operación"],
     ["Almacenamiento", conteos.bess, notaSuma(suma(M.bess || [], "mwh"), "MWh")],
     ["Comunas (Censo)", conteos.censo, "de 346 con dato"],
   ]; document.getElementById("kpis-mapa").innerHTML = kpis.map(([l, v, d]) =>
