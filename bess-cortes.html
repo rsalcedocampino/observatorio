@@ -167,8 +167,7 @@ PW.montarNav("bess-cortes.html"); const D = PW_DATA.c_besscortes; document.getEl
       (ult.gwh_carga_acum > 0 ? " (devolvieron el " + PW.fmt(100 * ult.gwh_acum / ult.gwh_carga_acum, 0) + " % de lo que cargaron)" : "") +
       // Dias sin captura de la fuente (bess_diario_sin_dato): no entran al acumulado y se dicen.
       ((n => n ? ", suma de los días con dato (" + n + (n === 1 ? " día" : " días") + " sin dato)." : ".")(
-        (B.bess_diario_sin_dato || []).length) +
-      " La serie se completa hacia atrás de a pocos días."); }
+        (B.bess_diario_sin_dato || []).length)); }
   if (B.bess_estado && B.bess_estado.length) {
     PW.tabla("t-bess", [
       { k: "estado", titulo: "Estado" },
