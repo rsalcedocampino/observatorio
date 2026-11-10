@@ -1,1 +1,1 @@
-{"esquema":"ia-v1","id":"estado_conectores_ahora","nivel":"nacional","fecha_corte":"2026-11-10 12:45","filas":[{"nivel":"nacional","codigo":"CL","nombre":"Chile","periodo":"2026-11-10 12:45","valores":{"conectores_disponibles":966,"conectores_con_estado":2409}}]}
+{"esquema":"ia-v1","id":"estado_conectores_ahora","nivel":"nacional","fecha_corte":"2026-11-10 14:45","filas":[{"nivel":"nacional","codigo":"CL","nombre":"Chile","periodo":"2026-11-10 14:45","valores":{"conectores_disponibles":977,"conectores_con_estado":2408}}]}
