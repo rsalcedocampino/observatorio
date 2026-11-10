@@ -104,6 +104,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <h2 style="margin-top:0">¿La red de carga rápida les sirve?</h2>
     <div class="kpis" id="kpi-red"></div>
     <div id="g-potencia"></div>
+    <p class="nota" id="nota-red"></p>
     <ul id="lectura" class="nota"></ul>
   </div>
 
@@ -185,7 +186,8 @@ const porAnioVentas = {}; (D.serie_mensual || []).forEach(m => {
   items: TRAMOS_KW.filter(([k]) => (RED.por_tramo_kw || {})[k] != null)
     .map(([k, t]) => ({ nombre: t, valor: RED.por_tramo_kw[k] })),
   fmtV: v => PW.fmt(v) + " conectores",
-}); const lista = (id, arr) => {
+}); const fotoRed = RED.fecha_foto || D.cruce_actualizado; document.getElementById("nota-red").textContent = fotoRed ?
+  "Red de carga pública contada el " + fotoRed + "; se vuelve a contar en cada actualización del sitio." : ""; const lista = (id, arr) => {
   document.getElementById(id).innerHTML = (arr || []).map(x => `<li>${PW.esc(x)}</li>`).join(""); }; lista("lectura", D.cruce_lectura); lista("caveats", D.caveats); document.getElementById("fuentes").textContent =
   "Fuentes: " + Object.values(D.fuentes || {}).join(" | ") +
   (RED.fuente ? " | Red de carga: " + RED.fuente : ""); document.getElementById("fuente").textContent =
