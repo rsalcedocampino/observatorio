@@ -66,6 +66,7 @@
       ["buses.html", "Buses eléctricos"],
       ["tco-buses.html", "Costo total de un bus urbano"],
       ["camiones.html", "Camiones y comerciales eléctricos"],
+      ["mercado-internacional.html", "Mercado Internacional"],
     ]],
     ["Energía", [
       ["riesgo.html", "Cortes de luz"],
@@ -142,6 +143,7 @@
   ICONOS["padron-ev.html"] = ICONOS["vehiculo.html"];
   ICONOS["especificaciones-ev.html"] = ICONOS["vehiculo.html"];
   ICONOS["homologaciones.html"] = ICONOS["vehiculo.html"];
+  ICONOS["mercado-internacional.html"] = IC('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>');
   ICONOS["inversion.html"] = IC('<path d="M3 17l5-5 3 3 4-4.5"/><path d="M15 10.5h4v4"/><path d="M3 21h18"/>');
   ICONOS["indicadores.html"] = IC('<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>');
   ICONOS["generacion.html"] = IC('<path d="M12 2v6M12 8l-4 6h8l-4 6"/><path d="M5 5l1.5 1.5M19 5l-1.5 1.5"/>');
