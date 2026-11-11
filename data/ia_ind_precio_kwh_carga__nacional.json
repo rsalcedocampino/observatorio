@@ -1,1 +1,1 @@
-{"esquema":"ia-v1","id":"precio_kwh_carga","nivel":"nacional","fecha_corte":"2026-11-11","filas":[{"nivel":"nacional","codigo":"CL","nombre":"Chile","periodo":"2026-11-11 18:45","valores":{"precio_promedio_clp_kwh":424.0,"conectores_con_precio":1867,"potencia_promedio_kw":44.3}}]}
+{"esquema":"ia-v1","id":"precio_kwh_carga","nivel":"nacional","fecha_corte":"2026-11-11","filas":[{"nivel":"nacional","codigo":"CL","nombre":"Chile","periodo":"2026-11-11 20:45","valores":{"precio_promedio_clp_kwh":424.0,"conectores_con_precio":1867,"potencia_promedio_kw":44.3}}]}
