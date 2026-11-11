@@ -235,7 +235,7 @@ function breakevenConCompra(evC, iceC, difPrecio) { for (let t = 0; t < evC.leng
 // -------- utilidades UI --------
 const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ") : ""; // carga: texto "AC X kW · DC Y kW" y estimacion de minutos de carga rapida DC al 80% (aprox, potencia constante).
 const cargaTxt = v => { const p = []; if (v.pac) p.push("AC " + v.pac + " kW"); if (v.pdc) p.push("DC " + v.pdc + " kW"); return p.join(" · "); }; const dcMin = v => (v.pdc && v.bt) ? Math.round(v.bt * 0.7 / v.pdc * 60) : null; // credibilidad del precio (pcf = alta/media/baja; pfe = fecha AAAA-MM si el origen la trae).
-const CONF_TXT = { alta: "alta", media: "media", baja: "estimada" }; const CONF_COL = { alta: "--good", media: "--ink-2", baja: "--critical" }; const confLabel = v => v.pcf ? `<span style="color:var(${CONF_COL[v.pcf] || "--ink-2"})">${CONF_TXT[v.pcf] || v.pcf}${v.pfe ? " (" + v.pfe + ")" : ""}</span>` : "—"; const confNota = v => v.pcf === "baja" ? "precio estimado desde tasación fiscal (no es precio de mercado citado)" : (v.pcf === "media" ? "precio de portal/catálogo" : ""); function opts(arr, fmt) { return arr.map(x => `<option value="${PW.esc(String(x))}">${PW.esc(fmt ? fmt(x) : x)}</option>`).join(""); }
+const CONF_TXT = { alta: "alta", media: "media", baja: "estimada" }; const CONF_COL = { alta: "--good", media: "--ink-2", baja: "--critical" }; const confLabel = v => v.pcf ? `<span style="color:var(${CONF_COL[v.pcf] || "--ink-2"})">${CONF_TXT[v.pcf] || v.pcf}${v.pfe ? " (" + v.pfe + ")" : ""}</span>` : "—"; const confNota = v => v.pcf === "baja" ? "precio estimado desde tasación fiscal (no es precio de mercado citado)" : (v.pcf === "media" ? "precio de portal/catálogo" : ""); const rngTxt = v => (v.rmn && v.rmx && v.rmn !== v.rmx) ? ` &mdash; rango verificado ${PW.clp(v.rmn)} a ${PW.clp(v.rmx)}` : ""; function opts(arr, fmt) { return arr.map(x => `<option value="${PW.esc(String(x))}">${PW.esc(fmt ? fmt(x) : x)}</option>`).join(""); }
 function marcas(pool) { return [...new Set(pool.map(x => x.mk))].sort((a, b) => a.localeCompare(b, "es")); }
 function modelos(pool, mk) { return [...new Set(pool.filter(x => x.mk === mk).map(x => x.md))].sort((a, b) => a.localeCompare(b, "es")); }
 // [VARIANTES] (mk, md, yr) NO identifica un vehiculo, asi que buscar() devolvia siempre la
@@ -328,8 +328,8 @@ const BUILD = {}; BUILD["comparador"] = function () {
         (eEv.eu ? "<a href=\"" + PW.esc(eEv.eu) + "\" target=\"_blank\" rel=\"noopener\">etiqueta de eficiencia oficial</a>" : "") +
         "</span>" : "") +
       ((eEv.pr || eIce.pr) ? "<br><span class=\"nota\">Precio de lista &mdash; eléctrico: " +
-        PW.clp(eEv.pr || 0) + " (confianza " + confLabel(eEv) + ") &middot; combustión: " +
-        PW.clp(eIce.pr || 0) + " (confianza " + confLabel(eIce) + ")</span>" : ""); PW.lineas("g-acum", {
+        PW.clp(eEv.pr || 0) + " (confianza " + confLabel(eEv) + rngTxt(eEv) + ") &middot; combustión: " +
+        PW.clp(eIce.pr || 0) + " (confianza " + confLabel(eIce) + rngTxt(eIce) + ")</span>" : ""); PW.lineas("g-acum", {
       labels: evC.map((_, i) => String(i)),
       series: [{ nombre: "Eléctrico", valores: evC, color: PW.color("--s1") },
                { nombre: "Combustión", valores: iceC, color: PW.color("--s2") }],
@@ -381,6 +381,7 @@ BUILD["recomendar"] = function () {
         `<p class="nota" style="margin:.2em 0">Precio ${PW.clp(b.pr)} · autonomía ${b.au ? PW.fmt(b.au) + " km" : "—"} · batería ${b.bt ? PW.fmt(b.bt, 1) + " kWh" : "—"} · conector ${PW.esc((b.cdc || b.cac || "").toUpperCase()) || "—"}</p>` +
         `<p class="nota" style="margin:.2em 0">TCO ${P.ny} años: <b>${PW.clp(tb.total)}</b> · costo/km ${PW.clp(tb.porKm)} · energía/año ${PW.clp(tb.energiaAnio)}</p>` +
         (b.pcf ? `<p class="nota" style="margin:.2em 0">Credibilidad del precio: ${confLabel(b)}` + (confNota(b) ? ` — ${confNota(b)}` : "") + `</p>` : "") +
+        ((b.rmn && b.rmx && b.rmn !== b.rmx) ? `<p class="nota" style="margin:.2em 0">Rango verificado del precio (nov-2026): ${PW.clp(b.rmn)} a ${PW.clp(b.rmx)}` + (b.rnt ? ` &mdash; ${PW.esc(b.rnt)}` : "") + `</p>` : "") +
         ((b.pac || b.pdc) ? `<p class="nota" style="margin:.2em 0">Carga: ${PW.esc(cargaTxt(b))}` + (dcMin(b) ? ` (~${dcMin(b)} min al 80% en carga rápida, estimado)` : "") + `</p>` : "") +
         ((b.pp || b.rem) ? `<p class="nota" style="margin:.2em 0">` +
           (b.pp ? `Precio de agencia (prensa): ${PW.clp(b.pp)}` : "") +
