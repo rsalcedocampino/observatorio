@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Un día del sistema eléctrico — Energías Futuro</title>
+<meta name="description" content="Mapa hora a hora de las centrales eléctricas de Chile: las solares se encienden al amanecer y se apagan al atardecer. Promedio del mes y un día destacado.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261112a">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<style>
+/* Colores propios de dos tecnologias que el sitio no tenia: embalse (azul marino) y solar CSP (oxido). El resto sale de los tokens --s1..--s5. */
+:root{--mc-embalse:#1e3a8a;--mc-csp:#9a3412}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mc-embalse:#8b9cf6;--mc-csp:#fdba74}}
+:root[data-theme="dark"]{--mc-embalse:#8b9cf6;--mc-csp:#fdba74}
+
+.mc-bloque{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:14px;align-items:start;margin:14px 0}
+.mc-bloque>.tarjeta{margin:0}
+@media (max-width:900px){.mc-bloque{grid-template-columns:minmax(0,1fr)}}
+
+.mc-fila{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.mc-modo{display:inline-flex;border:1px solid var(--axis);border-radius:8px;overflow:hidden;background:var(--surface-1)}
+.mc-modo label{position:relative;display:block;margin:0;cursor:pointer}
+.mc-modo label+label{border-left:1px solid var(--axis)}
+.mc-modo input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.mc-modo span{display:block;padding:7px 15px;font-size:13.5px;color:var(--ink-2)}
+.mc-modo input:checked+span{background:var(--accion);color:var(--accion-texto);font-weight:600}
+.mc-modo input:focus-visible+span{outline:2px solid var(--s1);outline-offset:-3px}
+.mc-modo input:disabled{cursor:not-allowed}
+.mc-modo input:disabled+span{opacity:.45}
+.mc-pista{margin:8px 0 0}
+
+.mc-tiempo{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin:12px 0 0}
+.mc-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:136px;padding:8px 16px;border:1px solid var(--accion);border-radius:8px;background:var(--accion);color:var(--accion-texto);font:inherit;font-weight:600;cursor:pointer}
+.mc-btn svg{width:15px;height:15px;fill:currentColor;flex:none}
+.mc-btn:hover{filter:brightness(1.08)}
+.mc-btn:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.mc-btn-sec{padding:6px 12px;border:1px solid var(--axis);border-radius:8px;background:var(--surface-1);color:var(--ink-2);font:inherit;font-size:13px;cursor:pointer}
+.mc-btn-sec:hover{background:var(--plane);color:var(--ink-1)}
+.mc-btn-sec:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.mc-rango{position:relative;margin:6px 0 10px;padding-bottom:20px}
+.mc-rango input{display:block;width:100%;height:28px;margin:0;accent-color:var(--accion);cursor:pointer}
+.mc-ticks{position:absolute;left:0;right:0;bottom:0;height:16px;font-size:11.5px;color:var(--ink-3)}
+.mc-ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.mc-lectura{flex:1 1 180px;min-width:0;line-height:1.2}
+.mc-lectura b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.mc-lectura small{display:block;color:var(--ink-3);font-size:12.5px}
+
+#mc-mapa{min-height:340px}
+.mc-ley{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;margin:10px 0 0;font-size:12.5px;color:var(--ink-2)}
+.mc-it{display:inline-flex;align-items:center;gap:7px}
+.mc-it svg{display:block;flex:none}
+.mc-it .mc-ref{fill:var(--ink-3);fill-opacity:.25;stroke:var(--ink-3);stroke-width:1}
+.mc-it .mc-sd{fill:none;stroke:var(--ink-3);stroke-width:1.4;stroke-dasharray:2 3}
+.mc-it .mc-ap{fill:var(--ink-3);fill-opacity:.25;stroke:var(--ink-3);stroke-opacity:.5;stroke-width:.8}
+
+#mc-escena:fullscreen{display:flex;flex-direction:column;overflow:auto;padding:14px;border-radius:0;background:var(--surface-1)}
+#mc-escena:fullscreen #mc-mapa{flex:1 1 auto;height:auto!important;min-height:260px}
+.pw-mapa-botones a[aria-label="Pantalla completa"]{display:none}
+
+.mc-svg{display:block;width:100%;height:auto;touch-action:pan-y;cursor:pointer;user-select:none;-webkit-user-select:none}
+.mc-grilla{stroke:var(--grid);stroke-width:1}
+.mc-eje{fill:var(--ink-3);font-size:11.5px}
+.mc-area{stroke:var(--surface-1);stroke-width:.7;transition:opacity .15s}
+.mc-marca{stroke:var(--ink-1);stroke-width:1.5}
+.mc-punto{fill:var(--surface-1);stroke:var(--ink-1);stroke-width:2}
+.mc-total{margin:8px 0 0;font-size:15px}
+.mc-total small{display:block;color:var(--ink-3);font-size:12px}
+
+.mc-tec{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:2px}
+.mc-tec button{width:100%;display:grid;grid-template-columns:14px minmax(0,1fr) auto 46px;gap:4px 10px;align-items:center;text-align:left;background:none;border:1px solid transparent;border-radius:8px;padding:7px 8px;font:inherit;font-size:13.5px;color:var(--ink-1);cursor:pointer}
+.mc-tec button:hover{background:var(--plane)}
+.mc-tec button:focus-visible{outline:2px solid var(--s1);outline-offset:-1px}
+.mc-tec button[aria-pressed="false"]{opacity:.5}
+.mc-tec button[aria-pressed="false"] .mc-tn{text-decoration:line-through}
+.mc-sw{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c,var(--ink-3));border:1px solid rgba(255,255,255,.7);vertical-align:-1px}
+.mc-tn{min-width:0;overflow-wrap:anywhere}
+.mc-tv{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.mc-tp{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:12px;text-align:right}
+
+@media (max-width:700px){
+  #mc-pantalla{display:none}
+  .mc-modo{display:flex;width:100%}
+  .mc-modo label{flex:1 1 0}
+  .mc-modo span{padding:9px 8px;text-align:center}
+  .mc-tiempo{flex-wrap:nowrap}
+  .mc-btn{min-width:0;padding:8px 14px}
+  .mc-lectura{flex:1 1 110px}
+  .mc-lectura b{font-size:19px}
+}
+
+.mc-spark{display:block;margin-top:6px}
+.mc-pop-aviso{margin:8px 0 0}
+#mc-detalle summary{cursor:pointer;font-weight:600}
+</style>
+</head>
+<body>
+<main>
+  <h1>Un día del sistema eléctrico</h1>
+  <p class="sub">Cada punto es una central del Sistema Eléctrico Nacional. El color dice qué tecnología es y el tamaño,
+  cuántos megavatios (MW) entrega en la hora que elijas. Mueve la barra de tiempo, o pulsa Reproducir, y mira cómo las
+  centrales solares se encienden al amanecer y se apagan al atardecer.</p>
+  <div class="aviso-borrador" id="mc-bat" role="note"><b>Primera etapa: sin baterías.</b> Este mapa todavía no incluye las
+  baterías (almacenamiento), así que lo que entregan al sistema al descargarse no está en estas cifras. Quedan para una etapa siguiente.</div>
+  <noscript><p class="nota">Este mapa necesita JavaScript para dibujarse.</p></noscript>
+
+  <div class="tarjeta" id="mc-estado" role="status">Cargando el mapa de centrales…</div>
+
+  <div id="mc-contenido" hidden>
+    <div class="mc-bloque">
+      <section class="tarjeta" id="mc-escena" aria-label="Mapa de centrales y barra de tiempo">
+        <div class="mc-fila">
+          <div class="mc-modo" role="radiogroup" aria-label="Qué mostrar">
+            <label><input type="radio" name="mc-modo" value="prom"><span>Promedio del mes</span></label>
+            <label><input type="radio" name="mc-modo" value="dia"><span>Día destacado</span></label>
+          </div>
+          <button type="button" class="mc-btn-sec" id="mc-pantalla" hidden>Pantalla completa</button>
+        </div>
+        <div class="mc-tiempo">
+          <button type="button" class="mc-btn" id="mc-play"></button>
+          <div class="mc-lectura"><b id="mc-hora-txt"></b><small id="mc-hora-sub"></small></div>
+        </div>
+        <div class="mc-rango">
+          <input type="range" id="mc-hora" min="0" max="23" step="1" value="12" aria-label="Hora del día">
+          <div class="mc-ticks" id="mc-ticks" aria-hidden="true"></div>
+        </div>
+        <div id="mc-mapa"></div>
+        <div class="mc-ley" id="mc-ley"></div>
+        <p class="nota mc-pista" id="mc-pista"></p>
+      </section>
+
+      <section class="tarjeta" id="mc-panel" aria-label="Generación del sistema a lo largo del día">
+        <h2 style="margin-top:0">El sistema en 24 horas</h2>
+        <p class="nota" style="margin-top:0" id="mc-graf-nota"></p>
+        <div id="mc-graf"></div>
+        <p class="mc-total" id="mc-total"></p>
+        <ul class="mc-tec" id="mc-tec"></ul>
+        <p class="nota">Toca una tecnología para ocultarla del mapa; vuelve a tocarla para mostrarla.</p>
+      </section>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Cómo leer este mapa</h2>
+      <ul>
+        <li><b>Cada punto es una central.</b> El color dice su tecnología. El tamaño muestra los MW que entrega en la hora elegida: mientras más grande, más entrega.</li>
+        <li><b>Un punto pequeño y tenue es una central que en esa hora no genera,</b> como las solares de noche.</li>
+        <li><b>Un anillo punteado gris es una central sin dato.</b> No se cuenta como cero: para esa hora no hay cifra.</li>
+        <li><b>Las horas van de 00:00 a 24:00.</b> «12:00 a 13:00» es la potencia media de esa hora.</li>
+        <li><b>Toca una central</b> para ver su detalle hora a hora. Para acercar el mapa usa Ctrl más la rueda del mouse, o pellizca en el celular.</li>
+      </ul>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Qué incluye este mapa y qué no</h2>
+      <ul id="mc-notas"></ul>
+    </div>
+
+    <details class="tarjeta" id="mc-detalle">
+      <summary>Ver las cifras hora a hora (tabla)</summary>
+      <p class="nota" id="mc-tabla-nota"></p>
+      <div id="t-horas"></div>
+    </details>
+  </div>
+</main>
+<script src="assets/comun.js?v=261112a"></script>
+<script>
+PW.montarNav("mapa-centrales.html");
+(function () {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const esc = PW.esc, fmt = PW.fmt;
+  const REDUCIDO = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+  const mesTexto = s => { const m = /^(\d{4})-(0[1-9]|1[0-2])/.exec(s || ""); return m ? MESES[+m[2] - 1] + " de " + m[1] : null; };
+  const diaTexto = s => { const m = /^(\d{4})-(0[1-9]|1[0-2])-(\d{2})/.exec(s || ""); return m ? (+m[3]) + " de " + MESES[+m[2] - 1] + " de " + m[1] : null; };
+  const dd = n => String(n).padStart(2, "0");
+  const rangoHora = h => dd(h) + ":00 a " + dd((h + 1) % 24) + ":00";
+  const mw = v => (v >= 100 ? fmt(Math.round(v)) : fmt(v, 1)) + " MW";
+  const energia = mwh => mwh >= 1000 ? fmt(mwh / 1000, 2) + " GWh" : fmt(mwh, 1) + " MWh";
+  const num = v => (typeof v === "number" && isFinite(v)) ? v : null;
+  const svg = (tag, atr, txt) => { const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const k in atr) e.setAttribute(k, atr[k]); if (txt != null) e.textContent = txt; return e; };
+
+  // Tecnologias: orden de apilado (de abajo hacia arriba) y color. Una tecnologia nueva del dato queda arriba, en gris.
+  const APILADO = ["termica", "geotermica", "hidro_embalse", "hidro_pasada", "eolica", "solar_csp", "solar_fv"];
+  const VAR = { termica: "--s2", geotermica: "--s5", hidro_embalse: "--mc-embalse", hidro_pasada: "--s1", eolica: "--s3", solar_csp: "--mc-csp", solar_fv: "--s4" };
+  const colorTec = t => PW.color(VAR[t] || "--ink-3");
+  const PESO = { on: 1, ap: 0.8, sd: 1.4, oc: 0 };
+
+  function fallo() {
+    $("mc-estado").textContent = "No se pudieron cargar los datos del mapa. Recarga la página en unos minutos.";
+  }
+
+  PW.cargarDatos("mapa_centrales").then(D => {
+    if (!D || !Array.isArray(D.centrales) || !D.centrales.length) return fallo();
+    iniciar(D);
+  }).catch(e => { console.error(e); fallo(); });
+
+  function iniciar(D) {
+    const meta = D.meta || {};
+    // una serie de 24 horas; sin ningun valor vale lo mismo que no tener serie
+    const serie = a => { const x = (Array.isArray(a) && a.length === 24) ? a.map(num) : null; return x && x.some(v => v != null) ? x : null; };
+    // si el dato dijera que las baterias ya van, el aviso de primera etapa dejaria de ser cierto
+    if (meta.baterias && !/^\s*no incluid/i.test(String(meta.baterias))) $("mc-bat").hidden = true;
+
+    // ---------- datos: centrales validas y totales por modo, tecnologia y hora
+    const cs = [];
+    D.centrales.forEach(c => {
+      const lat = num(c.lat), lon = num(c.lon);
+      if (lat == null || lon == null || !PW.enChile(lat, lon)) return;   // la misma red de seguridad que PW.mapa
+      const s = { prom: serie(c.promedio_mes_mw), dia: serie(c.dia_mw) };
+      if (!s.prom && !s.dia) return;
+      cs.push({ n: String(c.nombre || "Sin nombre"), t: String(c.tecnologia || "otra"), tn: String(c.tecnologia_nombre || c.tecnologia || "Otra"),
+        p: num(c.potencia_mw) || 0, rev: c.potencia_revisar === true, lat, lon, s });
+    });
+    if (!cs.length) return fallo();
+    cs.sort((a, b) => b.p - a.p);                       // las grandes se dibujan primero: las chicas quedan encima
+    const nombreTec = {};
+    cs.forEach(c => { if (!nombreTec[c.t]) nombreTec[c.t] = c.tn; });
+    const presentes = Object.keys(nombreTec);
+    const orden = APILADO.filter(t => presentes.includes(t)).concat(presentes.filter(t => !APILADO.includes(t)).sort());
+    const MODOS = ["prom", "dia"];
+    const tot = { prom: {}, dia: {} }, suma = { prom: Array(24).fill(0), dia: Array(24).fill(0) }, conDato = { prom: 0, dia: 0 };
+    MODOS.forEach(m => orden.forEach(t => { tot[m][t] = Array(24).fill(0); }));
+    let maxMW = 0;
+    cs.forEach(c => MODOS.forEach(m => {
+      const s = c.s[m]; if (!s) return;
+      conDato[m]++;
+      s.forEach((v, h) => { if (v != null) { tot[m][c.t][h] += v; suma[m][h] += v; if (v > maxMW) maxMW = v; } });
+    }));
+    if (!conDato.prom && !conDato.dia) return fallo();
+    const sinDia = cs.filter(c => !c.s.dia).length, sinProm = cs.filter(c => !c.s.prom).length;
+    const nRev = cs.filter(c => c.rev).length;
+    const mesTxt = mesTexto(meta.mes), diaTxt = diaTexto(meta.dia_destacado);
+    const deMes = mesTxt ? "de " + mesTxt : "del mes";
+    const est = { modo: conDato.prom ? "prom" : "dia", hora: 12, ocultas: new Set(), rep: false };
+
+    // ---------- escala vertical comun a los dos modos, para que cambiar de modo compare con la misma regla
+    function escalaY(maxv) {
+      if (!(maxv > 0)) maxv = 1;
+      for (let p = Math.pow(10, Math.floor(Math.log10(maxv / 5))); ; p *= 10)
+        for (const f of [1, 2, 2.5, 5]) { const paso = f * p; if (Math.ceil(maxv / paso) <= 5) return { paso, tope: Math.ceil(maxv / paso) * paso }; }
+    }
+    const EY = escalaY(Math.max(...suma.prom, ...suma.dia));
+
+    $("mc-estado").hidden = true;
+    $("mc-contenido").hidden = false;
+
+    // ---------- mapa de fondo y marcadores
+    const cont = $("mc-mapa");
+    const medidas = () => {
+      // con la pestana en segundo plano la ventana puede medir casi cero: se parte de un tamano de escritorio y el resize lo corrige
+      const vw = window.innerWidth >= 200 ? window.innerWidth : 1024, vh = window.innerHeight >= 300 ? window.innerHeight : 768;
+      return vw < 700 ? Math.round(Math.max(340, Math.min(460, vh * 0.52))) : Math.round(Math.max(440, Math.min(680, vh * 0.74)));
+    };
+    let alto = medidas();
+    let ESC = Math.max(0.72, Math.min(1.1, alto / 640));
+    const lats = cs.map(c => c.lat), lons = cs.map(c => c.lon);
+    const caja = { s: Math.min(...lats), n: Math.max(...lats), w: Math.min(...lons), e: Math.max(...lons) };
+    const mercY = lat => { const s = Math.sin(lat * Math.PI / 180); return Math.log((1 + s) / (1 - s)) / 2; };
+    const dy = Math.abs(mercY(caja.n) - mercY(caja.s)) / (2 * Math.PI), dx = Math.max(0.0001, (caja.e - caja.w) / 360);
+    // zoom (de a medio nivel) con que cabe todo el sistema en un mapa de ese alto y ancho, con 28 px de margen
+    const zoomPara = (hPx, wPx) => Math.max(3, Math.floor(Math.min(Math.log2(Math.max(60, hPx - 56) / (256 * dy)), Math.log2(Math.max(60, wPx - 56) / (256 * dx))) * 2) / 2);
+    const centroIni = [(caja.n + caja.s) / 2, (caja.e + caja.w) / 2];
+    const m = PW.mapa("mc-mapa", { capas: [], centro: centroIni, zoom: zoomPara(alto, cont.clientWidth || 600), alto });
+    if (!m) return;
+    const notaPrec = document.querySelector(".pw-nota-precision");
+    if (notaPrec) $("mc-escena").appendChild(notaPrec);
+    // si el visitante no ha movido ni acercado el mapa, un cambio de tamano de ventana lo vuelve a encuadrar
+    let tocado = false, encuadrando = false;
+    m.on("dragstart zoomstart", () => { if (!encuadrando) tocado = true; });
+    function encuadrar() { encuadrando = true; m.setView(centroIni, zoomPara(cont.clientHeight, cont.clientWidth), { animate: false }); encuadrando = false; }
+
+    const rend = L.canvas({ padding: 0.3, tolerance: 5 });
+    let abierta = null;
+    const valor = c => { const s = c.s[est.modo]; return s ? s[est.hora] : null; };
+    const textoTip = c => { const v = valor(c); return "<b>" + esc(c.n) + "</b><br>" + esc(c.tn) + " · " + (v == null ? "sin dato" : (v > 0.05 ? mw(v) : "sin generar")); };
+
+    function spark(s, h, col) {
+      const W = 230, H = 56, px = 4, top = 6, base = H - 16;
+      const mx = Math.max(0.1, ...s.map(x => x || 0));
+      const X = i => px + i * (W - 2 * px) / 23, Y = v => base - (v / mx) * (base - top);
+      let d = "", previo = false;
+      s.forEach((v, i) => { if (v == null) { previo = false; return; } d += (previo ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); previo = true; });
+      const v = s[h], x = X(h).toFixed(1);
+      return `<svg class="mc-spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Lo que entrega esta central hora a hora">` +
+        `<line class="mc-grilla" x1="${px}" x2="${W - px}" y1="${base}" y2="${base}"/>` +
+        `<path d="${d}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round"/>` +
+        `<line class="mc-marca" x1="${x}" x2="${x}" y1="${top}" y2="${base}" style="stroke-width:1"/>` +
+        (v == null ? "" : `<circle cx="${x}" cy="${Y(v).toFixed(1)}" r="3.4" fill="${col}" stroke="var(--surface-1)" stroke-width="1.5"/>`) +
+        `<text class="mc-eje" x="${px}" y="${H - 3}">0 h</text><text class="mc-eje" x="${W / 2}" y="${H - 3}" text-anchor="middle">12 h</text>` +
+        `<text class="mc-eje" x="${W - px}" y="${H - 3}" text-anchor="end">23 h</text></svg>`;
+    }
+    function htmlPopup(c) {
+      const s = c.s[est.modo], h = est.hora, v = s ? s[h] : null, col = colorTec(c.t);
+      const fila = (e, val) => val ? `<div class="pop-linea"><span>${e}</span><div>${val}</div></div>` : "";
+      const e = s ? s.reduce((a, x) => a + (x || 0), 0) : null;
+      return `<div class="pop-est"><div class="pop-titulo">${esc(c.n)}</div>` +
+        `<div class="pop-sub"><span class="mc-sw" style="--c:${col}"></span> ${esc(c.tn)}</div>` +
+        fila("Hora", rangoHora(h)) +
+        fila("Entrega", v == null ? "sin dato" : mw(v)) +
+        fila("Potencia", c.p > 0 ? mw(c.p) + " (registrada)" : null) +
+        fila("Energía", e == null ? null : energia(e) + (est.modo === "prom" ? " en un día típico" : " en el día")) +
+        (s ? spark(s, h, col) : "") +
+        (c.rev ? `<p class="pop-detalle mc-pop-aviso"><b>Potencia por revisar:</b> en el día destacado esta central generó más que su potencia registrada. La potencia viene de las fuentes.</p>` : "") +
+        `</div>`;
+    }
+    const estiloDe = (c, e) => {
+      const col = colorTec(c.t);
+      if (e === "oc") return { stroke: false, fill: false };
+      if (e === "sd") return { stroke: true, fill: false, color: PW.color("--ink-3"), weight: PESO.sd, opacity: 0.95, dashArray: "2 3" };
+      if (e === "ap") return { stroke: true, fill: true, fillColor: col, color: col, weight: PESO.ap, opacity: 0.5, fillOpacity: 0.22, dashArray: null };
+      return { stroke: true, fill: true, fillColor: col, color: "#ffffff", weight: PESO.on, opacity: 0.95, fillOpacity: 0.82, dashArray: null };
+    };
+    // area proporcional a los MW: radio = base + k * raiz(MW)
+    const radioDe = (e, v) => e === "oc" ? 0 : e === "sd" ? 3.6 * ESC : e === "ap" ? 2.1 * ESC : (1.8 + 0.85 * Math.sqrt(v)) * ESC;
+
+    const mks = cs.map(c => {
+      const mk = L.circleMarker([c.lat, c.lon], { renderer: rend, radius: 0, stroke: false, fill: false, bubblingMouseEvents: false });
+      mk._c = c;
+      mk.bindTooltip(() => textoTip(c), { direction: "top", offset: [0, -4], opacity: 0.95 });
+      mk.bindPopup(() => htmlPopup(c), { maxWidth: 300, autoPanPadding: [30, 30] });
+      mk.on("mouseover", () => { if (mk._e && mk._e !== "oc") mk.setStyle({ weight: 2.5 }); });
+      mk.on("mouseout", () => { if (mk._e && mk._e !== "oc") mk.setStyle({ weight: PESO[mk._e] }); });
+      mk.on("popupopen", () => { abierta = mk; });
+      mk.on("popupclose", () => { if (abierta === mk) abierta = null; });
+      mk.addTo(m);
+      return mk;
+    });
+    const actual = new Float32Array(mks.length), objetivo = new Float32Array(mks.length);
+    let raf = 0;
+    function ponerRadios() {
+      for (let i = 0; i < mks.length; i++) if (Math.abs(objetivo[i] - actual[i]) > 0.01) { actual[i] = objetivo[i]; mks[i].setRadius(actual[i]); }
+    }
+    function moverRadios(animar) {
+      cancelAnimationFrame(raf);
+      if (!animar || REDUCIDO) { ponerRadios(); return; }
+      const ini = Float32Array.from(actual), t0 = performance.now(), DUR = 320;
+      const paso = ahora => {
+        const k = Math.min(1, (ahora - t0) / DUR), e = 1 - Math.pow(1 - k, 3);
+        for (let i = 0; i < mks.length; i++) {
+          const r = ini[i] + (objetivo[i] - ini[i]) * e;
+          if (Math.abs(r - actual[i]) > 0.03 || (k === 1 && actual[i] !== objetivo[i])) { actual[i] = k === 1 ? objetivo[i] : r; mks[i].setRadius(actual[i]); }
+        }
+        if (k < 1) raf = requestAnimationFrame(paso);
+      };
+      raf = requestAnimationFrame(paso);
+    }
+
+    // ---------- lista accesible por teclado (los puntos van en canvas, sin nodos propios)
+    const det = L.DomUtil.create("details", "pw-mapa-lista-a11y", cont);
+    L.DomEvent.disableClickPropagation(det); L.DomEvent.disableScrollPropagation(det);
+    const sum = L.DomUtil.create("summary", "", det), ul = L.DomUtil.create("ul", "", det);
+    function listaA11y() {
+      if (det.contains(document.activeElement)) return;
+      const top = mks.map((mk, i) => ({ i, v: valor(mk._c) })).filter(x => x.v != null && x.v > 0.05 && !est.ocultas.has(mks[x.i]._c.t))
+        .sort((a, b) => b.v - a.v).slice(0, 15);
+      sum.textContent = "Lista de las " + top.length + " centrales que más entregan en esta hora";
+      ul.innerHTML = "";
+      top.forEach(x => {
+        const c = mks[x.i]._c, b = L.DomUtil.create("button", "", L.DomUtil.create("li", "", ul));
+        b.type = "button"; b.textContent = c.n + " — " + mw(x.v);
+        L.DomEvent.on(b, "click", ev => { L.DomEvent.stop(ev); m.setView([c.lat, c.lon], Math.max(m.getZoom(), 8)); mks[x.i].openPopup(); });
+      });
+    }
+
+    // ---------- grafico apilado de las 24 horas
+    const grafCont = $("mc-graf");
+    let marca = null, punto = null, svgG = null, geom = null;
+    function dibujarGrafico() {
+      const W = Math.max(260, Math.floor(grafCont.clientWidth || 320));
+      const H = Math.round(Math.max(210, Math.min(300, W * 0.56)));
+      const ml = 50, mr = 10, mt = 18, mb = 26, iw = W - ml - mr, ih = H - mt - mb;
+      const X = h => ml + h / 23 * iw, Y = v => mt + ih - v / EY.tope * ih;
+      geom = { X, Y };
+      const s = svg("svg", { class: "mc-svg", width: W, height: H, viewBox: "0 0 " + W + " " + H, role: "img" });
+      s.appendChild(svg("text", { class: "mc-eje", x: ml - 6, y: 9, "text-anchor": "end" }, "MW"));
+      for (let v = 0; v <= EY.tope + 1e-6; v += EY.paso) {
+        s.appendChild(svg("line", { class: "mc-grilla", x1: ml, x2: W - mr, y1: Y(v), y2: Y(v) }));
+        s.appendChild(svg("text", { class: "mc-eje", x: ml - 6, y: Y(v) + 4, "text-anchor": "end" }, fmt(v)));
+      }
+      for (let h = 0; h <= 21; h += 3) s.appendChild(svg("text", { class: "mc-eje", x: X(h), y: H - 8, "text-anchor": "middle" }, dd(h) + " h"));
+      const acum = Array(24).fill(0);
+      orden.forEach(t => {
+        const base = acum.slice(), cima = base.map((b, h) => b + tot[est.modo][t][h]);
+        let d = "M" + X(0).toFixed(1) + " " + Y(cima[0]).toFixed(1);
+        for (let h = 1; h < 24; h++) d += "L" + X(h).toFixed(1) + " " + Y(cima[h]).toFixed(1);
+        for (let h = 23; h >= 0; h--) d += "L" + X(h).toFixed(1) + " " + Y(base[h]).toFixed(1);
+        s.appendChild(svg("path", { class: "mc-area", d: d + "Z", fill: colorTec(t), "fill-opacity": est.ocultas.has(t) ? 0.15 : 0.9, "data-tec": t }));
+        cima.forEach((v, h) => { acum[h] = v; });
+      });
+      marca = svg("line", { class: "mc-marca", y1: mt, y2: mt + ih });
+      punto = svg("circle", { class: "mc-punto", r: 4.5 });
+      s.appendChild(marca); s.appendChild(punto);
+      const horaDe = ev => { const r = s.getBoundingClientRect(); const x = (ev.clientX - r.left) * (W / (r.width || W)) - ml; return Math.max(0, Math.min(23, Math.round(x / iw * 23))); };
+      let arrastra = false;
+      s.addEventListener("pointerdown", ev => { arrastra = true; pausar(); try { s.setPointerCapture(ev.pointerId); } catch (e) { /* sin captura */ } fijarHora(horaDe(ev)); });
+      s.addEventListener("pointermove", ev => { if (arrastra) fijarHora(horaDe(ev)); });
+      const fin = () => { arrastra = false; };
+      s.addEventListener("pointerup", fin); s.addEventListener("pointercancel", fin);
+      grafCont.innerHTML = ""; grafCont.appendChild(s); svgG = s;
+      moverMarca();
+    }
+    function moverMarca() {
+      if (!svgG || !geom) return;
+      const h = est.hora, x = geom.X(h), total = suma[est.modo][h];
+      marca.setAttribute("x1", x); marca.setAttribute("x2", x);
+      punto.setAttribute("cx", x); punto.setAttribute("cy", geom.Y(total));
+      svgG.setAttribute("aria-label", "Generación total por tecnología a lo largo del día. A las " + rangoHora(h) + " el total es " + fmt(Math.round(total)) + " MW.");
+    }
+
+    // ---------- lectura por tecnologia (tambien enciende y apaga cada una en el mapa)
+    const filas = orden.slice().reverse().map(t => {
+      const li = document.createElement("li"), b = document.createElement("button");
+      b.type = "button"; b.setAttribute("aria-pressed", "true");
+      b.innerHTML = `<span class="mc-sw" style="--c:${colorTec(t)}"></span><span class="mc-tn">${esc(nombreTec[t])}</span><span class="mc-tv"></span><span class="mc-tp"></span>`;
+      b.addEventListener("click", () => {
+        if (est.ocultas.has(t)) est.ocultas.delete(t); else est.ocultas.add(t);
+        b.setAttribute("aria-pressed", String(!est.ocultas.has(t)));
+        aplicar(true); dibujarGrafico();
+      });
+      li.appendChild(b); $("mc-tec").appendChild(li);
+      return { t, v: b.querySelector(".mc-tv"), p: b.querySelector(".mc-tp") };
+    });
+    function lectura() {
+      const h = est.hora, modo = est.modo, total = suma[modo][h];
+      filas.forEach(f => {
+        const v = tot[modo][f.t][h], pc = total > 0 ? v / total * 100 : 0;
+        f.v.textContent = fmt(Math.round(v)) + " MW";
+        f.p.textContent = v <= 0 ? "0 %" : (pc < 1 ? "<1 %" : fmt(Math.round(pc)) + " %");
+      });
+      $("mc-total").innerHTML = `Total del mapa en esta hora: <b>${fmt(Math.round(total))} MW</b><small>Suma de ${fmt(conDato[modo])} centrales con dato, sin baterías.</small>`;
+    }
+
+    // ---------- leyenda del mapa: tamaños de referencia y marcas especiales
+    function leyenda() {
+      const refs = [10, 100, 500].filter(v => v <= maxMW);
+      let html = `<span class="mc-it"><b>Tamaño = MW en esa hora</b></span>`;
+      refs.forEach(v => {
+        const r = radioDe("on", v), d = Math.ceil(r * 2 + 2);
+        html += `<span class="mc-it"><svg width="${d}" height="${d}" viewBox="0 0 ${d} ${d}" aria-hidden="true"><circle class="mc-ref" cx="${d / 2}" cy="${d / 2}" r="${r.toFixed(1)}"/></svg>${v} MW</span>`;
+      });
+      const r2 = radioDe("ap", 0), d2 = Math.ceil(r2 * 2 + 2), r3 = radioDe("sd", 0), d3 = Math.ceil(r3 * 2 + 3);
+      html += `<span class="mc-it"><svg width="${d2}" height="${d2}" viewBox="0 0 ${d2} ${d2}" aria-hidden="true"><circle class="mc-ap" cx="${d2 / 2}" cy="${d2 / 2}" r="${r2.toFixed(1)}"/></svg>Sin generar en esa hora</span>`;
+      if ((est.modo === "dia" ? sinDia : sinProm) > 0)
+        html += `<span class="mc-it"><svg width="${d3}" height="${d3}" viewBox="0 0 ${d3} ${d3}" aria-hidden="true"><circle class="mc-sd" cx="${d3 / 2}" cy="${d3 / 2}" r="${r3.toFixed(1)}"/></svg>Sin dato</span>`;
+      $("mc-ley").innerHTML = html;
+    }
+
+    // ---------- tabla hora a hora
+    const colsTabla = [{ k: "rango", titulo: "Hora" }].concat(orden.slice().reverse().map(t => ({ k: t, titulo: esc(nombreTec[t]), num: true, fmt: v => fmt(Math.round(v)) })))
+      .concat([{ k: "total", titulo: "Total", num: true, fmt: v => "<b>" + fmt(Math.round(v)) + "</b>" }]);
+    const filasTabla = () => Array.from({ length: 24 }, (_, h) => {
+      const f = { hora: h, rango: rangoHora(h), total: suma[est.modo][h] };
+      orden.forEach(t => { f[t] = tot[est.modo][t][h]; });
+      return f;
+    });
+    const tablaHoras = PW.tabla("t-horas", colsTabla, filasTabla(), { orden: "hora", asc: true, buscador: false });
+
+    // ---------- textos que dependen del modo y de la hora
+    function textoModo() {
+      const modo = est.modo;
+      let pista;
+      if (modo === "prom") pista = "Cada hora es el promedio de los días " + deMes + ".";
+      else {
+        pista = "Datos reales del " + (diaTxt || "día destacado") + (typeof meta.criterio_dia_destacado === "string" && meta.criterio_dia_destacado.trim() ? ", " + meta.criterio_dia_destacado.trim().replace(/[.\s]+$/, "") : "") + ".";
+        if (sinDia) pista += " " + fmt(sinDia) + (sinDia === 1 ? " central sin dato ese día." : " centrales sin dato ese día.");
+      }
+      $("mc-pista").textContent = pista;
+      $("mc-hora-sub").textContent = modo === "prom" ? "promedio " + deMes : (diaTxt || "día destacado");
+      $("mc-graf-nota").textContent = (modo === "prom" ? "Promedio " + deMes : "Día " + (diaTxt || "destacado")) +
+        ". Suma de las centrales del mapa en cada hora, en MW y sin baterías. Arrastra sobre el gráfico para cambiar la hora.";
+      $("mc-tabla-nota").textContent = "Megavatios (MW) de cada tecnología en cada hora. " + (modo === "prom" ? "Promedio " + deMes + "." : "Día " + (diaTxt || "destacado") + ".");
+    }
+    function aplicar(animar) {
+      const modo = est.modo, h = est.hora;
+      mks.forEach((mk, i) => {
+        const c = mk._c, s = c.s[modo], v = s ? s[h] : null;
+        const e = est.ocultas.has(c.t) ? "oc" : (v == null ? "sd" : (v > 0.05 ? "on" : "ap"));
+        if (e !== mk._e) {
+          mk._e = e; mk.options.interactive = e !== "oc"; mk.setStyle(estiloDe(c, e));
+          if (e === "oc") { mk.closeTooltip(); if (abierta === mk) mk.closePopup(); }
+        }
+        objetivo[i] = radioDe(e, v);
+      });
+      moverRadios(animar);
+      const total = suma[modo][h];
+      $("mc-hora").value = h;
+      $("mc-hora").setAttribute("aria-valuetext", rangoHora(h) + ", " + fmt(Math.round(total)) + " MW en total");
+      $("mc-hora-txt").textContent = rangoHora(h);
+      moverMarca(); lectura(); listaA11y();
+      if (abierta) abierta.getPopup().update();
+    }
+    function fijarHora(h) { est.hora = h; aplicar(true); }
+
+    // ---------- reproduccion
+    let timer = 0;
+    const IC_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>', IC_PAUSA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.5h4v15h-4zM13.5 4.5h4v15h-4z"/></svg>';
+    const btnPlay = $("mc-play");
+    function pintarPlay() { btnPlay.innerHTML = (est.rep ? IC_PAUSA : IC_PLAY) + "<span>" + (est.rep ? "Pausar" : "Reproducir") + "</span>"; }
+    function reproducir() {
+      if (est.rep) return;
+      est.rep = true; pintarPlay();
+      timer = setInterval(() => fijarHora((est.hora + 1) % 24), REDUCIDO ? 1200 : 750);
+      fijarHora((est.hora + 1) % 24);
+    }
+    function pausar() { if (!est.rep) return; est.rep = false; clearInterval(timer); pintarPlay(); }
+    btnPlay.addEventListener("click", () => est.rep ? pausar() : reproducir());
+    document.addEventListener("visibilitychange", () => { if (document.hidden) pausar(); });
+    $("mc-hora").addEventListener("input", ev => { pausar(); fijarHora(+ev.target.value); });
+
+    // ---------- modo, pantalla completa, tamano de ventana
+    const radios = [...document.querySelectorAll('input[name="mc-modo"]')];
+    radios.forEach(r => {
+      r.disabled = !conDato[r.value];
+      r.checked = r.value === est.modo;
+      r.addEventListener("change", () => {
+        if (!r.checked) return;
+        est.modo = r.value; textoModo(); leyenda(); dibujarGrafico(); tablaHoras.actualizar(filasTabla()); aplicar(true);
+      });
+    });
+    const ticks = $("mc-ticks");
+    [0, 6, 12, 18, 23].forEach(h => { const s = document.createElement("span"); s.textContent = dd(h) + " h"; s.style.left = "calc(8px + (100% - 16px) * " + (h / 23).toFixed(4) + ")"; ticks.appendChild(s); });
+    const escena = $("mc-escena"), btnPant = $("mc-pantalla");
+    if (document.fullscreenEnabled && escena.requestFullscreen) {
+      btnPant.hidden = false;
+      btnPant.addEventListener("click", () => { if (document.fullscreenElement) document.exitFullscreen(); else escena.requestFullscreen().catch(() => {}); });
+      document.addEventListener("fullscreenchange", () => {
+        const f = document.fullscreenElement === escena;
+        btnPant.textContent = f ? "Salir de pantalla completa" : "Pantalla completa";
+        if (!f) cont.style.height = alto + "px";
+        setTimeout(() => { m.invalidateSize(); if (!tocado) encuadrar(); }, 80);
+      });
+    }
+    let tmr = 0;
+    window.addEventListener("resize", () => {
+      clearTimeout(tmr);
+      tmr = setTimeout(() => {
+        if (!document.fullscreenElement) { alto = medidas(); cont.style.height = alto + "px"; }
+        ESC = Math.max(0.72, Math.min(1.1, alto / 640));
+        m.invalidateSize();
+        if (!tocado) encuadrar();
+        aplicar(false); leyenda(); dibujarGrafico();
+      }, 200);
+    });
+
+    // ---------- notas del dato (todo sale de la meta y de los datos; nada fijo)
+    function notas() {
+      const li = [];
+      const dia = diaTxt || "día destacado";
+      if (meta.fuente) li.push(`<b>Fuente.</b> ${esc(String(meta.fuente).replace(/[.\s]+$/, ""))}. Datos ${esc(deMes)}${meta.generado && diaTexto(meta.generado) ? ", preparados el " + esc(diaTexto(meta.generado)) : ""}.`);
+      const total = num(meta.pares_central_tipo_en_el_csv), enMapa = num(meta.centrales_en_mapa);
+      if (enMapa != null && total != null && total >= enMapa) {
+        const falta = total - enMapa, partes = [];
+        if (num(meta.sin_cruzar_por_nombre)) partes.push(fmt(meta.sin_cruzar_por_nombre) + " sin coincidencia de nombre en el catálogo de centrales");
+        if (num(meta.nombre_ambiguo_omitidas)) partes.push(fmt(meta.nombre_ambiguo_omitidas) + " con nombre ambiguo");
+        if (num(meta.sin_tecnologia_omitidas)) partes.push(fmt(meta.sin_tecnologia_omitidas) + " sin tecnología");
+        li.push(`<b>Centrales.</b> El mapa muestra ${fmt(enMapa)} de las ${fmt(total)} centrales, sin contar baterías, que trae el archivo del Coordinador.` + (falta > 0
+          ? (falta === 1 ? " La central restante no aparece porque no se pudo ubicar o clasificar" : ` Las ${fmt(falta)} restantes no aparecen porque no se pudieron ubicar o clasificar`) + (partes.length ? " (" + partes.join(", ") + ")" : "") + "."
+          : ""));
+      }
+      if (num(meta.cobertura_energia_dia_pct) != null)
+        li.push(`<b>Cobertura de energía.</b> El mapa recoge el ${fmt(meta.cobertura_energia_dia_pct, 1)} % de la energía generada el ${esc(dia)}, sin contar baterías.`);
+      const cc = meta.control_solar_dia;
+      if (cc && num(cc.csv_gwh) != null && num(cc.mapa_gwh) != null && cc.csv_gwh > 0) {
+        const sd = num(cc.serie_diaria_api_gwh);
+        li.push(`<b>Control de la energía solar.</b> El ${esc(diaTexto(cc.fecha) || dia)} el archivo del Coordinador suma ${fmt(cc.csv_gwh, 2)} GWh de energía solar` +
+          (sd == null ? "" : (Math.abs(sd - cc.csv_gwh) < 0.015 ? `, que coincide con la serie diaria del Coordinador (${fmt(sd, 2)} GWh)` : `, frente a ${fmt(sd, 2)} GWh de la serie diaria del Coordinador`)) +
+          `; el mapa recoge ${fmt(cc.mapa_gwh, 2)} GWh (${fmt(cc.mapa_gwh / cc.csv_gwh * 100)} %). La diferencia es energía de centrales que el mapa no muestra.`);
+      }
+      if (meta.baterias) {
+        const b = String(meta.baterias).trim(), q = /^no incluid[ao]s?\s*:?\s*/i.exec(b);
+        li.push(q ? `<b>Baterías.</b> No están en esta etapa${b.length > q[0].length ? " (" + esc(b.slice(q[0].length).replace(/[.\s]+$/, "")) + ")" : ""}.`
+                  : `<b>Baterías.</b> ${esc(b.replace(/[.\s]+$/, ""))}.`);
+      }
+      const motivo = typeof meta.motivo_sin_dato_dia === "string" ? meta.motivo_sin_dato_dia.trim().replace(/[.\s]+$/, "") : "";
+      if (conDato.dia && sinDia) li.push(`<b>Sin dato en el día destacado.</b> ${fmt(sinDia)} ${sinDia === 1 ? "central" : "centrales"}${motivo ? ": " + esc(motivo) : ""}. Se dibujan con un anillo punteado y no se cuentan como cero.`);
+      if (nRev) li.push(`<b>Potencia por revisar.</b> ${fmt(nRev)} ${nRev === 1 ? "central generó" : "centrales generaron"} en el día destacado más que su potencia registrada. La potencia viene de las fuentes; cada ficha lo avisa.`);
+      $("mc-notas").innerHTML = li.map(x => "<li>" + x + "</li>").join("");
+    }
+
+    // ---------- arranque
+    textoModo(); notas(); pintarPlay(); leyenda(); dibujarGrafico();
+    fijarHora(est.hora);
+  }
+})();
+</script>
+</body>
+</html>

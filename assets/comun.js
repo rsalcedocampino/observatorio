@@ -72,6 +72,7 @@
       ["riesgo.html", "Cortes de luz"],
       ["bess-cortes.html", "Almacenamiento (BESS) y cortes"],
       ["generacion.html", "Generación y emisiones"],
+      ["mapa-centrales.html", "Un día del sistema eléctrico"],
       ["vertimiento.html", "Vertimiento renovable"],
       ["red-electrica.html", "Red eléctrica y potencial renovable"],
       ["demanda-ev.html", "Demanda eléctrica de los eléctricos"],
@@ -147,6 +148,7 @@
   ICONOS["inversion.html"] = IC('<path d="M3 17l5-5 3 3 4-4.5"/><path d="M15 10.5h4v4"/><path d="M3 21h18"/>');
   ICONOS["indicadores.html"] = IC('<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>');
   ICONOS["generacion.html"] = IC('<path d="M12 2v6M12 8l-4 6h8l-4 6"/><path d="M5 5l1.5 1.5M19 5l-1.5 1.5"/>');
+  ICONOS["mapa-centrales.html"] = IC('<path d="M3 19h18"/><path d="M7 19a5 5 0 0 1 10 0"/><path d="M12 5.5v3M5.8 9.3l2 2M18.2 9.3l-2 2"/><path d="M8.5 22.5h7"/>');
   // vertimiento: la curva de generacion con la punta CORTADA en plano, que es literalmente lo
   // que pasa; la linea de puntos es el peak que se habria generado y se perdio.
   ICONOS["vertimiento.html"] = IC('<path d="M2 20c4 0 4-7 7-7h6c3 0 3 7 7 7"/><path d="M9 13c0-4 1.5-6 3-6s3 2 3 6" stroke-dasharray="2 2"/>');
