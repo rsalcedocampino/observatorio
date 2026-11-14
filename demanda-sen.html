@@ -32,7 +32,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/demanda_sen.js?v='+_pwv+'">')</script>
 <style>
-#f-dia{min-width:11em}
+#f-mes,#f-dia{min-width:11em}
 .kpi .v{font-variant-numeric:tabular-nums}
 .kpi .v .u{font-size:14px;font-weight:600;color:var(--ink-2)}
 #t-dias th:first-child,#t-dias td:first-child{white-space:nowrap}
@@ -66,8 +66,10 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
       <h2 style="margin-top:0">Un día, hora por hora</h2>
       <div id="b-horas">
         <div class="filtros">
+          <label for="f-mes">Mes <select id="f-mes"></select></label>
           <label for="f-dia">Día <select id="f-dia"></select></label>
         </div>
+        <p class="nota" id="n-sinhoras" hidden></p>
         <div id="g-hora" role="img" aria-label="Gráfico de líneas con la demanda, la generación renovable variable (ERV) y la demanda neta de un día, hora por hora, en megavatios"></div>
         <p class="nota" id="n-hora"></p>
         <p class="nota" id="n-numeracion"></p>
@@ -256,24 +258,45 @@ PW.montarNav("demanda-sen.html");
     });
     el("n-hora").textContent = "El " + fechaCorta(fecha) + " la demanda máxima fue de " + PW.fmt(H.dem[iMax]) + " MW, a la hora " + H.nums[iMax] +
       ". En esa hora las renovables variables (ERV) aportaron " + PW.fmt(H.erv[iMax]) + " MW (" + PW.fmt(100 * H.erv[iMax] / H.dem[iMax]) +
-      "% de la demanda de esa hora). La demanda neta más baja fue de " + PW.fmt(H.neta[iMin]) + " MW, a la hora " + H.nums[iMin] + ".";
+      "% de la demanda de esa hora). La demanda neta más baja fue de " + PW.fmt(H.neta[iMin]) + " MW, a la hora " + H.nums[iMin] + "." +
+      " En el día completo la demanda sumó " + f1.format(dia.get(fecha).demanda) + " GWh y las renovables variables (ERV) cubrieron el " + f1.format(dia.get(fecha).pct) + "%.";
     // El tramo de cada hora solo se dice para la numeración de 1 a 24, la que se midió el 14-11 con `fecha_hora` (la hora h va de (h-1):00 a h:00).
     const hh = n => String(n).padStart(2, "0") + ":00";
     const tramo = H.nums[0] === 1 && H.nums[23] === 24 ? " La hora " + H.nums[iMax] + " es el tramo de " + hh(H.nums[iMax] - 1) + " a " + hh(H.nums[iMax]) + "." : "";
     el("n-numeracion").textContent = "Las horas van del " + H.nums[0] + " al " + H.nums[23] + ", con la numeración que entrega el Coordinador." + tramo +
       " La demanda neta es la demanda menos las renovables variables (ERV).";
   }
-  const conHoras = [...HORARIO.keys()].sort().reverse();
-  if (conHoras.length) {
-    const sel = el("f-dia");
-    sel.innerHTML = conHoras.map(f => `<option value="${esc(f)}">${esc(fechaLarga(f))}</option>`).join("");
-    sel.addEventListener("change", () => dibujarHoras(sel.value));
-    dibujarHoras(conHoras[0]);
+  // ---- selector de mes y día: los meses con al menos un día con detalle por hora (el más reciente primero) y, dentro de cada mes, sus días en orden de calendario
+  const MES_LARGO = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+  const mesLargo = ym => MES_LARGO[+ym.slice(5, 7) - 1] + " " + ym.slice(0, 4);
+  const porMes = new Map();
+  [...HORARIO.keys()].sort().forEach(f => {
+    const ym = f.slice(0, 7);
+    if (!porMes.has(ym)) porMes.set(ym, []);
+    porMes.get(ym).push(f);
+  });
+  const meses = [...porMes.keys()].sort().reverse();
+  if (meses.length) {
+    const selMes = el("f-mes"), selDia = el("f-dia"), avisoMes = el("n-sinhoras");
+    selMes.innerHTML = meses.map(m => `<option value="${esc(m)}">${esc(mesLargo(m))}</option>`).join("");
+    // al cambiar de mes se muestra su último día con detalle; los días del mes que están en la tabla pero no tienen horas se avisan
+    const elegirMes = ym => {
+      const fechas = porMes.get(ym);
+      selDia.innerHTML = fechas.map(f => `<option value="${esc(f)}">${esc(fechaCorta(f))}</option>`).join("");
+      selDia.value = fechas[fechas.length - 1];
+      const sin = DIAS.filter(d => d.fecha.slice(0, 7) === ym).length - fechas.length;
+      avisoMes.hidden = sin <= 0;
+      avisoMes.textContent = sin <= 0 ? "" : (sin === 1 ? "Un día de este mes no tiene detalle por hora; de él solo está el total, en la tabla de abajo."
+        : sin + " días de este mes no tienen detalle por hora; de ellos solo está el total, en la tabla de abajo.");
+      dibujarHoras(selDia.value);
+    };
+    selMes.addEventListener("change", () => elegirMes(selMes.value));
+    selDia.addEventListener("change", () => dibujarHoras(selDia.value));
+    elegirMes(meses[0]);
   } else {
     el("b-horas").hidden = true;
     const p = el("sin-horas");
-    p.textContent = "Todavía no hay un día completo con detalle por hora. El Observatorio empezó a guardarlo hace poco, sin hacer más consultas al " +
-      "Coordinador: el primer día aparecerá aquí cuando se recoja, cada mañana. Los días anteriores solo tienen su total.";
+    p.textContent = "Todavía no hay un día completo con detalle por hora. Aparecerá aquí apenas se recoja uno; mientras tanto, cada día tiene su total en la tabla.";
     p.hidden = false;
   }
 
@@ -291,8 +314,9 @@ PW.montarNav("demanda-sen.html");
   // ---- fuente y frescura
   const pu = partes(ultimo), ahora = new Date();
   const edad = Math.round((Date.UTC(ahora.getFullYear(), ahora.getMonth(), ahora.getDate()) - Date.UTC(pu.a, pu.m - 1, pu.d)) / 864e5);   // días de calendario del lector
-  el("n-fuente").textContent = "Fuente: Coordinador Eléctrico Nacional, reporte de demanda neta de su API pública (SIP). El Observatorio hace una consulta " +
-    "por día, cada mañana, y guarda el resultado. Último día con datos: " + fechaLarga(ultimo) + "." +
+  el("n-fuente").textContent = "Fuente: Coordinador Eléctrico Nacional, reporte de demanda neta de su API pública (SIP). El Observatorio consulta el " +
+    "reporte cada mañana y guarda el resultado; si el día llega incompleto, lo completa con una segunda consulta o con la del día siguiente. " +
+    "Los primeros días de la serie se trajeron aparte, con una consulta por cada uno. Último día con datos: " + fechaLarga(ultimo) + "." +
     (D.meta && typeof D.meta.generado === "string" ? " Datos generados el " + D.meta.generado.slice(0, 10) + "." : "") +
     (edad >= 4 ? " El dato más reciente tiene " + edad + " días: la recolección diaria puede estar retrasada." : "");
 })();
