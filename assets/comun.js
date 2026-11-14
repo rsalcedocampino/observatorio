@@ -76,6 +76,7 @@
       ["mapa-centrales.html", "Un día del sistema eléctrico"],
       ["vertimiento.html", "Vertimiento renovable"],
       ["red-electrica.html", "Red eléctrica y potencial renovable"],
+      ["demanda-sen.html", "Demanda eléctrica del país"],
       ["demanda-ev.html", "Demanda eléctrica de los eléctricos"],
       ["pelp.html", "Chile frente a su plan energético (PELP)"],
     ]],
@@ -175,6 +176,7 @@
   ICONOS["vulnerabilidad.html"] = ICONOS["riesgo.html"];
   ICONOS["bess-cortes.html"] = ICONOS["baterias.html"];
   ICONOS["demanda-ev.html"] = ICONOS["operadores.html"];
+  ICONOS["demanda-sen.html"] = IC('<path d="M4 4v16h16"/><path d="M7 15c1.6 0 2-6 4-6s2 6 4 6 2.2-8 4.5-8"/>');
   ICONOS["pelp.html"] = ICONOS["tracker.html"];
   ICONOS["integracion.html"] = IC('<path d="M6 3v6a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3v6"/><circle cx="6" cy="3" r="1.6"/><circle cx="18" cy="21" r="1.6"/><circle cx="18" cy="9" r="1.6"/><circle cx="6" cy="15" r="1.6"/>');
   ICONOS["concentracion.html"] = IC('<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>');

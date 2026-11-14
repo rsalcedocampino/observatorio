@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Demanda eléctrica del país — Energías Futuro</title>
+<meta name="description" content="Cuánta electricidad consumió el Sistema Eléctrico Nacional cada día, a qué hora estuvo el máximo y qué parte de la demanda cubrieron las energías renovables variables (ERV). Datos del Coordinador Eléctrico Nacional.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261114a">
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/demanda_sen.js?v='+_pwv+'">')</script>
+<style>
+#f-dia{min-width:11em}
+.kpi .v{font-variant-numeric:tabular-nums}
+.kpi .v .u{font-size:14px;font-weight:600;color:var(--ink-2)}
+#t-dias th:first-child,#t-dias td:first-child{white-space:nowrap}
+</style>
+</head>
+<body>
+<main>
+  <h1>Demanda eléctrica del país</h1>
+  <p class="sub">Cuánta electricidad consumió el Sistema Eléctrico Nacional cada día, a qué hora estuvo el máximo y qué parte de esa
+  demanda cubrieron las energías renovables variables (ERV).</p>
+  <p class="aviso-borrador" id="aviso-serie" hidden></p>
+  <p class="nota" id="estado" hidden></p>
+
+  <div id="cuerpo">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="fila2">
+      <div class="tarjeta">
+        <h2 style="margin-top:0">Demanda de cada día</h2>
+        <div id="g-dia" role="img" aria-label="Gráfico de columnas con la demanda de cada día, en gigavatios-hora"></div>
+        <p class="nota" id="n-dia"></p>
+      </div>
+      <div class="tarjeta">
+        <h2 style="margin-top:0">Parte cubierta por renovables variables (ERV)</h2>
+        <div id="g-erv" role="img" aria-label="Gráfico de columnas con el porcentaje de la demanda de cada día que cubrió la generación renovable variable (ERV)"></div>
+        <p class="nota">Porcentaje de la demanda de cada día que cubrió la generación renovable variable (ERV) que informa el Coordinador.</p>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Un día, hora por hora</h2>
+      <div id="b-horas">
+        <div class="filtros">
+          <label for="f-dia">Día <select id="f-dia"></select></label>
+        </div>
+        <div id="g-hora" role="img" aria-label="Gráfico de líneas con la demanda, la generación renovable variable (ERV) y la demanda neta de un día, hora por hora, en megavatios"></div>
+        <p class="nota" id="n-hora"></p>
+        <p class="nota" id="n-numeracion"></p>
+      </div>
+      <p class="nota" id="sin-horas" hidden></p>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Todos los días</h2>
+      <div id="t-dias"></div>
+      <p class="nota">Cada fila es un día completo, con sus 24 horas. Haz clic en el título de una columna para ordenar.</p>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Cómo leer estas cifras</h2>
+      <ul>
+        <li><b>La demanda del día</b> es la electricidad que el sistema tuvo que producir para abastecer al país, sumada hora por hora y sin
+        contar lo que las propias centrales gastan para funcionar. Se mide en gigavatios-hora (GWh): un GWh son un millón de kWh.</li>
+        <li><b>El máximo</b> es la hora más exigida del día. Se mide en megavatios (MW), que miden potencia y no energía, y sirve para
+        dimensionar cuánta capacidad necesita el sistema.</li>
+        <li><b>Renovables variables (ERV)</b> es la generación que el Coordinador informa como energía renovable variable; «variable» quiere decir
+        que depende de condiciones que cambian, como el sol o el viento. El porcentaje es su parte de la demanda del día. El reporte no detalla
+        qué centrales cuenta como ERV, así que no la leas como «solar más eólica»: en los días revisados fue mayor que esa suma en la serie
+        de generación diaria del Observatorio.</li>
+        <li><b>La demanda neta</b> es la demanda menos las renovables variables (ERV): lo que queda por cubrir con las demás centrales del sistema.</li>
+        <li><b>Un día sin dato</b> (banda amarilla en el gráfico) es un día que el Coordinador no entregó completo. Un día a medias no se
+        publica.</li>
+      </ul>
+    </div>
+
+    <div class="tarjeta">
+      <h2 style="margin-top:0">Para seguir</h2>
+      <ul>
+        <li><a href="demanda-ev.html">Demanda eléctrica de los eléctricos</a>: cuánta energía consume el parque de vehículos eléctricos y cuándo su crecimiento se hará sentir en el sistema.</li>
+        <li><a href="mapa-centrales.html">Un día del sistema eléctrico</a>: qué centrales generan en cada hora, en un mapa.</li>
+        <li><a href="vertimiento.html">Vertimiento renovable</a>: la energía renovable que el sistema no pudo absorber y debió reducir.</li>
+        <li><a href="generacion.html">Parque de generación y almacenamiento</a>: las centrales del sistema, con su tecnología y su potencia.</li>
+      </ul>
+      <p class="nota" id="n-fuente"></p>
+    </div>
+  </div>
+</main>
+<script>document.write('<script src="data/demanda_sen.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=261114a"></script>
+<script>
+PW.montarNav("demanda-sen.html");
+(function () {
+  const D = (window.PW_DATA || {}).demanda_sen;
+  const el = id => document.getElementById(id);
+  const esc = PW.esc;
+  const num = v => typeof v === "number" && isFinite(v);
+
+  function sinDatos(txt) {
+    const p = el("estado");
+    p.textContent = txt;
+    p.hidden = false;
+    el("cuerpo").hidden = true;      // ojo: "contenido" es el id que comun.js le pone a <main>
+  }
+  if (!D || !Array.isArray(D.dias)) { sinDatos("Los datos de esta página no están disponibles por ahora. Vuelve a intentarlo más tarde."); return; }
+
+  // ---- fechas (todas AAAA-MM-DD; se calcula en UTC para que la zona horaria del lector no corra el día)
+  const MES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  const SEM = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+  function partes(iso) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso));
+    if (!m) return null;
+    const p = { a: +m[1], m: +m[2], d: +m[3] };
+    const t = new Date(Date.UTC(p.a, p.m - 1, p.d));
+    return t.getUTCFullYear() === p.a && t.getUTCMonth() === p.m - 1 && t.getUTCDate() === p.d ? p : null;   // rechaza 2026-13-45 y 2026-02-31
+  }
+  const semana = iso => { const p = partes(iso); return SEM[new Date(Date.UTC(p.a, p.m - 1, p.d)).getUTCDay()]; };
+  const fechaSolo = iso => { const p = partes(iso); return p.d + " " + MES[p.m - 1] + " " + p.a; };
+  const fechaCorta = iso => { const p = partes(iso); return semana(iso) + " " + p.d + " " + MES[p.m - 1]; };
+  const fechaLarga = iso => semana(iso) + " " + fechaSolo(iso);
+  const sumarDias = (iso, n) => { const p = partes(iso); return new Date(Date.UTC(p.a, p.m - 1, p.d + n)).toISOString().slice(0, 10); };
+
+  // ---- días: una fila por fecha (si viene repetida vale la última) y solo con cifras que se pueden mostrar
+  const porFecha = new Map();
+  D.dias.forEach(d => {
+    if (!d || !partes(d.fecha) || !num(d.demanda_gwh) || d.demanda_gwh <= 0 || !num(d.max_mw) || d.max_mw <= 0 || !num(d.erv_gwh) || d.erv_gwh < 0) return;
+    porFecha.set(d.fecha, d);
+  });
+  const DIAS = [...porFecha.values()].sort((a, b) => (a.fecha < b.fecha ? -1 : 1)).map(d => ({
+    fecha: d.fecha,
+    demanda: d.demanda_gwh,
+    max: d.max_mw,
+    horaMax: Number.isInteger(d.hora_max) && d.hora_max >= 0 && d.hora_max <= 24 ? d.hora_max : null,
+    erv: d.erv_gwh,
+    neta: d.demanda_gwh - d.erv_gwh,
+    pct: 100 * d.erv_gwh / d.demanda_gwh,
+  }));
+  if (!DIAS.length) { sinDatos("Todavía no hay días con datos. El Observatorio recoge uno cada mañana."); return; }
+  const primero = DIAS[0].fecha, ultimo = DIAS[DIAS.length - 1].fecha;
+  const u = DIAS[DIAS.length - 1];
+  const f1 = new Intl.NumberFormat("es-CL", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  // ---- aviso de serie corta: la cifra sale de los datos, no se escribe a mano
+  if (DIAS.length < 90) {
+    const av = el("aviso-serie");
+    av.textContent = "Serie nueva: parte el " + fechaSolo(primero) + " y hoy tiene " + DIAS.length + (DIAS.length === 1 ? " día" : " días") +
+      " con datos. Se suma uno cada mañana, así que todavía no alcanza para ver tendencias ni diferencias entre estaciones.";
+    av.hidden = false;
+  }
+
+  // ---- resumen del último día
+  // la unidad va aparte y más chica: a 375 px "246,1 GWh" en un solo cuerpo se partía en dos líneas
+  el("kpis").innerHTML = [
+    [f1.format(u.demanda), " GWh", "demanda del " + fechaCorta(u.fecha), "suma de las 24 horas"],
+    [PW.fmt(u.max), " MW", "máximo de ese día", u.horaMax != null ? "a la hora " + u.horaMax : ""],
+    [f1.format(u.pct) + "%", "", "cubierto por renovables variables (ERV)", f1.format(u.erv) + " GWh de " + f1.format(u.demanda)],
+    [f1.format(u.neta), " GWh", "demanda neta", "lo que cubrieron las demás centrales"],
+  ].map(d => `<div class="kpi"><div class="v">${esc(d[0])}${d[1] ? `<span class="u">${esc(d[1])}</span>` : ""}</div><div class="l">${esc(d[2])}</div><div class="d">${esc(d[3])}</div></div>`).join("");
+
+  // ---- gráficos por día: calendario seguido, con hueco (banda) en los días sin dato; como máximo los últimos 120
+  let cal = [];
+  for (let f = primero; f <= ultimo && cal.length < 4000; f = sumarDias(f, 1)) cal.push(f);
+  const recortado = cal.length > 120;
+  if (recortado) cal = cal.slice(-120);
+  const dia = new Map(DIAS.map(d => [d.fecha, d]));
+  const variosAnios = primero.slice(0, 4) !== ultimo.slice(0, 4);
+  const etq = f => {
+    const p = partes(f);
+    return (cal.length <= 31 ? semana(f) + " " : "") + p.d + " " + MES[p.m - 1] + (variosAnios ? " " + String(p.a).slice(2) : "");
+  };
+  const labels = cal.map(etq);
+  PW.columnas("g-dia", {
+    labels, alto: 240,
+    valores: cal.map(f => (dia.has(f) ? dia.get(f).demanda : null)),
+    fmtY: v => PW.fmt(v), fmtV: v => f1.format(v) + " GWh",
+  });
+  PW.columnas("g-erv", {
+    labels, alto: 240, color: PW.color("--s3"),
+    valores: cal.map(f => (dia.has(f) ? dia.get(f).pct : null)),
+    fmtY: v => PW.fmt(v) + "%", fmtV: v => f1.format(v) + "%",
+  });
+  const huecos = cal.filter(f => !dia.has(f)).length;
+  el("n-dia").textContent = "Gigavatios-hora (GWh) que consumió el país en cada día." +
+    (huecos ? " Los días con banda amarilla no tienen dato." : "") +
+    (recortado ? " Se muestran los últimos 120 días; la tabla trae todos." : "");
+
+  // ---- detalle por hora: solo los días con 24 horas seguidas y que sumen lo mismo que su total del día.
+  // La numeración es la del Coordinador y no se supone: sirve de la 1 a la 24 o de la 0 a la 23.
+  const filasH = new Map();
+  (Array.isArray(D.horas) ? D.horas : []).forEach(r => {
+    if (!r || !porFecha.has(r.fecha) || !Number.isInteger(r.hora) || r.hora < 0 || r.hora > 24) return;
+    if (![r.gen_bruta_mwh, r.gen_erv_mwh, r.cons_propio_mwh, r.demanda_neta_mwh].every(num)) return;
+    if (!filasH.has(r.fecha)) filasH.set(r.fecha, new Map());
+    filasH.get(r.fecha).set(r.hora, r);      // de una hora repetida vale la última fila
+  });
+  const HORARIO = new Map();
+  filasH.forEach((hs, fecha) => {
+    const nums = [...hs.keys()].sort((a, b) => a - b);
+    if (nums.length !== 24 || nums[23] - nums[0] !== 23) return;
+    const dem = [], erv = [], neta = [];
+    nums.forEach(h => {
+      const r = hs.get(h);
+      dem.push(r.gen_bruta_mwh - r.cons_propio_mwh);
+      erv.push(r.gen_erv_mwh);
+      neta.push(r.demanda_neta_mwh);
+    });
+    const gwh = a => a.reduce((s, v) => s + v, 0) / 1000;
+    const d = dia.get(fecha);
+    if (Math.abs(gwh(dem) - d.demanda) > 0.05 || Math.abs(gwh(erv) - d.erv) > 0.05) return;   // las horas no calzan con el día: no se muestran
+    HORARIO.set(fecha, { nums, dem, erv, neta });
+  });
+
+  function dibujarHoras(fecha) {
+    const H = HORARIO.get(fecha);
+    const iMax = H.dem.indexOf(Math.max(...H.dem));
+    const iMin = H.neta.indexOf(Math.min(...H.neta));
+    const piso = Math.min(...H.dem, ...H.erv, ...H.neta);
+    PW.lineas("g-hora", {
+      labels: H.nums.map(h => "Hora " + h), alto: 300,
+      min: piso < 0 ? Math.floor(piso / 500) * 500 : 0,
+      series: [
+        { nombre: "Demanda", valores: H.dem, color: PW.color("--s1") },
+        { nombre: "Renovables variables (ERV)", valores: H.erv, color: PW.color("--s3"), area: true },
+        { nombre: "Demanda neta", valores: H.neta, color: PW.color("--s2") },
+      ],
+      fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " MW",
+      lineaX: { i: iMax, texto: "Máximo del día" },
+    });
+    el("n-hora").textContent = "El " + fechaCorta(fecha) + " la demanda máxima fue de " + PW.fmt(H.dem[iMax]) + " MW, a la hora " + H.nums[iMax] +
+      ". En esa hora las renovables variables (ERV) aportaron " + PW.fmt(H.erv[iMax]) + " MW (" + PW.fmt(100 * H.erv[iMax] / H.dem[iMax]) +
+      "% de la demanda de esa hora). La demanda neta más baja fue de " + PW.fmt(H.neta[iMin]) + " MW, a la hora " + H.nums[iMin] + ".";
+    el("n-numeracion").textContent = "Las horas van del " + H.nums[0] + " al " + H.nums[23] + ", con la numeración que entrega el Coordinador. " +
+      "La demanda neta es la demanda menos las renovables variables (ERV).";
+  }
+  const conHoras = [...HORARIO.keys()].sort().reverse();
+  if (conHoras.length) {
+    const sel = el("f-dia");
+    sel.innerHTML = conHoras.map(f => `<option value="${esc(f)}">${esc(fechaLarga(f))}</option>`).join("");
+    sel.addEventListener("change", () => dibujarHoras(sel.value));
+    dibujarHoras(conHoras[0]);
+  } else {
+    el("b-horas").hidden = true;
+    const p = el("sin-horas");
+    p.textContent = "Todavía no hay un día completo con detalle por hora. El Observatorio empezó a guardarlo hace poco, sin hacer más consultas al " +
+      "Coordinador: el primer día aparecerá aquí cuando se recoja, cada mañana. Los días anteriores solo tienen su total.";
+    p.hidden = false;
+  }
+
+  // ---- tabla de todos los días, el más reciente primero
+  PW.tabla("t-dias", [
+    { k: "fecha", titulo: "Día", prio: true, fmt: v => esc(fechaLarga(v)) },
+    { k: "demanda", titulo: "Demanda (GWh)", num: true, prio: true, fmt: v => f1.format(v) },
+    { k: "max", titulo: "Máximo (MW)", num: true, prio: true, fmt: v => PW.fmt(v) },
+    { k: "horaMax", titulo: "Hora del máximo", num: true, fmt: v => (v == null ? "—" : String(v)) },
+    { k: "erv", titulo: "Renovables variables, ERV (GWh)", num: true, fmt: v => f1.format(v) },
+    { k: "pct", titulo: "Renovables variables, ERV (% de la demanda)", num: true, prio: true, fmt: v => f1.format(v) + "%" },
+    { k: "neta", titulo: "Demanda neta (GWh)", num: true, fmt: v => f1.format(v) },
+  ], DIAS.slice().reverse(), { orden: "fecha", asc: false, buscador: false });
+
+  // ---- fuente y frescura
+  const pu = partes(ultimo), ahora = new Date();
+  const edad = Math.round((Date.UTC(ahora.getFullYear(), ahora.getMonth(), ahora.getDate()) - Date.UTC(pu.a, pu.m - 1, pu.d)) / 864e5);   // días de calendario del lector
+  el("n-fuente").textContent = "Fuente: Coordinador Eléctrico Nacional, reporte de demanda neta de su API pública (SIP). El Observatorio hace una consulta " +
+    "por día, cada mañana, y guarda el resultado. Último día con datos: " + fechaLarga(ultimo) + "." +
+    (D.meta && typeof D.meta.generado === "string" ? " Datos generados el " + D.meta.generado.slice(0, 10) + "." : "") +
+    (edad >= 4 ? " El dato más reciente tiene " + edad + " días: la recolección diaria puede estar retrasada." : "");
+})();
+</script>
+</body>
+</html>
