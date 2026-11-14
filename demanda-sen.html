@@ -47,6 +47,13 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   <p class="nota" id="estado" hidden></p>
 
   <div id="cuerpo">
+    <div class="filtros" id="filtros">
+      <label for="f-mes">Mes <select id="f-mes"></select></label>
+      <label for="f-dia">Día <select id="f-dia"></select></label>
+    </div>
+    <p class="nota" id="n-filtro">Elige un mes y un día: las cifras, los gráficos y la tabla de esta página se ajustan a tu elección.</p>
+    <p class="nota" id="n-sinhoras" hidden></p>
+
     <div class="kpis" id="kpis"></div>
 
     <div class="fila2">
@@ -63,13 +70,8 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     </div>
 
     <div class="tarjeta">
-      <h2 style="margin-top:0">Un día, hora por hora</h2>
+      <h2 style="margin-top:0" id="t-hora">Un día, hora por hora</h2>
       <div id="b-horas">
-        <div class="filtros">
-          <label for="f-mes">Mes <select id="f-mes"></select></label>
-          <label for="f-dia">Día <select id="f-dia"></select></label>
-        </div>
-        <p class="nota" id="n-sinhoras" hidden></p>
         <div id="g-hora" role="img" aria-label="Gráfico de líneas con la demanda, la generación renovable variable (ERV) y la demanda neta de un día, hora por hora, en megavatios"></div>
         <p class="nota" id="n-hora"></p>
         <p class="nota" id="n-numeracion"></p>
@@ -79,9 +81,9 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     </div>
 
     <div class="tarjeta">
-      <h2 style="margin-top:0">Todos los días</h2>
+      <h2 style="margin-top:0" id="t-titulo">Todos los días</h2>
       <div id="t-dias"></div>
-      <p class="nota">Cada fila es un día completo, con sus 24 horas. Haz clic en el título de una columna para ordenar.</p>
+      <p class="nota">Cada fila es un día completo, con sus 24 horas. El día elegido va en negrita. Haz clic en el título de una columna para ordenar.</p>
     </div>
 
     <div class="tarjeta">
@@ -136,6 +138,7 @@ PW.montarNav("demanda-sen.html");
 
   // ---- fechas (todas AAAA-MM-DD; se calcula en UTC para que la zona horaria del lector no corra el día)
   const MES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  const MES_LARGO = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
   const SEM = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
   function partes(iso) {
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso));
@@ -148,6 +151,7 @@ PW.montarNav("demanda-sen.html");
   const fechaSolo = iso => { const p = partes(iso); return p.d + " " + MES[p.m - 1] + " " + p.a; };
   const fechaCorta = iso => { const p = partes(iso); return semana(iso) + " " + p.d + " " + MES[p.m - 1]; };
   const fechaLarga = iso => semana(iso) + " " + fechaSolo(iso);
+  const mesLargo = ym => MES_LARGO[+ym.slice(5, 7) - 1] + " " + ym.slice(0, 4);
   const sumarDias = (iso, n) => { const p = partes(iso); return new Date(Date.UTC(p.a, p.m - 1, p.d + n)).toISOString().slice(0, 10); };
 
   // ---- días: una fila por fecha (si viene repetida vale la última) y solo con cifras que se pueden mostrar
@@ -166,8 +170,8 @@ PW.montarNav("demanda-sen.html");
     pct: 100 * d.erv_gwh / d.demanda_gwh,
   }));
   if (!DIAS.length) { sinDatos("Todavía no hay días con datos. El Observatorio recoge uno cada mañana."); return; }
+  const dia = new Map(DIAS.map(d => [d.fecha, d]));
   const primero = DIAS[0].fecha, ultimo = DIAS[DIAS.length - 1].fecha;
-  const u = DIAS[DIAS.length - 1];
   const f1 = new Intl.NumberFormat("es-CL", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
   // ---- aviso de serie corta: la cifra sale de los datos, no se escribe a mano. Se mantiene mientras la serie no llegue a un año: sin un año completo no hay diferencias entre estaciones que mostrar
@@ -177,42 +181,6 @@ PW.montarNav("demanda-sen.html");
       " con datos. Se suma uno cada mañana, así que todavía no alcanza para ver tendencias ni diferencias entre estaciones.";
     av.hidden = false;
   }
-
-  // ---- resumen del último día
-  // la unidad va aparte y más chica: a 375 px "246,1 GWh" en un solo cuerpo se partía en dos líneas
-  el("kpis").innerHTML = [
-    [f1.format(u.demanda), " GWh", "demanda del " + fechaCorta(u.fecha), "suma de las 24 horas"],
-    [PW.fmt(u.max), " MW", "máximo de ese día", u.horaMax != null ? "a la hora " + u.horaMax : ""],
-    [f1.format(u.pct) + "%", "", "cubierto por renovables variables (ERV)", f1.format(u.erv) + " GWh de " + f1.format(u.demanda)],
-    [f1.format(u.neta), " GWh", "demanda neta", "lo que cubrieron las demás centrales"],
-  ].map(d => `<div class="kpi"><div class="v">${esc(d[0])}${d[1] ? `<span class="u">${esc(d[1])}</span>` : ""}</div><div class="l">${esc(d[2])}</div><div class="d">${esc(d[3])}</div></div>`).join("");
-
-  // ---- gráficos por día: calendario seguido, con hueco (banda) en los días sin dato; como máximo los últimos 120
-  let cal = [];
-  for (let f = primero; f <= ultimo && cal.length < 4000; f = sumarDias(f, 1)) cal.push(f);
-  const recortado = cal.length > 120;
-  if (recortado) cal = cal.slice(-120);
-  const dia = new Map(DIAS.map(d => [d.fecha, d]));
-  const variosAnios = primero.slice(0, 4) !== ultimo.slice(0, 4);
-  const etq = f => {
-    const p = partes(f);
-    return (cal.length <= 31 ? semana(f) + " " : "") + p.d + " " + MES[p.m - 1] + (variosAnios ? " " + String(p.a).slice(2) : "");
-  };
-  const labels = cal.map(etq);
-  PW.columnas("g-dia", {
-    labels, alto: 240,
-    valores: cal.map(f => (dia.has(f) ? dia.get(f).demanda : null)),
-    fmtY: v => PW.fmt(v), fmtV: v => f1.format(v) + " GWh",
-  });
-  PW.columnas("g-erv", {
-    labels, alto: 240, color: PW.color("--s3"),
-    valores: cal.map(f => (dia.has(f) ? dia.get(f).pct : null)),
-    fmtY: v => PW.fmt(v) + "%", fmtV: v => f1.format(v) + "%",
-  });
-  const huecos = cal.filter(f => !dia.has(f)).length;
-  el("n-dia").textContent = "Gigavatios-hora (GWh) que consumió el país en cada día." +
-    (huecos ? " Los días con banda amarilla no tienen dato." : "") +
-    (recortado ? " Se muestran los últimos 120 días; la tabla trae todos." : "");
 
   // ---- detalle por hora: solo los días con 24 horas seguidas y que sumen lo mismo que su total del día.
   // La numeración es la del Coordinador y no se supone: sirve de la 1 a la 24 o de la 0 a la 23.
@@ -240,6 +208,66 @@ PW.montarNav("demanda-sen.html");
     HORARIO.set(fecha, { nums, dem, erv, neta });
   });
 
+  // ---- el filtro: un mes (o todo el período) y un día. Todo lo que se ve en la página sale de estos dos valores.
+  // Al abrir: todo el período y el último día. Al cambiar de mes, si el día elegido no es de ese mes se pasa a su último día.
+  const diasDeMes = new Map();                       // "AAAA-MM" -> sus días con cifras, de menor a mayor
+  DIAS.forEach(d => {
+    const ym = d.fecha.slice(0, 7);
+    if (!diasDeMes.has(ym)) diasDeMes.set(ym, []);
+    diasDeMes.get(ym).push(d.fecha);
+  });
+  const meses = [...diasDeMes.keys()].sort().reverse();     // el más reciente primero
+  const sel = { mes: "todo", dia: ultimo };
+  const alcance = () => (sel.mes === "todo" ? DIAS : DIAS.filter(d => d.fecha.startsWith(sel.mes)));
+  const selMes = el("f-mes"), selDia = el("f-dia");
+
+  // ---- las cuatro cifras: las del día elegido
+  // la unidad va aparte y más chica: a 375 px "246,1 GWh" en un solo cuerpo se partía en dos líneas
+  function pintarCifras() {
+    const u = dia.get(sel.dia);
+    el("kpis").innerHTML = [
+      [f1.format(u.demanda), " GWh", "demanda del " + fechaCorta(u.fecha), "suma de las 24 horas"],
+      [PW.fmt(u.max), " MW", "máximo de ese día", u.horaMax != null ? "a la hora " + u.horaMax : ""],
+      [f1.format(u.pct) + "%", "", "cubierto por renovables variables (ERV)", f1.format(u.erv) + " GWh de " + f1.format(u.demanda)],
+      [f1.format(u.neta), " GWh", "demanda neta", "lo que cubrieron las demás centrales"],
+    ].map(d => `<div class="kpi"><div class="v">${esc(d[0])}${d[1] ? `<span class="u">${esc(d[1])}</span>` : ""}</div><div class="l">${esc(d[2])}</div><div class="d">${esc(d[3])}</div></div>`).join("");
+  }
+
+  // ---- gráficos por día: los días del mes elegido o de todo el período, en calendario seguido, con hueco (banda) en los días sin dato;
+  // como máximo los últimos 120. Una línea punteada marca el día elegido.
+  function pintarGraficosDia() {
+    const dias = alcance();
+    const p0 = dias[0].fecha, p1 = dias[dias.length - 1].fecha;
+    let cal = [];
+    for (let f = p0; f <= p1 && cal.length < 4000; f = sumarDias(f, 1)) cal.push(f);
+    const recortado = cal.length > 120;
+    if (recortado) cal = cal.slice(-120);
+    const variosAnios = p0.slice(0, 4) !== p1.slice(0, 4);
+    const etq = f => {
+      const p = partes(f);
+      return (cal.length <= 31 ? semana(f) + " " : "") + p.d + " " + MES[p.m - 1] + (variosAnios ? " " + String(p.a).slice(2) : "");
+    };
+    const labels = cal.map(etq);
+    const iSel = cal.indexOf(sel.dia);
+    const marca = iSel >= 0 ? [{ i: iSel, texto: "" }] : [];      // solo la línea: con texto se pisaba con el eje cuando el día queda cerca del borde izquierdo
+    PW.columnas("g-dia", {
+      labels, alto: 240, anotaciones: marca,
+      valores: cal.map(f => (dia.has(f) ? dia.get(f).demanda : null)),
+      fmtY: v => PW.fmt(v), fmtV: v => f1.format(v) + " GWh",
+    });
+    PW.columnas("g-erv", {
+      labels, alto: 240, color: PW.color("--s3"), anotaciones: marca,
+      valores: cal.map(f => (dia.has(f) ? dia.get(f).pct : null)),
+      fmtY: v => PW.fmt(v) + "%", fmtV: v => f1.format(v) + "%",
+    });
+    const huecos = cal.filter(f => !dia.has(f)).length;
+    el("n-dia").textContent = "Gigavatios-hora (GWh) que consumió el país en cada día" + (sel.mes === "todo" ? "" : " de " + mesLargo(sel.mes)) + "." +
+      (iSel >= 0 ? " La línea punteada marca el día elegido." : " El día elegido es anterior a los últimos 120 días del gráfico; está en la tabla.") +
+      (huecos ? " Los días con banda amarilla no tienen dato." : "") +
+      (recortado ? " Se muestran los últimos 120 días; la tabla trae todos." : "");
+  }
+
+  // ---- el día elegido, hora por hora
   function dibujarHoras(fecha) {
     const H = HORARIO.get(fecha);
     const iMax = H.dem.indexOf(Math.max(...H.dem));
@@ -266,50 +294,81 @@ PW.montarNav("demanda-sen.html");
     el("n-numeracion").textContent = "Las horas van del " + H.nums[0] + " al " + H.nums[23] + ", con la numeración que entrega el Coordinador." + tramo +
       " La demanda neta es la demanda menos las renovables variables (ERV).";
   }
-  // ---- selector de mes y día: los meses con al menos un día con detalle por hora (el más reciente primero) y, dentro de cada mes, sus días en orden de calendario
-  const MES_LARGO = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-  const mesLargo = ym => MES_LARGO[+ym.slice(5, 7) - 1] + " " + ym.slice(0, 4);
-  const porMes = new Map();
-  [...HORARIO.keys()].sort().forEach(f => {
-    const ym = f.slice(0, 7);
-    if (!porMes.has(ym)) porMes.set(ym, []);
-    porMes.get(ym).push(f);
-  });
-  const meses = [...porMes.keys()].sort().reverse();
-  if (meses.length) {
-    const selMes = el("f-mes"), selDia = el("f-dia"), avisoMes = el("n-sinhoras");
-    selMes.innerHTML = meses.map(m => `<option value="${esc(m)}">${esc(mesLargo(m))}</option>`).join("");
-    // al cambiar de mes se muestra su último día con detalle; los días del mes que están en la tabla pero no tienen horas se avisan
-    const elegirMes = ym => {
-      const fechas = porMes.get(ym);
-      selDia.innerHTML = fechas.map(f => `<option value="${esc(f)}">${esc(fechaCorta(f))}</option>`).join("");
-      selDia.value = fechas[fechas.length - 1];
-      const sin = DIAS.filter(d => d.fecha.slice(0, 7) === ym).length - fechas.length;
-      avisoMes.hidden = sin <= 0;
-      avisoMes.textContent = sin <= 0 ? "" : (sin === 1 ? "Un día de este mes no tiene detalle por hora; de él solo está el total, en la tabla de abajo."
-        : sin + " días de este mes no tienen detalle por hora; de ellos solo está el total, en la tabla de abajo.");
-      dibujarHoras(selDia.value);
-    };
-    selMes.addEventListener("change", () => elegirMes(selMes.value));
-    selDia.addEventListener("change", () => dibujarHoras(selDia.value));
-    elegirMes(meses[0]);
-  } else {
-    el("b-horas").hidden = true;
+  function pintarHoras() {
+    const hay = HORARIO.has(sel.dia);
+    el("t-hora").textContent = "Un día, hora por hora" + (HORARIO.size ? ": " + fechaLarga(sel.dia) : "");
+    el("b-horas").hidden = !hay;
     const p = el("sin-horas");
-    p.textContent = "Todavía no hay un día completo con detalle por hora. Aparecerá aquí apenas se recoja uno; mientras tanto, cada día tiene su total en la tabla.";
-    p.hidden = false;
+    p.hidden = hay;
+    if (hay) { dibujarHoras(sel.dia); return; }
+    p.textContent = HORARIO.size
+      ? "El " + fechaCorta(sel.dia) + " no tiene detalle por hora; de ese día solo está el total, arriba y en la tabla."
+      : "Todavía no hay un día completo con detalle por hora. Aparecerá aquí apenas se recoja uno; mientras tanto, cada día tiene su total en la tabla.";
   }
 
-  // ---- tabla de todos los días, el más reciente primero
-  PW.tabla("t-dias", [
-    { k: "fecha", titulo: "Día", prio: true, fmt: v => esc(fechaLarga(v)) },
-    { k: "demanda", titulo: "Demanda (GWh)", num: true, prio: true, fmt: v => f1.format(v) },
-    { k: "max", titulo: "Máximo (MW)", num: true, prio: true, fmt: v => PW.fmt(v) },
-    { k: "horaMax", titulo: "Hora del máximo", num: true, fmt: v => (v == null ? "—" : String(v)) },
-    { k: "erv", titulo: "Renovables variables, ERV (GWh)", num: true, fmt: v => f1.format(v) },
-    { k: "pct", titulo: "Renovables variables, ERV (% de la demanda)", num: true, prio: true, fmt: v => f1.format(v) + "%" },
-    { k: "neta", titulo: "Demanda neta (GWh)", num: true, fmt: v => f1.format(v) },
-  ], DIAS.slice().reverse(), { orden: "fecha", asc: false, buscador: false });
+  // ---- aviso de días sin detalle por hora dentro de lo que se está viendo (si no hay horas de ningún día, lo dice la tarjeta del gráfico por hora)
+  function pintarAviso() {
+    const sin = HORARIO.size ? alcance().filter(d => !HORARIO.has(d.fecha)).length : 0;
+    const p = el("n-sinhoras");
+    const donde = sel.mes === "todo" ? "del período" : "de este mes";
+    p.hidden = sin <= 0;
+    p.textContent = sin <= 0 ? "" : (sin === 1 ? "Un día " + donde + " no tiene detalle por hora; de él solo está el total, en la tabla de abajo."
+      : sin + " días " + donde + " no tienen detalle por hora; de ellos solo está el total, en la tabla de abajo.");
+  }
+
+  // ---- tabla de los días del mes elegido o de todo el período, el más reciente primero; el día elegido va en negrita
+  function pintarTabla() {
+    el("t-titulo").textContent = sel.mes === "todo" ? "Todos los días" : "Días de " + mesLargo(sel.mes);
+    PW.tabla("t-dias", [
+      { k: "fecha", titulo: "Día", prio: true, fmt: v => (v === sel.dia ? "<b>" + esc(fechaLarga(v)) + "</b>" : esc(fechaLarga(v))) },
+      { k: "demanda", titulo: "Demanda (GWh)", num: true, prio: true, fmt: v => f1.format(v) },
+      { k: "max", titulo: "Máximo (MW)", num: true, prio: true, fmt: v => PW.fmt(v) },
+      { k: "horaMax", titulo: "Hora del máximo", num: true, fmt: v => (v == null ? "—" : String(v)) },
+      { k: "erv", titulo: "Renovables variables, ERV (GWh)", num: true, fmt: v => f1.format(v) },
+      { k: "pct", titulo: "Renovables variables, ERV (% de la demanda)", num: true, prio: true, fmt: v => f1.format(v) + "%" },
+      { k: "neta", titulo: "Demanda neta (GWh)", num: true, fmt: v => f1.format(v) },
+    ], alcance().slice().reverse(), { orden: "fecha", asc: false, buscador: false });
+    // la tabla se desplaza por dentro: se lleva el día elegido a la vista
+    const caja = el("t-dias").querySelector(".scroll-x"), fila = caja && caja.querySelector("tbody tr b");
+    if (fila) {
+      const tr = fila.closest("tr");
+      caja.scrollTop = Math.max(0, tr.getBoundingClientRect().top - caja.getBoundingClientRect().top + caja.scrollTop - caja.clientHeight / 2);
+    }
+  }
+
+  function pintar() {
+    pintarCifras();
+    pintarGraficosDia();
+    pintarHoras();
+    pintarAviso();
+    pintarTabla();
+  }
+
+  // ---- las dos listas: «Todo el período» y los meses; los días del mes elegido o, con todo el período, todos agrupados por mes
+  const opcionDia = f => `<option value="${esc(f)}">${esc(fechaCorta(f))}</option>`;
+  function llenarMeses() {
+    selMes.innerHTML = '<option value="todo">Todo el período</option>' + meses.map(m => `<option value="${esc(m)}">${esc(mesLargo(m))}</option>`).join("");
+    selMes.value = sel.mes;
+  }
+  function llenarDias() {
+    selDia.innerHTML = sel.mes === "todo"
+      ? meses.map(m => `<optgroup label="${esc(mesLargo(m))}">${diasDeMes.get(m).map(opcionDia).join("")}</optgroup>`).join("")
+      : diasDeMes.get(sel.mes).map(opcionDia).join("");
+    selDia.value = sel.dia;
+  }
+  selMes.addEventListener("change", () => {
+    sel.mes = selMes.value;
+    if (sel.mes !== "todo" && !sel.dia.startsWith(sel.mes)) {
+      const fechas = diasDeMes.get(sel.mes);
+      sel.dia = fechas[fechas.length - 1];
+    }
+    llenarDias();
+    pintar();
+  });
+  selDia.addEventListener("change", () => { sel.dia = selDia.value; pintar(); });
+  llenarMeses();
+  llenarDias();
+  pintar();
 
   // ---- fuente y frescura
   const pu = partes(ultimo), ahora = new Date();
