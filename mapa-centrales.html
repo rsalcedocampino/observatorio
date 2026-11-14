@@ -32,10 +32,10 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <style>
-/* Colores propios de dos tecnologias que el sitio no tenia: embalse (azul marino) y solar CSP (oxido). El resto sale de los tokens --s1..--s5. */
-:root{--mc-embalse:#1e3a8a;--mc-csp:#9a3412}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mc-embalse:#8b9cf6;--mc-csp:#fdba74}}
-:root[data-theme="dark"]{--mc-embalse:#8b9cf6;--mc-csp:#fdba74}
+/* Colores propios de tres tecnologias que el sitio no tenia: embalse (azul marino), solar CSP (oxido) y baterias (violeta). El resto sale de los tokens --s1..--s5. */
+:root{--mc-embalse:#1e3a8a;--mc-csp:#9a3412;--mc-bateria:#7c3aed}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mc-embalse:#8b9cf6;--mc-csp:#fdba74;--mc-bateria:#d08cff}}
+:root[data-theme="dark"]{--mc-embalse:#8b9cf6;--mc-csp:#fdba74;--mc-bateria:#d08cff}
 
 .mc-bloque{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:14px;align-items:start;margin:14px 0}
 .mc-bloque>.tarjeta{margin:0}
@@ -100,6 +100,13 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 .mc-tn{min-width:0;overflow-wrap:anywhere}
 .mc-tv{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
 .mc-tp{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:12px;text-align:right}
+.mc-sw-anillo{background:transparent;border:2.5px solid var(--c,var(--ink-3));box-sizing:border-box}
+.mc-tec-sep{margin-top:6px;padding-top:6px;border-top:1px solid var(--grid)}
+.mc-it .mc-bd{fill:var(--mc-bateria);fill-opacity:.82;stroke:#fff;stroke-width:1}
+.mc-it .mc-bc{fill:var(--mc-bateria);fill-opacity:.12;stroke:var(--mc-bateria);stroke-width:2.4}
+.mc-cero{stroke:var(--ink-3);stroke-width:1.3}
+#mc-bat-det,#mc-bat-apx{margin-top:10px}
+#mc-bat-det summary,#mc-bat-apx summary{cursor:pointer;font-weight:600}
 
 @media (max-width:700px){
   #mc-pantalla{display:none}
@@ -112,7 +119,9 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   .mc-lectura b{font-size:19px}
 }
 
-.mc-spark{display:block;margin-top:6px}
+.mc-spark{display:block;margin-top:6px;max-width:100%;height:auto}
+/* el sitio fija un minimo de 240 px a la ficha; en un celular el mapa mide unos 295 y la ficha se desbordaba 14 px */
+@media (max-width:700px){.leaflet-popup-content .pop-est{min-width:0}}
 .mc-pop-aviso{margin:8px 0 0}
 #mc-detalle summary{cursor:pointer;font-weight:600}
 </style>
@@ -169,6 +178,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
         <li><b>Un punto pequeño y tenue es una central que en esa hora no genera,</b> como las solares de noche.</li>
         <li><b>Un anillo punteado gris es una central sin dato.</b> No se cuenta como cero: para esa hora no hay cifra.</li>
         <li><b>Las horas van de 00:00 a 24:00.</b> «12:00 a 13:00» es la potencia media de esa hora.</li>
+        <li id="mc-ley-bat" hidden><b>Las baterías van en violeta.</b> Llena, se está descargando: entrega energía al sistema. Anillo, se está cargando: la toma del sistema. El tamaño muestra los MW de esa hora, igual que en las centrales.<span id="mc-ley-apx" hidden> Algunas se dibujan en el punto de conexión que declaran (la subestación), porque el catálogo no trae su ubicación: la posición es aproximada y su ficha lo dice.</span></li>
         <li><b>Toca una central</b> para ver su detalle hora a hora. Para acercar el mapa usa Ctrl más la rueda del mouse, o pellizca en el celular.</li>
       </ul>
     </div>
@@ -176,6 +186,16 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <div class="tarjeta">
       <h2 style="margin-top:0">Qué incluye este mapa y qué no</h2>
       <ul id="mc-notas"></ul>
+      <details id="mc-bat-det" hidden>
+        <summary>Ver las baterías que no aparecen en el mapa</summary>
+        <p class="nota" id="mc-bat-det-nota"></p>
+        <div id="t-bat-sin"></div>
+      </details>
+      <details id="mc-bat-apx" hidden>
+        <summary>Ver las baterías con ubicación aproximada</summary>
+        <p class="nota" id="mc-bat-apx-nota"></p>
+        <div id="t-bat-apx"></div>
+      </details>
     </div>
 
     <details class="tarjeta" id="mc-detalle">
@@ -205,9 +225,9 @@ PW.montarNav("mapa-centrales.html");
 
   // Tecnologias: orden de apilado (de abajo hacia arriba) y color. Una tecnologia nueva del dato queda arriba, en gris.
   const APILADO = ["termica", "geotermica", "hidro_embalse", "hidro_pasada", "eolica", "solar_csp", "solar_fv"];
-  const VAR = { termica: "--s2", geotermica: "--s5", hidro_embalse: "--mc-embalse", hidro_pasada: "--s1", eolica: "--s3", solar_csp: "--mc-csp", solar_fv: "--s4" };
+  const VAR = { termica: "--s2", geotermica: "--s5", hidro_embalse: "--mc-embalse", hidro_pasada: "--s1", eolica: "--s3", solar_csp: "--mc-csp", solar_fv: "--s4", bateria: "--mc-bateria" };
   const colorTec = t => PW.color(VAR[t] || "--ink-3");
-  const PESO = { on: 1, ap: 0.8, sd: 1.4, oc: 0 };
+  const PESO = { on: 1, ap: 0.8, sd: 1.4, oc: 0, car: 2.4 };
 
   function fallo() {
     $("mc-estado").textContent = "No se pudieron cargar los datos del mapa. Recarga la página en unos minutos.";
@@ -222,8 +242,7 @@ PW.montarNav("mapa-centrales.html");
     const meta = D.meta || {};
     // una serie de 24 horas; sin ningun valor vale lo mismo que no tener serie
     const serie = a => { const x = (Array.isArray(a) && a.length === 24) ? a.map(num) : null; return x && x.some(v => v != null) ? x : null; };
-    // si el dato dijera que las baterias ya van, el aviso de primera etapa dejaria de ser cierto
-    if (meta.baterias && !/^\s*no incluid/i.test(String(meta.baterias))) $("mc-bat").hidden = true;
+    // el aviso de primera etapa lo reemplaza bannerBaterias() si el dato trae baterias; sin ellas sigue siendo cierto
 
     // ---------- datos: centrales validas y totales por modo, tecnologia y hora
     const cs = [];
@@ -237,6 +256,36 @@ PW.montarNav("mapa-centrales.html");
     });
     if (!cs.length) return fallo();
     cs.sort((a, b) => b.p - a.p);                       // las grandes se dibujan primero: las chicas quedan encima
+
+    // ---------- baterias (etapa 2): vienen aparte, en D.baterias; sin ellas la pagina queda como en la primera etapa
+    const acotar = (a, f) => a ? a.map(v => v == null ? null : f(v)) : null;
+    // baterias ubicadas de forma aproximada (el catalogo las trae sin coordenadas): el punto de conexion usado viene en la meta, por nombre
+    const apxMeta = new Map(), mbat = meta.baterias && typeof meta.baterias === "object" ? meta.baterias : {};
+    (((mbat.en_el_mapa || {}).ubicacion_aproximada || {}).centrales || []).forEach(c => { if (c && typeof c.nombre === "string") apxMeta.set(c.nombre, c); });
+    const bs = [];
+    (Array.isArray(D.baterias) ? D.baterias : []).forEach(b => {
+      if (!b) return;
+      const lat = num(b.lat), lon = num(b.lon);
+      if (lat == null || lon == null || !PW.enChile(lat, lon)) return;
+      // descarga >= 0 y carga <= 0, como en el CSV del Coordinador; un signo al reves se acota en lugar de dibujar algo falso
+      const inj = { prom: acotar(serie(b.promedio_mes_inyeccion_mw), v => Math.max(0, v)), dia: acotar(serie(b.dia_inyeccion_mw), v => Math.max(0, v)) };
+      const ret = { prom: acotar(serie(b.promedio_mes_retiro_mw), v => Math.min(0, v)), dia: acotar(serie(b.dia_retiro_mw), v => Math.min(0, v)) };
+      // lo que hace la bateria en cada hora (descarga positiva, carga negativa); sin ninguna de las dos series no hay dato
+      const neto = m => (!inj[m] && !ret[m]) ? null : Array.from({ length: 24 }, (_, h) => {
+        const a = inj[m] ? inj[m][h] : null, r = ret[m] ? ret[m][h] : null;
+        return a == null && r == null ? null : (a || 0) + (r || 0);
+      });
+      const s = { prom: neto("prom"), dia: neto("dia") };
+      if (!s.prom && !s.dia) return;
+      const nom = String(b.nombre || "Batería sin nombre"), apx = b.ubicacion_aproximada === true, pu = apx ? apxMeta.get(nom) : null;
+      bs.push({ bat: true, n: nom, t: "bateria", tn: "Baterías (almacenamiento)", p: num(b.potencia_mw) || 0, cap: num(b.capacidad_mwh),
+        segura: b.confianza === "seguro", hib: typeof b.hibrido_con_tecnologia === "string" && b.hibrido_con_tecnologia ? b.hibrido_con_tecnologia : null,
+        apx, met: apx ? (typeof b.ubicacion_metodo === "string" ? b.ubicacion_metodo : (pu && typeof pu.metodo === "string" ? pu.metodo : null)) : null,
+        cu: apx && (b.ubicacion_confianza === "alta" || b.ubicacion_confianza === "media") ? b.ubicacion_confianza : null, pto: pu && typeof pu.punto === "string" ? pu.punto : null,
+        rev: b.potencia_revisar === true, lat, lon, inj, ret, s });
+    });
+    bs.sort((a, b) => b.p - a.p);
+    const hayBat = bs.length > 0;
     const nombreTec = {};
     cs.forEach(c => { if (!nombreTec[c.t]) nombreTec[c.t] = c.tn; });
     const presentes = Object.keys(nombreTec);
@@ -251,19 +300,32 @@ PW.montarNav("mapa-centrales.html");
       s.forEach((v, h) => { if (v != null) { tot[m][c.t][h] += v; suma[m][h] += v; if (v > maxMW) maxMW = v; } });
     }));
     if (!conDato.prom && !conDato.dia) return fallo();
+    // totales de las baterias por modo y hora: lo que descargan (arriba, sobre las centrales) y lo que cargan (bajo el cero)
+    const totB = {}, conDatoB = { prom: 0, dia: 0 };
+    MODOS.forEach(m => { totB[m] = { inj: Array(24).fill(0), ret: Array(24).fill(0) }; });
+    bs.forEach(b => MODOS.forEach(m => {
+      if (b.s[m]) { conDatoB[m]++; b.s[m].forEach(v => { if (v != null && Math.abs(v) > maxMW) maxMW = Math.abs(v); }); }
+      if (b.inj[m]) b.inj[m].forEach((v, h) => { if (v != null) totB[m].inj[h] += v; });
+      if (b.ret[m]) b.ret[m].forEach((v, h) => { if (v != null) totB[m].ret[h] += v; });
+    }));
     const sinDia = cs.filter(c => !c.s.dia).length, sinProm = cs.filter(c => !c.s.prom).length;
     const nRev = cs.filter(c => c.rev).length;
     const mesTxt = mesTexto(meta.mes), diaTxt = diaTexto(meta.dia_destacado);
-    const deMes = mesTxt ? "de " + mesTxt : "del mes";
+    const deMes = mesTxt ? "de " + mesTxt : "del mes", enMes = mesTxt ? "en " + mesTxt : "en el mes";
     const est = { modo: conDato.prom ? "prom" : "dia", hora: 12, ocultas: new Set(), rep: false };
 
     // ---------- escala vertical comun a los dos modos, para que cambiar de modo compare con la misma regla
-    function escalaY(maxv) {
+    function escalaY(maxv, maxNeg) {
       if (!(maxv > 0)) maxv = 1;
       for (let p = Math.pow(10, Math.floor(Math.log10(maxv / 5))); ; p *= 10)
-        for (const f of [1, 2, 2.5, 5]) { const paso = f * p; if (Math.ceil(maxv / paso) <= 5) return { paso, tope: Math.ceil(maxv / paso) * paso }; }
+        for (const f of [1, 2, 2.5, 5]) {
+          const paso = f * p;
+          // bajo el cero el tope sube de a un quinto de paso (no de a un paso entero) para no dejar la mitad del grafico vacia
+          if (Math.ceil(maxv / paso) <= 5) return { paso, tope: Math.ceil(maxv / paso) * paso, neg: maxNeg > 0 ? Math.ceil(maxNeg * 1.06 / (paso / 5)) * (paso / 5) : 0 };
+        }
     }
-    const EY = escalaY(Math.max(...suma.prom, ...suma.dia));
+    // arriba: centrales mas lo que descargan las baterias; abajo (solo con baterias): lo que cargan
+    const EY = escalaY(Math.max(...MODOS.map(m => Math.max(...suma[m].map((v, h) => v + totB[m].inj[h])))), Math.max(0, ...MODOS.map(m => Math.max(...totB[m].ret.map(v => -v)))));
 
     $("mc-estado").hidden = true;
     $("mc-contenido").hidden = false;
@@ -277,7 +339,8 @@ PW.montarNav("mapa-centrales.html");
     };
     let alto = medidas();
     let ESC = Math.max(0.72, Math.min(1.1, alto / 640));
-    const lats = cs.map(c => c.lat), lons = cs.map(c => c.lon);
+    const todos = cs.concat(bs);                          // las baterias van al final: se dibujan encima de las centrales
+    const lats = todos.map(c => c.lat), lons = todos.map(c => c.lon);
     const caja = { s: Math.min(...lats), n: Math.max(...lats), w: Math.min(...lons), e: Math.max(...lons) };
     const mercY = lat => { const s = Math.sin(lat * Math.PI / 180); return Math.log((1 + s) / (1 - s)) / 2; };
     const dy = Math.abs(mercY(caja.n) - mercY(caja.s)) / (2 * Math.PI), dx = Math.max(0.0001, (caja.e - caja.w) / 360);
@@ -296,7 +359,11 @@ PW.montarNav("mapa-centrales.html");
     const rend = L.canvas({ padding: 0.3, tolerance: 5 });
     let abierta = null;
     const valor = c => { const s = c.s[est.modo]; return s ? s[est.hora] : null; };
-    const textoTip = c => { const v = valor(c); return "<b>" + esc(c.n) + "</b><br>" + esc(c.tn) + " · " + (v == null ? "sin dato" : (v > 0.05 ? mw(v) : "sin generar")); };
+    const textoTip = c => {
+      const v = valor(c);
+      if (c.bat) return "<b>" + esc(c.n) + "</b><br>Batería · " + (v == null ? "sin dato" : (v > 0.05 ? "se descarga: " + mw(v) : (v < -0.05 ? "se carga: " + mw(-v) : "en reposo"))) + (c.apx ? " · ubicación aproximada" : "");
+      return "<b>" + esc(c.n) + "</b><br>" + esc(c.tn) + " · " + (v == null ? "sin dato" : (v > 0.05 ? mw(v) : "sin generar"));
+    };
 
     function spark(s, h, col) {
       const W = 230, H = 56, px = 4, top = 6, base = H - 16;
@@ -327,21 +394,68 @@ PW.montarNav("mapa-centrales.html");
         (c.rev ? `<p class="pop-detalle mc-pop-aviso"><b>Potencia por revisar:</b> en el día destacado esta central generó más que su potencia registrada. La potencia viene de las fuentes.</p>` : "") +
         `</div>`;
     }
+    // curva de una bateria: lo que descarga sube desde la linea del cero y lo que carga (con raya) baja
+    function sparkBat(c, modo, h, col) {
+      const inj = c.inj[modo], ret = c.ret[modo];
+      const W = 230, H = 74, px = 4, top = 6, base = H - 16;
+      const mxA = Math.max(0, ...(inj || []).map(x => x || 0)), mxR = Math.max(0, ...(ret || []).map(x => -(x || 0)));
+      const k = mxA + mxR > 0 ? (base - top) / (mxA + mxR) : 0, cero = top + k * mxA;
+      const X = i => px + i * (W - 2 * px) / 23, Y = v => cero - v * k;
+      const linea = s => { let d = "", previo = false; s.forEach((v, i) => { if (v == null) { previo = false; return; } d += (previo ? "L" : "M") + X(i).toFixed(1) + " " + Y(v).toFixed(1); previo = true; }); return d; };
+      const x = X(h).toFixed(1), pt = s => { const v = s ? s[h] : null; return v == null ? "" : `<circle cx="${x}" cy="${Y(v).toFixed(1)}" r="3.2" fill="${col}" stroke="var(--surface-1)" stroke-width="1.5"/>`; };
+      return `<svg class="mc-spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Lo que descarga y lo que carga esta batería hora a hora">` +
+        `<line class="mc-grilla" x1="${px}" x2="${W - px}" y1="${cero.toFixed(1)}" y2="${cero.toFixed(1)}"/>` +
+        (inj ? `<path d="${linea(inj)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round"/>` : "") +
+        (ret ? `<path d="${linea(ret)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linejoin="round" stroke-dasharray="4 3"/>` : "") +
+        `<line class="mc-marca" x1="${x}" x2="${x}" y1="${top}" y2="${base}" style="stroke-width:1"/>` + pt(inj) + pt(ret) +
+        `<text class="mc-eje" x="${px}" y="${H - 3}">0 h</text><text class="mc-eje" x="${W / 2}" y="${H - 3}" text-anchor="middle">12 h</text>` +
+        `<text class="mc-eje" x="${W - px}" y="${H - 3}" text-anchor="end">23 h</text></svg>`;
+    }
+    const HIB = Object.assign(Object.create(null), { solar_fv: "un parque solar fotovoltaico", solar_csp: "una central solar termoeléctrica", eolica: "un parque eólico" });
+    // como se ubico una bateria que el catalogo trae sin coordenadas (los textos del dato no llevan tildes)
+    const METODO = Object.assign(Object.create(null), { "punto de conexion": "punto de conexión", "punto de conexion (nombre casi igual)": "punto de conexión (nombre de la subestación casi igual)", "proyecto asociado": "proyecto asociado" });
+    function htmlPopupBat(c) {
+      const modo = est.modo, h = est.hora, col = colorTec("bateria");
+      const a = c.inj[modo] ? c.inj[modo][h] : null, r = c.ret[modo] ? c.ret[modo][h] : null;
+      const fila = (e, val) => val ? `<div class="pop-linea"><span>${e}</span><div>${val}</div></div>` : "";
+      const suma24 = s => s ? s.reduce((x, y) => x + (y || 0), 0) : null;
+      const eA = suma24(c.inj[modo]), eR = suma24(c.ret[modo]);
+      return `<div class="pop-est"><div class="pop-titulo">${esc(c.n)}</div>` +
+        `<div class="pop-sub"><span class="mc-sw" style="--c:${col}"></span> Baterías (almacenamiento)</div>` +
+        fila("Hora", rangoHora(h)) +
+        fila("Descarga", a == null ? "sin dato" : (a > 0.05 ? mw(a) : "no se descarga")) +
+        fila("Carga", r == null ? "sin dato" : (r < -0.05 ? mw(-r) : "no se carga")) +
+        fila("Potencia", c.p > 0 ? mw(c.p) + (c.cap ? " · " + fmt(c.cap, 0) + " MWh" : "") + " (registrados)" : null) +
+        fila("Energía", eA == null && eR == null ? null : "descarga " + energia(eA || 0) + (eR == null ? "" : ", carga " + energia(-eR)) + (modo === "prom" ? " en un día típico" : " en el día")) +
+        fila("Catálogo", c.segura ? "central confirmada" : "central probable, no confirmada") +
+        fila("Ubicación", c.apx ? "aproximada: " + esc(METODO[c.met] || "punto de conexión") + (c.pto ? " «" + esc(c.pto) + "»" : "") + (c.cu ? ", confianza " + c.cu : "") : "la del catálogo") +
+        sparkBat(c, modo, h, col) +
+        (c.apx ? `<p class="pop-detalle mc-pop-aviso">Se dibuja en la subestación, no necesariamente donde está la batería.</p>` : "") +
+        (c.hib ? `<p class="pop-detalle mc-pop-aviso">Comparte su punto con ${esc(HIB[c.hib] || "otra central")}.</p>` : "") +
+        (!c.ret.prom && !c.ret.dia ? `<p class="pop-detalle mc-pop-aviso">El Coordinador solo informa lo que descarga: su carga no está en las cifras.</p>` : "") +
+        (c.rev ? `<p class="pop-detalle mc-pop-aviso"><b>Potencia por revisar:</b> en el día destacado movió más que su potencia registrada.</p>` : "") +
+        `</div>`;
+    }
     const estiloDe = (c, e) => {
       const col = colorTec(c.t);
       if (e === "oc") return { stroke: false, fill: false };
       if (e === "sd") return { stroke: true, fill: false, color: PW.color("--ink-3"), weight: PESO.sd, opacity: 0.95, dashArray: "2 3" };
+      if (e === "car") return { stroke: true, fill: true, fillColor: col, color: col, weight: PESO.car, opacity: 0.95, fillOpacity: 0.12, dashArray: null };
       if (e === "ap") return { stroke: true, fill: true, fillColor: col, color: col, weight: PESO.ap, opacity: 0.5, fillOpacity: 0.22, dashArray: null };
       return { stroke: true, fill: true, fillColor: col, color: "#ffffff", weight: PESO.on, opacity: 0.95, fillOpacity: 0.82, dashArray: null };
     };
     // area proporcional a los MW: radio = base + k * raiz(MW)
-    const radioDe = (e, v) => e === "oc" ? 0 : e === "sd" ? 3.6 * ESC : e === "ap" ? 2.1 * ESC : (1.8 + 0.85 * Math.sqrt(v)) * ESC;
+    const radioDe = (e, v) => e === "oc" ? 0 : e === "sd" ? 3.6 * ESC : e === "ap" ? 2.1 * ESC : e === "car" ? (1.8 + 0.85 * Math.sqrt(-v)) * ESC : (1.8 + 0.85 * Math.sqrt(v)) * ESC;
 
-    const mks = cs.map(c => {
+    // la ficha no puede ser mas ancha que el mapa: en un celular de 375 px el mapa mide unos 300 y una ficha de 300 se cortaba por la derecha
+    const anchoPop = Math.min(300, Math.max(190, (cont.clientWidth || 600) - 70));
+    // y tampoco mas alta que el mapa: en escritorio cabe entera, en un celular se desplaza por dentro
+    const altoPop = Math.max(220, Math.min(400, (cont.clientHeight || 600) - 140));
+    const mks = todos.map(c => {
       const mk = L.circleMarker([c.lat, c.lon], { renderer: rend, radius: 0, stroke: false, fill: false, bubblingMouseEvents: false });
       mk._c = c;
       mk.bindTooltip(() => textoTip(c), { direction: "top", offset: [0, -4], opacity: 0.95 });
-      mk.bindPopup(() => htmlPopup(c), { maxWidth: 300, autoPanPadding: [30, 30] });
+      mk.bindPopup(() => c.bat ? htmlPopupBat(c) : htmlPopup(c), { maxWidth: anchoPop, maxHeight: altoPop, autoPanPadding: [30, 30] });
       mk.on("mouseover", () => { if (mk._e && mk._e !== "oc") mk.setStyle({ weight: 2.5 }); });
       mk.on("mouseout", () => { if (mk._e && mk._e !== "oc") mk.setStyle({ weight: PESO[mk._e] }); });
       mk.on("popupopen", () => { abierta = mk; });
@@ -381,8 +495,9 @@ PW.montarNav("mapa-centrales.html");
       ul.innerHTML = "";
       top.forEach(x => {
         const c = mks[x.i]._c, b = L.DomUtil.create("button", "", L.DomUtil.create("li", "", ul));
-        b.type = "button"; b.textContent = c.n + " — " + mw(x.v);
-        L.DomEvent.on(b, "click", ev => { L.DomEvent.stop(ev); m.setView([c.lat, c.lon], Math.max(m.getZoom(), 8)); mks[x.i].openPopup(); });
+        b.type = "button"; b.textContent = c.n + (c.bat ? " (batería)" : "") + " — " + mw(x.v);
+        // sin animacion: con el mapa a medio mover la ficha se abre antes de que Leaflet pueda reencuadrarla y queda cortada por arriba
+        L.DomEvent.on(b, "click", ev => { L.DomEvent.stop(ev); m.setView([c.lat, c.lon], Math.max(m.getZoom(), 8), { animate: false }); mks[x.i].openPopup(); });
       });
     }
 
@@ -391,26 +506,35 @@ PW.montarNav("mapa-centrales.html");
     let marca = null, punto = null, svgG = null, geom = null;
     function dibujarGrafico() {
       const W = Math.max(260, Math.floor(grafCont.clientWidth || 320));
-      const H = Math.round(Math.max(210, Math.min(300, W * 0.56)));
+      const H0 = Math.round(Math.max(210, Math.min(300, W * 0.56))), H = EY.neg > 0 ? H0 + 30 : H0;
       const ml = 50, mr = 10, mt = 18, mb = 26, iw = W - ml - mr, ih = H - mt - mb;
-      const X = h => ml + h / 23 * iw, Y = v => mt + ih - v / EY.tope * ih;
+      const X = h => ml + h / 23 * iw, Y = v => mt + ih - (v + EY.neg) / (EY.tope + EY.neg) * ih;
       geom = { X, Y };
       const s = svg("svg", { class: "mc-svg", width: W, height: H, viewBox: "0 0 " + W + " " + H, role: "img" });
       s.appendChild(svg("text", { class: "mc-eje", x: ml - 6, y: 9, "text-anchor": "end" }, "MW"));
-      for (let v = 0; v <= EY.tope + 1e-6; v += EY.paso) {
+      const etq = v => Math.abs(v) < 1e-6 ? "0" : (v < 0 ? "−" + fmt(-v) : fmt(v));
+      for (let v = -Math.floor(EY.neg / EY.paso + 1e-9) * EY.paso; v <= EY.tope + 1e-6; v += EY.paso) {
         s.appendChild(svg("line", { class: "mc-grilla", x1: ml, x2: W - mr, y1: Y(v), y2: Y(v) }));
-        s.appendChild(svg("text", { class: "mc-eje", x: ml - 6, y: Y(v) + 4, "text-anchor": "end" }, fmt(v)));
+        s.appendChild(svg("text", { class: "mc-eje", x: ml - 6, y: Y(v) + 4, "text-anchor": "end" }, etq(v)));
       }
+      if (EY.neg > 0) s.appendChild(svg("line", { class: "mc-cero", x1: ml, x2: W - mr, y1: Y(0), y2: Y(0) }));
       for (let h = 0; h <= 21; h += 3) s.appendChild(svg("text", { class: "mc-eje", x: X(h), y: H - 8, "text-anchor": "middle" }, dd(h) + " h"));
-      const acum = Array(24).fill(0);
-      orden.forEach(t => {
-        const base = acum.slice(), cima = base.map((b, h) => b + tot[est.modo][t][h]);
+      const area = (cima, base, t, op) => {
         let d = "M" + X(0).toFixed(1) + " " + Y(cima[0]).toFixed(1);
         for (let h = 1; h < 24; h++) d += "L" + X(h).toFixed(1) + " " + Y(cima[h]).toFixed(1);
         for (let h = 23; h >= 0; h--) d += "L" + X(h).toFixed(1) + " " + Y(base[h]).toFixed(1);
-        s.appendChild(svg("path", { class: "mc-area", d: d + "Z", fill: colorTec(t), "fill-opacity": est.ocultas.has(t) ? 0.15 : 0.9, "data-tec": t }));
+        s.appendChild(svg("path", { class: "mc-area", d: d + "Z", fill: colorTec(t), "fill-opacity": est.ocultas.has(t) ? 0.15 : op, "data-tec": t }));
+      };
+      const acum = Array(24).fill(0);
+      orden.forEach(t => {
+        const base = acum.slice(), cima = base.map((b, h) => b + tot[est.modo][t][h]);
+        area(cima, base, t, 0.9);
         cima.forEach((v, h) => { acum[h] = v; });
       });
+      if (hayBat) {                                           // baterias: lo que descargan se apila sobre las centrales y lo que cargan baja del cero
+        area(acum.map((b, h) => b + totB[est.modo].inj[h]), acum, "bateria", 0.9);
+        area(Array(24).fill(0), totB[est.modo].ret, "bateria", 0.55);
+      }
       marca = svg("line", { class: "mc-marca", y1: mt, y2: mt + ih });
       punto = svg("circle", { class: "mc-punto", r: 4.5 });
       s.appendChild(marca); s.appendChild(punto);
@@ -425,25 +549,35 @@ PW.montarNav("mapa-centrales.html");
     }
     function moverMarca() {
       if (!svgG || !geom) return;
-      const h = est.hora, x = geom.X(h), total = suma[est.modo][h];
+      const h = est.hora, x = geom.X(h), total = suma[est.modo][h], desc = hayBat ? totB[est.modo].inj[h] : 0, carga = hayBat ? totB[est.modo].ret[h] : 0;
       marca.setAttribute("x1", x); marca.setAttribute("x2", x);
-      punto.setAttribute("cx", x); punto.setAttribute("cy", geom.Y(total));
-      svgG.setAttribute("aria-label", "Generación total por tecnología a lo largo del día. A las " + rangoHora(h) + " el total es " + fmt(Math.round(total)) + " MW.");
+      punto.setAttribute("cx", x); punto.setAttribute("cy", geom.Y(total + desc));
+      svgG.setAttribute("aria-label", "Generación total por tecnología a lo largo del día. A las " + rangoHora(h) + " el total es " + fmt(Math.round(total)) + " MW." +
+        (hayBat ? " Las baterías descargan " + fmt(Math.round(desc)) + " MW y cargan " + fmt(Math.abs(Math.round(carga))) + " MW." : ""));
     }
 
     // ---------- lectura por tecnologia (tambien enciende y apaga cada una en el mapa)
-    const filas = orden.slice().reverse().map(t => {
+    const entAbs = v => fmt(Math.abs(Math.round(v)));        // evita el "-0" de un cero con signo
+    const botones = {};                                       // tecnologia -> botones que la encienden y apagan (las baterias tienen dos filas)
+    function alternar(t) {
+      if (est.ocultas.has(t)) est.ocultas.delete(t); else est.ocultas.add(t);
+      (botones[t] || []).forEach(b => b.setAttribute("aria-pressed", String(!est.ocultas.has(t))));
+      aplicar(true); dibujarGrafico();
+    }
+    function filaTec(t, nombre, anillo, separada) {
       const li = document.createElement("li"), b = document.createElement("button");
       b.type = "button"; b.setAttribute("aria-pressed", "true");
-      b.innerHTML = `<span class="mc-sw" style="--c:${colorTec(t)}"></span><span class="mc-tn">${esc(nombreTec[t])}</span><span class="mc-tv"></span><span class="mc-tp"></span>`;
-      b.addEventListener("click", () => {
-        if (est.ocultas.has(t)) est.ocultas.delete(t); else est.ocultas.add(t);
-        b.setAttribute("aria-pressed", String(!est.ocultas.has(t)));
-        aplicar(true); dibujarGrafico();
-      });
+      if (separada) li.className = "mc-tec-sep";
+      b.innerHTML = `<span class="mc-sw${anillo ? " mc-sw-anillo" : ""}" style="--c:${colorTec(t)}"></span><span class="mc-tn">${esc(nombre)}</span><span class="mc-tv"></span><span class="mc-tp"></span>`;
+      b.addEventListener("click", () => alternar(t));
+      (botones[t] = botones[t] || []).push(b);
       li.appendChild(b); $("mc-tec").appendChild(li);
       return { t, v: b.querySelector(".mc-tv"), p: b.querySelector(".mc-tp") };
-    });
+    }
+    const filas = orden.slice().reverse().map(t => filaTec(t, nombreTec[t], false, false));
+    // baterias: dos filas (descargan / cargan) que se encienden y apagan juntas
+    const filasB = hayBat ? [{ k: "inj", nombre: "Baterías: descargan", anillo: false }, { k: "ret", nombre: "Baterías: cargan", anillo: true }]
+      .map((x, i) => Object.assign(filaTec("bateria", x.nombre, x.anillo, i === 0), { k: x.k })) : [];
     function lectura() {
       const h = est.hora, modo = est.modo, total = suma[modo][h];
       filas.forEach(f => {
@@ -451,7 +585,13 @@ PW.montarNav("mapa-centrales.html");
         f.v.textContent = fmt(Math.round(v)) + " MW";
         f.p.textContent = v <= 0 ? "0 %" : (pc < 1 ? "<1 %" : fmt(Math.round(pc)) + " %");
       });
-      $("mc-total").innerHTML = `Total del mapa en esta hora: <b>${fmt(Math.round(total))} MW</b><small>Suma de ${fmt(conDato[modo])} centrales con dato, sin baterías.</small>`;
+      filasB.forEach(f => {
+        const v = totB[modo][f.k][h];
+        f.v.textContent = (f.k === "ret" ? (v < -0.05 ? "−" + entAbs(v) : "0") : entAbs(v)) + " MW";
+        f.p.textContent = "";
+      });
+      $("mc-total").innerHTML = `Total del mapa en esta hora: <b>${fmt(Math.round(total))} MW</b><small>Suma de ${fmt(conDato[modo])} centrales con dato, sin baterías.</small>` +
+        (hayBat ? `<small>Baterías en esta hora: descargan <b>${entAbs(totB[modo].inj[h])} MW</b> y cargan <b>${entAbs(totB[modo].ret[h])} MW</b> (${fmt(conDatoB[modo])} baterías con dato).</small>` : "");
     }
 
     // ---------- leyenda del mapa: tamaños de referencia y marcas especiales
@@ -466,15 +606,23 @@ PW.montarNav("mapa-centrales.html");
       html += `<span class="mc-it"><svg width="${d2}" height="${d2}" viewBox="0 0 ${d2} ${d2}" aria-hidden="true"><circle class="mc-ap" cx="${d2 / 2}" cy="${d2 / 2}" r="${r2.toFixed(1)}"/></svg>Sin generar en esa hora</span>`;
       if ((est.modo === "dia" ? sinDia : sinProm) > 0)
         html += `<span class="mc-it"><svg width="${d3}" height="${d3}" viewBox="0 0 ${d3} ${d3}" aria-hidden="true"><circle class="mc-sd" cx="${d3 / 2}" cy="${d3 / 2}" r="${r3.toFixed(1)}"/></svg>Sin dato</span>`;
+      if (hayBat) {
+        const rb = 6 * ESC, db = Math.ceil(rb * 2 + 5);
+        html += `<span class="mc-it"><svg width="${db}" height="${db}" viewBox="0 0 ${db} ${db}" aria-hidden="true"><circle class="mc-bd" cx="${db / 2}" cy="${db / 2}" r="${rb.toFixed(1)}"/></svg>Batería que se descarga</span>` +
+          `<span class="mc-it"><svg width="${db}" height="${db}" viewBox="0 0 ${db} ${db}" aria-hidden="true"><circle class="mc-bc" cx="${db / 2}" cy="${db / 2}" r="${rb.toFixed(1)}"/></svg>Batería que se carga</span>`;
+      }
       $("mc-ley").innerHTML = html;
     }
 
     // ---------- tabla hora a hora
     const colsTabla = [{ k: "rango", titulo: "Hora" }].concat(orden.slice().reverse().map(t => ({ k: t, titulo: esc(nombreTec[t]), num: true, fmt: v => fmt(Math.round(v)) })))
-      .concat([{ k: "total", titulo: "Total", num: true, fmt: v => "<b>" + fmt(Math.round(v)) + "</b>" }]);
+      .concat([{ k: "total", titulo: hayBat ? "Total sin baterías" : "Total", num: true, fmt: v => "<b>" + fmt(Math.round(v)) + "</b>" }])
+      .concat(hayBat ? [{ k: "bdes", titulo: "Baterías: descargan", num: true, fmt: v => fmt(Math.round(v)) },
+                        { k: "bcar", titulo: "Baterías: cargan", num: true, fmt: v => v < -0.05 ? "−" + entAbs(v) : "0" }] : []);
     const filasTabla = () => Array.from({ length: 24 }, (_, h) => {
       const f = { hora: h, rango: rangoHora(h), total: suma[est.modo][h] };
       orden.forEach(t => { f[t] = tot[est.modo][t][h]; });
+      if (hayBat) { f.bdes = totB[est.modo].inj[h]; f.bcar = totB[est.modo].ret[h]; }
       return f;
     });
     const tablaHoras = PW.tabla("t-horas", colsTabla, filasTabla(), { orden: "hora", asc: true, buscador: false });
@@ -487,18 +635,21 @@ PW.montarNav("mapa-centrales.html");
       else {
         pista = "Datos reales del " + (diaTxt || "día destacado") + (typeof meta.criterio_dia_destacado === "string" && meta.criterio_dia_destacado.trim() ? ", " + meta.criterio_dia_destacado.trim().replace(/[.\s]+$/, "") : "") + ".";
         if (sinDia) pista += " " + fmt(sinDia) + (sinDia === 1 ? " central sin dato ese día." : " centrales sin dato ese día.");
+        if (hayBat && conDatoB.dia < bs.length) pista += " " + fmt(bs.length - conDatoB.dia) + (bs.length - conDatoB.dia === 1 ? " batería sin dato ese día." : " baterías sin dato ese día.");
       }
       $("mc-pista").textContent = pista;
       $("mc-hora-sub").textContent = modo === "prom" ? "promedio " + deMes : (diaTxt || "día destacado");
       $("mc-graf-nota").textContent = (modo === "prom" ? "Promedio " + deMes : "Día " + (diaTxt || "destacado")) +
-        ". Suma de las centrales del mapa en cada hora, en MW y sin baterías. Arrastra sobre el gráfico para cambiar la hora.";
-      $("mc-tabla-nota").textContent = "Megavatios (MW) de cada tecnología en cada hora. " + (modo === "prom" ? "Promedio " + deMes + "." : "Día " + (diaTxt || "destacado") + ".");
+        (hayBat ? ". Suma de las centrales del mapa en cada hora, en MW. Lo que descargan las baterías va arriba, sobre las centrales, y lo que cargan, bajo el cero. Arrastra sobre el gráfico para cambiar la hora."
+                : ". Suma de las centrales del mapa en cada hora, en MW y sin baterías. Arrastra sobre el gráfico para cambiar la hora.");
+      $("mc-tabla-nota").textContent = "Megavatios (MW) de cada tecnología en cada hora. " + (modo === "prom" ? "Promedio " + deMes + "." : "Día " + (diaTxt || "destacado") + ".") +
+        (hayBat ? " El total no incluye las baterías; lo que cargan va con signo menos." : "");
     }
     function aplicar(animar) {
       const modo = est.modo, h = est.hora;
       mks.forEach((mk, i) => {
         const c = mk._c, s = c.s[modo], v = s ? s[h] : null;
-        const e = est.ocultas.has(c.t) ? "oc" : (v == null ? "sd" : (v > 0.05 ? "on" : "ap"));
+        const e = est.ocultas.has(c.t) ? "oc" : (v == null ? "sd" : (v > 0.05 ? "on" : (c.bat && v < -0.05 ? "car" : "ap")));
         if (e !== mk._e) {
           mk._e = e; mk.options.interactive = e !== "oc"; mk.setStyle(estiloDe(c, e));
           if (e === "oc") { mk.closeTooltip(); if (abierta === mk) mk.closePopup(); }
@@ -566,6 +717,67 @@ PW.montarNav("mapa-centrales.html");
       }, 200);
     });
 
+    // ---------- baterias: aviso de arriba y notas de cobertura (todo sale de la meta y de las filas; nada fijo)
+    const gwh = v => fmt(v, v >= 100 ? 0 : 1) + " GWh";
+    function bannerBaterias() {
+      if (!hayBat) return;                                    // sin baterias en el dato, el aviso de primera etapa sigue siendo cierto
+      const mb = meta.baterias && typeof meta.baterias === "object" ? meta.baterias : {};
+      const em = mb.en_el_mapa || {}, su = mb.sin_ubicacion || {}, sp = mb.sin_par || {};
+      const pct = num(em.inyeccion_pct), parcial = (num(su.n_centrales) || 0) + (num(sp.n_centrales) || 0) > 0, nApx = bs.filter(b => b.apx).length;
+      $("mc-bat").innerHTML = `<b>Baterías incluidas${parcial ? ", con cobertura parcial" : ""}.</b> El mapa dibuja ${fmt(bs.length)} ${bs.length === 1 ? "central" : "centrales"} de baterías` +
+        (pct != null ? `, que suman el ${fmt(pct, 1)} % de la energía que las baterías inyectaron ${enMes}` : "") + "." +
+        (nApx ? ` De ellas, ${fmt(nApx)} ${nApx === 1 ? "está" : "están"} en una ubicación aproximada (su punto de conexión).` : "") +
+        (parcial ? " Faltan las que no se pudieron ubicar ni encontrar: el detalle está más abajo, en «Qué incluye este mapa y qué no»." : "");
+      $("mc-ley-bat").hidden = false;
+      $("mc-ley-apx").hidden = !nApx;
+    }
+    function notasBaterias(mb, li) {
+      const em = mb.en_el_mapa || {}, su = mb.sin_ubicacion || {}, sp = mb.sin_par || {}, pc = (mb.energia_por_confianza_pct || {}).inyeccion || {};
+      let t = `<b>Baterías.</b> El mapa dibuja ${fmt(bs.length)} ${bs.length === 1 ? "central" : "centrales"} de baterías`;
+      if (num(em.inyeccion_gwh) != null && num(mb.energia_inyeccion_gwh) != null && num(em.inyeccion_pct) != null) {
+        t += `: ${gwh(em.inyeccion_gwh)} de los ${gwh(mb.energia_inyeccion_gwh)} que las baterías inyectaron ${enMes} (${fmt(em.inyeccion_pct, 1)} %)`;
+        if (num(em.retiro_gwh) != null && num(mb.energia_retiro_gwh) != null && num(em.retiro_pct) != null)
+          t += ` y ${gwh(em.retiro_gwh)} de los ${gwh(mb.energia_retiro_gwh)} que retiraron (${fmt(em.retiro_pct, 1)} %)`;
+      }
+      t += ".";
+      const falta = [];
+      if (num(su.n_centrales)) falta.push(`otras ${fmt(su.n_centrales)} porque no se pudo ubicar` + (num(su.inyeccion_pct) != null ? ` (${fmt(su.inyeccion_pct, 1)} % de la energía inyectada)` : ""));
+      if (num(sp.n_centrales)) falta.push(`otras ${fmt(sp.n_centrales)} porque no se encontró su central en el catálogo` + (num(sp.inyeccion_pct) != null ? ` (${fmt(sp.inyeccion_pct, 1)} %)` : ""));
+      if (falta.length) t += " No aparecen " + falta.join(" y ") + ". La lista está al final de esta sección.";
+      li.push(t);
+      // las que el catalogo trae sin coordenadas y se dibujan en su punto de conexion: la posicion es aproximada
+      const ua = em.ubicacion_aproximada || {}, nApx = bs.filter(b => b.apx).length, nProy = bs.filter(b => b.apx && b.met === "proyecto asociado").length;
+      if (nApx) li.push(`<b>Ubicación aproximada.</b> ${fmt(nApx)} de las baterías dibujadas no tienen coordenadas en el catálogo y se ubicaron en el punto de conexión que declaran (la subestación)` +
+        (nProy ? ` o, en ${nProy === 1 ? "una" : fmt(nProy)}, en su proyecto asociado` : "") +
+        `: la posición es la de ese punto, no necesariamente la de la batería.` + (num(ua.inyeccion_pct) != null ? ` Suman el ${fmt(ua.inyeccion_pct, 1)} % de la energía inyectada.` : "") + ` La lista, con el punto usado, está al final de esta sección.`);
+      const nSeg = bs.filter(b => b.segura).length, nProb = bs.length - nSeg;
+      let e = `<b>Ubicación de las baterías.</b> De las ${fmt(bs.length)} baterías dibujadas, ${fmt(nSeg)} tienen su central confirmada y ${fmt(nProb)} son probables: ` +
+        `una asignación menos segura entre la central del Coordinador y la del catálogo, que cada ficha avisa.`;
+      if (num(pc.seguro) != null && num(pc.probable) != null)
+        e += ` Por energía inyectada, la equivalencia es segura en el ${fmt(pc.seguro, 1)} %, probable en el ${fmt(pc.probable, 1)} %` + (num(pc.sin_par) ? ` y no existe en el ${fmt(pc.sin_par, 1)} %` : "") + ".";
+      li.push(e);
+      const nHib = bs.filter(b => b.hib).length;
+      if (nHib) li.push(`<b>Baterías junto a parques.</b> ${fmt(nHib)} ${nHib === 1 ? "batería es la" : "baterías son las"} de un parque y ${nHib === 1 ? "comparte" : "comparten"} su punto en el mapa: se dibujan una sobre la otra.`);
+      // las que no se dibujan, con su energia
+      const filasSin = (su.centrales || []).map(c => ({ nombre: String(c.nombre || "Sin nombre"), motivo: "No se pudo ubicar", iny: num(c.inyeccion_gwh), ret: num(c.retiro_gwh) }))
+        .concat((sp.centrales || []).map(c => ({ nombre: String(c.nombre || "Sin nombre"), motivo: "No se encontró su central en el catálogo", iny: num(c.inyeccion_gwh), ret: num(c.retiro_gwh) })));
+      if (filasSin.length) {
+        $("mc-bat-det").hidden = false;
+        $("mc-bat-det-nota").textContent = "Baterías que el mapa no dibuja, con su energía " + deMes + ", en GWh. «Inyectó» es lo que entregó al sistema y «retiró», lo que tomó para cargarse.";
+        PW.tabla("t-bat-sin", [{ k: "nombre", titulo: "Batería" }, { k: "motivo", titulo: "Por qué no aparece" },
+          { k: "iny", titulo: "Inyectó (GWh)", num: true, fmt: v => v == null ? "—" : fmt(v, 1) }, { k: "ret", titulo: "Retiró (GWh)", num: true, fmt: v => v == null ? "—" : fmt(v, 1) }],
+          filasSin, { orden: "iny", asc: false, buscador: false });
+      }
+      // las que se dibujan en una ubicacion aproximada, con el punto que se uso
+      const filasApx = bs.filter(b => b.apx).map(b => ({ nombre: b.n, punto: b.pto, como: METODO[b.met] || "punto de conexión", conf: b.cu }));
+      if (filasApx.length) {
+        $("mc-bat-apx").hidden = false;
+        $("mc-bat-apx-nota").textContent = "Baterías que el catálogo trae sin coordenadas y que el mapa dibuja en el punto que declaran. La posición es la de la subestación (o la del proyecto asociado), no necesariamente la de la batería.";
+        PW.tabla("t-bat-apx", [{ k: "nombre", titulo: "Batería" }, { k: "punto", titulo: "Punto usado" }, { k: "como", titulo: "Cómo se ubicó" }, { k: "conf", titulo: "Confianza de la ubicación" }],
+          filasApx, { orden: "nombre", asc: true, buscador: false });
+      }
+    }
+
     // ---------- notas del dato (todo sale de la meta y de los datos; nada fijo)
     function notas() {
       const li = [];
@@ -590,19 +802,22 @@ PW.montarNav("mapa-centrales.html");
           (sd == null ? "" : (Math.abs(sd - cc.csv_gwh) < 0.015 ? `, que coincide con la serie diaria del Coordinador (${fmt(sd, 2)} GWh)` : `, frente a ${fmt(sd, 2)} GWh de la serie diaria del Coordinador`)) +
           `; el mapa recoge ${fmt(cc.mapa_gwh, 2)} GWh (${fmt(cc.mapa_gwh / cc.csv_gwh * 100)} %). La diferencia es energía de centrales que el mapa no muestra.`);
       }
-      if (meta.baterias) {
-        const b = String(meta.baterias).trim(), q = /^no incluid[ao]s?\s*:?\s*/i.exec(b);
+      if (hayBat && meta.baterias && typeof meta.baterias === "object") notasBaterias(meta.baterias, li);
+      else if (typeof meta.baterias === "string" && meta.baterias.trim()) {
+        const b = meta.baterias.trim(), q = /^no incluid[ao]s?\s*:?\s*/i.exec(b);
         li.push(q ? `<b>Baterías.</b> No están en esta etapa${b.length > q[0].length ? " (" + esc(b.slice(q[0].length).replace(/[.\s]+$/, "")) + ")" : ""}.`
                   : `<b>Baterías.</b> ${esc(b.replace(/[.\s]+$/, ""))}.`);
       }
       const motivo = typeof meta.motivo_sin_dato_dia === "string" ? meta.motivo_sin_dato_dia.trim().replace(/[.\s]+$/, "") : "";
       if (conDato.dia && sinDia) li.push(`<b>Sin dato en el día destacado.</b> ${fmt(sinDia)} ${sinDia === 1 ? "central" : "centrales"}${motivo ? ": " + esc(motivo) : ""}. Se dibujan con un anillo punteado y no se cuentan como cero.`);
       if (nRev) li.push(`<b>Potencia por revisar.</b> ${fmt(nRev)} ${nRev === 1 ? "central generó" : "centrales generaron"} en el día destacado más que su potencia registrada. La potencia viene de las fuentes; cada ficha lo avisa.`);
+      const nRevB = bs.filter(b => b.rev).length;
+      if (nRevB) li.push(`<b>Potencia de baterías por revisar.</b> ${fmt(nRevB)} ${nRevB === 1 ? "batería movió" : "baterías movieron"} en el día destacado más que su potencia registrada. La potencia viene de las fuentes; cada ficha lo avisa.`);
       $("mc-notas").innerHTML = li.map(x => "<li>" + x + "</li>").join("");
     }
 
     // ---------- arranque
-    textoModo(); notas(); pintarPlay(); leyenda(); dibujarGrafico();
+    bannerBaterias(); textoModo(); notas(); pintarPlay(); leyenda(); dibujarGrafico();
     fijarHora(est.hora);
   }
 })();
