@@ -1,9 +1,10 @@
 window.PW_DATA.c_tarifas_bt = {
- "generado": "2026-11-10",
+ "generado": "2026-11-14",
  "vigencia": "2026-11-01",
  "vigencia_por_distribuidor": {
   "cge": "2026-10-01",
   "chilquinta": "2026-11-01",
+  "coopelan": "2026-11-01",
   "edelaysen": "2026-11-01",
   "edelmag": "2026-11-01",
   "enel-distribucion": "2026-11-01",
@@ -55,6 +56,11 @@ window.PW_DATA.c_tarifas_bt = {
    "url": "https://www.chilquinta.cl/informacion-de-interes/tarifas-vigentes"
   },
   {
+   "distribuidora": "Coopelan",
+   "documento": "Tarifas de suministro eléctrico vigentes en noviembre de 2026",
+   "url": "https://www.coopelan.cl/informacion-comercial/tarifas"
+  },
+  {
    "distribuidora": "Edelmag",
    "documento": "Tarifas de suministro eléctrico vigentes en noviembre de 2026",
    "url": "https://www.edelmag.cl/wp-content/uploads/2026/10/EDELMAG-Tarifas-Suministro-noviembre-2026-PNP.8T.pdf"
@@ -70,6 +76,7 @@ window.PW_DATA.c_tarifas_bt = {
  "distribuidoras_incluidas": [
   "cge",
   "chilquinta",
+  "coopelan",
   "edelaysen",
   "edelmag",
   "enel-distribucion",
@@ -80,6 +87,7 @@ window.PW_DATA.c_tarifas_bt = {
  "distribuidoras_nombre": {
   "cge": "CGE y filiales",
   "chilquinta": "Chilquinta",
+  "coopelan": "Coopelan",
   "edelaysen": "Edelaysén",
   "edelmag": "Edelmag",
   "enel-distribucion": "Enel Distribución",
@@ -183,10 +191,12 @@ window.PW_DATA.c_tarifas_bt = {
    "comunas": 33,
    "distribuidoras": [
     "cge",
+    "coopelan",
     "frontel"
    ],
    "comunas_por_distribuidora": {
     "cge": 12,
+    "coopelan": 5,
     "frontel": 27
    }
   },
@@ -535,6 +545,28 @@ window.PW_DATA.c_tarifas_bt = {
     "BT4": {
      "potencia_contratada_clp_kw": 9717.0,
      "energia_clp_kwh": 145.4
+    }
+   },
+   "coopelan": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 2868.87,
+     "variable_clp_kwh_tramo1": 284.98
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 2868.87,
+     "energia_total_clp_kwh": 153.11,
+     "potencia_punta_clp_kw": 72110.0,
+     "potencia_parcial_punta_clp_kw": 52023.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 3694.03,
+     "energia_total_clp_kwh": 153.11,
+     "potencia_leida_punta_clp_kw": 72110.0,
+     "potencia_leida_parcial_punta_clp_kw": 52023.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 22589.0,
+     "energia_clp_kwh": 120.75
     }
    },
    "frontel": {
@@ -5374,6 +5406,28 @@ window.PW_DATA.c_tarifas_bt = {
       "potencia_contratada_clp_kw": 10193.0,
       "energia_clp_kwh": 140.05
      }
+    },
+    "coopelan": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "variable_clp_kwh_tramo1": 286.63
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "energia_total_clp_kwh": 154.77,
+      "potencia_punta_clp_kw": 72110.0,
+      "potencia_parcial_punta_clp_kw": 52023.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 3694.03,
+      "energia_total_clp_kwh": 154.77,
+      "potencia_leida_punta_clp_kw": 72110.0,
+      "potencia_leida_parcial_punta_clp_kw": 52023.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 22589.0,
+      "energia_clp_kwh": 122.4
+     }
     }
    }
   },
@@ -5450,6 +5504,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 15158.0,
     "energia_clp_kwh": 140.05
+   },
+   "por_distribuidor": {
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 295.65
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 172.42,
+      "potencia_punta_clp_kw": 69914.0,
+      "potencia_parcial_punta_clp_kw": 51402.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 172.42,
+      "potencia_leida_punta_clp_kw": 69914.0,
+      "potencia_leida_parcial_punta_clp_kw": 51402.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 15158.0,
+      "energia_clp_kwh": 140.05
+     }
+    },
+    "coopelan": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "variable_clp_kwh_tramo1": 286.63
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "energia_total_clp_kwh": 154.77,
+      "potencia_punta_clp_kw": 72110.0,
+      "potencia_parcial_punta_clp_kw": 52023.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 3694.03,
+      "energia_total_clp_kwh": 154.77,
+      "potencia_leida_punta_clp_kw": 72110.0,
+      "potencia_leida_parcial_punta_clp_kw": 52023.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 22589.0,
+      "energia_clp_kwh": 122.4
+     }
+    }
    }
   },
   "08305": {
@@ -5519,6 +5619,28 @@ window.PW_DATA.c_tarifas_bt = {
      "BT4": {
       "potencia_contratada_clp_kw": 5225.0,
       "energia_clp_kwh": 140.05
+     }
+    },
+    "coopelan": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "variable_clp_kwh_tramo1": 286.63
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "energia_total_clp_kwh": 154.77,
+      "potencia_punta_clp_kw": 72110.0,
+      "potencia_parcial_punta_clp_kw": 52023.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 3694.03,
+      "energia_total_clp_kwh": 154.77,
+      "potencia_leida_punta_clp_kw": 72110.0,
+      "potencia_leida_parcial_punta_clp_kw": 52023.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 22589.0,
+      "energia_clp_kwh": 122.4
      }
     }
    }
@@ -5621,6 +5743,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 15158.0,
     "energia_clp_kwh": 135.14
+   },
+   "por_distribuidor": {
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 290.74
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 167.5,
+      "potencia_punta_clp_kw": 69914.0,
+      "potencia_parcial_punta_clp_kw": 51402.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 167.5,
+      "potencia_leida_punta_clp_kw": 69914.0,
+      "potencia_leida_parcial_punta_clp_kw": 51402.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 15158.0,
+      "energia_clp_kwh": 135.14
+     }
+    },
+    "coopelan": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "variable_clp_kwh_tramo1": 282.49
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "energia_total_clp_kwh": 150.63,
+      "potencia_punta_clp_kw": 72110.0,
+      "potencia_parcial_punta_clp_kw": 52023.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 3694.03,
+      "energia_total_clp_kwh": 150.63,
+      "potencia_leida_punta_clp_kw": 72110.0,
+      "potencia_leida_parcial_punta_clp_kw": 52023.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 22589.0,
+      "energia_clp_kwh": 118.26
+     }
+    }
    }
   },
   "08310": {
@@ -5671,6 +5839,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 15158.0,
     "energia_clp_kwh": 135.14
+   },
+   "por_distribuidor": {
+    "frontel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "variable_clp_kwh_tramo1": 290.74
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 167.5,
+      "potencia_punta_clp_kw": 69914.0,
+      "potencia_parcial_punta_clp_kw": 51402.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1319.13,
+      "energia_total_clp_kwh": 167.5,
+      "potencia_leida_punta_clp_kw": 69914.0,
+      "potencia_leida_parcial_punta_clp_kw": 51402.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 15158.0,
+      "energia_clp_kwh": 135.14
+     }
+    },
+    "coopelan": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "variable_clp_kwh_tramo1": 282.49
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 2868.87,
+      "energia_total_clp_kwh": 150.63,
+      "potencia_punta_clp_kw": 72110.0,
+      "potencia_parcial_punta_clp_kw": 52023.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 3694.03,
+      "energia_total_clp_kwh": 150.63,
+      "potencia_leida_punta_clp_kw": 72110.0,
+      "potencia_leida_parcial_punta_clp_kw": 52023.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 22589.0,
+      "energia_clp_kwh": 118.26
+     }
+    }
    }
   },
   "08312": {
