@@ -71,6 +71,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
         <div id="g-hora" role="img" aria-label="Gráfico de líneas con la demanda, la generación renovable variable (ERV) y la demanda neta de un día, hora por hora, en megavatios"></div>
         <p class="nota" id="n-hora"></p>
         <p class="nota" id="n-numeracion"></p>
+        <p class="nota" id="n-cifra">La demanda por hora es la cifra del Coordinador, tal como viene y sin ajustes: su forma puede no ser la del consumo de hogares e industrias (ver «Cómo leer estas cifras»).</p>
       </div>
       <p class="nota" id="sin-horas" hidden></p>
     </div>
@@ -84,14 +85,17 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <div class="tarjeta">
       <h2 style="margin-top:0">Cómo leer estas cifras</h2>
       <ul>
-        <li><b>La demanda del día</b> es la electricidad que el sistema tuvo que producir para abastecer al país, sumada hora por hora y sin
-        contar lo que las propias centrales gastan para funcionar. Se mide en gigavatios-hora (GWh): un GWh son un millón de kWh.</li>
-        <li><b>El máximo</b> es la hora más exigida del día. Se mide en megavatios (MW), que miden potencia y no energía, y sirve para
-        dimensionar cuánta capacidad necesita el sistema.</li>
+        <li><b>La demanda</b> es la cifra del reporte de demanda neta del Coordinador: la generación bruta menos los consumos propios, hora por
+        hora. La del día es la suma de sus 24 horas. El Observatorio la publica tal como viene, sin ajustes. El reporte no define qué incluyen
+        la generación bruta ni los consumos propios, así que la curva por hora puede no parecerse a la del consumo de hogares e industrias.
+        Se mide en gigavatios-hora (GWh): un GWh son un millón de kWh.</li>
+        <li><b>El máximo</b> es la hora con la mayor demanda del día según esa cifra. Se mide en megavatios (MW), que miden potencia y no
+        energía.</li>
         <li><b>Renovables variables (ERV)</b> es la generación que el Coordinador informa como energía renovable variable; «variable» quiere decir
-        que depende de condiciones que cambian, como el sol o el viento. El porcentaje es su parte de la demanda del día. El reporte no detalla
-        qué centrales cuenta como ERV, así que no la leas como «solar más eólica»: en los días revisados fue mayor que esa suma en la serie
-        de generación diaria del Observatorio.</li>
+        que depende de condiciones que cambian, como el sol o el viento. Según su descripción, incluye la eólica, la solar fotovoltaica y las
+        centrales hidráulicas de pasada. En los días revisados fue mayor que la solar sumada a la eólica de la serie de generación diaria del
+        Observatorio, algo esperable porque incluye también la hidráulica de pasada, y de noche sigue aportando. El porcentaje es su parte de la
+        demanda del día.</li>
         <li><b>La demanda neta</b> es la demanda menos las renovables variables (ERV): lo que queda por cubrir con las demás centrales del sistema.</li>
         <li><b>Un día sin dato</b> (banda amarilla en el gráfico) es un día que el Coordinador no entregó completo. Un día a medias no se
         publica.</li>
@@ -253,8 +257,11 @@ PW.montarNav("demanda-sen.html");
     el("n-hora").textContent = "El " + fechaCorta(fecha) + " la demanda máxima fue de " + PW.fmt(H.dem[iMax]) + " MW, a la hora " + H.nums[iMax] +
       ". En esa hora las renovables variables (ERV) aportaron " + PW.fmt(H.erv[iMax]) + " MW (" + PW.fmt(100 * H.erv[iMax] / H.dem[iMax]) +
       "% de la demanda de esa hora). La demanda neta más baja fue de " + PW.fmt(H.neta[iMin]) + " MW, a la hora " + H.nums[iMin] + ".";
-    el("n-numeracion").textContent = "Las horas van del " + H.nums[0] + " al " + H.nums[23] + ", con la numeración que entrega el Coordinador. " +
-      "La demanda neta es la demanda menos las renovables variables (ERV).";
+    // El tramo de cada hora solo se dice para la numeración de 1 a 24, la que se midió el 14-11 con `fecha_hora` (la hora h va de (h-1):00 a h:00).
+    const hh = n => String(n).padStart(2, "0") + ":00";
+    const tramo = H.nums[0] === 1 && H.nums[23] === 24 ? " La hora " + H.nums[iMax] + " es el tramo de " + hh(H.nums[iMax] - 1) + " a " + hh(H.nums[iMax]) + "." : "";
+    el("n-numeracion").textContent = "Las horas van del " + H.nums[0] + " al " + H.nums[23] + ", con la numeración que entrega el Coordinador." + tramo +
+      " La demanda neta es la demanda menos las renovables variables (ERV).";
   }
   const conHoras = [...HORARIO.keys()].sort().reverse();
   if (conHoras.length) {
