@@ -170,8 +170,8 @@ PW.montarNav("demanda-sen.html");
   const u = DIAS[DIAS.length - 1];
   const f1 = new Intl.NumberFormat("es-CL", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
-  // ---- aviso de serie corta: la cifra sale de los datos, no se escribe a mano
-  if (DIAS.length < 90) {
+  // ---- aviso de serie corta: la cifra sale de los datos, no se escribe a mano. Se mantiene mientras la serie no llegue a un año: sin un año completo no hay diferencias entre estaciones que mostrar
+  if (DIAS.length < 365) {
     const av = el("aviso-serie");
     av.textContent = "Serie nueva: parte el " + fechaSolo(primero) + " y hoy tiene " + DIAS.length + (DIAS.length === 1 ? " día" : " días") +
       " con datos. Se suma uno cada mañana, así que todavía no alcanza para ver tendencias ni diferencias entre estaciones.";
