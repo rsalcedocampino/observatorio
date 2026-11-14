@@ -3,8 +3,10 @@ window.PW_DATA.c_tarifas_bt = {
  "vigencia": "2026-11-01",
  "vigencia_por_distribuidor": {
   "cge": "2026-10-01",
+  "cooprel": "2026-10-01",
   "chilquinta": "2026-11-01",
   "coopelan": "2026-11-01",
+  "eepa": "2026-11-01",
   "edelaysen": "2026-11-01",
   "edelmag": "2026-11-01",
   "enel-distribucion": "2026-11-01",
@@ -56,6 +58,16 @@ window.PW_DATA.c_tarifas_bt = {
    "url": "https://www.chilquinta.cl/informacion-de-interes/tarifas-vigentes"
   },
   {
+   "distribuidora": "COOPREL",
+   "documento": "Tarifas de suministro eléctrico vigentes en octubre de 2026",
+   "url": "https://electrica.cooprel.cl/tarifas.php"
+  },
+  {
+   "distribuidora": "EEPA",
+   "documento": "Tarifas de suministro eléctrico vigentes en noviembre de 2026",
+   "url": "https://eepa.cl/tarifas-de-suministro-electrico/"
+  },
+  {
    "distribuidora": "Coopelan",
    "documento": "Tarifas de suministro eléctrico vigentes en noviembre de 2026",
    "url": "https://www.coopelan.cl/informacion-comercial/tarifas"
@@ -77,8 +89,10 @@ window.PW_DATA.c_tarifas_bt = {
   "cge",
   "chilquinta",
   "coopelan",
+  "cooprel",
   "edelaysen",
   "edelmag",
+  "eepa",
   "enel-distribucion",
   "frontel",
   "luz-osorno",
@@ -88,8 +102,10 @@ window.PW_DATA.c_tarifas_bt = {
   "cge": "CGE y filiales",
   "chilquinta": "Chilquinta",
   "coopelan": "Coopelan",
+  "cooprel": "COOPREL",
   "edelaysen": "Edelaysén",
   "edelmag": "Edelmag",
+  "eepa": "EEPA",
   "enel-distribucion": "Enel Distribución",
   "frontel": "Frontel",
   "luz-osorno": "Luz Osorno",
@@ -222,11 +238,13 @@ window.PW_DATA.c_tarifas_bt = {
    "region_kit": "Los Lagos",
    "comunas": 30,
    "distribuidoras": [
+    "cooprel",
     "edelaysen",
     "luz-osorno",
     "saesa"
    ],
    "comunas_por_distribuidora": {
+    "cooprel": 1,
     "edelaysen": 3,
     "luz-osorno": 9,
     "saesa": 27
@@ -263,10 +281,12 @@ window.PW_DATA.c_tarifas_bt = {
    "comunas": 52,
    "distribuidoras": [
     "cge",
+    "eepa",
     "enel-distribucion"
    ],
    "comunas_por_distribuidora": {
     "cge": 19,
+    "eepa": 1,
     "enel-distribucion": 33
    }
   },
@@ -276,10 +296,12 @@ window.PW_DATA.c_tarifas_bt = {
    "region_kit": "Los Ríos",
    "comunas": 12,
    "distribuidoras": [
+    "cooprel",
     "luz-osorno",
     "saesa"
    ],
    "comunas_por_distribuidora": {
+    "cooprel": 3,
     "luz-osorno": 2,
     "saesa": 12
    }
@@ -661,6 +683,28 @@ window.PW_DATA.c_tarifas_bt = {
    }
   },
   "10": {
+   "cooprel": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 5137.59,
+     "variable_clp_kwh_tramo1": 243.39
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 5137.59,
+     "energia_total_clp_kwh": 179.57,
+     "potencia_punta_clp_kw": 82430.0,
+     "potencia_parcial_punta_clp_kw": 54475.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 5137.59,
+     "energia_total_clp_kwh": 179.57,
+     "potencia_leida_punta_clp_kw": 82430.0,
+     "potencia_leida_parcial_punta_clp_kw": 54475.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 30244.0,
+     "energia_clp_kwh": 147.38
+    }
+   },
    "edelaysen": {
     "BT1": {
      "cargo_fijo_clp_mes": 1319.13,
@@ -799,6 +843,28 @@ window.PW_DATA.c_tarifas_bt = {
      "energia_clp_kwh": 152.99
     }
    },
+   "eepa": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 1946.45,
+     "variable_clp_kwh_tramo1": 265.65
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 1946.45,
+     "energia_total_clp_kwh": 183.96,
+     "potencia_punta_clp_kw": 33669.0,
+     "potencia_parcial_punta_clp_kw": 22964.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 2122.27,
+     "energia_total_clp_kwh": 183.96,
+     "potencia_leida_punta_clp_kw": 33669.0,
+     "potencia_leida_parcial_punta_clp_kw": 22964.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 10991.0,
+     "energia_clp_kwh": 162.62
+    }
+   },
    "enel-distribucion": {
     "BT1": {
      "cargo_fijo_clp_mes": 734.64,
@@ -823,6 +889,28 @@ window.PW_DATA.c_tarifas_bt = {
    }
   },
   "14": {
+   "cooprel": {
+    "BT1": {
+     "cargo_fijo_clp_mes": 5137.59,
+     "variable_clp_kwh_tramo1": 239.95
+    },
+    "BT2": {
+     "cargo_fijo_clp_mes": 5137.59,
+     "energia_total_clp_kwh": 176.12,
+     "potencia_punta_clp_kw": 82430.0,
+     "potencia_parcial_punta_clp_kw": 54475.0
+    },
+    "BT3": {
+     "cargo_fijo_clp_mes": 5137.59,
+     "energia_total_clp_kwh": 176.12,
+     "potencia_leida_punta_clp_kw": 82430.0,
+     "potencia_leida_parcial_punta_clp_kw": 54475.0
+    },
+    "BT4": {
+     "potencia_contratada_clp_kw": 30244.0,
+     "energia_clp_kwh": 143.93
+    }
+   },
    "luz-osorno": {
     "BT1": {
      "cargo_fijo_clp_mes": 1319.13,
@@ -8305,6 +8393,28 @@ window.PW_DATA.c_tarifas_bt = {
       "potencia_contratada_clp_kw": 10638.0,
       "energia_clp_kwh": 128.97
      }
+    },
+    "cooprel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "variable_clp_kwh_tramo1": 243.39
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "energia_total_clp_kwh": 179.57,
+      "potencia_punta_clp_kw": 82430.0,
+      "potencia_parcial_punta_clp_kw": 54475.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "energia_total_clp_kwh": 179.57,
+      "potencia_leida_punta_clp_kw": 82430.0,
+      "potencia_leida_parcial_punta_clp_kw": 54475.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 30244.0,
+      "energia_clp_kwh": 147.38
+     }
     }
    }
   },
@@ -9531,6 +9641,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 3955.0,
     "energia_clp_kwh": 155.12
+   },
+   "por_distribuidor": {
+    "cge": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "variable_clp_kwh_tramo1": 236.12
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 176.46,
+      "potencia_punta_clp_kw": 24031.0,
+      "potencia_parcial_punta_clp_kw": 16833.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1071.14,
+      "energia_total_clp_kwh": 176.46,
+      "potencia_leida_punta_clp_kw": 24031.0,
+      "potencia_leida_parcial_punta_clp_kw": 16833.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 3955.0,
+      "energia_clp_kwh": 155.12
+     }
+    },
+    "eepa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1946.45,
+      "variable_clp_kwh_tramo1": 265.65
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1946.45,
+      "energia_total_clp_kwh": 183.96,
+      "potencia_punta_clp_kw": 33669.0,
+      "potencia_parcial_punta_clp_kw": 22964.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 2122.27,
+      "energia_total_clp_kwh": 183.96,
+      "potencia_leida_punta_clp_kw": 33669.0,
+      "potencia_leida_parcial_punta_clp_kw": 22964.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 10991.0,
+      "energia_clp_kwh": 162.62
+     }
+    }
    }
   },
   "13202": {
@@ -10276,6 +10432,28 @@ window.PW_DATA.c_tarifas_bt = {
       "potencia_contratada_clp_kw": 10638.0,
       "energia_clp_kwh": 128.97
      }
+    },
+    "cooprel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "variable_clp_kwh_tramo1": 243.39
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "energia_total_clp_kwh": 179.57,
+      "potencia_punta_clp_kw": 82430.0,
+      "potencia_parcial_punta_clp_kw": 54475.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "energia_total_clp_kwh": 179.57,
+      "potencia_leida_punta_clp_kw": 82430.0,
+      "potencia_leida_parcial_punta_clp_kw": 54475.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 30244.0,
+      "energia_clp_kwh": 147.38
+     }
     }
    }
   },
@@ -10327,6 +10505,52 @@ window.PW_DATA.c_tarifas_bt = {
    "BT4": {
     "potencia_contratada_clp_kw": 9321.0,
     "energia_clp_kwh": 140.21
+   },
+   "por_distribuidor": {
+    "saesa": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "variable_clp_kwh_tramo1": 269.23
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 172.4,
+      "potencia_punta_clp_kw": 35011.0,
+      "potencia_parcial_punta_clp_kw": 23023.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 1246.48,
+      "energia_total_clp_kwh": 172.4,
+      "potencia_leida_punta_clp_kw": 35011.0,
+      "potencia_leida_parcial_punta_clp_kw": 23023.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 9321.0,
+      "energia_clp_kwh": 140.21
+     }
+    },
+    "cooprel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "variable_clp_kwh_tramo1": 243.39
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "energia_total_clp_kwh": 179.57,
+      "potencia_punta_clp_kw": 82430.0,
+      "potencia_parcial_punta_clp_kw": 54475.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "energia_total_clp_kwh": 179.57,
+      "potencia_leida_punta_clp_kw": 82430.0,
+      "potencia_leida_parcial_punta_clp_kw": 54475.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 30244.0,
+      "energia_clp_kwh": 147.38
+     }
+    }
    }
   },
   "14204": {
@@ -10396,6 +10620,28 @@ window.PW_DATA.c_tarifas_bt = {
      "BT4": {
       "potencia_contratada_clp_kw": 12947.0,
       "energia_clp_kwh": 120.2
+     }
+    },
+    "cooprel": {
+     "BT1": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "variable_clp_kwh_tramo1": 233.06
+     },
+     "BT2": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "energia_total_clp_kwh": 169.23,
+      "potencia_punta_clp_kw": 82430.0,
+      "potencia_parcial_punta_clp_kw": 54475.0
+     },
+     "BT3": {
+      "cargo_fijo_clp_mes": 5137.59,
+      "energia_total_clp_kwh": 169.23,
+      "potencia_leida_punta_clp_kw": 82430.0,
+      "potencia_leida_parcial_punta_clp_kw": 54475.0
+     },
+     "BT4": {
+      "potencia_contratada_clp_kw": 30244.0,
+      "energia_clp_kwh": 137.04
      }
     }
    }
