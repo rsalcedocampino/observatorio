@@ -150,6 +150,7 @@
   ICONOS["marcos-almacenamiento.html"] = IC('<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>');
   ICONOS["inversion.html"] = IC('<path d="M3 17l5-5 3 3 4-4.5"/><path d="M15 10.5h4v4"/><path d="M3 21h18"/>');
   ICONOS["indicadores.html"] = IC('<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>');
+  ICONOS["grupos-economicos.html"] = IC('<rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/>');
   ICONOS["generacion.html"] = IC('<path d="M12 2v6M12 8l-4 6h8l-4 6"/><path d="M5 5l1.5 1.5M19 5l-1.5 1.5"/>');
   ICONOS["mapa-centrales.html"] = IC('<path d="M3 19h18"/><path d="M7 19a5 5 0 0 1 10 0"/><path d="M12 5.5v3M5.8 9.3l2 2M18.2 9.3l-2 2"/><path d="M8.5 22.5h7"/>');
   // vertimiento: la curva de generacion con la punta CORTADA en plano, que es literalmente lo
