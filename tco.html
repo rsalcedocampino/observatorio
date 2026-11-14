@@ -329,7 +329,9 @@ const BUILD = {}; BUILD["comparador"] = function () {
         "</span>" : "") +
       ((eEv.pr || eIce.pr) ? "<br><span class=\"nota\">Precio de lista &mdash; eléctrico: " +
         PW.clp(eEv.pr || 0) + " (confianza " + confLabel(eEv) + rngTxt(eEv) + ") &middot; combustión: " +
-        PW.clp(eIce.pr || 0) + " (confianza " + confLabel(eIce) + rngTxt(eIce) + ")</span>" : ""); PW.lineas("g-acum", {
+        PW.clp(eIce.pr || 0) + " (confianza " + confLabel(eIce) + rngTxt(eIce) + ")</span>" : "");
+    if (eIce.ivn || eEv.ivn) g("v-comp").innerHTML += "<br><span class=\"nota\">Impuesto verde no calculado para " + (eIce.ivn ? "el combustión" : "el eléctrico") + ": su costo de uso queda sin ese impuesto, así que la comparación no está completa para ese vehículo.</span>";
+    PW.lineas("g-acum", {
       labels: evC.map((_, i) => String(i)),
       series: [{ nombre: "Eléctrico", valores: evC, color: PW.color("--s1") },
                { nombre: "Combustión", valores: iceC, color: PW.color("--s2") }],

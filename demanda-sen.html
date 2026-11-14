@@ -33,6 +33,10 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>document.write('<link rel="preload" as="script" href="data/demanda_sen.js?v='+_pwv+'">')</script>
 <style>
 #f-mes,#f-dia{min-width:11em}
+.filtros button.dia-nav{background:var(--surface-1);color:var(--ink-1);border:1px solid var(--axis);border-radius:6px;padding:5px 10px;font-size:13.5px;font-family:inherit;cursor:pointer}
+.filtros button.dia-nav:hover:not(:disabled){background:var(--plane)}
+.filtros button.dia-nav:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+.filtros button.dia-nav:disabled{opacity:.45;cursor:default}
 .kpi .v{font-variant-numeric:tabular-nums}
 .kpi .v .u{font-size:14px;font-weight:600;color:var(--ink-2)}
 #t-dias th:first-child,#t-dias td:first-child{white-space:nowrap}
@@ -50,8 +54,10 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <div class="filtros" id="filtros">
       <label for="f-mes">Mes <select id="f-mes"></select></label>
       <label for="f-dia">Día <select id="f-dia"></select></label>
+      <button type="button" class="dia-nav" id="b-ant">‹ Día anterior</button>
+      <button type="button" class="dia-nav" id="b-sig">Día siguiente ›</button>
     </div>
-    <p class="nota" id="n-filtro">Elige un mes y un día: las cifras, los gráficos y la tabla de esta página se ajustan a tu elección.</p>
+    <p class="nota" id="n-filtro">Elige un mes y un día, o recorre los días con los botones: las cifras, los gráficos y la tabla de esta página se ajustan a tu elección. La dirección de la página guarda tu elección, así que puedes copiarla para volver al mismo día.</p>
     <p class="nota" id="n-sinhoras" hidden></p>
 
     <div class="kpis" id="kpis"></div>
@@ -217,7 +223,20 @@ PW.montarNav("demanda-sen.html");
     diasDeMes.get(ym).push(d.fecha);
   });
   const meses = [...diasDeMes.keys()].sort().reverse();     // el más reciente primero
-  const sel = { mes: "todo", dia: ultimo };
+  // El filtro también vive en la dirección de la página: ?dia=AAAA-MM-DD y, con un mes elegido, &mes=AAAA-MM. Con todo el período y el último día la dirección
+  // queda sin parámetros. Un valor que no sea una fecha del dato abre la vista de siempre, sin error; los demás parámetros (como ?cb=) no se tocan.
+  function filtroDeLaDireccion() {
+    try {
+      const q = new URLSearchParams(location.search);
+      const d = q.get("dia"), m = q.get("mes");
+      const dOk = d !== null && dia.has(d), mOk = m !== null && diasDeMes.has(m);
+      if (dOk && mOk && d.startsWith(m)) return { mes: m, dia: d };
+      if (dOk) return { mes: "todo", dia: d };
+      if (mOk) { const f = diasDeMes.get(m); return { mes: m, dia: f[f.length - 1] }; }
+    } catch (e) { /* sin una dirección legible: la vista normal */ }
+    return { mes: "todo", dia: ultimo };
+  }
+  const sel = filtroDeLaDireccion();
   const alcance = () => (sel.mes === "todo" ? DIAS : DIAS.filter(d => d.fecha.startsWith(sel.mes)));
   const selMes = el("f-mes"), selDia = el("f-dia");
 
@@ -336,12 +355,41 @@ PW.montarNav("demanda-sen.html");
     }
   }
 
+  // ---- botones de día anterior y siguiente: recorren los días con datos (sin pararse en los huecos del calendario); si con un mes elegido el día cae en otro
+  // mes, el mes lo sigue; solo se desactivan en el primer y el último día de todo el dato
+  const posicion = new Map(DIAS.map((d, i) => [d.fecha, i]));
+  const vecino = paso => { const i = posicion.get(sel.dia) + paso; return i >= 0 && i < DIAS.length ? DIAS[i].fecha : null; };
+  function pintarBotones() {
+    [["b-ant", -1, "Es el primer día con datos"], ["b-sig", 1, "Es el último día con datos"]].forEach(([id, paso, sin]) => {
+      const f = vecino(paso), b = el(id);
+      b.disabled = f === null;
+      b.title = f === null ? sin : "Ir al " + fechaCorta(f);
+    });
+  }
+
+  // ---- la dirección de la página guarda el filtro; replaceState: cambiar el filtro no recarga la página ni llena el historial del navegador
+  function escribirDireccion() {
+    try {
+      const q = new URLSearchParams(location.search);
+      q.delete("dia");
+      q.delete("mes");
+      if (!(sel.mes === "todo" && sel.dia === ultimo)) {
+        q.set("dia", sel.dia);
+        if (sel.mes !== "todo") q.set("mes", sel.mes);
+      }
+      const s = q.toString();
+      history.replaceState(null, "", location.pathname + (s ? "?" + s : "") + location.hash);
+    } catch (e) { /* si el navegador no lo permite, el filtro funciona igual sin quedar en la dirección */ }
+  }
+
   function pintar() {
     pintarCifras();
     pintarGraficosDia();
     pintarHoras();
     pintarAviso();
     pintarTabla();
+    pintarBotones();
+    escribirDireccion();
   }
 
   // ---- las dos listas: «Todo el período» y los meses; los días del mes elegido o, con todo el período, todos agrupados por mes
@@ -366,6 +414,20 @@ PW.montarNav("demanda-sen.html");
     pintar();
   });
   selDia.addEventListener("change", () => { sel.dia = selDia.value; pintar(); });
+  function irA(f) {
+    if (f === null) return;
+    sel.dia = f;
+    if (sel.mes !== "todo" && !f.startsWith(sel.mes)) {      // con un mes elegido, al pasar su borde se sigue en el mes vecino
+      sel.mes = f.slice(0, 7);
+      selMes.value = sel.mes;
+      llenarDias();
+    } else {
+      selDia.value = f;
+    }
+    pintar();
+  }
+  el("b-ant").addEventListener("click", () => irA(vecino(-1)));
+  el("b-sig").addEventListener("click", () => irA(vecino(1)));
   llenarMeses();
   llenarDias();
   pintar();
