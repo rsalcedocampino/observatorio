@@ -30,13 +30,13 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <link rel="stylesheet" href="assets/estilo.css?v=261114b">
 <script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
-<script>document.write('<link rel="preload" as="script" href="data/demanda_sen.js?v='+_pwv+'">')</script>
+<script>document.write('<link rel="preload" as="script" href="data/demanda_sen_indice.js?v='+_pwv+'">')</script>
 <style>
 #f-mes,#f-dia{min-width:11em}
-.filtros button.dia-nav{background:var(--surface-1);color:var(--ink-1);border:1px solid var(--axis);border-radius:6px;padding:5px 10px;font-size:13.5px;font-family:inherit;cursor:pointer}
-.filtros button.dia-nav:hover:not(:disabled){background:var(--plane)}
-.filtros button.dia-nav:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
-.filtros button.dia-nav:disabled{opacity:.45;cursor:default}
+button.dia-nav{background:var(--surface-1);color:var(--ink-1);border:1px solid var(--axis);border-radius:6px;padding:5px 10px;font-size:13.5px;font-family:inherit;cursor:pointer}
+button.dia-nav:hover:not(:disabled){background:var(--plane)}
+button.dia-nav:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+button.dia-nav:disabled{opacity:.45;cursor:default}
 .kpi .v{font-variant-numeric:tabular-nums}
 .kpi .v .u{font-size:14px;font-weight:600;color:var(--ink-2)}
 #t-dias th:first-child,#t-dias td:first-child{white-space:nowrap}
@@ -124,12 +124,12 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     </div>
   </div>
 </main>
-<script>document.write('<script src="data/demanda_sen.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/demanda_sen_indice.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=261114b"></script>
 <script>
 PW.montarNav("demanda-sen.html");
 (function () {
-  const D = (window.PW_DATA || {}).demanda_sen;
+  const D = (window.PW_DATA || {}).demanda_sen_indice;      // el índice: los días con sus totales; las horas vienen en un archivo por mes (ver más abajo)
   const el = id => document.getElementById(id);
   const esc = PW.esc;
   const num = v => typeof v === "number" && isFinite(v);
@@ -188,31 +188,67 @@ PW.montarNav("demanda-sen.html");
     av.hidden = false;
   }
 
-  // ---- detalle por hora: solo los días con 24 horas seguidas y que sumen lo mismo que su total del día.
+  // ---- detalle por hora: viene en un archivo por mes (data/demanda_sen/AAAA-MM.js) que se baja al mirar un día de ese mes y una sola vez; el índice solo trae los
+  // días con sus totales. Un día se muestra por hora solo si tiene 24 horas seguidas y que sumen lo mismo que su total del día.
   // La numeración es la del Coordinador y no se supone: sirve de la 1 a la 24 o de la 0 a la 23.
-  const filasH = new Map();
-  (Array.isArray(D.horas) ? D.horas : []).forEach(r => {
-    if (!r || !porFecha.has(r.fecha) || !Number.isInteger(r.hora) || r.hora < 0 || r.hora > 24) return;
-    if (![r.gen_bruta_mwh, r.gen_erv_mwh, r.cons_propio_mwh, r.demanda_neta_mwh].every(num)) return;
-    if (!filasH.has(r.fecha)) filasH.set(r.fecha, new Map());
-    filasH.get(r.fecha).set(r.hora, r);      // de una hora repetida vale la última fila
+  const ARCHIVO = new Map();                 // "AAAA-MM" -> archivo de ese mes según el índice (solo rutas con la forma demanda_sen/AAAA-MM.js)
+  ((D.meta && Array.isArray(D.meta.meses)) ? D.meta.meses : []).forEach(m => {
+    if (m && typeof m.mes === "string" && /^\d{4}-\d{2}$/.test(m.mes) && m.archivo === "demanda_sen/" + m.mes + ".js") ARCHIVO.set(m.mes, m.archivo);
   });
-  const HORARIO = new Map();
-  filasH.forEach((hs, fecha) => {
-    const nums = [...hs.keys()].sort((a, b) => a - b);
-    if (nums.length !== 24 || nums[23] - nums[0] !== 23) return;
-    const dem = [], erv = [], neta = [];
-    nums.forEach(h => {
-      const r = hs.get(h);
-      dem.push(r.gen_bruta_mwh - r.cons_propio_mwh);
-      erv.push(r.gen_erv_mwh);
-      neta.push(r.demanda_neta_mwh);
+  // los días que el índice ya dice que no tienen sus 24 horas (opcional: si falta el campo, se comprueba al bajar cada mes)
+  const SIN_DETALLE = new Set(D.meta && Array.isArray(D.meta.dias_sin_detalle) ? D.meta.dias_sin_detalle.filter(f => dia.has(f)) : []);
+  const HORARIO = new Map();                 // fecha -> {nums, dem, erv, neta}, de los meses ya bajados
+  const MES_ESTADO = new Map();              // "AAAA-MM" -> "cargando" | "listo" | "error"
+  function procesarMes(ym, M) {
+    const filasH = new Map();
+    (M && Array.isArray(M.horas) ? M.horas : []).forEach(r => {
+      if (!r || typeof r.fecha !== "string" || r.fecha.slice(0, 7) !== ym || !dia.has(r.fecha) || !Number.isInteger(r.hora) || r.hora < 0 || r.hora > 24) return;
+      if (![r.gen_bruta_mwh, r.gen_erv_mwh, r.cons_propio_mwh, r.demanda_neta_mwh].every(num)) return;
+      if (!filasH.has(r.fecha)) filasH.set(r.fecha, new Map());
+      filasH.get(r.fecha).set(r.hora, r);      // de una hora repetida vale la última fila
     });
-    const gwh = a => a.reduce((s, v) => s + v, 0) / 1000;
-    const d = dia.get(fecha);
-    if (Math.abs(gwh(dem) - d.demanda) > 0.05 || Math.abs(gwh(erv) - d.erv) > 0.05) return;   // las horas no calzan con el día: no se muestran
-    HORARIO.set(fecha, { nums, dem, erv, neta });
-  });
+    filasH.forEach((hs, fecha) => {
+      const nums = [...hs.keys()].sort((a, b) => a - b);
+      if (nums.length !== 24 || nums[23] - nums[0] !== 23) return;
+      const dem = [], erv = [], neta = [];
+      nums.forEach(h => {
+        const r = hs.get(h);
+        dem.push(r.gen_bruta_mwh - r.cons_propio_mwh);
+        erv.push(r.gen_erv_mwh);
+        neta.push(r.demanda_neta_mwh);
+      });
+      const gwh = a => a.reduce((s, v) => s + v, 0) / 1000;
+      const d = dia.get(fecha);
+      if (Math.abs(gwh(dem) - d.demanda) > 0.05 || Math.abs(gwh(erv) - d.erv) > 0.05) return;   // las horas no calzan con el día: no se muestran
+      HORARIO.set(fecha, { nums, dem, erv, neta });
+    });
+  }
+  function cargarMes(ym) {
+    if (!ARCHIVO.has(ym) || MES_ESTADO.has(ym)) return;           // sin archivo para ese mes, o ya bajado o en camino
+    MES_ESTADO.set(ym, "cargando");
+    const s = document.createElement("script");
+    s.src = "data/" + ARCHIVO.get(ym) + "?v=" + encodeURIComponent(String(window._pwv !== undefined ? window._pwv : ""));   // _pwv: el número que cambia cada 10 minutos, el mismo de los demás módulos
+    s.onload = () => {
+      const M = ((window.PW_DATA || {}).demanda_sen_meses || {})[ym];
+      if (M) { procesarMes(ym, M); MES_ESTADO.set(ym, "listo"); } else MES_ESTADO.set(ym, "error");
+      alTerminarMes();
+    };
+    s.onerror = () => { MES_ESTADO.set(ym, "error"); alTerminarMes(); };
+    document.head.appendChild(s);
+  }
+  // "si" (tiene detalle), "no", "cargando", "error" o "pendiente" (todavía no se pidió el mes de ese día)
+  function estadoDetalle(f) {
+    if (HORARIO.has(f)) return "si";
+    if (SIN_DETALLE.has(f)) return "no";
+    const ym = f.slice(0, 7);
+    if (!ARCHIVO.has(ym)) return "no";
+    const e = MES_ESTADO.get(ym);
+    return e === "listo" ? "no" : (e || "pendiente");
+  }
+  function alTerminarMes() {                 // llegó (o falló) un mes: se vuelve a pintar lo que depende de las horas
+    pintarHoras();
+    pintarAviso();
+  }
 
   // ---- el filtro: un mes (o todo el período) y un día. Todo lo que se ve en la página sale de estos dos valores.
   // Al abrir: todo el período y el último día. Al cambiar de mes, si el día elegido no es de ese mes se pasa a su último día.
@@ -314,20 +350,34 @@ PW.montarNav("demanda-sen.html");
       " La demanda neta es la demanda menos las renovables variables (ERV).";
   }
   function pintarHoras() {
-    const hay = HORARIO.has(sel.dia);
-    el("t-hora").textContent = "Un día, hora por hora" + (HORARIO.size ? ": " + fechaLarga(sel.dia) : "");
+    const f = sel.dia, ym = f.slice(0, 7), est = estadoDetalle(f), hay = est === "si";
+    if (est === "pendiente") cargarMes(ym);                          // se pide el mes del día elegido; al llegar se vuelve a pintar
+    el("t-hora").textContent = "Un día, hora por hora" + (ARCHIVO.size ? ": " + fechaLarga(f) : "");
     el("b-horas").hidden = !hay;
     const p = el("sin-horas");
     p.hidden = hay;
-    if (hay) { dibujarHoras(sel.dia); return; }
-    p.textContent = HORARIO.size
-      ? "El " + fechaCorta(sel.dia) + " no tiene detalle por hora; de ese día solo está el total, arriba y en la tabla."
-      : "Todavía no hay un día completo con detalle por hora. Aparecerá aquí apenas se recoja uno; mientras tanto, cada día tiene su total en la tabla.";
+    if (hay) { dibujarHoras(f); return; }
+    if (est === "pendiente" || est === "cargando") {
+      p.textContent = "Cargando el detalle por hora de " + fechaCorta(f) + "…";
+    } else if (est === "error") {
+      p.textContent = "No se pudo cargar el detalle por hora de " + mesLargo(ym) + ". ";
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "dia-nav";
+      b.textContent = "Reintentar";
+      b.addEventListener("click", () => { MES_ESTADO.delete(ym); pintarHoras(); });
+      p.appendChild(b);
+    } else {
+      p.textContent = ARCHIVO.size
+        ? "El " + fechaCorta(f) + " no tiene detalle por hora; de ese día solo está el total, arriba y en la tabla."
+        : "Todavía no hay un día completo con detalle por hora. Aparecerá aquí apenas se recoja uno; mientras tanto, cada día tiene su total en la tabla.";
+    }
   }
 
-  // ---- aviso de días sin detalle por hora dentro de lo que se está viendo (si no hay horas de ningún día, lo dice la tarjeta del gráfico por hora)
+  // ---- aviso de días sin detalle por hora dentro de lo que se está viendo (si no hay horas de ningún día, lo dice la tarjeta del gráfico por hora);
+  // solo cuenta los días que ya se sabe que no lo tienen: los de un mes todavía sin bajar entran cuando llega (o si el índice los lista en dias_sin_detalle)
   function pintarAviso() {
-    const sin = HORARIO.size ? alcance().filter(d => !HORARIO.has(d.fecha)).length : 0;
+    const sin = ARCHIVO.size ? alcance().filter(d => estadoDetalle(d.fecha) === "no").length : 0;
     const p = el("n-sinhoras");
     const donde = sel.mes === "todo" ? "del período" : "de este mes";
     p.hidden = sin <= 0;
