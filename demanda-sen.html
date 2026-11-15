@@ -96,7 +96,7 @@ button.dia-nav:disabled{opacity:.45;cursor:default}
       <h2 style="margin-top:0">Cómo leer estas cifras</h2>
       <ul>
         <li><b>La demanda</b> es la cifra del reporte de demanda neta del Coordinador: la generación bruta menos los consumos propios, hora por
-        hora. La del día es la suma de sus 24 horas. El Observatorio la publica tal como viene, sin ajustes. El reporte no define qué incluyen
+        hora. La del día es la suma de sus horas: 24, salvo los dos días del año en que cambia la hora, que tienen 23 o 25. El Observatorio la publica tal como viene, sin ajustes. El reporte no define qué incluyen
         la generación bruta ni los consumos propios, así que la curva por hora puede no parecerse a la del consumo de hogares e industrias.
         Se mide en gigavatios-hora (GWh): un GWh son un millón de kWh.</li>
         <li><b>El máximo</b> es la hora con la mayor demanda del día según esa cifra. Se mide en megavatios (MW), que miden potencia y no
@@ -160,6 +160,35 @@ PW.montarNav("demanda-sen.html");
   const mesLargo = ym => MES_LARGO[+ym.slice(5, 7) - 1] + " " + ym.slice(0, 4);
   const sumarDias = (iso, n) => { const p = partes(iso); return new Date(Date.UTC(p.a, p.m - 1, p.d + n)).toISOString().slice(0, 10); };
 
+  // ---- cuántas horas tuvo cada día en Chile: 24, salvo los dos días del año en que cambia la hora (uno de 23 y otro de 25). Lo calcula el navegador con la zona
+  // America/Santiago, sin fechas escritas a mano; si no la entiende, todos los días valen 24 y la página se comporta como si no existiera el cambio de hora.
+  let horaChile = null, fechaChile = null;
+  try {
+    horaChile = new Intl.DateTimeFormat("en-US", { timeZone: "America/Santiago", hourCycle: "h23", hour: "numeric" });
+    fechaChile = new Intl.DateTimeFormat("en-US", { timeZone: "America/Santiago", year: "numeric", month: "2-digit", day: "2-digit" });
+  } catch (e) { horaChile = null; }
+  const LARGO = new Map();
+  const desfaseChile = iso => { const p = partes(iso); return +horaChile.format(new Date(Date.UTC(p.a, p.m - 1, p.d, 12))) - 12; };      // a las 12:00 UTC: -3 con horario de verano, -4 sin él
+  function horasDelDia(iso) {
+    if (LARGO.has(iso)) return LARGO.get(iso);
+    let n = 24;
+    try {
+      // lejos de un cambio de hora el desfase es el mismo el día antes, ese día y el día después: 24 horas. Junto a uno se cuentan las horas que, desde la medianoche UTC, caen en esa fecha en Chile
+      if (horaChile && !(desfaseChile(sumarDias(iso, -1)) === desfaseChile(iso) && desfaseChile(iso) === desfaseChile(sumarDias(iso, 1)))) {
+        const p = partes(iso), base = Date.UTC(p.a, p.m - 1, p.d);
+        n = 0;
+        for (let h = 0; h < 32; h++) {
+          const o = {};
+          fechaChile.formatToParts(new Date(base + h * 3600000)).forEach(x => { o[x.type] = x.value; });
+          if (o.year + "-" + o.month + "-" + o.day === iso) n++;
+        }
+        if (n < 23 || n > 25) n = 24;
+      }
+    } catch (e) { n = 24; }
+    LARGO.set(iso, n);
+    return n;
+  }
+
   // ---- días: una fila por fecha (si viene repetida vale la última) y solo con cifras que se pueden mostrar
   const porFecha = new Map();
   D.dias.forEach(d => {
@@ -189,7 +218,7 @@ PW.montarNav("demanda-sen.html");
   }
 
   // ---- detalle por hora: viene en un archivo por mes (data/demanda_sen/AAAA-MM.js) que se baja al mirar un día de ese mes y una sola vez; el índice solo trae los
-  // días con sus totales. Un día se muestra por hora solo si tiene 24 horas seguidas y que sumen lo mismo que su total del día.
+  // días con sus totales. Un día se muestra por hora solo si tuvo 24 horas en Chile (los dos días de cambio de hora tuvieron 23 o 25) y trae 24 horas seguidas que sumen lo mismo que su total del día.
   // La numeración es la del Coordinador y no se supone: sirve de la 1 a la 24 o de la 0 a la 23.
   const ARCHIVO = new Map();                 // "AAAA-MM" -> archivo de ese mes según el índice (solo rutas con la forma demanda_sen/AAAA-MM.js)
   ((D.meta && Array.isArray(D.meta.meses)) ? D.meta.meses : []).forEach(m => {
@@ -238,6 +267,7 @@ PW.montarNav("demanda-sen.html");
   }
   // "si" (tiene detalle), "no", "cargando", "error" o "pendiente" (todavía no se pidió el mes de ese día)
   function estadoDetalle(f) {
+    if (horasDelDia(f) !== 24) return "no";        // el día del cambio de hora (23 o 25 horas) no se dibuja por hora, tenga o no filas en su mes
     if (HORARIO.has(f)) return "si";
     if (SIN_DETALLE.has(f)) return "no";
     const ym = f.slice(0, 7);
@@ -281,7 +311,7 @@ PW.montarNav("demanda-sen.html");
   function pintarCifras() {
     const u = dia.get(sel.dia);
     el("kpis").innerHTML = [
-      [f1.format(u.demanda), " GWh", "demanda del " + fechaCorta(u.fecha), "suma de las 24 horas"],
+      [f1.format(u.demanda), " GWh", "demanda del " + fechaCorta(u.fecha), horasDelDia(u.fecha) === 24 ? "suma de las 24 horas" : "día de " + horasDelDia(u.fecha) + " horas por el cambio de hora"],
       [PW.fmt(u.max), " MW", "máximo de ese día", u.horaMax != null ? "a la hora " + u.horaMax : ""],
       [f1.format(u.pct) + "%", "", "cubierto por renovables variables (ERV)", f1.format(u.erv) + " GWh de " + f1.format(u.demanda)],
       [f1.format(u.neta), " GWh", "demanda neta", "lo que cubrieron las demás centrales"],
@@ -316,9 +346,11 @@ PW.montarNav("demanda-sen.html");
       fmtY: v => PW.fmt(v) + "%", fmtV: v => f1.format(v) + "%",
     });
     const huecos = cal.filter(f => !dia.has(f)).length;
+    const cambios = cal.filter(f => dia.has(f) && horasDelDia(f) !== 24);      // los días de 23 o 25 horas que el gráfico dibuja
     el("n-dia").textContent = "Gigavatios-hora (GWh) que consumió el país en cada día" + (sel.mes === "todo" ? "" : " de " + mesLargo(sel.mes)) + "." +
       (iSel >= 0 ? " La línea punteada marca el día elegido." : " El día elegido es anterior a los últimos 120 días del gráfico; está en la tabla.") +
       (huecos ? " Los días con banda amarilla no tienen dato." : "") +
+      cambios.map(f => " Por el cambio de hora, el " + fechaCorta(f) + " tuvo " + horasDelDia(f) + " horas: su total no se compara con el de un día de 24.").join("") +
       (recortado ? " Se muestran los últimos 120 días; la tabla trae todos." : "");
   }
 
@@ -359,6 +391,8 @@ PW.montarNav("demanda-sen.html");
     if (hay) { dibujarHoras(f); return; }
     if (est === "pendiente" || est === "cargando") {
       p.textContent = "Cargando el detalle por hora de " + fechaCorta(f) + "…";
+    } else if (horasDelDia(f) !== 24) {
+      p.textContent = "El " + fechaCorta(f) + " cambió la hora: ese día tuvo " + horasDelDia(f) + " horas y no 24, así que no se muestra por hora. De él solo está el total, arriba y en la tabla.";
     } else if (est === "error") {
       p.textContent = "No se pudo cargar el detalle por hora de " + mesLargo(ym) + ". ";
       const b = document.createElement("button");
@@ -375,7 +409,7 @@ PW.montarNav("demanda-sen.html");
   }
 
   // ---- aviso de días sin detalle por hora dentro de lo que se está viendo (si no hay horas de ningún día, lo dice la tarjeta del gráfico por hora);
-  // solo cuenta los días que ya se sabe que no lo tienen: los de un mes todavía sin bajar entran cuando llega (o si el índice los lista en dias_sin_detalle)
+  // solo cuenta los días que ya se sabe que no lo tienen: los de un mes todavía sin bajar entran cuando llega (o si el índice los lista en dias_sin_detalle); los dos días de cambio de hora se saben siempre
   function pintarAviso() {
     const sin = ARCHIVO.size ? alcance().filter(d => estadoDetalle(d.fecha) === "no").length : 0;
     const p = el("n-sinhoras");
