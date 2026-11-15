@@ -48,6 +48,7 @@ button.dia-nav:disabled{opacity:.45;cursor:default}
   <p class="sub">Cuánta electricidad consumió el Sistema Eléctrico Nacional cada día, a qué hora estuvo el máximo y qué parte de esa
   demanda cubrieron las energías renovables variables (ERV).</p>
   <p class="aviso-borrador" id="aviso-serie" hidden></p>
+  <p class="aviso-borrador" id="aviso-carga" hidden></p>
   <p class="nota" id="estado" hidden></p>
 
   <div id="cuerpo">
@@ -86,6 +87,12 @@ button.dia-nav:disabled{opacity:.45;cursor:default}
       <p class="nota" id="sin-horas" hidden></p>
     </div>
 
+    <div class="tarjeta" id="t-carga" hidden>
+      <h2 style="margin-top:0" id="t-carga-titulo">Día incompleto</h2>
+      <p class="nota">El Coordinador entregó este día a medias. Lo que llegó se ve aquí, hora por hora; el día entra en las cifras, los gráficos y la tabla cuando llegue completo.</p>
+      <div id="carga-dias"></div>
+    </div>
+
     <div class="tarjeta">
       <h2 style="margin-top:0" id="t-titulo">Todos los días</h2>
       <div id="t-dias"></div>
@@ -107,8 +114,9 @@ button.dia-nav:disabled{opacity:.45;cursor:default}
         Observatorio, algo esperable porque incluye también la hidráulica de pasada, y de noche sigue aportando. El porcentaje es su parte de la
         demanda del día.</li>
         <li><b>La demanda neta</b> es la demanda menos las renovables variables (ERV): lo que queda por cubrir con las demás centrales del sistema.</li>
-        <li><b>Un día sin dato</b> (banda amarilla en el gráfico) es un día que el Coordinador no entregó completo. Un día a medias no se
-        publica.</li>
+        <li><b>Un día sin dato</b> (banda amarilla en el gráfico) es un día que el Coordinador no entregó completo. Un día a medias no entra en las
+        cifras, los gráficos ni la tabla: si llegaron algunas horas, se muestran aparte como «día incompleto», con la banda amarilla en las horas que faltan, y el día
+        entra cuando llegue completo.</li>
       </ul>
     </div>
 
@@ -228,13 +236,32 @@ PW.montarNav("demanda-sen.html");
   const SIN_DETALLE = new Set(D.meta && Array.isArray(D.meta.dias_sin_detalle) ? D.meta.dias_sin_detalle.filter(f => dia.has(f)) : []);
   const HORARIO = new Map();                 // fecha -> {nums, dem, erv, neta}, de los meses ya bajados
   const MES_ESTADO = new Map();              // "AAAA-MM" -> "cargando" | "listo" | "error"
+  // ---- días incompletos («en carga»): días que el Coordinador entregó a medias (llegaron algunas horas, no las 24). No entran en las cifras, los gráficos ni la tabla: se muestran
+  // aparte con las horas que llegaron. El índice los lista en meta.dias_en_carga ([{fecha, horas}], se usan como mucho los dos más recientes) y sus horas vienen en el archivo de su mes,
+  // como las de los demás días. Sin ese campo, o vacío, no se muestra nada y la página queda como siempre.
+  const EN_CARGA = [];
+  (D.meta && Array.isArray(D.meta.dias_en_carga) ? D.meta.dias_en_carga : []).forEach(c => {
+    if (c && partes(c.fecha) && !dia.has(c.fecha) && Number.isInteger(c.horas) && c.horas >= 1 && c.horas <= 23 && !EN_CARGA.some(x => x.fecha === c.fecha)) EN_CARGA.push({ fecha: c.fecha, horas: c.horas });
+  });
+  EN_CARGA.sort((a, b) => (a.fecha < b.fecha ? 1 : -1));      // el más reciente primero
+  EN_CARGA.length = Math.min(EN_CARGA.length, 2);
+  const PARCIAL = new Map();                 // fecha -> {base, nums, dem, erv, neta}: las horas que llegaron de cada día en carga, de los meses ya bajados
   function procesarMes(ym, M) {
-    const filasH = new Map();
+    const filasH = new Map(), filasC = new Map();      // filasC: las filas de los días en carga
+    const enCarga = new Set(EN_CARGA.map(c => c.fecha));
     (M && Array.isArray(M.horas) ? M.horas : []).forEach(r => {
-      if (!r || typeof r.fecha !== "string" || r.fecha.slice(0, 7) !== ym || !dia.has(r.fecha) || !Number.isInteger(r.hora) || r.hora < 0 || r.hora > 24) return;
+      if (!r || typeof r.fecha !== "string" || r.fecha.slice(0, 7) !== ym || !(dia.has(r.fecha) || enCarga.has(r.fecha)) || !Number.isInteger(r.hora) || r.hora < 0 || r.hora > 24) return;
       if (![r.gen_bruta_mwh, r.gen_erv_mwh, r.cons_propio_mwh, r.demanda_neta_mwh].every(num)) return;
-      if (!filasH.has(r.fecha)) filasH.set(r.fecha, new Map());
-      filasH.get(r.fecha).set(r.hora, r);      // de una hora repetida vale la última fila
+      const destino = dia.has(r.fecha) ? filasH : filasC;
+      if (!destino.has(r.fecha)) destino.set(r.fecha, new Map());
+      destino.get(r.fecha).set(r.hora, r);      // de una hora repetida vale la última fila
+    });
+    filasC.forEach((hs, fecha) => {
+      // la numeración es la del Coordinador (de 1 a 24 o de 0 a 23): con una hora 0 se cuenta desde 0 y si no desde 1; una hora fuera del eje del día no se usa
+      const base = hs.has(0) ? 0 : 1;
+      const nums = [...hs.keys()].filter(h => h - base >= 0 && h - base < 24).sort((a, b) => a - b);
+      if (!nums.length || nums.length > 23) return;       // sin horas, o con las 24: no es un día a medias
+      PARCIAL.set(fecha, { base, nums, dem: nums.map(h => hs.get(h).gen_bruta_mwh - hs.get(h).cons_propio_mwh), erv: nums.map(h => hs.get(h).gen_erv_mwh), neta: nums.map(h => hs.get(h).demanda_neta_mwh) });
     });
     filasH.forEach((hs, fecha) => {
       const nums = [...hs.keys()].sort((a, b) => a - b);
@@ -278,6 +305,7 @@ PW.montarNav("demanda-sen.html");
   function alTerminarMes() {                 // llegó (o falló) un mes: se vuelve a pintar lo que depende de las horas
     pintarHoras();
     pintarAviso();
+    pintarEnCarga();
   }
 
   // ---- el filtro: un mes (o todo el período) y un día. Todo lo que se ve en la página sale de estos dos valores.
@@ -419,6 +447,73 @@ PW.montarNav("demanda-sen.html");
       : sin + " días " + donde + " no tienen detalle por hora; de ellos solo está el total, en la tabla de abajo.");
   }
 
+  // ---- días incompletos: un aviso arriba y, con las horas que llegaron, una tarjeta con su gráfico por hora. El eje es el del día completo: las horas que llegaron se dibujan y las que
+  // faltan quedan como la banda amarilla de «sin dato» de siempre. No hay cifras del día: con unas pocas horas no se puede decir cuánto consumió el país.
+  const llegaron = n => (n === 1 ? "llegó 1 de las 24 horas" : "llegaron " + n + " de las 24 horas");
+  function dibujarParcial(id, nota, H) {
+    const alinear = a => { const v = new Array(24).fill(null); H.nums.forEach((h, k) => { v[h - H.base] = a[k]; }); return v; };
+    const piso = Math.min(...H.dem, ...H.erv, ...H.neta);
+    PW.lineas(id, {
+      labels: Array.from({ length: 24 }, (_, k) => "Hora " + (k + H.base)), alto: 240,
+      min: piso < 0 ? Math.floor(piso / 500) * 500 : 0,
+      series: [
+        { nombre: "Demanda", valores: alinear(H.dem), color: PW.color("--s1") },
+        { nombre: "Renovables variables (ERV)", valores: alinear(H.erv), color: PW.color("--s3"), area: true },
+        { nombre: "Demanda neta", valores: alinear(H.neta), color: PW.color("--s2") },
+      ],
+      fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " MW",
+    });
+    const hh = n => String(n).padStart(2, "0") + ":00";
+    const seguidas = H.nums.every((h, k) => k === 0 || h === H.nums[k - 1] + 1);
+    const ultima = H.nums[H.nums.length - 1];
+    // el tramo de cada hora solo se dice con la numeración de 1 a 24, la que se midió con fecha_hora (la hora h va de (h-1):00 a h:00)
+    const tramo = H.base === 1 && seguidas ? " (de " + hh(H.nums[0] - 1) + " a " + hh(ultima) + ")" : "";
+    const cuales = H.nums.length === 1 ? "Llegó la hora " + ultima : "Llegaron las horas " + (seguidas ? H.nums[0] + " a " + ultima : H.nums.join(", "));
+    nota.textContent = cuales + tramo + "; las demás, en la banda amarilla, aún no. Con esas horas no se puede decir cuánto consumió el país ese día ni a qué hora estuvo el máximo.";
+  }
+  function pintarEnCarga() {
+    const cont = el("carga-dias");
+    cont.innerHTML = "";
+    // de cada día se sabe lo que llegó (sus horas) o, mientras baja su mes, la cuenta del índice; si el mes ya bajó y no trae horas de ese día, el índice se equivocó y no se dice nada
+    const vistos = EN_CARGA.map(c => {
+      const datos = PARCIAL.get(c.fecha) || null, ym = c.fecha.slice(0, 7), e = MES_ESTADO.get(ym);
+      return { fecha: c.fecha, datos, n: datos ? datos.nums.length : c.horas, estado: datos ? "si" : (!ARCHIVO.has(ym) || e === "error" ? "error" : (e === "listo" ? "vacio" : "espera")) };
+    }).filter(c => c.estado !== "vacio");
+    const aviso = el("aviso-carga");
+    aviso.hidden = !vistos.length;
+    aviso.textContent = !vistos.length ? "" : vistos.length === 1
+      ? "El " + fechaCorta(vistos[0].fecha) + " está incompleto: " + llegaron(vistos[0].n) + ". Se ve más abajo, hora por hora, y entra en las cifras, los gráficos y la tabla cuando llegue completo."
+      : "Hay dos días incompletos: " + vistos.map(c => "el " + fechaCorta(c.fecha) + " (" + llegaron(c.n) + ")").join(" y ") + ". Se ven más abajo, hora por hora, y entran en las cifras, los gráficos y la tabla cuando lleguen completos.";
+    const bloques = vistos.filter(c => c.estado !== "espera");
+    el("t-carga").hidden = !bloques.length;
+    el("t-carga-titulo").textContent = bloques.length === 1 ? "Día incompleto" : "Días incompletos";
+    bloques.forEach((c, i) => {
+      const b = document.createElement("div");
+      const h = document.createElement("h3");
+      h.style.margin = "14px 0 4px";
+      h.textContent = fechaCorta(c.fecha) + ": " + llegaron(c.n);
+      b.appendChild(h);
+      if (c.estado === "error") {
+        const p = document.createElement("p");
+        p.className = "nota";
+        p.textContent = "Las horas de este día no están disponibles por ahora.";
+        b.appendChild(p);
+        cont.appendChild(b);
+        return;
+      }
+      const g = document.createElement("div");
+      g.id = "g-carga-" + i;
+      g.setAttribute("role", "img");
+      g.setAttribute("aria-label", "Gráfico de líneas con las horas que llegaron del " + fechaCorta(c.fecha) + ": demanda, generación renovable variable (ERV) y demanda neta, en megavatios");
+      const nota = document.createElement("p");
+      nota.className = "nota";
+      b.appendChild(g);
+      b.appendChild(nota);
+      cont.appendChild(b);
+      dibujarParcial(g.id, nota, c.datos);
+    });
+  }
+
   // ---- tabla de los días del mes elegido o de todo el período, el más reciente primero; el día elegido va en negrita
   function pintarTabla() {
     el("t-titulo").textContent = sel.mes === "todo" ? "Todos los días" : "Días de " + mesLargo(sel.mes);
@@ -520,6 +615,8 @@ PW.montarNav("demanda-sen.html");
   llenarMeses();
   llenarDias();
   pintar();
+  EN_CARGA.forEach(c => cargarMes(c.fecha.slice(0, 7)));      // las horas de un día en carga vienen en el archivo de su mes: se piden al abrir (si es el mes del día elegido, se baja una sola vez)
+  pintarEnCarga();
 
   // ---- fuente y frescura
   const pu = partes(ultimo), ahora = new Date();
