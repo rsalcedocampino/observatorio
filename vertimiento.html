@@ -24,7 +24,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>Vertimiento de energía renovable — Energías Futuro</title>
-<meta name="description" content="Cuánta energía eólica, solar e hidro no pudo absorber el sistema y debió reducirse: por región, por mes y por hora del día. El recorte es cero de noche y máximo al final de la tarde.">
+<meta name="description" content="Cuánta energía eólica, solar e hidro no pudo absorber el sistema y debió reducirse: por región, por mes y por hora del día. El recorte es casi cero de noche y máximo al final de la tarde.">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/estilo.css?v=261114b">
@@ -38,7 +38,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <main>
   <h1>Vertimiento de energía renovable</h1>
   <p class="sub">Energía eólica, solar e hidro que el sistema no pudo absorber y debió reducir en
-  la operación en tiempo real. Por región, por mes y por hora del día: el recorte es cero de noche
+  la operación en tiempo real. Por región, por mes y por hora del día: el recorte es casi cero de noche
   y máximo al final de la tarde, justo cuando la red de carga está más ocupada.</p>
   <p class="nota" id="nota"></p>
 
@@ -68,7 +68,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     <div id="g-hora"></div>
     <p class="nota" style="margin-top:1.2rem"><b>Y esto es lo que hace la red de carga a esas
     mismas horas.</b> La ocupación de los cargadores públicos ya es más alta justo en la ventana
-    en que sobra energía, y cae de noche, cuando no sobra nada. Dicho de otra forma:
+    en que sobra energía, y cae de noche, cuando casi no sobra. Dicho de otra forma:
     <b>"cargar de noche" sería el consejo equivocado</b> si lo que se busca es aprovechar el
     excedente renovable.</p>
     <div id="g-ocup"></div>
@@ -187,7 +187,7 @@ document.getElementById("nota-hora").textContent =
   "GWh reducidos según la hora del día, sumando todo el período. El máximo es el bloque de las " +
   etiqHora(pico.hora) + " a las " + etiqHora((pico.hora + 1) % 24) + ". Entre las 21:00 y las " +
   "07:00 se reduce apenas el " + PW.fmt(100 * noche / V.nacional.gwh_total, 1) +
-  "% del total: de noche no sobra energía renovable porque no hay sol. " +
+  "% del total: de noche casi no sobra energía renovable. " +
   // la convencion la declara el propio dato; no se le antepone una glosa que la repita
   (V.convencion_hora ? "Convención horaria: " + V.convencion_hora + "." : "");
 
