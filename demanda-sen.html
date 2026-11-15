@@ -89,7 +89,7 @@ button.dia-nav:disabled{opacity:.45;cursor:default}
     <div class="tarjeta">
       <h2 style="margin-top:0" id="t-titulo">Todos los días</h2>
       <div id="t-dias"></div>
-      <p class="nota">Cada fila es un día completo, con sus 24 horas. El día elegido va en negrita. Haz clic en el título de una columna para ordenar.</p>
+      <p class="nota" id="n-tabla">Cada fila es un día completo, con sus 24 horas. El día elegido va en negrita. Haz clic en el título de una columna para ordenar.</p>
     </div>
 
     <div class="tarjeta">
@@ -431,6 +431,11 @@ PW.montarNav("demanda-sen.html");
       { k: "pct", titulo: "Renovables variables, ERV (% de la demanda)", num: true, prio: true, fmt: v => f1.format(v) + "%" },
       { k: "neta", titulo: "Demanda neta (GWh)", num: true, fmt: v => f1.format(v) },
     ], alcance().slice().reverse(), { orden: "fecha", asc: false, buscador: false });
+    // el pie nombra los días de esta tabla que no tuvieron 24 horas (los dos del cambio de hora, de 23 o 25); si no hay ninguno, queda el texto de siempre
+    const raros = alcance().filter(d => horasDelDia(d.fecha) !== 24).map(d => "el " + fechaLarga(d.fecha) + " (" + horasDelDia(d.fecha) + " horas)");
+    el("n-tabla").textContent = "Cada fila es un día completo, con sus 24 horas" +
+      (raros.length ? ", salvo " + (raros.length > 1 ? raros.slice(0, -1).join(", ") + " y " + raros[raros.length - 1] : raros[0]) + ", por el cambio de hora" : "") +
+      ". El día elegido va en negrita. Haz clic en el título de una columna para ordenar.";
     // la tabla se desplaza por dentro: se lleva el día elegido a la vista
     const caja = el("t-dias").querySelector(".scroll-x"), fila = caja && caja.querySelector("tbody tr b");
     if (fila) {
