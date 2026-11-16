@@ -926,6 +926,8 @@ PW.montarNav("demanda-sen.html");
         labels: res.map(r => mesLargo(r.mes)), alto: 240, valores: res.map(r => r.prom),
         fmtY: v => PW.fmt(v), fmtV: v => f1.format(v) + " GWh por día",
       });
+      // PW.columnas pinta todas las columnas de un solo color: cada mes lleva aquí el suyo, el de su etiqueta, su línea y su fila de la tabla
+      el("g-cm-prom").querySelectorAll("svg rect[rx]").forEach((r, i) => r.setAttribute("fill", colorDe(i)));
       const largo = Math.max(...res.map(r => r.calendario)), campo = el("cm-metrica").value;      // «demanda» | «pct»
       const series = res.map((r, i) => ({
         nombre: mesLargo(r.mes), color: colorDe(i), bordesEstructurales: true,      // los días que el mes aún no tiene o que no existen en él no llevan banda de «sin dato»
