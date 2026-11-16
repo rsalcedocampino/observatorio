@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="es"><head>
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager --><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="assets/estilo.css?v=261116a">
+<title>Reporte regional: Biobío</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1d2430;--mut:#5b6573;--acc:#1f6f5c;--card:#ffffff;--line:#dcd9cf}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#14181f;--fg:#e8ebf0;--mut:#9aa3b0;--acc:#5fc4a8;--card:#1c222c;--line:#2e3644;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181f;--fg:#e8ebf0;--mut:#9aa3b0;--acc:#5fc4a8;--card:#1c222c;--line:#2e3644;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,"Segoe UI",Arial,sans-serif;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+main{max-width:980px;margin:0 auto;padding-block:20px 40px}
+.aviso{font-size:12px;color:var(--mut);border:1px dashed var(--line);padding:6px 10px;border-radius:6px;margin:0 0 12px}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:6px}
+h1{font-size:26px;margin:0;text-wrap:balance}
+label{font-size:13px;color:var(--mut)}
+select{font:inherit;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 18px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.tabs button{font:inherit;font-size:14px;background:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--mut);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.panel[hidden]{display:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+.kpi .v{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px;min-width:0}
+.card h2{font-size:16px;margin:0 0 10px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:170px}
+.bars div{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bars i{display:block;width:100%;background:var(--acc);border-radius:4px 4px 0 0}
+.bars small{font-size:11px;color:var(--mut);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.wrap{overflow-x:auto}
+.nota{font-size:12px;color:var(--mut);margin:8px 0 0}
+.vacio{color:var(--mut);font-style:italic}
+footer{margin-top:24px;font-size:12px;color:var(--mut);border-top:1px solid var(--line);padding-top:12px}
+</style></head>
+<body><main>
+<p class="aviso">Proyección y simulación se actualizan con la corrida mensual del modelo; aún no muestran cifras para este mes.</p>
+<div class="top">
+  <h1 id="titulo">Reporte regional</h1>
+  <label>Región <select id="sel-region"><option value="rr-metropolitana.html">Metropolitana</option><option value="rr-arica.html">Arica y Parinacota</option><option value="rr-tarapaca.html">Tarapacá</option><option value="rr-antofagasta.html">Antofagasta</option><option value="rr-atacama.html">Atacama</option><option value="rr-coquimbo.html">Coquimbo</option><option value="rr-valparaiso.html">Valparaíso</option><option value="rr-ohiggins.html">O'Higgins</option><option value="rr-maule.html">Maule</option><option value="rr-nuble.html">Ñuble</option><option value="rr-biobio.html" selected>Biobío</option><option value="rr-araucania.html">La Araucanía</option><option value="rr-rios.html">Los Ríos</option><option value="rr-lagos.html">Los Lagos</option><option value="rr-aysen.html">Aysén</option><option value="rr-magallanes.html">Magallanes</option></select></label>
+  <label>Año <select id="sel-anio"></select></label>
+  <label>Mes <select id="sel-mes"></select></label>
+</div>
+<nav class="tabs" role="tablist" aria-label="Secciones de la región">
+  <button role="tab" aria-selected="true" data-tab="resumen">Resumen</button>
+  <button role="tab" aria-selected="false" data-tab="proyeccion">Proyección</button>
+  <button role="tab" aria-selected="false" data-tab="simulacion">Simulación</button>
+  <button role="tab" aria-selected="false" data-tab="sitios">Sitios</button>
+  <button role="tab" aria-selected="false" data-tab="evidencia">Evidencia</button>
+  <button role="tab" aria-selected="false" data-tab="historia">Historia</button>
+  <button role="tab" aria-selected="false" data-tab="comparar">Comparar meses</button>
+  <button role="tab" aria-selected="false" data-tab="contexto">Contexto</button>
+</nav>
+
+<section class="panel" id="p-resumen" role="tabpanel">
+  <div class="kpis" id="kpis-reg"></div>
+  <div class="card" id="kpi-territorio"></div>
+  <div class="kpis" id="kpis-energia-nac"></div>
+  <div class="card" id="mapa-territorio"><h2>Mapa de la región</h2><svg id="mapa-svg" role="img" aria-label="Mapa de las comunas de la región" style="width:100%;height:auto;max-height:420px"></svg><p class="nota">Contorno de las comunas de la región (INE, Censo 2024). Sin cifras por comuna todavía.</p></div>
+  <div class="card"><h2>Parque de vehículos eléctricos por año</h2><div class="bars" id="b"></div><p class="nota" id="nb"></p><div id="mes-util"></div></div>
+</section>
+
+<section class="panel" id="p-proyeccion" role="tabpanel" hidden>
+  <div class="card"><h2>Proyección</h2><div id="mes-proy"></div></div>
+</section>
+
+<section class="panel" id="p-simulacion" role="tabpanel" hidden>
+  <div class="card"><h2>Simulación</h2><div id="mes-sim"></div></div>
+</section>
+
+<section class="panel" id="p-sitios" role="tabpanel" hidden>
+  <div class="card"><h2>Proyectos energéticos en evaluación o aprobados (SEIA)</h2><div class="wrap"><table><thead><tr><th>Proyecto</th><th>Comuna</th><th>Tecnología</th><th class="n">MW</th><th class="n">US$ MM</th><th>Estado</th></tr></thead><tbody id="tp"></tbody></table></div><p class="nota" id="nc"></p><p class="nota" id="mes-sitios"></p></div>
+</section>
+
+<section class="panel" id="p-evidencia" role="tabpanel" hidden>
+  <div class="card"><h2>Evidencia</h2><p class="vacio">Pendiente: aquí van las fuentes de cada cifra de esta región y su fecha de generación.</p></div>
+</section>
+
+<section class="panel" id="p-historia" role="tabpanel" hidden>
+  <div class="card"><h2>Historia</h2><div id="mes-hist"></div><div id="tarifas-mes"></div><div id="historia-series"></div></div>
+</section>
+
+<section class="panel" id="p-comparar" role="tabpanel" hidden>
+  <div class="card">
+    <h2>Comparar meses</h2>
+    <p class="nota">Elige dos meses. Un mes sin dato aparece como "sin dato" en la comparación.</p>
+    <div class="top" style="margin:10px 0">
+      <label>Mes A <select id="cmp-a"></select></label>
+      <label>Mes B <select id="cmp-b"></select></label>
+    </div>
+    <div class="wrap"><table><thead><tr><th>Indicador</th><th class="n" id="cmp-ha"></th><th class="n" id="cmp-hb"></th><th class="n">Diferencia (B menos A)</th></tr></thead><tbody id="cmp-tabla"></tbody></table></div>
+    <p class="nota" id="cmp-nota"></p>
+  </div>
+</section>
+
+<section class="panel" id="p-contexto" role="tabpanel" hidden>
+  <div class="card">
+    <h2>Contexto territorial</h2>
+    <p class="nota" id="ctx-fuentes"></p>
+    <div class="kpis" id="ctx-kpis"></div>
+  </div>
+  <div class="card">
+    <h2>Buscar comuna</h2>
+    <label>Comuna <select id="ctx-comuna"></select></label>
+    <div class="wrap" style="margin-top:10px"><table><thead><tr><th>Indicador</th><th class="n" id="ctx-h-comuna"></th><th class="n" id="ctx-h-region"></th><th>Año</th></tr></thead><tbody id="ctx-detalle"></tbody></table></div>
+    <p class="nota" id="ctx-nota"></p>
+  </div>
+  <div class="card">
+    <h2>Ranking de comunas por vulnerabilidad</h2>
+    <div class="wrap"><table><thead><tr><th>Comuna</th><th class="n">Índice</th><th class="n">Cortes</th><th class="n">Precio</th><th class="n">Social</th><th>Año</th></tr></thead><tbody id="ctx-ranking"></tbody></table></div>
+    <p class="nota">Índice de 0 a 100: más alto, más vulnerable. Usa el Censo 2024 y los cortes de 2017 a 2026.</p>
+  </div>
+</section>
+
+<footer id="pie"></footer>
+</main>
+<script src="data/rr/rr_region_08.js?v=261114b"></script>
+<script src="data/rr/rr_mes_08.js?v=261114b"></script>
+<script src="data/rr/rr_historia_08.js?v=261114b"></script>
+<script src="data/rr/rr_tarifas_faltantes.js?v=261114b"></script>
+<script src="data/rr/rr_contexto_08.js?v=261114b"></script>
+<script>
+const D = window.PW_DATA.rr_region_08;
+const MES = window.PW_DATA.rr_mes_08;
+const f0 = new Intl.NumberFormat("es-CL",{maximumFractionDigits:0});
+const f1 = new Intl.NumberFormat("es-CL",{minimumFractionDigits:1,maximumFractionDigits:1});
+document.getElementById("titulo").textContent = "Reporte regional: " + D.region;
+const k = [[f0.format(D.parque[D.parque.length-1]),"vehículos eléctricos en "+D.anios[D.anios.length-1]],[f0.format(D.delta),"sumados entre "+D.anios[D.anios.length-2]+" y "+D.anios[D.anios.length-1]],[f1.format(D.cagr)+"%","crecimiento anual medio "+D.anios[Math.max(0,D.anios.length-5)]+"-"+D.anios[D.anios.length-1]],[f0.format(D.proy),"proyectos en el SEIA"],[f0.format(D.mw)+" MW","potencia declarada"],[f0.format(D.mmus)+" MMUS$","inversión declarada"]];
+document.getElementById("kpis-reg").innerHTML = k.map(x=>'<div class="kpi"><div class="v">'+x[0]+'</div><div class="l">'+x[1]+'</div></div>').join("");
+document.getElementById("kpi-territorio").innerHTML = '<h2>Territorio</h2><p>'+D.region+' tiene '+f0.format(D.proy)+' proyectos en el SEIA, con '+f0.format(D.mw)+' MW declarados. Hay proyectos en '+f0.format(D.comunas_con)+' de sus '+f0.format(D.comunas_total)+' comunas.</p>';
+document.getElementById("mapa-svg").setAttribute("viewBox", D.geo_vb);
+document.getElementById("mapa-svg").innerHTML = '<path d="'+D.geo_d+'" fill="var(--line)" stroke="var(--mut)" stroke-width="0.6" fill-rule="evenodd"/>';
+document.getElementById("kpis-energia-nac").innerHTML = [[f0.format(D.nac_proy),"proyectos en el SEIA, todo el país"],[f0.format(D.nac_mmus)+" MMUS$","inversión declarada, todo el país"]].map(x=>'<div class="kpi"><div class="v">'+x[0]+'</div><div class="l">'+x[1]+'</div></div>').join("");
+const mx = Math.max(...D.parque);
+document.getElementById("b").innerHTML = D.parque.map((v,i)=>'<div><i style="height:'+(v/mx*100).toFixed(1)+'%"></i><small>'+D.anios[i]+'</small></div>').join("");
+document.getElementById("nb").textContent = "Stock a fin de cada año, por comuna de registro del permiso (INE). Generado "+D.gen_p+".";
+document.getElementById("tp").innerHTML = D.top.map(x=>'<tr><td>'+x.nombre+'</td><td>'+x.comuna+'</td><td>'+x.tec+'</td><td class="n">'+f1.format(x.mw)+'</td><td class="n">'+f0.format(x.mmus)+'</td><td>'+x.estado+'</td></tr>').join("");
+document.getElementById("nc").textContent = "Cinco proyectos de mayor potencia. Inversión declarada por el titular; no toda se materializa. Generado "+D.gen_c+".";
+document.getElementById("pie").textContent = "Fuente de los datos vivos: cada archivo de la región, generado el "+D.gen_p+". Filtro por mes: hoy solo hay foto del modelo de noviembre de 2026; cargadores, ventas, tarifas y cortes se conectan en la siguiente etapa.";
+
+// filtro por mes: afecta todas las pestañas; un mes sin dato dice "sin dato", nunca cero
+const MESES_NOMBRE = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const etiqueta = m => m.length === 4 ? "el año " + m : MESES_NOMBRE[+m.slice(5, 7) - 1] + " de " + m.slice(0, 4);
+const selMes = document.getElementById("sel-mes");
+const meses = [];
+for (let a = 2025; a <= 2026; a++) for (let b = 1; b <= 12; b++) meses.push(a + "-" + String(b).padStart(2, "0"));
+const selAnio = document.getElementById("sel-anio");
+const ANIOS = ["2025", "2026"];
+selAnio.innerHTML = ANIOS.map(a => '<option value="' + a + '">' + a + '</option>').join("");
+// el año filtra la lista de meses; el mes dice qué periodo se muestra ("AAAA" = año completo, "AAAA-MM" = mes)
+function llenarMeses(anio, actual) {
+  const ops = ['<option value="' + anio + '">Año completo</option>'];
+  for (let b = 1; b <= 12; b++) {
+    const m = anio + "-" + String(b).padStart(2, "0");
+    ops.push('<option value="' + m + '">' + MESES_NOMBRE[b - 1] + (MES.datos[m] ? "" : " (sin dato)") + '</option>');
+  }
+  selMes.innerHTML = ops.join("");
+  const num = actual && actual.length > 4 ? actual.slice(4) : null;
+  selMes.value = num ? anio + num : anio;
+}
+function fijarUrl(v) {
+  try { history.replaceState(null, "", "?" + (v.length === 4 ? "anio=" : "mes=") + v); } catch (e) {}
+}
+const pct = v => v == null ? "sin dato" : f1.format(v * 100) + "%";
+const num = v => v == null ? "sin dato" : f0.format(v);
+const mm = v => v == null ? "sin dato" : f1.format(v / 1e6) + " MM US$";
+const kpi = (v, l) => '<div class="kpi"><div class="v">' + v + '</div><div class="l">' + l + '</div></div>';
+const vacioMes = m => '<p class="vacio">Sin dato para ' + etiqueta(m) + '. Se muestra "sin dato", no cero.</p>';
+// historia (rr_historia_<cut>.js): una serie por nombre; un mes sin valor es "sin dato", nunca cero
+const HIST = Object.values(window.PW_DATA || {}).find(v => v && v.series) || null;
+function renderHistoria(anio) {
+  const cont = document.getElementById("historia-series");
+  if (!HIST) { cont.innerHTML = '<p class="vacio">Sin historia cargada para esta región.</p>'; return; }
+  const nombresMes = MESES_NOMBRE.map(x => x.slice(0, 3));
+  cont.innerHTML = Object.entries(HIST.series).map(([nombre, s]) => {
+    const d = s.datos || {};
+    const valores = {};
+    (d.datos || []).forEach(x => { valores[x.mes] = x.valor; });
+    const celdas = [];
+    for (let b = 1; b <= 12; b++) {
+      const v = valores[anio + "-" + String(b).padStart(2, "0")];
+      celdas.push('<td class="n">' + (v == null ? "sin dato" : (v % 1 ? f1 : f0).format(v)) + '</td>');
+    }
+    return '<h3>' + nombre.replace(/_/g, " ") + '</h3>'
+      + '<p class="nota">Unidad: ' + (d.unidad || s.unidad || "sin dato") + ' · Fuente: ' + (s.fuente || "sin dato") + ' · Serie desde ' + (d.inicio || "sin dato") + ' hasta ' + (d.fin || "sin dato") + '</p>'
+      + '<div class="wrap"><table><thead><tr>' + nombresMes.map(x => '<th class="n">' + x + '</th>').join("") + '</tr></thead><tbody><tr>' + celdas.join("") + '</tr></tbody></table></div>';
+  }).join("");
+}
+// tarifas BT4 por mes: solo entran al promedio las distribuidoras con dato; no comparar meses con conjuntos distintos
+const TARIFAS = (window.PW_DATA && window.PW_DATA.rr_tarifas_faltantes) || {};
+function renderTarifas(m) {
+  const cont = document.getElementById("tarifas-mes");
+  const t = TARIFAS[m];
+  if (!t || !t.filas) { cont.innerHTML = '<p class="nota">Tarifa BT4 de ' + etiqueta(m) + ': sin dato. La carpeta de ese mes está en reconstrucción en el proyecto de tarifas.</p>'; return; }
+  cont.innerHTML = '<p class="nota"><strong>Tarifa BT4 de ' + etiqueta(m) + ':</strong> entran al promedio regional: ' + t.distribuidoras_presentes.join(", ") + '. Faltan: ' + t.faltan.join(", ") + '. Comunas con dato: ' + t.comunas + '. No se compara este promedio con meses que tengan otro conjunto de distribuidoras.</p>';
+}
+function mostrarMes(m) {
+  renderHistoria(m.slice(0, 4));
+  renderTarifas(m);
+  const d = MES.datos[m];
+  const ids = ["mes-proy", "mes-sim", "mes-sitios", "mes-util", "mes-hist"];
+  if (!d) { ids.forEach(id => document.getElementById(id).innerHTML = vacioMes(m)); return; }
+  document.getElementById("mes-proy").innerHTML = '<div class="kpis">' + [
+    kpi(pct(d.cuota_ajustada), "cuota del parque ajustada"),
+    kpi(num(d.ev_enchufables_2035), "EV enchufables 2035"),
+    kpi(mm(d.capex_total_usd), "inversión total del modelo"),
+    kpi(mm(d.brecha_2035_usd), "brecha 2035"),
+  ].join("") + '</div><p class="nota">Corrida del modelo de ' + etiqueta(m) + ', tomada el ' + MES.generado + '.</p>';
+  document.getElementById("mes-sim").innerHTML = '<p class="nota">Conectores proyectados a 2035: ' + num(d.conectores_2035) + '. La simulación año a año está en la salida de la corrida.</p>';
+  document.getElementById("mes-sitios").textContent = "Nodos del modelo: " + num(d.n_nodos) + ". Los sitios candidatos no están en esta versión.";
+  const u = d.util || {};
+  document.getElementById("mes-util").innerHTML = '<p class="nota">Cargadores y conectores: diario desde agosto de 2026. Conectores en la red: ' + num(u.n_conectores) + '. Ocupación del periodo ' + (u.desde || "sin dato") + ' a ' + (u.hasta || "sin dato") + ': ' + (u.pct_ocupado == null ? "sin dato" : f1.format(u.pct_ocupado) + "%") + ' (CC ' + (u.dc_pct_ocupado == null ? "sin dato" : f1.format(u.dc_pct_ocupado) + "%") + ', CA ' + (u.ac_pct_ocupado == null ? "sin dato" : f1.format(u.ac_pct_ocupado) + "%") + '). Parque eléctrico (INE): solo por año; se muestra el año completo.</p>';
+  document.getElementById("mes-hist").innerHTML = '<p class="nota">Meses con dato: ' + MES.meses_con_dato.map(etiqueta).join(", ") + '. Los demás meses se muestran como sin dato.</p>';
+}
+selAnio.addEventListener("change", () => {
+  llenarMeses(selAnio.value, selMes.value);
+  mostrarMes(selMes.value);
+  fijarUrl(selMes.value);
+});
+selMes.addEventListener("change", () => {
+  selAnio.value = selMes.value.slice(0, 4);
+  mostrarMes(selMes.value);
+  fijarUrl(selMes.value);
+});
+const q = new URLSearchParams(location.search);
+const pedido = q.get("mes") || q.get("anio");
+const inicial = pedido && /^\d{4}(-\d{2})?$/.test(pedido) && meses.some(m => m.startsWith(pedido.slice(0, 4))) ? pedido : MES.meses_con_dato[MES.meses_con_dato.length - 1];
+selAnio.value = inicial.slice(0, 4);
+llenarMeses(selAnio.value, inicial);
+document.getElementById("sel-region").addEventListener("change", e => {
+  window.location.href = e.target.value + "?" + (selMes.value.length === 4 ? "anio=" : "mes=") + selMes.value;
+});
+mostrarMes(selMes.value);
+
+// comparar meses: dos meses lado a lado; un dato que falta se muestra como sin dato
+const INDIC = [
+  ["Cuota del parque ajustada", d => d.cuota_ajustada, pct],
+  ["EV enchufables 2035", d => d.ev_enchufables_2035, num],
+  ["Inversión total del modelo", d => d.capex_total_usd, mm],
+  ["Brecha 2035", d => d.brecha_2035_usd, mm],
+  ["Apoyo público (CLP/kWh)", d => d.apoyo_clp_kwh, v => v == null ? "sin dato" : f1.format(v)],
+  ["Conectores proyectados a 2035", d => d.conectores_2035, num],
+  ["Nodos del modelo", d => d.n_nodos, num],
+  ["Ocupación de conectores (%)", d => d.util && d.util.pct_ocupado, v => v == null ? "sin dato" : f1.format(v) + "%"],
+];
+const selA = document.getElementById("cmp-a");
+const selB = document.getElementById("cmp-b");
+const opciones = meses.map(m => '<option value="' + m + '">' + etiqueta(m) + (MES.datos[m] ? "" : " (sin dato)") + '</option>').join("");
+selA.innerHTML = opciones;
+selB.innerHTML = opciones;
+const conDato = MES.meses_con_dato;
+selA.value = conDato[conDato.length - 1];
+selB.value = meses[meses.indexOf(selA.value) - 1] || selA.value;
+function comparar() {
+  const a = selA.value, b = selB.value;
+  const da = MES.datos[a], db = MES.datos[b];
+  document.getElementById("cmp-ha").textContent = etiqueta(a);
+  document.getElementById("cmp-hb").textContent = etiqueta(b);
+  document.getElementById("cmp-tabla").innerHTML = INDIC.map(([nom, get, fmt]) => {
+    const va = da ? get(da) : null, vb = db ? get(db) : null;
+    const dif = va != null && vb != null ? fmt(vb - va) : "sin dato";
+    return "<tr><td>" + nom + '</td><td class="n">' + (da ? fmt(va) : "sin dato") + '</td><td class="n">' + (db ? fmt(vb) : "sin dato") + '</td><td class="n">' + dif + "</td></tr>";
+  }).join("");
+  document.getElementById("cmp-nota").textContent = !da || !db
+    ? "Falta el dato de " + [!da && etiqueta(a), !db && etiqueta(b)].filter(Boolean).join(" y ") + ". Esa comparación no se calcula."
+    : "Comparación entre dos fotos del modelo, tomadas el " + MES.generado + ". Las columnas de cargadores y ventas se compararán cuando su serie mensual esté cargada.";
+}
+selA.addEventListener("change", comparar);
+selB.addEventListener("change", comparar);
+comparar();
+
+// contexto territorial: censo 2024 por comuna y región, buscador de comuna y ranking de vulnerabilidad
+const CTX = Object.values(window.PW_DATA || {}).find(v => v && v.comunas && v.fuentes) || null;
+const fmtInd = (v, ind) => v == null ? "sin dato" : new Intl.NumberFormat("es-CL", { minimumFractionDigits: ind.dec, maximumFractionDigits: ind.dec }).format(v) + (ind.suf || "");
+function mostrarComuna(cut) {
+  const c = CTX.comunas.find(x => x.cut === cut);
+  if (!c) return;
+  document.getElementById("ctx-h-comuna").textContent = c.comuna;
+  document.getElementById("ctx-h-region").textContent = CTX.region;
+  document.getElementById("ctx-detalle").innerHTML = CTX.indicadores.map(ind =>
+    "<tr><td>" + ind.label + '</td><td class="n">' + fmtInd(c.censo[ind.k], ind) + '</td><td class="n">' + fmtInd(CTX.region_censo[ind.k], ind) + "</td><td>Censo 2024</td></tr>"
+  ).join("");
+  document.getElementById("ctx-nota").textContent = "Electricidad de la vivienda: " + (c.electricidad.pct_red == null ? "sin dato" : f1.format(c.electricidad.pct_red) + "% con red pública") + " (Censo 2024). Vulnerabilidad: " + (c.vulnerabilidad.indice == null ? "sin dato" : f1.format(c.vulnerabilidad.indice)) + " de 100 (cortes, precio y social).";
+}
+function renderContexto() {
+  if (!CTX) return;
+  document.getElementById("ctx-fuentes").textContent = "Fuentes: Censo 2024 (INE) para población, edad, educación, vivienda, electricidad y conectividad. Vulnerabilidad: índice de #1 con cortes 2017 a 2026, bencina y Censo 2024.";
+  const r = CTX.region_censo;
+  const kp = [[fmtInd(r.poblacion, { dec: 0, suf: "" }), "población (Censo 2024)"], [fmtInd(r.pct_65_mas, { dec: 1, suf: "%" }), "65 años o más (Censo 2024)"], [fmtInd(r.pct_internet_fija, { dec: 1, suf: "%" }), "con internet fija (Censo 2024)"], [String(CTX.comunas.length), "comunas en la región"]];
+  document.getElementById("ctx-kpis").innerHTML = kp.map(x => '<div class="kpi"><div class="v">' + x[0] + '</div><div class="l">' + x[1] + "</div></div>").join("");
+  const sel = document.getElementById("ctx-comuna");
+  sel.innerHTML = CTX.comunas.map(c => '<option value="' + c.cut + '">' + c.comuna + "</option>").join("");
+  sel.addEventListener("change", () => mostrarComuna(sel.value));
+  mostrarComuna(sel.value);
+  const orden = [...CTX.comunas].sort((a, b) => (b.vulnerabilidad.indice || 0) - (a.vulnerabilidad.indice || 0));
+  document.getElementById("ctx-ranking").innerHTML = orden.map(c => {
+    const v = c.vulnerabilidad;
+    return "<tr><td>" + c.comuna + '</td><td class="n">' + (v.indice == null ? "sin dato" : f1.format(v.indice)) + '</td><td class="n">' + (v.pilar_cortes == null ? "sin dato" : f1.format(v.pilar_cortes)) + '</td><td class="n">' + (v.pilar_precio == null ? "sin dato" : f1.format(v.pilar_precio)) + '</td><td class="n">' + (v.pilar_social == null ? "sin dato" : f1.format(v.pilar_social)) + "</td><td>Censo 2024 y cortes 2017-2026</td></tr>";
+  }).join("");
+}
+renderContexto();
+
+// pestañas: cambian de sección sin cambiar de página ni de dirección
+const botones = [...document.querySelectorAll(".tabs [role=tab]")];
+function mostrar(nombre) {
+  botones.forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === nombre)));
+  document.querySelectorAll(".panel").forEach(p => { p.hidden = p.id !== "p-" + nombre; });
+}
+botones.forEach(b => b.addEventListener("click", () => mostrar(b.dataset.tab)));
+</script><script src="assets/comun.js?v=261116a"></script>
+<script>PW.montarNav("rr-biobio.html");</script>
+</body></html>

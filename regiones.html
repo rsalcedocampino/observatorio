@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es"><head>
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager --><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="assets/estilo.css?v=261116a">
+<title>Reporte regional y comunal</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1d2430;--mut:#5b6573;--acc:#1f6f5c;--card:#ffffff;--line:#dcd9cf}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#14181f;--fg:#e8ebf0;--mut:#9aa3b0;--acc:#5fc4a8;--card:#1c222c;--line:#2e3644;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181f;--fg:#e8ebf0;--mut:#9aa3b0;--acc:#5fc4a8;--card:#1c222c;--line:#2e3644;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,"Segoe UI",Arial,sans-serif;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+main{max-width:980px;margin:0 auto;padding-block:20px 40px}
+.aviso{font-size:12px;color:var(--mut);border:1px dashed var(--line);padding:6px 10px;border-radius:6px;margin:0 0 12px}
+h1{font-size:26px;margin:4px 0 6px;text-wrap:balance}
+.sub{color:var(--mut);margin:0 0 14px}
+label{font-size:13px;color:var(--mut)}
+select{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);min-width:14em}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0}
+.kpi .v{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px;min-width:0}
+.card h2{font-size:16px;margin:0 0 10px}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+a{color:var(--acc)}
+.nota{font-size:12px;color:var(--mut);margin:8px 0 0}
+</style></head>
+<body><main>
+<p class="aviso">Índice para revisar. No está publicado ni enlazado. Cada región abre su propio reporte.</p>
+<h1>Reporte regional y comunal</h1>
+<p class="sub">Elige una región para ver su reporte: red de carga, flota eléctrica, mercado, energía y contexto social de su territorio.</p>
+<label>Ir a una región <select id="sel-region"></select></label>
+<label>Año <select id="sel-anio"></select></label>
+<label>Mes <select id="sel-mes"></select></label>
+
+<div class="kpis" id="kpis-reg"></div>
+<div class="card" id="kpi-territorio"><h2>Territorio</h2><p>Elige una región en el menú para ver sus cifras.</p></div>
+<div class="kpis" id="kpis-energia-nac"></div>
+
+<section class="card">
+  <h2>Ranking nacional de proyectos energéticos (SEIA)</h2>
+  <div class="wrap"><table><thead><tr><th>Región</th><th class="n">Proyectos</th><th class="n">MW declarados</th><th class="n">Inversión, US$ MM</th></tr></thead><tbody id="ranking-nacional"></tbody></table></div>
+  <p class="nota" id="nota-ranking"></p>
+</section>
+
+</main>
+<script src="data/rr/rr_indice.js?v=261114b"></script>
+<script>
+const I = window.PW_DATA.rr_indice;
+const f0 = new Intl.NumberFormat("es-CL",{maximumFractionDigits:0});
+const sel = document.getElementById("sel-region");
+const slug = {"Arica y Parinacota":"arica","Tarapacá":"tarapaca","Antofagasta":"antofagasta","Atacama":"atacama","Coquimbo":"coquimbo","Valparaíso":"valparaiso","O'Higgins":"ohiggins","Maule":"maule","Ñuble":"nuble","Biobío":"biobio","La Araucanía":"araucania","Los Ríos":"rios","Los Lagos":"lagos","Aysén":"aysen","Magallanes":"magallanes","Metropolitana":"metropolitana"};
+sel.innerHTML = '<option value="">Elige una región…</option>' + I.regiones.map(r => '<option value="rr-' + slug[r.nombre] + '.html">' + r.nombre + '</option>').join("");
+sel.addEventListener("change", () => { if (sel.value) window.location.href = sel.value + "?" + (selMes.value.length === 4 ? "anio=" : "mes=") + selMes.value; });
+
+const tot = I.regiones.reduce((a, r) => ({p: a.p + r.proyectos, mw: a.mw + r.mw, mmus: a.mmus + r.mmus}), {p: 0, mw: 0, mmus: 0});
+document.getElementById("kpis-reg").innerHTML = [[f0.format(tot.p),"proyectos en el SEIA, todas las regiones"],[f0.format(tot.mw)+" MW","potencia declarada"],[f0.format(I.regiones.length),"regiones con reporte"]].map(x => '<div class="kpi"><div class="v">' + x[0] + '</div><div class="l">' + x[1] + '</div></div>').join("");
+document.getElementById("kpis-energia-nac").innerHTML = [[f0.format(I.nacional.proyectos),"proyectos en el SEIA, todo el país"],[f0.format(I.nacional.mmus)+" MMUS$","inversión declarada, todo el país"]].map(x => '<div class="kpi"><div class="v">' + x[0] + '</div><div class="l">' + x[1] + '</div></div>').join("");
+const orden = [...I.regiones].sort((a, b) => b.proyectos - a.proyectos);
+document.getElementById("ranking-nacional").innerHTML = orden.map(r => '<tr><td><a href="rr-' + slug[r.nombre] + '.html">' + r.nombre + '</a></td><td class="n">' + f0.format(r.proyectos) + '</td><td class="n">' + f0.format(r.mw) + '</td><td class="n">' + f0.format(r.mmus) + '</td></tr>').join("");
+document.getElementById("nota-ranking").textContent = "Fuente: Servicio de Evaluación Ambiental (SEA) vía CNE. Inversión declarada por el titular; no toda se materializa. Generado " + I.gen_c + ".";
+// filtro por mes: el mes viaja en el enlace a cada región (?mes=AAAA-MM)
+const NOMBRES_MES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const mesesIdx = [];
+for (let a = 2025; a <= 2026; a++) for (let b = 1; b <= 12; b++) mesesIdx.push(a + "-" + String(b).padStart(2, "0"));
+const selAnio = document.getElementById("sel-anio");
+const selMes = document.getElementById("sel-mes");
+selAnio.innerHTML = ["2025", "2026"].map(a => '<option value="' + a + '">' + a + "</option>").join("");
+// el año filtra los meses; el mes dice qué periodo viaja a cada región ("AAAA" = año completo, "AAAA-MM" = mes)
+function llenarMesesIdx(anio, actual) {
+  const ops = ['<option value="' + anio + '">Año completo</option>'];
+  for (let b = 1; b <= 12; b++) ops.push('<option value="' + anio + "-" + String(b).padStart(2, "0") + '">' + NOMBRES_MES[b - 1] + "</option>");
+  selMes.innerHTML = ops.join("");
+  selMes.value = actual && actual.length > 4 ? anio + actual.slice(4) : anio;
+}
+llenarMesesIdx("2026", "2026-11");
+function ajustarEnlaces() {
+  document.querySelectorAll('a[href^="rr-"]').forEach(a => { a.href = a.getAttribute("href").split("?")[0] + "?" + (selMes.value.length === 4 ? "anio=" : "mes=") + selMes.value; });
+}
+selAnio.addEventListener("change", () => { llenarMesesIdx(selAnio.value, selMes.value); ajustarEnlaces(); });
+selMes.addEventListener("change", () => { selAnio.value = selMes.value.slice(0, 4); ajustarEnlaces(); });
+ajustarEnlaces();
+</script><script src="assets/comun.js?v=261116a"></script>
+<script>PW.montarNav("regiones.html");</script>
+</body></html>
