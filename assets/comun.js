@@ -99,7 +99,6 @@
     ]],
     ["Territorio", [
       ["reporte-regional.html", "Reporte Regional"],
-      ["regiones.html", "Regiones"],
       ["vulnerabilidad.html", "Vulnerabilidad energética"],
       ["censo.html", "Censo 2024 y proyección"],
       ["pois.html", "Puntos de interés y servicios"],
@@ -126,7 +125,6 @@
     "index.html": IC('<circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/>'),
     "mapas.html": IC('<path d="M9 3L3 5.5v15L9 18l6 3 6-2.5v-15L15 6z"/><path d="M9 3v15M15 6v15"/>'),
     "reporte-regional.html": IC('<path d="M12 21s-6-5.2-6-9.5A6 6 0 0 1 18 11.5c0 4.3-6 9.5-6 9.5z"/><path d="M9.5 11.3v-1.8M12 11.3V8M14.5 11.3v-1"/>'),
-    "regiones.html": IC('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M12 9v6"/>'),
     "radar.html": IC('<path d="M3 15h18l-2 4H5z"/><path d="M7 15V9h4v6M11 9l6-3v9"/>'),
     "tracker.html": IC('<path d="M5 21V4"/><path d="M5 4h13l-2.5 3.5L18 11H5"/>'),
     "vehiculo.html": IC('<path d="M4 15l1.5-5.5C5.8 8.6 6.6 8 7.5 8h9c.9 0 1.7.6 2 1.5L20 15"/><rect x="3" y="14" width="18" height="4" rx="1.5"/><circle cx="7.5" cy="18.5" r="1.4"/><circle cx="16.5" cy="18.5" r="1.4"/>'),
@@ -341,9 +339,6 @@
   }
 
   function montarNav(activa) {
-    // Las 16 paginas por region (rr-<region>.html) no tienen entrada propia: se llega a ellas
-    // desde regiones.html, y en el menu marcan esa entrada.
-    if (/^rr-[a-z]+\.html$/.test(activa)) activa = "regiones.html";
     const h = document.createElement("header");
     h.className = "pw";
     let nav = `<a href="index.html" class="${activa === "index.html" ? "activo" : ""}">Inicio</a>`;
