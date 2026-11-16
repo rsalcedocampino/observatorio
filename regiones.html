@@ -44,7 +44,6 @@ a{color:var(--acc)}
 .nota{font-size:12px;color:var(--mut);margin:8px 0 0}
 </style></head>
 <body><main>
-<p class="aviso">Índice para revisar. No está publicado ni enlazado. Cada región abre su propio reporte.</p>
 <h1>Reporte regional y comunal</h1>
 <p class="sub">Elige una región para ver su reporte: red de carga, flota eléctrica, mercado, energía y contexto social de su territorio.</p>
 <label>Ir a una región <select id="sel-region"></select></label>
@@ -62,7 +61,7 @@ a{color:var(--acc)}
 </section>
 
 </main>
-<script src="data/rr/rr_indice.js?v=261114b"></script>
+<script src="data/rr/rr_indice.js?v=261116a"></script>
 <script>
 const I = window.PW_DATA.rr_indice;
 const f0 = new Intl.NumberFormat("es-CL",{maximumFractionDigits:0});
@@ -84,7 +83,7 @@ for (let a = 2025; a <= 2026; a++) for (let b = 1; b <= 12; b++) mesesIdx.push(a
 const selAnio = document.getElementById("sel-anio");
 const selMes = document.getElementById("sel-mes");
 selAnio.innerHTML = ["2025", "2026"].map(a => '<option value="' + a + '">' + a + "</option>").join("");
-// el año filtra los meses; el mes dice qué periodo viaja a cada región ("AAAA" = año completo, "AAAA-MM" = mes)
+// el año filtra los meses; el mes dice qué período viaja a cada región ("AAAA" = año completo, "AAAA-MM" = mes)
 function llenarMesesIdx(anio, actual) {
   const ops = ['<option value="' + anio + '">Año completo</option>'];
   for (let b = 1; b <= 12; b++) ops.push('<option value="' + anio + "-" + String(b).padStart(2, "0") + '">' + NOMBRES_MES[b - 1] + "</option>");

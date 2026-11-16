@@ -133,12 +133,29 @@ footer{margin-top:24px;font-size:12px;color:var(--mut);border-top:1px solid var(
 
 <footer id="pie"></footer>
 </main>
-<script src="data/rr/rr_region_03.js?v=261114b"></script>
-<script src="data/rr/rr_mes_03.js?v=261114b"></script>
-<script src="data/rr/rr_historia_03.js?v=261114b"></script>
-<script src="data/rr/rr_tarifas_faltantes.js?v=261114b"></script>
-<script src="data/rr/rr_contexto_03.js?v=261114b"></script>
 <script>
+var PWfaltan = 5, PWtrasCargar = [];
+function PWcargado() { if (--PWfaltan === 0) PWtrasCargar.forEach(function (f) { f(); }); }
+function PWtrasDatos(f) { if (PWfaltan === 0) f(); else PWtrasCargar.push(f); }
+function PWreintentar(s) {
+  if (s.dataset.reintento) { PWavisar(); return; }
+  s.dataset.reintento = "1";
+  var n = document.createElement("script");
+  n.src = s.src; n.onload = PWcargado; n.onerror = PWavisar;
+  s.parentNode.insertBefore(n, s.nextSibling);
+}
+function PWavisar() {
+  var m = document.querySelector("main");
+  if (m) m.insertAdjacentHTML("afterbegin", '<p class="aviso">No se pudieron cargar los datos de esta región. Recargue la página.</p>');
+}
+</script>
+<script src="data/rr/rr_region_03.js?v=261116a" onload="PWcargado()" onerror="PWreintentar(this)"></script>
+<script src="data/rr/rr_mes_03.js?v=261116a" onload="PWcargado()" onerror="PWreintentar(this)"></script>
+<script src="data/rr/rr_historia_03.js?v=261116a" onload="PWcargado()" onerror="PWreintentar(this)"></script>
+<script src="data/rr/rr_tarifas_faltantes.js?v=261116a" onload="PWcargado()" onerror="PWreintentar(this)"></script>
+<script src="data/rr/rr_contexto_03.js?v=261116a" onload="PWcargado()" onerror="PWreintentar(this)"></script>
+<script>
+PWtrasDatos(function () {
 const D = window.PW_DATA.rr_region_03;
 const MES = window.PW_DATA.rr_mes_03;
 const f0 = new Intl.NumberFormat("es-CL",{maximumFractionDigits:0});
@@ -155,7 +172,7 @@ document.getElementById("b").innerHTML = D.parque.map((v,i)=>'<div><i style="hei
 document.getElementById("nb").textContent = "Stock a fin de cada año, por comuna de registro del permiso (INE). Generado "+D.gen_p+".";
 document.getElementById("tp").innerHTML = D.top.map(x=>'<tr><td>'+x.nombre+'</td><td>'+x.comuna+'</td><td>'+x.tec+'</td><td class="n">'+f1.format(x.mw)+'</td><td class="n">'+f0.format(x.mmus)+'</td><td>'+x.estado+'</td></tr>').join("");
 document.getElementById("nc").textContent = "Cinco proyectos de mayor potencia. Inversión declarada por el titular; no toda se materializa. Generado "+D.gen_c+".";
-document.getElementById("pie").textContent = "Fuente de los datos vivos: cada archivo de la región, generado el "+D.gen_p+". Filtro por mes: hoy solo hay foto del modelo de noviembre de 2026; cargadores, ventas, tarifas y cortes se conectan en la siguiente etapa.";
+document.getElementById("pie").textContent = "Fuente de los datos vivos: cada archivo de la región, generado el "+D.gen_p+". Filtro por mes: hoy solo hay foto del modelo de noviembre de 2026.";
 
 // filtro por mes: afecta todas las pestañas; un mes sin dato dice "sin dato", nunca cero
 const MESES_NOMBRE = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
@@ -166,7 +183,7 @@ for (let a = 2025; a <= 2026; a++) for (let b = 1; b <= 12; b++) meses.push(a + 
 const selAnio = document.getElementById("sel-anio");
 const ANIOS = ["2025", "2026"];
 selAnio.innerHTML = ANIOS.map(a => '<option value="' + a + '">' + a + '</option>').join("");
-// el año filtra la lista de meses; el mes dice qué periodo se muestra ("AAAA" = año completo, "AAAA-MM" = mes)
+// el año filtra la lista de meses; el mes dice qué período se muestra ("AAAA" = año completo, "AAAA-MM" = mes)
 function llenarMeses(anio, actual) {
   const ops = ['<option value="' + anio + '">Año completo</option>'];
   for (let b = 1; b <= 12; b++) {
@@ -228,7 +245,7 @@ function mostrarMes(m) {
   document.getElementById("mes-sim").innerHTML = '<p class="nota">Conectores proyectados a 2035: ' + num(d.conectores_2035) + '. La simulación año a año está en la salida de la corrida.</p>';
   document.getElementById("mes-sitios").textContent = "Nodos del modelo: " + num(d.n_nodos) + ". Los sitios candidatos no están en esta versión.";
   const u = d.util || {};
-  document.getElementById("mes-util").innerHTML = '<p class="nota">Cargadores y conectores: diario desde agosto de 2026. Conectores en la red: ' + num(u.n_conectores) + '. Ocupación del periodo ' + (u.desde || "sin dato") + ' a ' + (u.hasta || "sin dato") + ': ' + (u.pct_ocupado == null ? "sin dato" : f1.format(u.pct_ocupado) + "%") + ' (CC ' + (u.dc_pct_ocupado == null ? "sin dato" : f1.format(u.dc_pct_ocupado) + "%") + ', CA ' + (u.ac_pct_ocupado == null ? "sin dato" : f1.format(u.ac_pct_ocupado) + "%") + '). Parque eléctrico (INE): solo por año; se muestra el año completo.</p>';
+  document.getElementById("mes-util").innerHTML = '<p class="nota">Cargadores y conectores: diario desde agosto de 2026. Conectores en la red: ' + num(u.n_conectores) + '. Ocupación del período ' + (u.desde || "sin dato") + ' a ' + (u.hasta || "sin dato") + ': ' + (u.pct_ocupado == null ? "sin dato" : f1.format(u.pct_ocupado) + "%") + ' (CC ' + (u.dc_pct_ocupado == null ? "sin dato" : f1.format(u.dc_pct_ocupado) + "%") + ', CA ' + (u.ac_pct_ocupado == null ? "sin dato" : f1.format(u.ac_pct_ocupado) + "%") + '). Parque eléctrico (INE): solo por año; se muestra el año completo.</p>';
   document.getElementById("mes-hist").innerHTML = '<p class="nota">Meses con dato: ' + MES.meses_con_dato.map(etiqueta).join(", ") + '. Los demás meses se muestran como sin dato.</p>';
 }
 selAnio.addEventListener("change", () => {
@@ -303,7 +320,7 @@ function mostrarComuna(cut) {
 }
 function renderContexto() {
   if (!CTX) return;
-  document.getElementById("ctx-fuentes").textContent = "Fuentes: Censo 2024 (INE) para población, edad, educación, vivienda, electricidad y conectividad. Vulnerabilidad: índice de #1 con cortes 2017 a 2026, bencina y Censo 2024.";
+  document.getElementById("ctx-fuentes").textContent = "Fuentes: Censo 2024 (INE) para población, edad, educación, vivienda, electricidad y conectividad. Vulnerabilidad: índice de vulnerabilidad energética del Observatorio, con cortes 2017 a 2026, bencina y Censo 2024.";
   const r = CTX.region_censo;
   const kp = [[fmtInd(r.poblacion, { dec: 0, suf: "" }), "población (Censo 2024)"], [fmtInd(r.pct_65_mas, { dec: 1, suf: "%" }), "65 años o más (Censo 2024)"], [fmtInd(r.pct_internet_fija, { dec: 1, suf: "%" }), "con internet fija (Censo 2024)"], [String(CTX.comunas.length), "comunas en la región"]];
   document.getElementById("ctx-kpis").innerHTML = kp.map(x => '<div class="kpi"><div class="v">' + x[0] + '</div><div class="l">' + x[1] + "</div></div>").join("");
@@ -326,6 +343,7 @@ function mostrar(nombre) {
   document.querySelectorAll(".panel").forEach(p => { p.hidden = p.id !== "p-" + nombre; });
 }
 botones.forEach(b => b.addEventListener("click", () => mostrar(b.dataset.tab)));
+});
 </script><script src="assets/comun.js?v=261116a"></script>
 <script>PW.montarNav("rr-atacama.html");</script>
 </body></html>
