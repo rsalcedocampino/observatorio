@@ -32,14 +32,24 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>var _pwv=Math.floor(Date.now()/6e5)</script>
 <script>document.write('<link rel="preload" as="script" href="data/demanda_sen_indice.js?v='+_pwv+'">')</script>
 <style>
+#f-anio{min-width:9em}
 #f-mes,#f-dia{min-width:11em}
+#cd-anio,#cm-anio{min-width:6em}
+#cd-mes,#cm-mes,#cd-dia{min-width:11em}
+ul.elegidos{list-style:none;display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0;padding:0}
+ul.elegidos li{display:inline-flex;align-items:center;gap:8px;background:var(--surface-1);color:var(--ink-1);border:1px solid var(--axis);border-radius:999px;padding:3px 4px 3px 12px;font-size:13.5px}
+.muestra{display:inline-block;width:10px;height:10px;margin-right:6px;border-radius:3px;background:var(--c,var(--s1));vertical-align:-1px}
+ul.elegidos .muestra{margin-right:0}
+button.quitar{background:transparent;color:var(--ink-2);border:0;border-radius:999px;padding:3px 10px;font-size:12.5px;font-family:inherit;text-decoration:underline;cursor:pointer}
+button.quitar:hover{color:var(--ink-1);background:var(--plane)}
+button.quitar:focus-visible{outline:2px solid var(--s1);outline-offset:1px}
 button.dia-nav{background:var(--surface-1);color:var(--ink-1);border:1px solid var(--axis);border-radius:6px;padding:5px 10px;font-size:13.5px;font-family:inherit;cursor:pointer}
 button.dia-nav:hover:not(:disabled){background:var(--plane)}
 button.dia-nav:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
 button.dia-nav:disabled{opacity:.45;cursor:default}
 .kpi .v{font-variant-numeric:tabular-nums}
 .kpi .v .u{font-size:14px;font-weight:600;color:var(--ink-2)}
-#t-dias th:first-child,#t-dias td:first-child{white-space:nowrap}
+#t-dias th:first-child,#t-dias td:first-child,#t-cd th:first-child,#t-cd td:first-child,#t-cm th:first-child,#t-cm td:first-child{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -52,13 +62,21 @@ button.dia-nav:disabled{opacity:.45;cursor:default}
   <p class="nota" id="estado" hidden></p>
 
   <div id="cuerpo">
+    <div class="tab-nav" id="pestanas" role="tablist" aria-label="Vistas de la página">
+      <button type="button" class="tab-btn activo" data-tab="un-dia">Ver un día</button>
+      <button type="button" class="tab-btn" data-tab="comparar-dias">Comparar días</button>
+      <button type="button" class="tab-btn" data-tab="comparar-meses">Comparar meses</button>
+    </div>
+
+    <div class="tab-content activo" id="un-dia">
     <div class="filtros" id="filtros">
+      <label for="f-anio">Año <select id="f-anio"></select></label>
       <label for="f-mes">Mes <select id="f-mes"></select></label>
       <label for="f-dia">Día <select id="f-dia"></select></label>
       <button type="button" class="dia-nav" id="b-ant">‹ Día anterior</button>
       <button type="button" class="dia-nav" id="b-sig">Día siguiente ›</button>
     </div>
-    <p class="nota" id="n-filtro">Elige un mes y un día, o recorre los días con los botones: las cifras, los gráficos y la tabla de esta página se ajustan a tu elección. La dirección de la página guarda tu elección, así que puedes copiarla para volver al mismo día.</p>
+    <p class="nota" id="n-filtro">Elige el año, el mes y el día, o recorre los días con los botones: las cifras, los gráficos y la tabla de esta vista se ajustan a tu elección. La dirección de la página guarda tu elección, así que puedes copiarla para volver al mismo día. Para poner varios días o meses lado a lado, usa «Comparar días» y «Comparar meses».</p>
     <p class="nota" id="n-sinhoras" hidden></p>
 
     <div class="kpis" id="kpis"></div>
@@ -87,16 +105,93 @@ button.dia-nav:disabled{opacity:.45;cursor:default}
       <p class="nota" id="sin-horas" hidden></p>
     </div>
 
-    <div class="tarjeta" id="t-carga" hidden>
-      <h2 style="margin-top:0" id="t-carga-titulo">Día incompleto</h2>
-      <p class="nota">El Coordinador entregó este día a medias. Lo que llegó se ve aquí, hora por hora; el día entra en las cifras, los gráficos y la tabla cuando llegue completo.</p>
-      <div id="carga-dias"></div>
-    </div>
-
     <div class="tarjeta">
       <h2 style="margin-top:0" id="t-titulo">Todos los días</h2>
       <div id="t-dias"></div>
       <p class="nota" id="n-tabla">Cada fila es un día completo, con sus 24 horas. El día elegido va en negrita. Haz clic en el título de una columna para ordenar.</p>
+    </div>
+    </div>
+
+    <div class="tab-content" id="comparar-dias">
+      <div class="tarjeta">
+        <h2 style="margin-top:0">Comparar días</h2>
+        <p class="nota">Elige dos o más días (hasta 6) para ver sus curvas por hora y sus cifras lado a lado: para cada uno, el año, el mes y el día, y «Agregar». Al abrir, trae el último día contra el mismo día de la semana anterior. La dirección de la página guarda la comparación, así que puedes copiarla.</p>
+        <div class="filtros" id="cd-filtros">
+          <label for="cd-anio">Año <select id="cd-anio"></select></label>
+          <label for="cd-mes">Mes <select id="cd-mes"></select></label>
+          <label for="cd-dia">Día <select id="cd-dia"></select></label>
+          <button type="button" class="dia-nav" id="cd-agregar">Agregar</button>
+        </div>
+        <p class="nota" id="cd-msg" aria-live="polite"></p>
+        <ul class="elegidos" id="cd-elegidos" aria-label="Días elegidos"></ul>
+      </div>
+
+      <div class="tarjeta">
+        <h2 style="margin-top:0" id="t-cd-hora">Hora por hora: demanda</h2>
+        <div class="filtros">
+          <label for="cd-metrica">Qué comparar
+            <select id="cd-metrica">
+              <option value="dem">Demanda</option>
+              <option value="erv">Renovables variables (ERV)</option>
+              <option value="neta">Demanda neta</option>
+            </select>
+          </label>
+        </div>
+        <div id="g-cd" role="img" aria-label="Gráfico de líneas con la curva por hora de cada día elegido, en megavatios"></div>
+        <p class="nota" id="n-cd"></p>
+      </div>
+
+      <div class="tarjeta">
+        <h2 style="margin-top:0">Las cifras de cada día</h2>
+        <div id="t-cd"></div>
+        <p class="nota" id="n-cd-tabla"></p>
+      </div>
+    </div>
+
+    <div class="tab-content" id="comparar-meses">
+      <div class="tarjeta">
+        <h2 style="margin-top:0">Comparar meses</h2>
+        <p class="nota">Elige dos o más meses (hasta 6) para ver cuánto consumió el país en cada uno: para cada uno, el año, el mes y «Agregar». Al abrir, trae los dos últimos meses. La dirección de la página guarda la comparación, así que puedes copiarla.</p>
+        <div class="filtros" id="cm-filtros">
+          <label for="cm-anio">Año <select id="cm-anio"></select></label>
+          <label for="cm-mes">Mes <select id="cm-mes"></select></label>
+          <button type="button" class="dia-nav" id="cm-agregar">Agregar</button>
+        </div>
+        <p class="nota" id="cm-msg" aria-live="polite"></p>
+        <ul class="elegidos" id="cm-elegidos" aria-label="Meses elegidos"></ul>
+      </div>
+
+      <div class="tarjeta">
+        <h2 style="margin-top:0">Demanda diaria promedio de cada mes</h2>
+        <div id="g-cm-prom" role="img" aria-label="Gráfico de columnas con la demanda diaria promedio de cada mes elegido, en gigavatios-hora por día"></div>
+        <p class="nota" id="n-cm-prom"></p>
+      </div>
+
+      <div class="tarjeta">
+        <h2 style="margin-top:0">Cada día del mes, mes contra mes</h2>
+        <div class="filtros">
+          <label for="cm-metrica">Qué comparar
+            <select id="cm-metrica">
+              <option value="demanda">Demanda de cada día (GWh)</option>
+              <option value="pct">Parte cubierta por renovables variables (ERV, %)</option>
+            </select>
+          </label>
+        </div>
+        <div id="g-cm-dia" role="img" aria-label="Gráfico de líneas con el valor de cada día de cada mes elegido, un mes sobre otro"></div>
+        <p class="nota" id="n-cm-dia"></p>
+      </div>
+
+      <div class="tarjeta">
+        <h2 style="margin-top:0">Las cifras de cada mes</h2>
+        <div id="t-cm"></div>
+        <p class="nota" id="n-cm-tabla"></p>
+      </div>
+    </div>
+
+    <div class="tarjeta" id="t-carga" hidden>
+      <h2 style="margin-top:0" id="t-carga-titulo">Día incompleto</h2>
+      <p class="nota">El Coordinador entregó este día a medias. Lo que llegó se ve aquí, hora por hora; el día entra en las cifras, los gráficos y la tabla cuando llegue completo.</p>
+      <div id="carga-dias"></div>
     </div>
 
     <div class="tarjeta">
@@ -117,6 +212,10 @@ button.dia-nav:disabled{opacity:.45;cursor:default}
         <li><b>Un día sin dato</b> (banda amarilla en el gráfico) es un día que el Coordinador no entregó completo. Un día a medias no entra en las
         cifras, los gráficos ni la tabla: si llegaron algunas horas, se muestran aparte como «día incompleto», con la banda amarilla en las horas que faltan, y el día
         entra cuando llegue completo.</li>
+        <li><b>Comparar días</b> pone en un mismo gráfico las curvas por hora de los días que elijas. Solo se dibujan los días con sus 24 horas y detalle por hora; de los demás, como los dos del
+        cambio de hora, queda la fila de la tabla. La diferencia se mide contra el primer día que elegiste y no se calcula con un día de 23 o 25 horas, porque su total no se compara con el de uno de 24.</li>
+        <li><b>Comparar meses</b> compara el promedio diario, que es la demanda total de los días con datos del mes dividida por esos días: un mes que aún no termina, o que tiene días sin dato, suma menos
+        sin que se haya consumido menos.</li>
       </ul>
     </div>
 
@@ -302,37 +401,49 @@ PW.montarNav("demanda-sen.html");
     const e = MES_ESTADO.get(ym);
     return e === "listo" ? "no" : (e || "pendiente");
   }
-  function alTerminarMes() {                 // llegó (o falló) un mes: se vuelve a pintar lo que depende de las horas
-    pintarHoras();
-    pintarAviso();
+  function alTerminarMes() {                 // llegó (o falló) un mes: se vuelve a pintar lo que depende de las horas, en la vista que se está viendo
+    const v = vistaActiva();
+    if (v === "comparar-dias") pintarCompararDias();
+    else if (v === "un-dia") { pintarHoras(); pintarAviso(); }
     pintarEnCarga();
   }
 
-  // ---- el filtro: un mes (o todo el período) y un día. Todo lo que se ve en la página sale de estos dos valores.
-  // Al abrir: todo el período y el último día. Al cambiar de mes, si el día elegido no es de ese mes se pasa a su último día.
+  // ---- el filtro: año, mes y día. Todo lo que se ve en «Ver un día» sale de estos tres valores: el año («todo» o un año) y el mes («todo» o un mes) dicen qué días muestran los
+  // gráficos por día y la tabla; el día es el de las cuatro cifras y el gráfico por hora. Al abrir: todo el período y el último día. Un mes es de un solo año, así que con un mes
+  // elegido el año es el suyo. La lista de días trae solo los del mes del día elegido. Al cambiar de año o de mes, si el día elegido no es de ahí se pasa al último día de ese año o de ese mes.
   const diasDeMes = new Map();                       // "AAAA-MM" -> sus días con cifras, de menor a mayor
+  const diasDeAnio = new Map();                      // "AAAA" -> sus días con cifras, de menor a mayor
   DIAS.forEach(d => {
-    const ym = d.fecha.slice(0, 7);
+    const ym = d.fecha.slice(0, 7), a = d.fecha.slice(0, 4);
     if (!diasDeMes.has(ym)) diasDeMes.set(ym, []);
     diasDeMes.get(ym).push(d.fecha);
+    if (!diasDeAnio.has(a)) diasDeAnio.set(a, []);
+    diasDeAnio.get(a).push(d.fecha);
   });
   const meses = [...diasDeMes.keys()].sort().reverse();     // el más reciente primero
-  // El filtro también vive en la dirección de la página: ?dia=AAAA-MM-DD y, con un mes elegido, &mes=AAAA-MM. Con todo el período y el último día la dirección
-  // queda sin parámetros. Un valor que no sea una fecha del dato abre la vista de siempre, sin error; los demás parámetros (como ?cb=) no se tocan.
+  const anios = [...diasDeAnio.keys()].sort().reverse();
+  const mesesDe = a => (a === "todo" ? meses : meses.filter(m => m.startsWith(a)));
+  const ultimoDe = lista => lista[lista.length - 1];
+  // El filtro también vive en la dirección de la página: ?dia=AAAA-MM-DD y, con un mes elegido, &mes=AAAA-MM o, con solo un año elegido, &anio=AAAA. Con todo el período y el último día la
+  // dirección queda sin parámetros. Un valor que no sea una fecha, un mes o un año del dato, o que no calce con los demás, abre la vista de siempre, sin error; los demás parámetros
+  // (como ?cb=) no se tocan.
   function filtroDeLaDireccion() {
     try {
       const q = new URLSearchParams(location.search);
-      const d = q.get("dia"), m = q.get("mes");
-      const dOk = d !== null && dia.has(d), mOk = m !== null && diasDeMes.has(m);
-      if (dOk && mOk && d.startsWith(m)) return { mes: m, dia: d };
-      if (dOk) return { mes: "todo", dia: d };
-      if (mOk) { const f = diasDeMes.get(m); return { mes: m, dia: f[f.length - 1] }; }
+      const d = q.get("dia"), m = q.get("mes"), a = q.get("anio");
+      const dOk = d !== null && dia.has(d), mOk = m !== null && diasDeMes.has(m), aOk = a !== null && diasDeAnio.has(a);
+      if (dOk && mOk && d.startsWith(m)) return { anio: m.slice(0, 4), mes: m, dia: d };
+      if (dOk) return { anio: aOk && d.startsWith(a) ? a : "todo", mes: "todo", dia: d };
+      if (mOk) return { anio: m.slice(0, 4), mes: m, dia: ultimoDe(diasDeMes.get(m)) };
+      if (aOk) return { anio: a, mes: "todo", dia: ultimoDe(diasDeAnio.get(a)) };
     } catch (e) { /* sin una dirección legible: la vista normal */ }
-    return { mes: "todo", dia: ultimo };
+    return { anio: "todo", mes: "todo", dia: ultimo };
   }
   const sel = filtroDeLaDireccion();
-  const alcance = () => (sel.mes === "todo" ? DIAS : DIAS.filter(d => d.fecha.startsWith(sel.mes)));
-  const selMes = el("f-mes"), selDia = el("f-dia");
+  // los días que muestran los gráficos por día y la tabla: los del mes elegido, o los del año elegido, o todos
+  const alcance = () => (sel.mes !== "todo" ? DIAS.filter(d => d.fecha.startsWith(sel.mes)) : (sel.anio !== "todo" ? DIAS.filter(d => d.fecha.startsWith(sel.anio)) : DIAS));
+  const nombreAlcance = () => (sel.mes !== "todo" ? mesLargo(sel.mes) : (sel.anio !== "todo" ? sel.anio : null));      // null: todo el período
+  const selAnio = el("f-anio"), selMes = el("f-mes"), selDia = el("f-dia");
 
   // ---- las cuatro cifras: las del día elegido
   // la unidad va aparte y más chica: a 375 px "246,1 GWh" en un solo cuerpo se partía en dos líneas
@@ -375,7 +486,7 @@ PW.montarNav("demanda-sen.html");
     });
     const huecos = cal.filter(f => !dia.has(f)).length;
     const cambios = cal.filter(f => dia.has(f) && horasDelDia(f) !== 24);      // los días de 23 o 25 horas que el gráfico dibuja
-    el("n-dia").textContent = "Gigavatios-hora (GWh) que consumió el país en cada día" + (sel.mes === "todo" ? "" : " de " + mesLargo(sel.mes)) + "." +
+    el("n-dia").textContent = "Gigavatios-hora (GWh) que consumió el país en cada día" + (nombreAlcance() === null ? "" : " de " + nombreAlcance()) + "." +
       (iSel >= 0 ? " La línea punteada marca el día elegido." : " El día elegido es anterior a los últimos 120 días del gráfico; está en la tabla.") +
       (huecos ? " Los días con banda amarilla no tienen dato." : "") +
       cambios.map(f => " Por el cambio de hora, el " + fechaCorta(f) + " tuvo " + horasDelDia(f) + " horas: su total no se compara con el de un día de 24.").join("") +
@@ -441,7 +552,7 @@ PW.montarNav("demanda-sen.html");
   function pintarAviso() {
     const sin = ARCHIVO.size ? alcance().filter(d => estadoDetalle(d.fecha) === "no").length : 0;
     const p = el("n-sinhoras");
-    const donde = sel.mes === "todo" ? "del período" : "de este mes";
+    const donde = sel.mes !== "todo" ? "de este mes" : (sel.anio !== "todo" ? "de este año" : "del período");
     p.hidden = sin <= 0;
     p.textContent = sin <= 0 ? "" : (sin === 1 ? "Un día " + donde + " no tiene detalle por hora; de él solo está el total, en la tabla de abajo."
       : sin + " días " + donde + " no tienen detalle por hora; de ellos solo está el total, en la tabla de abajo.");
@@ -516,7 +627,7 @@ PW.montarNav("demanda-sen.html");
 
   // ---- tabla de los días del mes elegido o de todo el período, el más reciente primero; el día elegido va en negrita
   function pintarTabla() {
-    el("t-titulo").textContent = sel.mes === "todo" ? "Todos los días" : "Días de " + mesLargo(sel.mes);
+    el("t-titulo").textContent = nombreAlcance() === null ? "Todos los días" : "Días de " + nombreAlcance();
     PW.tabla("t-dias", [
       { k: "fecha", titulo: "Día", prio: true, fmt: v => (v === sel.dia ? "<b>" + esc(fechaLarga(v)) + "</b>" : esc(fechaLarga(v))) },
       { k: "demanda", titulo: "Demanda (GWh)", num: true, prio: true, fmt: v => f1.format(v) },
@@ -551,17 +662,24 @@ PW.montarNav("demanda-sen.html");
     });
   }
 
-  // ---- la dirección de la página guarda el filtro; replaceState: cambiar el filtro no recarga la página ni llena el historial del navegador
+  // ---- la dirección de la página guarda lo que se está viendo; replaceState: cambiar el filtro no recarga la página ni llena el historial del navegador.
+  // «Ver un día»: ?dia=AAAA-MM-DD y, con un mes elegido, &mes=AAAA-MM o, con solo un año, &anio=AAAA. «Comparar días»: ?dias=AAAA-MM-DD,AAAA-MM-DD,… «Comparar meses»: ?meses=AAAA-MM,AAAA-MM,…
+  // La vista misma va en el ancla (#comparar-dias, #comparar-meses), como en las demás páginas con pestañas; sin ancla se abre «Ver un día», así que los enlaces de antes siguen valiendo.
   function escribirDireccion() {
     try {
       const q = new URLSearchParams(location.search);
-      q.delete("dia");
-      q.delete("mes");
-      if (!(sel.mes === "todo" && sel.dia === ultimo)) {
+      ["dia", "mes", "anio", "dias", "meses"].forEach(k => q.delete(k));
+      const v = vistaActiva();
+      if (v === "comparar-dias") {
+        if (cmpDias.length) q.set("dias", cmpDias.join(","));
+      } else if (v === "comparar-meses") {
+        if (cmpMeses.length) q.set("meses", cmpMeses.join(","));
+      } else if (!(sel.anio === "todo" && sel.mes === "todo" && sel.dia === ultimo)) {
         q.set("dia", sel.dia);
         if (sel.mes !== "todo") q.set("mes", sel.mes);
+        else if (sel.anio !== "todo") q.set("anio", sel.anio);
       }
-      const s = q.toString();
+      const s = q.toString().replace(/%2C/gi, ",");      // la coma es válida en una dirección: se deja legible
       history.replaceState(null, "", location.pathname + (s ? "?" + s : "") + location.hash);
     } catch (e) { /* si el navegador no lo permite, el filtro funciona igual sin quedar en la dirección */ }
   }
@@ -576,45 +694,316 @@ PW.montarNav("demanda-sen.html");
     escribirDireccion();
   }
 
-  // ---- las dos listas: «Todo el período» y los meses; los días del mes elegido o, con todo el período, todos agrupados por mes
-  const opcionDia = f => `<option value="${esc(f)}">${esc(fechaCorta(f))}</option>`;
-  function llenarMeses() {
-    selMes.innerHTML = '<option value="todo">Todo el período</option>' + meses.map(m => `<option value="${esc(m)}">${esc(mesLargo(m))}</option>`).join("");
+  // ---- las tres listas de «Ver un día». Año: «Todos los años» y los años del dato. Mes: «Todo el período» (o «Todo AAAA» con un año elegido) y los meses de ese año (todos, sin año elegido).
+  // Día: los días del mes del día elegido, con el año escrito cuando no hay un año elegido (sin él, «sáb 3 oct» podría ser de cualquier año).
+  const opcionDia = (f, conAnio) => `<option value="${esc(f)}">${esc(conAnio ? fechaLarga(f) : fechaCorta(f))}</option>`;
+  const opcionMes = m => `<option value="${esc(m)}">${esc(mesLargo(m))}</option>`;
+  const opcionAnio = a => `<option value="${esc(a)}">${esc(a)}</option>`;
+  function llenarListas() {
+    selAnio.innerHTML = '<option value="todo">Todos los años</option>' + anios.map(opcionAnio).join("");
+    selAnio.value = sel.anio;
+    selMes.innerHTML = `<option value="todo">${sel.anio === "todo" ? "Todo el período" : "Todo " + esc(sel.anio)}</option>` + mesesDe(sel.anio).map(opcionMes).join("");
     selMes.value = sel.mes;
-  }
-  function llenarDias() {
-    selDia.innerHTML = sel.mes === "todo"
-      ? meses.map(m => `<optgroup label="${esc(mesLargo(m))}">${diasDeMes.get(m).map(opcionDia).join("")}</optgroup>`).join("")
-      : diasDeMes.get(sel.mes).map(opcionDia).join("");
+    selDia.innerHTML = diasDeMes.get(sel.dia.slice(0, 7)).map(f => opcionDia(f, sel.anio === "todo")).join("");
     selDia.value = sel.dia;
   }
+  selAnio.addEventListener("change", () => {
+    sel.anio = selAnio.value;
+    sel.mes = "todo";                                           // un mes es de un solo año: al cambiar de año se vuelve a «Todo el período» o «Todo AAAA»
+    if (sel.anio !== "todo" && !sel.dia.startsWith(sel.anio)) sel.dia = ultimoDe(diasDeAnio.get(sel.anio));
+    llenarListas();
+    pintar();
+  });
   selMes.addEventListener("change", () => {
     sel.mes = selMes.value;
-    if (sel.mes !== "todo" && !sel.dia.startsWith(sel.mes)) {
-      const fechas = diasDeMes.get(sel.mes);
-      sel.dia = fechas[fechas.length - 1];
+    if (sel.mes !== "todo") {
+      sel.anio = sel.mes.slice(0, 4);                           // con un mes elegido el año es el suyo
+      if (!sel.dia.startsWith(sel.mes)) sel.dia = ultimoDe(diasDeMes.get(sel.mes));
     }
-    llenarDias();
+    llenarListas();
     pintar();
   });
   selDia.addEventListener("change", () => { sel.dia = selDia.value; pintar(); });
   function irA(f) {
     if (f === null) return;
     sel.dia = f;
-    if (sel.mes !== "todo" && !f.startsWith(sel.mes)) {      // con un mes elegido, al pasar su borde se sigue en el mes vecino
-      sel.mes = f.slice(0, 7);
-      selMes.value = sel.mes;
-      llenarDias();
-    } else {
-      selDia.value = f;
-    }
+    if (sel.mes !== "todo" && !f.startsWith(sel.mes)) { sel.mes = f.slice(0, 7); sel.anio = f.slice(0, 4); }      // con un mes elegido, al pasar su borde se sigue en el mes vecino
+    else if (sel.mes === "todo" && sel.anio !== "todo" && !f.startsWith(sel.anio)) sel.anio = f.slice(0, 4);      // y con un año elegido, en el año vecino
+    llenarListas();
     pintar();
   }
   el("b-ant").addEventListener("click", () => irA(vecino(-1)));
   el("b-sig").addEventListener("click", () => irA(vecino(1)));
-  llenarMeses();
-  llenarDias();
-  pintar();
+
+  // ---- «Comparar días» y «Comparar meses»: dos o más días (o meses) lado a lado, hasta MAX_COMPARAR. Se agregan con los mismos selectores (año, mes y día) y se quitan de la lista de elegidos;
+  // cada uno lleva su color, el mismo en la lista y en el gráfico (el orden de colores es el de PW.lineas). El primero que se elige es la referencia de las diferencias.
+  const MAX_COMPARAR = 6;
+  const SERIES = ["--s1", "--s2", "--s6", "--s3", "--s4", "--s5"];
+  const colorDe = i => PW.color(SERIES[i % SERIES.length]);
+  const diasEnMes = ym => new Date(Date.UTC(+ym.slice(0, 4), +ym.slice(5, 7), 0)).getUTCDate();
+  const conSigno = v => { const r = Math.round(v * 10) / 10; return (r > 0 ? "+" : "") + f1.format(r === 0 ? 0 : r); };      // «+3,2», «-1,0», «0,0»; nunca «-0,0»
+  const enLista = xs => (xs.length > 1 ? xs.slice(0, -1).join(", ") + " y " + xs[xs.length - 1] : xs[0]);
+  // lo que se compara al abrir: lo que diga la dirección o, sin eso, el último día contra el mismo día de la semana anterior (si ese día no está, contra el día anterior) y los dos últimos meses
+  function listaDeLaDireccion(clave, valido) {
+    try {
+      const v = new URLSearchParams(location.search).get(clave), lista = [];
+      if (v === null) return lista;
+      v.split(",").forEach(x => { if (valido(x) && !lista.includes(x)) lista.push(x); });
+      return lista.slice(0, MAX_COMPARAR);
+    } catch (e) { return []; }
+  }
+  let cmpDias = listaDeLaDireccion("dias", f => dia.has(f));
+  if (!cmpDias.length) {
+    cmpDias = [ultimo];
+    const semAntes = sumarDias(ultimo, -7);
+    if (dia.has(semAntes)) cmpDias.push(semAntes);
+    else if (DIAS.length > 1) cmpDias.push(DIAS[DIAS.length - 2].fecha);
+  }
+  let cmpMeses = listaDeLaDireccion("meses", m => diasDeMes.has(m));
+  if (!cmpMeses.length) cmpMeses = meses.slice(0, 2);
+  // lo que muestran los selectores de cada vista al abrir: el día (o el mes) más reciente que todavía no está en la lista, para que «Agregar» sirva de inmediato
+  const libreD = (DIAS.slice().reverse().find(d => !cmpDias.includes(d.fecha)) || DIAS[DIAS.length - 1]).fecha, libreM = meses.find(m => !cmpMeses.includes(m)) || meses[0];
+  const pickD = { anio: libreD.slice(0, 4), mes: libreD.slice(0, 7), dia: libreD };
+  const pickM = { anio: libreM.slice(0, 4), mes: libreM };
+  function llenarSelector(id, p, conDia) {
+    const sa = el(id + "-anio"), sm = el(id + "-mes");
+    sa.innerHTML = anios.map(opcionAnio).join("");
+    sa.value = p.anio;
+    sm.innerHTML = mesesDe(p.anio).map(opcionMes).join("");
+    sm.value = p.mes;
+    if (conDia) {
+      const sd = el(id + "-dia");
+      sd.innerHTML = diasDeMes.get(p.mes).map(f => opcionDia(f, false)).join("");
+      sd.value = p.dia;
+    }
+  }
+  function conectarSelector(id, p, conDia, alCambiar) {
+    el(id + "-anio").addEventListener("change", e => {
+      p.anio = e.target.value;
+      p.mes = mesesDe(p.anio)[0];                               // el mes más reciente de ese año
+      if (conDia) p.dia = ultimoDe(diasDeMes.get(p.mes));
+      llenarSelector(id, p, conDia);
+      alCambiar();
+    });
+    el(id + "-mes").addEventListener("change", e => {
+      p.mes = e.target.value;
+      if (conDia) p.dia = ultimoDe(diasDeMes.get(p.mes));
+      llenarSelector(id, p, conDia);
+      alCambiar();
+    });
+    if (conDia) el(id + "-dia").addEventListener("change", e => { p.dia = e.target.value; alCambiar(); });
+  }
+  // el botón «Agregar» y su aviso: no se agrega lo que ya está ni más de MAX_COMPARAR; con menos de dos no hay nada que comparar
+  function estadoAgregar(pref, lista, candidato, sust, plural) {
+    const b = el(pref + "-agregar"), m = el(pref + "-msg");
+    let aviso = "";
+    b.disabled = false;
+    if (lista.length >= MAX_COMPARAR) { b.disabled = true; aviso = "Ya hay " + MAX_COMPARAR + " " + plural + " elegidos: quita uno para agregar otro."; }
+    else if (lista.includes(candidato)) { b.disabled = true; aviso = "Ese " + sust + " ya está en la comparación."; }
+    else if (lista.length < 2) aviso = "Elige al menos dos " + plural + " para comparar.";
+    m.textContent = aviso;
+  }
+  function pintarElegidos(id, lista, texto, quitar) {
+    const ul = el(id);
+    ul.innerHTML = "";
+    lista.forEach((x, i) => {
+      const li = document.createElement("li");
+      const mu = document.createElement("span");
+      mu.className = "muestra";
+      mu.style.setProperty("--c", colorDe(i));
+      const t = document.createElement("span");
+      t.textContent = texto(x);
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "quitar";
+      b.textContent = "Quitar";
+      b.setAttribute("aria-label", "Quitar " + texto(x) + " de la comparación");
+      b.addEventListener("click", () => {
+        quitar(x);
+        // la lista se vuelve a dibujar: el foco del teclado pasa al «Quitar» del que ocupó su lugar o, si no queda ninguno, al botón «Agregar»
+        const bs = ul.querySelectorAll("button.quitar");
+        (bs[Math.min(i, bs.length - 1)] || el(id.split("-")[0] + "-agregar")).focus();
+      });
+      li.append(mu, t, b);
+      ul.appendChild(li);
+    });
+  }
+
+  // «Comparar días»: la curva por hora de cada día elegido en un solo gráfico y una tabla con sus cifras. La curva solo existe para un día con 24 horas y detalle por hora (los demás, como los dos
+  // del cambio de hora, quedan en la tabla y se dice por qué). Las curvas se alinean por posición: la primera hora de cada día cae en el mismo lugar del eje. Las horas de cada día vienen en el archivo
+  // de su mes; los que faltan se piden al mostrar la vista y, al llegar, alTerminarMes la vuelve a pintar.
+  const METRICA_DIA = { dem: "demanda", erv: "renovables variables (ERV)", neta: "demanda neta" };
+  const muestraHtml = c => `<span class="muestra" style="--c:${esc(c)}"></span>`;
+  function pintarCompararDias() {
+    llenarSelector("cd", pickD, true);
+    estadoAgregar("cd", cmpDias, pickD.dia, "día", "días");
+    pintarElegidos("cd-elegidos", cmpDias, fechaLarga, f => { cmpDias = cmpDias.filter(x => x !== f); pintarCompararDias(); });
+    cmpDias.forEach(f => { if (estadoDetalle(f) === "pendiente") cargarMes(f.slice(0, 7)); });
+    const m = el("cd-metrica").value;
+    el("t-cd-hora").textContent = "Hora por hora: " + METRICA_DIA[m];
+    const conCurva = cmpDias.map((f, i) => ({ f, i })).filter(x => estadoDetalle(x.f) === "si");
+    if (conCurva.length) {
+      const series = conCurva.map(x => ({ nombre: fechaLarga(x.f), valores: HORARIO.get(x.f)[m], color: colorDe(x.i) }));
+      const base = HORARIO.get(conCurva[0].f).nums[0], piso = Math.min(...series.flatMap(s => s.valores));
+      PW.lineas("g-cd", {
+        labels: Array.from({ length: 24 }, (_, k) => "Hora " + (k + base)), alto: 300,
+        min: piso < 0 ? Math.floor(piso / 500) * 500 : 0, series,
+        fmtY: v => PW.fmt(v), fmtV: v => PW.fmt(v) + " MW",
+      });
+    } else {
+      el("g-cd").innerHTML = "";
+    }
+    // la nota del gráfico: lo que falta o no se puede dibujar, día por día
+    const n = el("n-cd"), frases = [];
+    if (!cmpDias.length) frases.push("Agrega días para ver su curva por hora.");
+    const esperan = cmpDias.filter(f => ["pendiente", "cargando"].includes(estadoDetalle(f)));
+    if (esperan.length) frases.push("Cargando el detalle por hora de " + enLista(esperan.map(fechaCorta)) + "…");
+    cmpDias.filter(f => estadoDetalle(f) === "no").forEach(f => frases.push(horasDelDia(f) !== 24
+      ? "El " + fechaCorta(f) + " cambió la hora: tuvo " + horasDelDia(f) + " horas y no 24, así que no tiene curva por hora."
+      : "El " + fechaCorta(f) + " no tiene detalle por hora, así que no tiene curva."));
+    const fallos = [...new Set(cmpDias.filter(f => estadoDetalle(f) === "error").map(f => f.slice(0, 7)))];
+    if (fallos.length) frases.push("No se pudo cargar el detalle por hora de " + enLista(fallos.map(mesLargo)) + ".");
+    if (conCurva.length) {
+      const H0 = HORARIO.get(conCurva[0].f);
+      frases.push("Las horas van del " + H0.nums[0] + " al " + H0.nums[23] + ", con la numeración que entrega el Coordinador." + (m === "neta" ? " La demanda neta es la demanda menos las renovables variables (ERV)." : ""));
+    }
+    n.textContent = frases.join(" ");
+    if (fallos.length) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "dia-nav";
+      b.textContent = "Reintentar";
+      b.addEventListener("click", () => { fallos.forEach(ym => MES_ESTADO.delete(ym)); pintarCompararDias(); });
+      n.append(" ", b);
+    }
+    // la tabla: una fila por día elegido, en el orden en que se eligieron; la diferencia es contra el primero y solo entre días de 24 horas
+    const ref = cmpDias.length ? dia.get(cmpDias[0]) : null;
+    const filas = cmpDias.map((f, i) => {
+      const d = dia.get(f), comparable = i > 0 && horasDelDia(f) === 24 && horasDelDia(ref.fecha) === 24;
+      return {
+        fecha: f, color: colorDe(i), demanda: d.demanda, max: d.max, horaMax: d.horaMax, pct: d.pct, neta: d.neta, esRef: i === 0,
+        dif: comparable ? d.demanda - ref.demanda : null, difPct: comparable ? 100 * (d.demanda - ref.demanda) / ref.demanda : null,
+      };
+    });
+    if (filas.length) {
+      PW.tabla("t-cd", [
+        { k: "fecha", titulo: "Día", prio: true, fmt: (v, r) => muestraHtml(r.color) + esc(fechaLarga(v)) },
+        { k: "demanda", titulo: "Demanda (GWh)", num: true, prio: true, fmt: v => f1.format(v) },
+        { k: "max", titulo: "Máximo (MW)", num: true, prio: true, fmt: v => PW.fmt(v) },
+        { k: "horaMax", titulo: "Hora del máximo", num: true, fmt: v => (v == null ? "—" : String(v)) },
+        { k: "pct", titulo: "Renovables variables, ERV (% de la demanda)", num: true, prio: true, fmt: v => f1.format(v) + "%" },
+        { k: "neta", titulo: "Demanda neta (GWh)", num: true, fmt: v => f1.format(v) },
+        { k: "dif", titulo: "Demanda respecto del primero", num: true, prio: true,
+          fmt: (v, r) => (r.esRef ? "referencia" : (v == null ? "no comparable" : conSigno(v) + " GWh (" + conSigno(r.difPct) + "%)")) },
+      ], filas, { buscador: false });
+    } else {
+      el("t-cd").innerHTML = "";
+    }
+    const raros = cmpDias.filter(f => horasDelDia(f) !== 24).map(f => fechaLarga(f) + " (" + horasDelDia(f) + " horas)");
+    el("n-cd-tabla").textContent = filas.length
+      ? "La última columna resta la demanda del primer día que elegiste, la fila marcada «referencia»." +
+        (raros.length ? " " + (raros.length > 1 ? "Los días " + enLista(raros) + " tuvieron" : "El día " + raros[0] + " tuvo") +
+          " otra cantidad de horas por el cambio de hora: su total no se compara con el de un día de 24 y por eso no se calcula la diferencia." : "")
+      : "";
+    escribirDireccion();
+  }
+
+  // «Comparar meses»: el promedio diario y el total de cada mes, y sus días uno sobre otro. Se compara el promedio diario y no el total porque los meses no tienen los mismos días:
+  // un mes sin todos sus días con datos (el que va en curso, o uno con días sin dato) suma menos sin que se haya consumido menos.
+  function resumenMes(m) {
+    const ds = diasDeMes.get(m).map(f => dia.get(f));
+    const total = ds.reduce((s, d) => s + d.demanda, 0), erv = ds.reduce((s, d) => s + d.erv, 0);
+    const mx = ds.reduce((a, d) => (d.max > a.max ? d : a), ds[0]);
+    return { mes: m, n: ds.length, calendario: diasEnMes(m), total, prom: total / ds.length, pct: 100 * erv / total, max: mx.max, diaMax: mx.fecha };
+  }
+  function pintarCompararMeses() {
+    llenarSelector("cm", pickM, false);
+    estadoAgregar("cm", cmpMeses, pickM.mes, "mes", "meses");
+    pintarElegidos("cm-elegidos", cmpMeses, mesLargo, m => { cmpMeses = cmpMeses.filter(x => x !== m); pintarCompararMeses(); });
+    const res = cmpMeses.map(resumenMes), ref = res[0];
+    if (res.length) {
+      PW.columnas("g-cm-prom", {
+        labels: res.map(r => mesLargo(r.mes)), alto: 240, valores: res.map(r => r.prom),
+        fmtY: v => PW.fmt(v), fmtV: v => f1.format(v) + " GWh por día",
+      });
+      const largo = Math.max(...res.map(r => r.calendario)), campo = el("cm-metrica").value;      // «demanda» | «pct»
+      const series = res.map((r, i) => ({
+        nombre: mesLargo(r.mes), color: colorDe(i), bordesEstructurales: true,      // los días que el mes aún no tiene o que no existen en él no llevan banda de «sin dato»
+        valores: Array.from({ length: largo }, (_, k) => { const f = r.mes + "-" + String(k + 1).padStart(2, "0"); return dia.has(f) ? dia.get(f)[campo === "pct" ? "pct" : "demanda"] : null; }),
+      }));
+      // la demanda de cada día varía poco entre un mes y otro (200 a 250 GWh): desde cero las líneas quedan pegadas arriba. El eje parte de un múltiplo de 50 bajo el 85 % del mínimo, y la nota lo dice;
+      // la parte cubierta por las ERV (en %) sí parte de cero
+      const piso = campo === "pct" ? 0 : Math.floor(0.85 * Math.min(...series.flatMap(s => s.valores).filter(v => v !== null)) / 50) * 50;
+      PW.lineas("g-cm-dia", {
+        labels: Array.from({ length: largo }, (_, k) => "Día " + (k + 1)), alto: 300, min: piso, series,
+        fmtY: v => (campo === "pct" ? PW.fmt(v) + "%" : PW.fmt(v)), fmtV: v => f1.format(v) + (campo === "pct" ? "%" : " GWh"),
+      });
+      PW.tabla("t-cm", [
+        { k: "mes", titulo: "Mes", prio: true, fmt: (v, r) => muestraHtml(r.color) + esc(mesLargo(v)) },
+        { k: "n", titulo: "Días con datos", num: true, prio: true, fmt: (v, r) => v + " de " + r.calendario },
+        { k: "total", titulo: "Demanda total (GWh)", num: true, prio: true, fmt: v => f1.format(v) },
+        { k: "prom", titulo: "Promedio diario (GWh)", num: true, prio: true, fmt: v => f1.format(v) },
+        { k: "max", titulo: "Máximo (MW)", num: true, fmt: v => PW.fmt(v) },
+        { k: "diaMax", titulo: "Día del máximo", fmt: v => esc(fechaCorta(v)) },
+        { k: "pct", titulo: "ERV (% de la demanda)", num: true, fmt: v => f1.format(v) + "%" },
+        { k: "dif", titulo: "Respecto del primero", num: true, prio: true,
+          fmt: (v, r) => (r.esRef ? "referencia" : conSigno(v) + "%") },
+      ], res.map((r, i) => Object.assign(r, { color: colorDe(i), esRef: i === 0, dif: i === 0 ? null : 100 * (r.prom - ref.prom) / ref.prom })), { buscador: false });
+      const parciales = res.filter(r => r.n < r.calendario).map(r => mesLargo(r.mes) + " (" + r.n + " de " + r.calendario + " días)");
+      el("n-cm-prom").textContent = "Promedio de la demanda de los días con datos de cada mes, en gigavatios-hora (GWh) por día." +
+        (parciales.length ? " Se compara el promedio y no el total porque " + enLista(parciales) + (parciales.length > 1 ? " no tienen" : " no tiene") + " todos sus días con datos." : "");
+      // la banda amarilla marca solo los días sin dato entre el primer y el último día con datos del mes: lo que el mes aún no tiene (o no existe en él) no lleva banda
+      const conHuecos = res.some(r => { const ds = diasDeMes.get(r.mes).map(f => +f.slice(8)); return ds.length < ds[ds.length - 1] - ds[0] + 1; });
+      el("n-cm-dia").textContent = "Cada línea es un mes, día por día. " + (piso > 0 ? "El eje parte de " + PW.fmt(piso) + " GWh y no de cero, para que se vean las diferencias. " : "") +
+        (res.some(r => r.calendario < largo) ? "Los meses más cortos terminan antes. " : "") +
+        (res.some(r => diasDeMes.get(r.mes).some(f => horasDelDia(f) !== 24)) ? "Los días de cambio de hora (23 o 25 horas) se muestran con su total, sin ajuste. " : "") +
+        (conHuecos ? "Los días con banda amarilla no tienen dato." : "");
+      el("n-cm-tabla").textContent = "La última columna compara el promedio diario de cada mes con el del primero que elegiste, la fila marcada «referencia». " +
+        "Los días de cambio de hora (23 o 25 horas) cuentan con su total, sin ajuste.";
+    } else {
+      ["g-cm-prom", "g-cm-dia", "t-cm"].forEach(id => { el(id).innerHTML = ""; });
+      ["n-cm-prom", "n-cm-dia", "n-cm-tabla"].forEach(id => { el(id).textContent = ""; });
+      el("n-cm-prom").textContent = "Agrega meses para compararlos.";
+    }
+    escribirDireccion();
+  }
+  conectarSelector("cd", pickD, true, () => estadoAgregar("cd", cmpDias, pickD.dia, "día", "días"));
+  conectarSelector("cm", pickM, false, () => estadoAgregar("cm", cmpMeses, pickM.mes, "mes", "meses"));
+  el("cd-agregar").addEventListener("click", () => {
+    if (cmpDias.length < MAX_COMPARAR && !cmpDias.includes(pickD.dia)) { cmpDias = cmpDias.concat(pickD.dia); pintarCompararDias(); }
+  });
+  el("cm-agregar").addEventListener("click", () => {
+    if (cmpMeses.length < MAX_COMPARAR && !cmpMeses.includes(pickM.mes)) { cmpMeses = cmpMeses.concat(pickM.mes); pintarCompararMeses(); }
+  });
+  el("cd-metrica").addEventListener("change", pintarCompararDias);
+  el("cm-metrica").addEventListener("change", pintarCompararMeses);
+
+  // ---- las tres vistas (sub-navegación). Cada una se pinta al mostrarla, no antes: un gráfico dibujado en una vista oculta no mide su ancho
+  function vistaActiva() {
+    const p = document.querySelector("#cuerpo .tab-content.activo");
+    return p ? p.id : "un-dia";
+  }
+  let vistaPrevia = "un-dia";                                    // la última vista que se mostró
+  function pintarVista() {
+    const v = vistaPrevia = vistaActiva();
+    if (v === "comparar-dias") pintarCompararDias();
+    else if (v === "comparar-meses") pintarCompararMeses();
+    else pintar();
+  }
+  const pestanas = PW.pestanas("pestanas");                      // muestra la vista del ancla (o la primera) y atiende los clics; los clics y el cambio de ancla se atienden antes que lo de abajo
+  const VISTAS = [...el("pestanas").querySelectorAll("[data-tab]")].map(b => b.dataset.tab);
+  VISTAS.forEach(id => el("pestanas").querySelector('[data-tab="' + id + '"]').addEventListener("click", pintarVista));
+  window.addEventListener("hashchange", () => {
+    const id = location.hash.slice(1);
+    if (id && !VISTAS.includes(id) && pestanas) {                // un ancla que no es de una vista (el enlace «Saltar al contenido», por ejemplo) no cambia de vista: PW.pestanas la toma por la primera
+      pestanas.mostrar(vistaPrevia, false);
+      try { history.replaceState(null, "", location.pathname + location.search + "#" + vistaPrevia); } catch (e) { /* sin historial: la vista queda igual */ }
+      return;
+    }
+    pintarVista();
+  });
+  llenarListas();
+  pintarVista();
   EN_CARGA.forEach(c => cargarMes(c.fecha.slice(0, 7)));      // las horas de un día en carga vienen en el archivo de su mes: se piden al abrir (si es el mes del día elegido, se baja una sola vez)
   pintarEnCarga();
 
