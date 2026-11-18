@@ -84,19 +84,31 @@ PW.montarNav(document.querySelector("main"), "pois.html");
 
 // ---- Colores por capa ----
 const CAPAS_DEF = [
-  { k: "turismo",     label: "Turismo",             color: "#e67e22", campo: "t" },
-  { k: "naturaleza",  label: "Naturaleza (SNASPE)",  color: "#27ae60", campo: "t" },
-  { k: "patrimonio",  label: "Patrimonio (CMN)",     color: "#8e44ad", campo: "c" },
-  { k: "salud",       label: "Salud",                color: "#e84393", campo: "t" },
-  { k: "vialidad",    label: "Zonas de descanso",    color: "#7f8c8d", campo: "n" },
-  { k: "destinos",    label: "Destinos turísticos",  color: "#2980b9", campo: "c" },
-  { k: "zoit",        label: "ZOIT",                 color: "#16a085", campo: "n" },
-  { k: "circuitos",   label: "Circuitos",            color: "#c0392b", campo: "n" },
-  { k: "aeropuertos", label: "Aeropuertos",          color: "#1abc9c", campo: "iata" },
-  { k: "museos",      label: "Museos y cultura",     color: "#d35400", campo: "t" },
-  { k: "centrales",   label: "Centrales eléctricas", color: "#f39c12", campo: "t" },
-  { k: "escuelas",    label: "Educación",            color: "#3498db", campo: "d" },
+  { k: "turismo",     label: "Turismo",             color: "#e67e22" },
+  { k: "naturaleza",  label: "Naturaleza (SNASPE)",  color: "#27ae60" },
+  { k: "patrimonio",  label: "Patrimonio (CMN)",     color: "#8e44ad" },
+  { k: "salud",       label: "Salud",                color: "#e84393" },
+  { k: "vialidad",    label: "Zonas de descanso",    color: "#7f8c8d" },
+  { k: "destinos",    label: "Destinos turísticos",  color: "#2980b9" },
+  { k: "zoit",        label: "ZOIT",                 color: "#16a085" },
+  { k: "circuitos",   label: "Circuitos",            color: "#c0392b" },
+  { k: "aeropuertos", label: "Aeropuertos",          color: "#1abc9c" },
+  { k: "museos",      label: "Museos y cultura",     color: "#d35400" },
+  { k: "centrales",   label: "Centrales eléctricas", color: "#f39c12" },
+  { k: "escuelas",    label: "Educación",            color: "#3498db" },
 ];
+// campos propios de cada categoria que se muestran en la ficha: [campo, etiqueta, decimales?]
+const POI_CAMPOS = {
+  turismo: [["t", "Tipo"]],
+  naturaleza: [["t", "Tipo"], ["km2", "Superficie (km²)", 1]],
+  patrimonio: [["c", "Categoría"]],
+  salud: [["t", "Tipo"], ["d", "Dependencia"]],
+  vialidad: [["c", "Ruta"], ["km", "Kilómetro de la ruta", 1]],
+  destinos: [["c", "Categoría"]],
+  aeropuertos: [["iata", "Código IATA"]],
+  museos: [["t", "Tipo"]],
+  centrales: [["t", "Tecnología"], ["mw", "Potencia (MW)", 2]],
+};
 
 // ---- Tablas de detalle ----
 const COLS_DETALLE = {
@@ -125,17 +137,18 @@ const NOMBRES_REGION = {
 let mapaObj = null;
 
 function iniciarMapa(datos) {
-  const capas = CAPAS_DEF.map(({ k, label, color, campo }) => ({
+  const capas = CAPAS_DEF.map(({ k, label, color }) => ({
     nombre: label,
     color: color,
     visible: true,
     puntos: (datos[k] || []).map(p => {
-      const sub = p[campo] ? PW.esc(p[campo]) : "";
+      const filas = (POI_CAMPOS[k] || []).filter(([c]) => p[c] !== undefined && p[c] !== null && p[c] !== "" && !(["mw", "km", "km2"].includes(c) && p[c] === 0)).map(([c, et, dec]) =>
+        `<br>${PW.esc(et)}: ${dec !== undefined ? Number(p[c]).toLocaleString("es-CL", { minimumFractionDigits: dec, maximumFractionDigits: dec }) : PW.esc(String(p[c]))}`).join("");
       return {
         lat: p.lat,
         lon: p.lon,
         color: color,
-        popup: `<b>${PW.esc(p.n || "(sin nombre)")}</b>${sub ? "<br>" + sub : ""}`,
+        popup: `<b>${PW.esc(p.n || "(sin nombre)")}</b>${filas}`,
         tip: p.n || "",
       };
     }),
