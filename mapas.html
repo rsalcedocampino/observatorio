@@ -237,6 +237,22 @@ function pintarLeyendaRegiones() {
 let concesionCargando = false; function asegurarConcesiones() {
   if (!on("concesion") || window.PW_DATA.geo_concesiones || concesionCargando) return; concesionCargando = true; const sc = document.createElement("script"); sc.src = "data/geo_concesiones.js?v=" + _pwv; sc.onload = () => { concesionCargando = false; render(false); }; document.head.appendChild(sc); }
 
+// puntos de interés (data/pois.js, ~2,7 MB): categorías y color; se cargan solo al elegir una
+const POI_CATS = [
+  ["turismo", "Turismo", "#e67e22", [["t", "Tipo"]]], ["naturaleza", "Naturaleza (SNASPE)", "#27ae60", [["t", "Tipo"], ["km2", "Superficie (km²)", 1]]],
+  ["patrimonio", "Patrimonio (CMN)", "#8e44ad", [["c", "Categoría"]]], ["salud", "Salud", "#e84393", [["t", "Tipo"], ["d", "Dependencia"]]],
+  ["vialidad", "Zonas de descanso", "#7f8c8d", [["c", "Ruta"], ["km", "Longitud (km)", 1]]], ["destinos", "Destinos turísticos", "#2980b9", [["c", "Categoría"]]],
+  ["zoit", "ZOIT", "#16a085", []], ["circuitos", "Circuitos", "#c0392b", []],
+  ["aeropuertos", "Aeropuertos", "#1abc9c", [["iata", "Código IATA"]]], ["museos", "Museos y cultura", "#d35400", [["t", "Tipo"]]],
+  ["centrales", "Centrales eléctricas", "#f39c12", [["t", "Tecnología"], ["mw", "Potencia (MW)", 1]]], ["escuelas", "Educación", "#3498db", []]];
+function poiPopup(p, campos) {
+  const filas = campos.filter(([c]) => p[c] !== undefined && p[c] !== null && p[c] !== "").map(([c, et, dec]) =>
+    `<div class="pop-linea"><span>${et}</span><div>${dec !== undefined ? PW.fmt(p[c], dec) : PW.esc(String(p[c]))}</div></div>`).join("");
+  return `<div class="pop-est"><div class="pop-titulo">${PW.esc(p.n || "(sin nombre)")}</div>${filas}</div>`; }
+let poisCargando = false; function asegurarPois() {
+  const k = document.getElementById("f-poi").value; if (!k || (window.PW_DATA.pois && window.PW_DATA.pois[k]) || poisCargando) { render(false); return; }
+  poisCargando = true; const sp = document.createElement("script"); sp.src = "data/pois.js?v=" + _pwv; sp.onload = () => { poisCargando = false; render(false); }; document.head.appendChild(sp); }
+
 // re-render del mapa. fit=true encuadra a lo filtrado; si no, conserva el zoom/paneo actual.
 function render(fit) {
   const ind = document.getElementById("f-ind").value; const carga = (M.carga || []).filter(dentro); const subs  = (RED.subestaciones || []).filter(dentro); const solar = (M.solar || []).filter(dentro); const bess  = (M.bess || []).filter(dentro); const postesPts = on("postes") ? postesRender() : null; // transmision UNIFICADA (IDE + nuevas 2019) separada por banda de tension (potencia):
@@ -267,7 +283,10 @@ function render(fit) {
         lat: p.lat, lon: p.lon, r: radio(4, p.mwh, 4), color: C("--s5"),
         tip: (p.n || "BESS") + (p.mwh ? " — " + PW.fmt(p.mwh, 1) + " MWh" : ""),
         popup: popupPlanta(p) })) },
-  ]; const capaBanda = (key, arr) => ({
+  ]; const poiK = document.getElementById("f-poi").value; const poiArr = poiK && window.PW_DATA.pois ? (window.PW_DATA.pois[poiK] || []) : [];
+  if (poiK && poiArr.length) { const cat = POI_CATS.find(c => c[0] === poiK) || []; const colPoi = cat[2] || "#888"; capas.push({ nombre: "Puntos de interés", visible: true, color: colPoi,
+    puntos: poiArr.filter(p => !filtroTerr.rcut || p.r === filtroTerr.rcut).map(p => ({ lat: p.lat, lon: p.lon, r: 4, color: colPoi, tip: p.n || "", popup: poiPopup(p, cat[3] || []) })) }); }
+  const capaBanda = (key, arr) => ({
     nombre: "trans-" + key, visible: on(key), geojson: fc(arr),
     color: props => {
       const kv = +(props.kv || 0); const nueva = (props.fuente || "").indexOf("kmz") === 0; return nueva
@@ -490,7 +509,12 @@ PW.filtrosTerritorio("filtros-mapa", territorio, f => { filtroTerr = f; PW.carga
          <option value="km_bt">km de red BT (baja tensión)</option>
          <option value="km_mt">km de red MT (media tensión)</option>
        </optgroup>
-     </select></label>`); document.getElementById("f-ind").addEventListener("input", () => PW.cargarGeoComunas().then(() => render(false))); // cruces sugeridos
+     </select></label>
+  <label>Puntos de interés
+     <select id="f-poi" autocomplete="off">
+       <option value="" selected>— (apagado)</option>
+       ${POI_CATS.map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}
+     </select></label>`); document.getElementById("f-ind").addEventListener("input", () => PW.cargarGeoComunas().then(() => render(false))); document.getElementById("f-poi").addEventListener("input", () => asegurarPois()); // cruces sugeridos
 const cont = document.getElementById("presets"); cont.innerHTML = `<span class="nota" style="align-self:center;margin:0">Cruces sugeridos:</span>` +
   PRESETS.map((p, i) => `<button class="preset-btn" data-i="${i}"${p.desc ? ` title="${p.desc}"` : ""}>${p.t}</button>`).join(""); cont.querySelectorAll(".preset-btn").forEach(b =>
   b.addEventListener("click", () => aplicarPreset(PRESETS[+b.dataset.i]))); render(false); asegurarCuts(); // si geo_lineas llego cacheado sin `cuts`, recargarlo fresco para el recorte por CUT
