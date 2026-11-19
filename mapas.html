@@ -244,7 +244,7 @@ const POI_CATS = [
   ["vialidad", "Zonas de descanso", "#7f8c8d", [["c", "Ruta"], ["km", "Kilómetro de la ruta", 1]]], ["destinos", "Destinos turísticos", "#2980b9", [["c", "Categoría"]]],
   ["zoit", "ZOIT", "#16a085", []], ["circuitos", "Circuitos", "#c0392b", []],
   ["aeropuertos", "Aeropuertos", "#1abc9c", [["iata", "Código IATA"]]], ["museos", "Museos y cultura", "#d35400", [["t", "Tipo"]]],
-  ["centrales", "Centrales eléctricas", "#f39c12", [["t", "Tecnología"], ["mw", "Potencia (MW)", 2]]], ["escuelas", "Educación", "#3498db", []]];
+  ["centrales", "Centrales eléctricas", "#f39c12", [["t", "Tecnología"], ["mw", "Potencia (MW)", 1]]], ["escuelas", "Educación", "#3498db", []]];
 function poiPopup(p, campos) {
   const filas = campos.filter(([c]) => p[c] !== undefined && p[c] !== null && p[c] !== "" && !(["mw", "km", "km2"].includes(c) && p[c] === 0)).map(([c, et, dec]) =>
     `<div class="pop-linea"><span>${et}</span><div>${dec !== undefined ? Number(p[c]).toLocaleString("es-CL", { minimumFractionDigits: dec, maximumFractionDigits: dec }) : PW.esc(String(p[c]))}</div></div>`).join("");
