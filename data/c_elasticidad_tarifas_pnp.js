@@ -1,11 +1,11 @@
 /* Datos de Precio de Nudo de Corto Plazo por Subestación
-   Fuente: CNE, RE 247 Tabla 17 (DS 4T/2026)
+   Fuente: CNE, Precio de Nudo de Corto Plazo, Informe Técnico Definitivo de julio de 2026 (Res. Ex. CNE N° 397, de 3 de agosto de 2026); decreto del Ministerio de Energía aún no publicado al 20-11-2026
    Generado: generar_datos_elasticidad_pnp.py */
 
 window.PW_DATA.c_elasticidad_tarifas_pnp = {
-  "generado": "2026-11-06",
-  "vigencia": "Precio de Nudo de Corto Plazo, reajustado al 1-abr-2026 (DS 4T/2026; RE 247, Tabla 17)",
-  "nota": "Datos APR-2026 de Subestaciones 220kV. Mapeado a distribuidoras.",
+  "generado": "2026-11-20",
+  "vigencia": "Precio de Nudo de Corto Plazo, Informe Técnico Definitivo de julio de 2026 (Res. Ex. CNE N° 397, de 3 de agosto de 2026); decreto del Ministerio de Energía aún no publicado al 20-11-2026",
+  "nota": "Datos JUL-2026 de Subestaciones 220kV. Mapeado a distribuidoras.",
   "total_subestaciones": 34,
   "subestaciones_por_region_dist": {
     "01": {
@@ -13,32 +13,32 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
         {
           "subestacion": "Pozo Almonte",
           "tension_kv": 220,
-          "energia_kwh": 52.0,
-          "potencia_kw": 8545.91
+          "energia_kwh": 45.331,
+          "potencia_kw": 8483.61
         },
         {
           "subestacion": "Cóndores",
           "tension_kv": 220,
-          "energia_kwh": 49.093,
-          "potencia_kw": 8722.23
+          "energia_kwh": 43.771,
+          "potencia_kw": 8884.09
         },
         {
           "subestacion": "Tarapacá",
           "tension_kv": 220,
-          "energia_kwh": 50.771,
-          "potencia_kw": 8632.78
+          "energia_kwh": 46.703,
+          "potencia_kw": 9009.02
         },
         {
           "subestacion": "Lagunas",
           "tension_kv": 220,
-          "energia_kwh": 50.504,
-          "potencia_kw": 8574.29
+          "energia_kwh": 46.648,
+          "potencia_kw": 8961.96
         },
         {
           "subestacion": "Nueva Victoria",
           "tension_kv": 220,
-          "energia_kwh": 50.357,
-          "potencia_kw": 8549.35
+          "energia_kwh": 46.514,
+          "potencia_kw": 8938.0
         }
       ]
     },
@@ -47,52 +47,52 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
         {
           "subestacion": "Chuquicamata",
           "tension_kv": 220,
-          "energia_kwh": 52.236,
-          "potencia_kw": 8486.56
+          "energia_kwh": 48.386,
+          "potencia_kw": 8761.72
         },
         {
           "subestacion": "Calama",
           "tension_kv": 220,
-          "energia_kwh": 52.979,
-          "potencia_kw": 8434.96
+          "energia_kwh": 48.234,
+          "potencia_kw": 8581.16
         },
         {
           "subestacion": "El Tesoro",
           "tension_kv": 220,
-          "energia_kwh": 51.675,
-          "potencia_kw": 8620.74
+          "energia_kwh": 47.35,
+          "potencia_kw": 8688.13
         },
         {
           "subestacion": "El Cobre",
           "tension_kv": 220,
-          "energia_kwh": 48.728,
-          "potencia_kw": 8650.84
+          "energia_kwh": 47.91,
+          "potencia_kw": 8988.48
         },
         {
           "subestacion": "Laberinto",
           "tension_kv": 220,
-          "energia_kwh": 48.679,
-          "potencia_kw": 8645.68
+          "energia_kwh": 47.88,
+          "potencia_kw": 8985.06
         }
       ],
       "sin-distribuidor": [
         {
           "subestacion": "Crucero",
           "tension_kv": 220,
-          "energia_kwh": 49.738,
-          "potencia_kw": 8359.27
+          "energia_kwh": 44.289,
+          "potencia_kw": 8315.89
         },
         {
           "subestacion": "Encuentro",
           "tension_kv": 220,
-          "energia_kwh": 51.875,
-          "potencia_kw": 8439.26
+          "energia_kwh": 47.978,
+          "potencia_kw": 8682.99
         },
         {
           "subestacion": "Esperanza SING",
           "tension_kv": 220,
-          "energia_kwh": 51.666,
-          "potencia_kw": 8619.88
+          "energia_kwh": 47.343,
+          "potencia_kw": 8687.27
         }
       ]
     },
@@ -101,34 +101,34 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
         {
           "subestacion": "Cardones",
           "tension_kv": 220,
-          "energia_kwh": 51.563,
-          "potencia_kw": 8447.86
+          "energia_kwh": 47.429,
+          "potencia_kw": 8570.04
         },
         {
           "subestacion": "Maitencillo",
           "tension_kv": 220,
-          "energia_kwh": 50.424,
-          "potencia_kw": 8372.17
+          "energia_kwh": 45.575,
+          "potencia_kw": 8481.04
         }
       ],
       "sin-distribuidor": [
         {
           "subestacion": "Atacama",
           "tension_kv": 220,
-          "energia_kwh": 52.774,
-          "potencia_kw": 8926.93
+          "energia_kwh": 46.222,
+          "potencia_kw": 8901.2
         },
         {
           "subestacion": "D. De Almagro",
           "tension_kv": 220,
-          "energia_kwh": 51.474,
-          "potencia_kw": 8420.33
+          "energia_kwh": 47.136,
+          "potencia_kw": 8518.69
         },
         {
           "subestacion": "Carrera Pinto",
           "tension_kv": 220,
-          "energia_kwh": 51.287,
-          "potencia_kw": 8388.51
+          "energia_kwh": 47.002,
+          "potencia_kw": 8491.31
         }
       ]
     },
@@ -137,16 +137,16 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
         {
           "subestacion": "Pan de Azúcar",
           "tension_kv": 220,
-          "energia_kwh": 51.737,
-          "potencia_kw": 8506.34
+          "energia_kwh": 48.118,
+          "potencia_kw": 8700.11
         }
       ],
       "sin-distribuidor": [
         {
           "subestacion": "Los Vilos",
           "tension_kv": 220,
-          "energia_kwh": 52.988,
-          "potencia_kw": 8802.22
+          "energia_kwh": 49.032,
+          "potencia_kw": 9194.71
         }
       ]
     },
@@ -155,28 +155,28 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
         {
           "subestacion": "Los Maquis",
           "tension_kv": 220,
-          "energia_kwh": 57.239,
-          "potencia_kw": 8797.06
+          "energia_kwh": 50.63,
+          "potencia_kw": 9009.88
         }
       ],
       "sin-distribuidor": [
         {
           "subestacion": "Punta Colorada",
           "tension_kv": 220,
-          "energia_kwh": 50.642,
-          "potencia_kw": 8411.73
+          "energia_kwh": 45.88,
+          "potencia_kw": 8531.53
         },
         {
           "subestacion": "Nogales",
           "tension_kv": 220,
-          "energia_kwh": 51.461,
-          "potencia_kw": 8600.95
+          "energia_kwh": 46.587,
+          "potencia_kw": 8557.2
         },
         {
           "subestacion": "Quillota",
           "tension_kv": 220,
-          "energia_kwh": 52.236,
-          "potencia_kw": 8788.46
+          "energia_kwh": 48.532,
+          "potencia_kw": 9118.55
         }
       ]
     },
@@ -185,16 +185,16 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
         {
           "subestacion": "Rapel",
           "tension_kv": 220,
-          "energia_kwh": 49.04,
-          "potencia_kw": 8840.92
+          "energia_kwh": 44.344,
+          "potencia_kw": 9233.22
         }
       ],
       "sin-distribuidor": [
         {
           "subestacion": "O’Higgins",
           "tension_kv": 220,
-          "energia_kwh": 49.462,
-          "potencia_kw": 8694.7
+          "energia_kwh": 48.423,
+          "potencia_kw": 9032.12
         }
       ]
     },
@@ -203,48 +203,48 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
         {
           "subestacion": "Melipilla",
           "tension_kv": 220,
-          "energia_kwh": 49.324,
-          "potencia_kw": 8891.67
+          "energia_kwh": 44.6,
+          "potencia_kw": 9293.12
         },
         {
           "subestacion": "Maipo",
           "tension_kv": 220,
-          "energia_kwh": 51.096,
-          "potencia_kw": 8603.53
+          "energia_kwh": 47.563,
+          "potencia_kw": 9011.59
         }
       ],
       "enel": [
         {
           "subestacion": "Lampa",
           "tension_kv": 220,
-          "energia_kwh": 49.64,
-          "potencia_kw": 8786.74
+          "energia_kwh": 47.087,
+          "potencia_kw": 9204.12
         }
       ],
       "sin-distribuidor": [
         {
           "subestacion": "Polpaico",
           "tension_kv": 220,
-          "energia_kwh": 48.715,
-          "potencia_kw": 8836.62
+          "energia_kwh": 45.472,
+          "potencia_kw": 9231.51
         },
         {
           "subestacion": "El Llano",
           "tension_kv": 220,
-          "energia_kwh": 56.847,
-          "potencia_kw": 8732.55
+          "energia_kwh": 50.246,
+          "potencia_kw": 8938.85
         },
         {
           "subestacion": "Cerro Navia",
           "tension_kv": 220,
-          "energia_kwh": 48.853,
-          "potencia_kw": 8864.14
+          "energia_kwh": 45.661,
+          "potencia_kw": 9274.29
         },
         {
           "subestacion": "Chena",
           "tension_kv": 220,
-          "energia_kwh": 48.79,
-          "potencia_kw": 8853.82
+          "energia_kwh": 45.648,
+          "potencia_kw": 9276.0
         }
       ]
     },
@@ -253,8 +253,8 @@ window.PW_DATA.c_elasticidad_tarifas_pnp = {
         {
           "subestacion": "Parinacota",
           "tension_kv": 220,
-          "energia_kwh": 50.25,
-          "potencia_kw": 8717.93
+          "energia_kwh": 45.136,
+          "potencia_kw": 8954.25
         }
       ]
     }
