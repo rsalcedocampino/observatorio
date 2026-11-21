@@ -1,5 +1,5 @@
 window.PW_DATA.c_tarifas_bt = {
- "generado": "2026-11-14",
+ "generado": "2026-11-21",
  "vigencia": "2026-11-01",
  "vigencia_por_distribuidor": {
   "cge": "2026-10-01",
