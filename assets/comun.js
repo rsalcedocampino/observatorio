@@ -66,6 +66,7 @@
       ["buses.html", "Buses eléctricos"],
       ["tco-buses.html", "Costo total de un bus urbano"],
       ["camiones.html", "Camiones y comerciales eléctricos"],
+      ["motos-electricas.html", "Motos eléctricas"],
       ["mercado-internacional.html", "Mercado Internacional"],
       ["marcos-almacenamiento.html", "Marcos normativos de almacenamiento"],
     ]],
@@ -143,6 +144,7 @@
   ICONOS["elasticidad.html"] = ICONOS["costo.html"];
   ICONOS["buses.html"] = ICONOS["vehiculo.html"];
   ICONOS["camiones.html"] = ICONOS["vehiculo.html"];
+  ICONOS["motos-electricas.html"] = ICONOS["vehiculo.html"];
   ICONOS["padron-ev.html"] = ICONOS["vehiculo.html"];
   ICONOS["especificaciones-ev.html"] = ICONOS["vehiculo.html"];
   ICONOS["homologaciones.html"] = ICONOS["vehiculo.html"];

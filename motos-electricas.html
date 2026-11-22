@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://unpkg.com https://*.basemaps.cartocdn.com https://server.arcgisonline.com https://*.tile.opentopomap.org https://*.tile.openstreetmap.org https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.google.cl https://*.doubleclick.net; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://www.google.com https://*.doubleclick.net https://www.googletagmanager.com https://www.google.cl; base-uri 'self'; frame-src https://www.googletagmanager.com; form-action 'none'; object-src 'none'">
+<!-- Google Tag Manager -->
+<!-- [CONSENTIMIENTO] Ley 21.719: GTM y GA4 se cargan solo si el visitante acepto la medicion
+     (localStorage pw_consent = "si"). El aviso y el cambio de eleccion estan en assets/comun.js. -->
+<script>
+window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'});
+window.pwCargarMedicion = function () {
+  if (window.pwMedicionCargada) return; window.pwMedicionCargada = true;
+  gtag('consent', 'update', {analytics_storage: 'granted'});
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NM4KNK6H');
+  var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-0C4Z3N1KZJ'; document.head.appendChild(g);
+  gtag('js', new Date()); gtag('config', 'G-0C4Z3N1KZJ');
+};
+try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion(); } catch (e) {}
+</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Motos eléctricas — Energías Futuro</title>
+<meta name="description" content="Motos eléctricas en Chile: cuántas se importan cada año, su peso frente al mercado total de motos y cuántas circulan con permiso.">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/estilo.css?v=261122a">
+<script>var _pwv=Math.floor(Date.now()/6e5)</script>
+<script>document.write('<link rel="preload" as="script" href="data/motos_electricas.js?v='+_pwv+'">')</script>
+<script>try{var t=localStorage.getItem('pw-tema');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+</head>
+<body>
+<main>
+  <h1>Motos eléctricas</h1>
+  <p class="sub">Cuántas motos eléctricas entran a Chile cada año, cuánto pesan frente al mercado
+  total de motos y cuántas circulan con permiso. Son importaciones registradas por Aduana, no ventas.</p>
+  <p class="nota" id="nota"></p>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Motos eléctricas importadas por año</h2>
+    <p class="nota" id="lectura-imp"></p>
+    <div id="g-imp"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Precio medio de importación</h2>
+    <p class="nota">Valor de importación (CIF) dividido por las unidades de cada año, en dólares. No es el precio de venta al público.</p>
+    <div id="g-precio"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Motos eléctricas con permiso de circulación</h2>
+    <p class="nota" id="lectura-parque"></p>
+    <div id="g-parque"></div>
+  </div>
+
+  <div class="tarjeta">
+    <h2 style="margin-top:0">Año por año</h2>
+    <div id="t-anios"></div>
+    <p class="nota">Peso en el mercado = motos eléctricas importadas en el año divididas por las ventas
+    totales de motos que informa la asociación de importadores (ANIM). Compara importaciones con ventas,
+    así que es una referencia de orden de magnitud. Un año marcado «estimado» tiene el mercado total
+    calculado a partir de la variación que informó la asociación. Una raya significa sin dato.</p>
+    <p class="nota" id="fuente"></p>
+  </div>
+</main>
+<script>document.write('<script src="data/motos_electricas.js?v='+_pwv+'"><\/script>')</script>
+<script src="assets/comun.js?v=261122a"></script>
+<script>
+PW.montarNav("motos-electricas.html"); const D = PW_DATA.motos_electricas; const T = D.totales; const raya = "—";
+document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota;
+document.getElementById("fuente").textContent = "Fuente: " + D.fuente;
+const IMP = D.anios.filter(a => a.unidades != null);
+document.getElementById("lectura-imp").textContent = "Entre " + T.desde + " y " + T.hasta + " se importaron " + PW.fmt(T.unidades) +
+  " motos eléctricas de calle. El año más alto fue " + T.max_anio + ", con " + PW.fmt(T.max_unidades) + ". El último año es parcial.";
+PW.columnas("g-imp", { labels: IMP.map(a => String(a.anio)), valores: IMP.map(a => a.unidades), fmtV: v => PW.fmt(v) + " motos", alto: 280 });
+PW.lineas("g-precio", { labels: IMP.map(a => String(a.anio)), series: [{ nombre: "Precio medio de importación", valores: IMP.map(a => a.precio_usd) }], fmtV: v => "US$ " + PW.fmt(v), alto: 260 });
+const PAR = D.anios.filter(a => a.parque_elec != null);
+document.getElementById("lectura-parque").textContent = T.parque_anio == null ? "" : "En " + T.parque_anio + " había " + PW.fmt(T.parque_elec) +
+  " motos eléctricas con permiso de circulación, el " + PW.fmt(T.penetracion_pct, 2) + " % de todas las motos. Fuente: INE.";
+PW.columnas("g-parque", { labels: PAR.map(a => String(a.anio)), valores: PAR.map(a => a.parque_elec), color: PW.color("--s3"), fmtV: v => PW.fmt(v) + " motos", alto: 260 });
+const n = (v, d) => v == null ? raya : PW.fmt(v, d);
+PW.tabla("t-anios", [
+  { k: "anio", titulo: "Año", num: true, fmt: v => String(v) },
+  { k: "unidades", titulo: "Importadas", num: true, fmt: v => n(v) },
+  { k: "precio_usd", titulo: "Precio medio (US$)", num: true, fmt: v => n(v) },
+  { k: "mercado", titulo: "Mercado total de motos", num: true, fmt: (v, f) => v == null ? raya : PW.fmt(v) + (f && f.mercado_calidad === "estimado" ? " (estimado)" : "") },
+  { k: "part_pct", titulo: "Peso en el mercado", num: true, fmt: v => v == null ? raya : PW.fmt(v, 2) + " %" },
+  { k: "parque_elec", titulo: "Con permiso de circulación", num: true, fmt: v => n(v) },
+  { k: "penetracion_pct", titulo: "% del parque de motos", num: true, fmt: v => v == null ? raya : PW.fmt(v, 2) + " %" },
+], D.anios.filter(a => a.anio >= T.desde), { orden: "anio" });
+</script>
+</body>
+</html>
