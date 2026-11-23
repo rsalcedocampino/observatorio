@@ -164,7 +164,10 @@ const cols = [
     `batería co-ubicada dentro de ${ALM.cN} plantas solares, que no aparece como fila propia. Almacenamiento total ` +
     `en operación: <b>${PW.fmt(ALM.totMwh)} MWh</b> en ${ALM.totN} sistemas (${ALM.sN} dedicados + ${ALM.cN} co-ubicados ` +
     `en plantas solares). La potencia (MW) de las baterías co-ubicadas no viene desglosada en el catastro, así que la ` +
-    `potencia total de batería operando es mayor que la que muestra la barra.`; })(); // Mix de generación por tecnología en el tiempo (GWh) — desde c_genmix.js
+    `potencia total de batería operando es mayor que la que muestra la barra.`;
+  if ((D.potencia_medida || []).length) g("nota-alm").innerHTML += " " + D.potencia_medida.map(m =>
+    `<b>${PW.esc(m.nombre)}</b> figura con ${PW.fmt(m.mw, 1)} MW: es la mayor inyección que el Coordinador Eléctrico le ha medido en una hora, ` +
+    `no su potencia instalada, que no está confirmada (el catastro declara ${PW.fmt(m.nominal_mw, 0)} MW).`).join(" "); })(); // Mix de generación por tecnología en el tiempo (GWh) — desde c_genmix.js
 (function () {
   const MX = window.PW_DATA.c_genmix; if (!MX || !MX.series || !MX.series.length) return; const COL = {
     "Solar FV + CSP": "--s4", "Eólica": "--s3", "Hidroelectricidad": "--s1",
