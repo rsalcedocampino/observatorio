@@ -8,6 +8,11 @@
 # - Se puede relanzar a mano desde Actions («Run workflow») sin commits vacios.
 # - El sitio es estatico: no hay build. Se sube la raiz del repo tal cual (sin .git ni .github).
 #
+# - Reintento dentro de la misma corrida (autorizado por el usuario en el chat de #1 el 2026-11-24, tras
+#   E-030): si el despliegue falla, espera 90 s y repite la subida y el despliegue, hasta 3 intentos.
+#   Cada reintento sube el artefacto con otro nombre, porque un nombre ya usado no se puede repetir
+#   en la misma corrida. El fallo del primer intento queda a la vista como aviso de la corrida.
+#
 # Lo mantiene #1. publicar_web.py excluye .github del espejo, asi que este archivo vive solo aqui.
 name: Publicar sitio
 
@@ -31,15 +36,53 @@ jobs:
     timeout-minutes: 45
     environment:
       name: github-pages
-      url: ${{ steps.despliegue.outputs.page_url }}
+      url: ${{ steps.despliegue3.outputs.page_url || steps.despliegue2.outputs.page_url || steps.despliegue1.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
           path: .
-      - id: despliegue
+      - id: despliegue1
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+        with:
+          timeout: 1800000
+          error_count: 20
+
+      - name: Esperar antes del intento 2
+        if: steps.despliegue1.outcome == 'failure'
+        run: |
+          echo "::warning::El despliegue fallo en el intento 1; se reintenta en 90 s."
+          sleep 90
+      - if: steps.despliegue1.outcome == 'failure'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          name: github-pages-2
+          path: .
+      - id: despliegue2
+        if: steps.despliegue1.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+        with:
+          artifact_name: github-pages-2
+          timeout: 1800000
+          error_count: 20
+
+      - name: Esperar antes del intento 3
+        if: steps.despliegue2.outcome == 'failure'
+        run: |
+          echo "::warning::El despliegue fallo en el intento 2; se reintenta en 90 s."
+          sleep 90
+      - if: steps.despliegue2.outcome == 'failure'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          name: github-pages-3
+          path: .
+      - id: despliegue3
+        if: steps.despliegue2.outcome == 'failure'
         uses: actions/deploy-pages@v5
         with:
+          artifact_name: github-pages-3
           timeout: 1800000
           error_count: 20
