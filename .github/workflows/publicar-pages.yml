@@ -12,6 +12,10 @@
 #   E-030): si el despliegue falla, espera 90 s y repite la subida y el despliegue, hasta 3 intentos.
 #   Cada reintento sube el artefacto con otro nombre, porque un nombre ya usado no se puede repetir
 #   en la misma corrida. El fallo del primer intento queda a la vista como aviso de la corrida.
+# - Pausa de 20 s entre cada subida y su despliegue (autorizada por el usuario en el chat de #1 el
+#   2026-11-25). Hipotesis, no probada: GitHub tarda un instante en dejar visible el artefacto recien
+#   subido. La corrida 294 (24-11 20:49) fallo los 3 intentos con «No artifacts named ... were found»
+#   y el despliegue partio en el mismo segundo en que termino la subida.
 #
 # Lo mantiene #1. publicar_web.py excluye .github del espejo, asi que este archivo vive solo aqui.
 name: Publicar sitio
@@ -43,6 +47,8 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: .
+      - name: Pausa antes del despliegue 1
+        run: sleep 20
       - id: despliegue1
         uses: actions/deploy-pages@v5
         continue-on-error: true
@@ -60,6 +66,9 @@ jobs:
         with:
           name: github-pages-2
           path: .
+      - name: Pausa antes del despliegue 2
+        if: steps.despliegue1.outcome == 'failure'
+        run: sleep 20
       - id: despliegue2
         if: steps.despliegue1.outcome == 'failure'
         uses: actions/deploy-pages@v5
@@ -79,6 +88,9 @@ jobs:
         with:
           name: github-pages-3
           path: .
+      - name: Pausa antes del despliegue 3
+        if: steps.despliegue2.outcome == 'failure'
+        run: sleep 20
       - id: despliegue3
         if: steps.despliegue2.outcome == 'failure'
         uses: actions/deploy-pages@v5
