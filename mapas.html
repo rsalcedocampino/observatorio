@@ -317,8 +317,8 @@ function render(fit) {
   } : { nombre: "", visible: false, valores: {} }; const prev = mapa ? { c: mapa.getCenter(), z: mapa.getZoom() } : null; if (mapa) { mapa.remove(); mapa = null; }
   mapa = PW.mapa("mapa-todo", {
     capas, lineas, comunas, sinSelector: true, sinCluster: true, alto: 580,
-    centro: prev && !fit ? [prev.c.lat, prev.c.lng] : [-35.5, -71.3],
-    zoom: prev && !fit ? prev.z : 5,
+    centro: prev && !fit ? [prev.c.lat, prev.c.lng] : [-37, -71],
+    zoom: prev && !fit ? prev.z : 4,
   }); if (mapa && on("regiones") && window.PW_DATA.geo_comunas) { const nomR = nombresRegion();
     const feats = window.PW_DATA.geo_comunas.features.filter(f => !filtroTerr.rcut || rcutDe(f.properties) === filtroTerr.rcut);
     L.geoJSON(fc(feats), { pane: "pw-comunas", interactive: !ind,
