@@ -2,7 +2,7 @@ window.PW_DATA = window.PW_DATA || {};
 window.PW_DATA.privados_rm_sec = {
   "generado": "2026-11-27",
   "fuente": "Registro IRVE SEC - captura 2026-11",
-  "nota": "Cargadores privados en el Registro SEC sin presencia en la red publica en linea. Sin potencia en esta captura.",
+  "nota": "Cargadores privados en el Registro SEC sin presencia en la red pública en línea. Sin potencia en esta captura.",
   "totales": {
     "folios_sec": 2749,
     "cargadores": 3532,
