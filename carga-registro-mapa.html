@@ -129,6 +129,15 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
     </div>
   </div>
 
+  <div class="tarjeta" id="privados-rm" hidden>
+    <h2 style="margin-top:0">Privados en la Región Metropolitana</h2>
+    <p class="nota">Cargadores privados inscritos en el Registro SEC que no figuran en la red pública en línea. Se muestran aparte y no se suman a los cargadores públicos de arriba. Esta captura no trae potencia declarada.</p>
+    <div class="kpis" id="priv-rm-kpis"></div>
+    <h3>Comunas con más conectores</h3>
+    <div id="priv-rm-tabla"></div>
+    <p class="fuente" id="priv-rm-fuente"></p>
+  </div>
+
   <p class="fuente" id="ci-fuente"></p>
   </section>
   <section class="tab-content" id="reporte">
@@ -170,6 +179,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   </section>
 </main>
 <script>document.write('<script src="data/carga_mapa.js?v='+_pwv+'"><\/script>')</script>
+<script>document.write('<script src="data/privados_rm_sec.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=261122a"></script>
 <script>
 PW.montarNav("carga-registro-mapa.html"); const D = window.PW_DATA.carga_mapa || {}; const PTS = (D.puntos || []).map(p => ({ ...p, lat: +p.lat, lon: +p.lon }))
@@ -390,6 +400,22 @@ const C = D.compatibilidad || {}; PW.tabla("rp-t-compat", [
     })();
   }
 });
+(function () {
+  const P = window.PW_DATA.privados_rm_sec; const caja = document.getElementById("privados-rm");
+  if (!P || !P.totales || !caja) return;
+  const t = P.totales;
+  document.getElementById("priv-rm-kpis").innerHTML =
+    kpiHTML([PW.fmt(t.folios_sec), "folios SEC", "inscripciones en la Región Metropolitana"]) +
+    kpiHTML([PW.fmt(t.cargadores), "cargadores privados", "fuera de la red pública en línea"]) +
+    kpiHTML([PW.fmt(t.conectores), "conectores", "en " + PW.fmt(t.comunas) + " comunas"]);
+  PW.tabla("priv-rm-tabla", [
+    { k: "comuna", titulo: "Comuna" },
+    { k: "cargadores", titulo: "Cargadores", num: true, fmt: v => PW.fmt(v) },
+    { k: "conectores", titulo: "Conectores", num: true, fmt: v => PW.fmt(v) },
+  ], (P.por_comuna || []).slice(0, 10));
+  document.getElementById("priv-rm-fuente").textContent = "Fuente: " + (P.fuente || "Registro SEC") + (P.generado ? ". Generado " + P.generado + "." : ".");
+  caja.hidden = false;
+})();
 </script>
 </body>
 </html>

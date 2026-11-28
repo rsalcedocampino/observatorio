@@ -115,6 +115,10 @@ details.seccion > summary { padding: 4px 0; }
     <div class="kpis" id="kpi-ventas"></div>
     <h3 class="grupo-tit">Territorio y cobertura</h3>
     <div class="kpis" id="kpi-territorio"></div>
+    <h3 class="grupo-tit">Mapa de la red nacional</h3>
+    <div id="mapa-nacional"></div>
+    <div id="ley-nacional" style="margin-top:8px"></div>
+    <p class="nota" id="cont-nacional"></p>
     <div id="mini-ranking" style="margin-top:16px"></div>
     <p class="nota" id="resumen-nota" style="margin:12px 0 0"></p>
   </div>
@@ -357,7 +361,7 @@ let REG_ESTADO = null, tabReg = null, tabEnergia = null; (function poblarFiltroR
       extra: "Hoy: " + PW.fmt(f.cargadores_pub) + " públicos — necesarios 2035: " + PW.fmt(f.necesarios_2035) + (f.flotas_pct >= FLOTA_REG_PCT ? " — " + f.flotas_pct + "% del parque en comunas de flotas" : ""),
       color: f.estado === "En ritmo" ? PW.color("--s3") : PW.color("--s2"),
     })), fmtV: v => PW.fmt(v),
-  }); refrescarEnergiaReg(filasTodas, regSel); REG_ESTADO = { filas: filasTodas, p2035Nac, ratio, parqueNacHoy }; renderResumenNacional(); }
+  }); refrescarEnergiaReg(filasTodas, regSel); REG_ESTADO = { filas: filasTodas, p2035Nac, ratio, parqueNacHoy }; renderResumenNacional(); dibujarMapaNacional(); }
 
 function refrescarEnergiaReg(filasTodas, regSel) {
   const ER = D.energia_reg || {}; const DEM = window.PW_DATA.c_demanda; const km = DEM ? DEM.supuestos.km_anuales : 15000; const rend = DEM ? DEM.supuestos.rendimiento_km_kwh : 5.4; const gwhSen = DEM ? DEM.kpis.gwh_sen_anual : null; const filasE = filasTodas.map(f => {
@@ -457,8 +461,30 @@ document.getElementById("sel-region").addEventListener("input", function () {
   poblarSelComuna(this.value); renderDossier(this.value || null, null); }); document.getElementById("sel-comuna").addEventListener("input", function () {
   const rcut = document.getElementById("sel-region").value; renderDossier(rcut || null, cutDe(rcut, this.value)); }); document.getElementById("btn-limpiar").addEventListener("click", function () {
   document.getElementById("sel-region").value = ""; poblarSelComuna(""); document.getElementById("buscador-territorio").value = ""; document.getElementById("buscador-msg").textContent = "Elige o escribe un territorio para desplegar su dossier con toda la información y cruces."; renderDossier(null, null); window.scrollTo({ top: 0, behavior: "smooth" }); }); // ===================== DOSSIER =====================
+let mapaNac = null; async function dibujarMapaNacional() {
+  // Vista sin region elegida: todas las estaciones de acceso publico y los proyectos de planta solar y almacenamiento del pais (los mismos filtros que el dossier).
+  const cont = document.getElementById("mapa-nacional"); if (!cont) return; try { await cargarScript("mapa"); } catch (err) { cont.textContent = "No se pudo cargar el mapa."; return; }
+  const M = PW_DATA.mapa || {}; const ACCESO_PUB = new Set(["publico", "publico_restringido", "mixto"]); const pts = (M.carga || []).filter(p => ACCESO_PUB.has(p.acc)).map(p => ({
+    lat: p.lat, lon: p.lon, r: 5, color: (p.kw || 0) >= 50 ? PW.color("--s2") : PW.color("--s1"), popup: PW.popupEstacion(p),
+  })); const ptsSolar = (M.solar || []).map(p => ({
+    lat: p.lat, lon: p.lon, r: 4, color: PW.color("--s4"),
+    popup: `<b>${PW.esc(p.n)}</b><br>Planta solar — ${PW.esc(p.com || "")}` + (p.mw ? `<br>${PW.fmt(p.mw, 1)} MW` : "") + `<br>Estado: ${PW.estadoProyecto(p.est) || "sin dato"}`,
+  })); const ptsBess = (M.bess || []).map(p => ({
+    lat: p.lat, lon: p.lon, r: 4, color: PW.color("--s3"),
+    popup: `<b>${PW.esc(p.n)}</b><br>Almacenamiento — ${PW.esc(p.com || "")}` + (p.mwh ? `<br>${PW.fmt(p.mwh)} MWh` : "") + `<br>Estado: ${PW.estadoProyecto(p.est) || "sin dato"}`,
+  })); if (mapaNac) { mapaNac.remove(); mapaNac = null; }
+  mapaNac = PW.mapa("mapa-nacional", { capas: [
+    { nombre: "Estaciones de carga", puntos: pts },
+    { nombre: "Plantas solares", puntos: ptsSolar },
+    { nombre: "Almacenamiento (BESS)", puntos: ptsBess },
+  ], centro: [-37, -71], zoom: 4, alto: 578 }); // En pantallas angostas el selector de capas abierto tapa el norte de Chile: se pliega y se abre con un toque.
+  const selCapas = document.querySelector("#mapa-nacional .leaflet-control-layers"); if (selCapas && window.innerWidth < 600) selCapas.classList.remove("leaflet-control-layers-expanded");
+  PW.leyendaMapa("ley-nacional", [
+    ["Carga estándar (< 50 kW)", PW.color("--s1")], ["Carga rápida (≥ 50 kW)", PW.color("--s2")],
+    ["Planta solar", PW.color("--s4")], ["Almacenamiento", PW.color("--s3")],
+  ]); document.getElementById("cont-nacional").textContent = pts.length + " estaciones de carga, " + ptsSolar.length + " plantas solares y " + ptsBess.length + " proyectos de almacenamiento en todo el país. Elige una región para ver su dossier."; }
 let mapaTerr = null; async function renderDossier(rcut, cut) {
-  const dossier = document.getElementById("dossier"); const estado = document.getElementById("dossier-estado"); if (!rcut) { dossier.style.display = "none"; document.getElementById("card-nacional").style.display = ""; return; }
+  const dossier = document.getElementById("dossier"); const estado = document.getElementById("dossier-estado"); if (!rcut) { dossier.style.display = "none"; document.getElementById("card-nacional").style.display = ""; if (mapaNac) mapaNac.invalidateSize(); return; }
   estado.style.display = ""; estado.textContent = "Cargando dossier del territorio…"; try { await cargarBundle(); } catch (err) { estado.textContent = "No se pudieron cargar los datos del dossier. Reintenta."; return; }
   estado.style.display = "none"; dossier.style.display = ""; document.getElementById("card-nacional").style.display = "none"; const reg = D.regiones.find(r => r.rcut === rcut); const regNombre = reg ? reg.region : ((CENSO_REG[rcut] && CENSO_REG[rcut].region) || rcut); const com = cut ? COM_BY_CUT[String(cut)] : null; const nivelComuna = !!com; const ctx = { rcut, cut: cut ? String(cut) : null, com, regNombre, nivelComuna, filaReg: REG_ESTADO.filas.find(f => f.rcut === rcut) }; document.getElementById("dossier-titulo").textContent = nivelComuna ? com.comuna : regNombre; document.getElementById("dossier-sub").innerHTML = nivelComuna
     ? `Comuna · <a href="#" id="volver-region">${PW.esc(regNombre)}</a> ▸ ${PW.esc(com.comuna)}`
