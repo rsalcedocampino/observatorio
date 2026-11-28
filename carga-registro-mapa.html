@@ -54,6 +54,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
   transporte público de buses. Para los agregados por región y potencia ver
   <a href="#capacidad">Capacidad de carga instalada</a>.</p>
   <p class="nota" id="nota"></p>
+  <p class="nota" id="priv-aviso" hidden></p>
 
   <div class="kpis" id="kpis"></div>
 
@@ -415,6 +416,16 @@ const C = D.compatibilidad || {}; PW.tabla("rp-t-compat", [
   ], (P.por_comuna || []).slice(0, 10));
   document.getElementById("priv-rm-fuente").textContent = "Fuente: " + (P.fuente || "Registro SEC") + (P.generado ? ". Generado " + P.generado + "." : ".");
   caja.hidden = false;
+  const av = document.getElementById("priv-aviso");
+  if (av) {
+    av.innerHTML = "Aparte de este registro: <b>" + PW.fmt(t.cargadores) + " cargadores privados</b> inscritos en la Región Metropolitana que no están en la red pública en línea. <a href=\"#privados-rm\" id=\"priv-aviso-enlace\">Ver el detalle por comuna</a>.";
+    av.hidden = false;
+    document.getElementById("priv-aviso-enlace").addEventListener("click", ev => {
+      ev.preventDefault();
+      const btn = document.querySelector('.tab-btn[data-tab="capacidad"]'); if (btn) btn.click();
+      setTimeout(() => caja.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
+    });
+  }
 })();
 </script>
 </body>
