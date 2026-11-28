@@ -480,7 +480,7 @@ document.querySelectorAll("[data-k]").forEach(el => {
   // Cada subtexto describe la MISMA cifra de su tarjeta (pedido del usuario, 08-11): el del
   // precio llevaba la potencia media, que se calcula sobre todos los conectores y no sobre los
   // que tienen precio; y decia "carga publica" cuando el promedio incluye conectores restringidos.
-  [PW.fmt(k.ventas_ytd), "vehículos electrificados vendidos en " + k.ventas_ultimo_mes.slice(0,4), "enchufables e híbridos, con buses y camiones · enero a " + k.ventas_ultimo_mes.slice(0,7)],
+  [PW.fmt(k.ventas_ytd), "vehículos de cero y bajas emisiones vendidos en " + k.ventas_ultimo_mes.slice(0,4), "enchufables, híbridos y microhíbridos, con buses y camiones · enero a " + k.ventas_ultimo_mes.slice(0,7)],
   ["$" + PW.fmt(k.pkwh_nacional), "precio medio del kWh en la red de carga", "promedio simple de " + PW.fmt(k.pkwh_n) + " conectores con precio publicado"],
   [PW.fmt(k.pct_renovable_dia, 1) + "%", "de la generación fue renovable", "solar, eólica, hidro, geotermia y biomasa · día " + k.fecha_generacion_dia],
 ]; document.getElementById("kpis").innerHTML = defs.map(d =>
