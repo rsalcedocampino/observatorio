@@ -481,6 +481,9 @@ document.querySelectorAll("[data-k]").forEach(el => {
   // precio llevaba la potencia media, que se calcula sobre todos los conectores y no sobre los
   // que tienen precio; y decia "carga publica" cuando el promedio incluye conectores restringidos.
   [PW.fmt(k.ventas_ytd), "vehículos de cero y bajas emisiones vendidos en " + k.ventas_ultimo_mes.slice(0,4), "enchufables, híbridos y microhíbridos, con buses y camiones · enero a " + k.ventas_ultimo_mes.slice(0,7)],
+  [PW.fmt(k.ventas_ytd_electricos), "vehículos eléctricos vendidos en " + k.ventas_ultimo_mes.slice(0,4), "100 % eléctricos, con buses y camiones · enero a " + k.ventas_ultimo_mes.slice(0,7)],
+  [PW.fmt(k.ventas_ytd_bev), "vehículos 100 % eléctricos (BEV) vendidos en " + k.ventas_ultimo_mes.slice(0,4), "enero a " + k.ventas_ultimo_mes.slice(0,7)],
+  [PW.fmt(k.ventas_ytd_phev), "híbridos enchufables vendidos en " + k.ventas_ultimo_mes.slice(0,4), "incluye rango extendido enchufable · enero a " + k.ventas_ultimo_mes.slice(0,7)],
   ["$" + PW.fmt(k.pkwh_nacional), "precio medio del kWh en la red de carga", "promedio simple de " + PW.fmt(k.pkwh_n) + " conectores con precio publicado"],
   [PW.fmt(k.pct_renovable_dia, 1) + "%", "de la generación fue renovable", "solar, eólica, hidro, geotermia y biomasa · día " + k.fecha_generacion_dia],
 ]; document.getElementById("kpis").innerHTML = defs.map(d =>
