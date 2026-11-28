@@ -151,7 +151,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 PW.montarNav("camiones.html"); const D = (window.PW_DATA && PW_DATA.c_camiones) || {}; const R = D.resumen || {}, RED = D.red_dc || {}; const kpi = d => `<div class="kpi"><div class="v">${d[0]}</div><div class="l">${d[1]}</div><div class="d">${d[2] || ""}</div></div>`; document.getElementById("nota").textContent =
   "Ventas hasta " + ((D.cobertura || {}).ventas_hasta || "—").slice(0, 7) +
   " e inscripciones hasta " + ((D.cobertura || {}).inscripciones_hasta || "—").slice(0, 7) +
-  ". Generado el " + (D.generado || "—") + "."; document.getElementById("kpis").innerHTML = [
+  ". Generado el " + (D.generado || "—") + "." + ((((D.serie_mensual || []).slice(-1)[0]) || {}).ym === "2026-10-01" ? " El dato de octubre de 2026 se calculó como el acumulado de octubre menos el de septiembre, porque el informe no publica el mes por separado." : ""); document.getElementById("kpis").innerHTML = [
   [PW.fmt(R.electrico_ventas_total || 0), "camiones eléctricos vendidos", "acumulado histórico (ventas)"],
   [PW.fmt((D.por_tramo.find(t => /14.969/.test(t.tramo)) || {}).electrico || 0), "eléctricos pesados",
    "más de 14.969 kg (inscripciones)"],

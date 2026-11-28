@@ -81,7 +81,7 @@ try { if (localStorage.getItem('pw_consent') === 'si') window.pwCargarMedicion()
 <script>document.write('<script src="data/c_buses.js?v='+_pwv+'"><\/script>')</script>
 <script src="assets/comun.js?v=261122a"></script>
 <script>
-PW.montarNav("buses.html"); const D = PW_DATA.c_buses; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota; // [VENTAS APILADAS POR MES] (pedido 2026-08-20): barras acumuladas por categoria con
+PW.montarNav("buses.html"); const D = PW_DATA.c_buses; document.getElementById("nota").textContent = "Actualizado " + (D.generado || "").slice(0, 10) + ". " + D.nota + ((D.meses || []).slice(-1)[0] === "2026-10" ? " El dato de octubre de 2026 se calculó como el acumulado de octubre menos el de septiembre, porque el informe no publica el mes por separado." : ""); // [VENTAS APILADAS POR MES] (pedido 2026-08-20): barras acumuladas por categoria con
 // filtros de año, mes y tipo de bus. Renderer page-local (comun.js no trae apiladas).
 const cats = Object.keys(D.ventas_categoria); const COL_CAT = {}; ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6"].forEach((v, i) => { if (cats[i]) COL_CAT[cats[i]] = PW.color(v) || "#888"; }); const NOM_MES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
                  "septiembre", "octubre", "noviembre", "diciembre"]; const g = id => document.getElementById(id); [...new Set(D.meses.map(m => m.slice(0, 4)))].sort().forEach(a => g("f-anio").appendChild(new Option(a, a))); NOM_MES.forEach((n, i) => g("f-mes").appendChild(new Option(n, String(i + 1).padStart(2, "0")))); cats.forEach(c => g("f-tipo").appendChild(new Option(c, c))); function pintarVentas() {
